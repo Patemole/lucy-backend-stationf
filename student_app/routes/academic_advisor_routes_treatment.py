@@ -1,11 +1,11 @@
 import time
 from functools import wraps
-from airs.routes.academic_advisor_routes import rl
+from student_app.routes.academic_advisor_routes import rl
 
-from airs.LLM.academic_advisor_search_engine_answering_LLM_chain import  LLM_chain_search_engine_and_answering
-import airs.prompts.academic_advisor_search_engine_and_answering_prompts
+from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import  LLM_chain_search_engine_and_answering
+import student_app.prompts.academic_advisor_search_engine_and_answering_prompts
 
-from airs.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
+from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
 #from airs.prompts.academic_advisor_reformulations_prompts import 
 
 
@@ -39,7 +39,7 @@ async def academic_advisor_router_treatment(input_message, chat_history):
     print("\n")
     print("La route choisi est general directives")
     print("\n")
-    prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_general_directives
+    prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_general_directives
     #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
     search_engine_query = input_message #for testing before going further
     method = "search_engine"

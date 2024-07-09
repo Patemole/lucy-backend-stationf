@@ -10,13 +10,13 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from functools import wraps
 import time
-from airs.database.dynamo_db.chat import get_chat_history, store_message_async
-from airs.model.input_query import InputQuery, InputQueryAI
-from airs.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
-from airs.academic_advisor import academic_advisor_answer_generation
-from airs.LLM.academic_advisor_search_engine_answering_LLM_chain import LLM_chain_search_engine_and_answering
+from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
+from student_app.model.input_query import InputQuery, InputQueryAI
+from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
+from student_app.academic_advisor import academic_advisor_answer_generation
+from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import LLM_chain_search_engine_and_answering
 
-from airs.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
+from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
 # Logging configuration
 logging.basicConfig(
