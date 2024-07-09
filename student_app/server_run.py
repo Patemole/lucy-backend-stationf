@@ -7,8 +7,8 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from airs.server_files import create_app as create_files_app
-from airs.server_academic_advisor import create_app as create_academic_advisor_app
+from student_app.server_files import create_app as create_files_app
+from student_app.server_academic_advisor import create_app as create_academic_advisor_app
 
 
 # Configurer le logging
