@@ -10,6 +10,11 @@ import os
 import time
 from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.chat_message_histories import ChatMessageHistory
+from student_app.prompts.academic_advisor_reformulations_prompts import prompt_reformulation_for_web_search
+#from langchain_core.output_parsers import StrOutputParser
+
+prompt_answering = prompt_reformulation_for_web_search
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -18,6 +23,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 os.environ["GROQ_API_KEY"] = GROQ_API_KEY
 
 MODEL_NAME = "llama3-70b-8192"
+
+#TODO verify airs. and add university to it
+#prompt_answering = airs.prompts.academic_advisor_reformulations_prompts.prompt_reformulation_for_web_search
 
 # Fonction pour mesurer le temps d'exécution
 def timeit(func):
@@ -35,7 +43,9 @@ def timeit(func):
 
 
 # Fonction principale renommée
-def LLM_chain_reformulation(content: str, chat_history):
+def LLM_chain_reformulation(content: str, chat_history, student_profile, university):
+
+    print("reformulation of the user input")
 
     GROQ_LLM = ChatGroq(temperature=0, model_name=MODEL_NAME, streaming=True)
 
@@ -45,20 +55,16 @@ def LLM_chain_reformulation(content: str, chat_history):
         [
             (
                 "system",
-                """Given the following conversation and a follow up question (the HumanMessage), rephrase the follow up question to be a standalone question, in its original language.
-
-                    Chat History:
-                    {chat_history}
-                    Standalone question:
-                """
+                prompt_answering,
             ),
             MessagesPlaceholder(variable_name="messages"),
         ]
     )
 
-    chain = prompt_search_engine | GROQ_LLM
+    chain = prompt_search_engine | GROQ_LLM 
 
-    response = chain.invoke({"messages": [HumanMessage(content=content)], "chat_history": chat_history})
+    response = chain.invoke({"messages": [HumanMessage(content=content)], "chat_history": chat_history, "student_profile": student_profile, "university":university})
 
+    print("Reformulated user input into search engine query : \n" + response.content) 
     return response.content
         

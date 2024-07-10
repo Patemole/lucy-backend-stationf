@@ -13,6 +13,7 @@ from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.chat_message_histories import ChatMessageHistory
 from functools import wraps
 import time
+#from langchain_core.output_parsers import StrOutputParser
 
 from pinecone import Pinecone
 from openai import OpenAI
@@ -163,11 +164,21 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
         global tool_google
         tool_google = GoogleSearchAPIWrapper()
 
+        print("\n")
+        print("\n")
+        print("Search enginge query is : \n")
+        print(search_engine_query)
+        print("\n")
+        print("\n")
+
         # Utiliser la variable content et combined_urls dans l'appel à timed_invoke_google
         answer_search_engine = timed_invoke_google({f"{search_engine_query}"})
 
         print("\n")
+        print("\n")
+        print("Answer from the search engine: \n")
         print(answer_search_engine)
+        print("\n")
         print("\n")
     
 
@@ -188,7 +199,7 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
             ]
         )
 
-        chain = prompt_search_engine | GROQ_LLM
+        chain = prompt_search_engine | GROQ_LLM 
 
         '''
         with_message_history = RunnableWithMessageHistory(
