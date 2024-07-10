@@ -24,8 +24,8 @@ def timing_decorator(func):
 
 #Il faut rajouter un "search_engine", un "RAG" ou "nothing" en plus dans les paramètres a renvoyer pour savoir quoi utiliser ensuite dans la fonction qui asnwer 
 @timing_decorator
-async def academic_advisor_router_treatment(input_message, chat_history):
-
+async def academic_advisor_router_treatment(input_message, chat_history, university):
+    print(3)
     student_profile = "A junior in the engineering school majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
     print("\n")
@@ -39,11 +39,13 @@ async def academic_advisor_router_treatment(input_message, chat_history):
     print("\n")
     print("La route choisi est general directives")
     print("\n")
+    #TODO modify here for promt of the right route
     prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_general_directives
-    #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-    search_engine_query = input_message #for testing before going further
+    search_engine_query = LLM_chain_reformulation(input_message, chat_history, student_profile, university)
+    #search_engine_query = input_message #for testing before going further
     method = "search_engine"
     keywords = ""
+    print(4)
     return search_engine_query, prompt_answering, student_profile, method, keywords
 
 
