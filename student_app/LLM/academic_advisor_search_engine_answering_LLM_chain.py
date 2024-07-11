@@ -22,6 +22,9 @@ import langchain_pinecone
 import langchain
 from langchain.schema import Document
 from typing import List
+from student_app.scraping.scraping import fetch_content_with_jinai
+from student_app.LLM.academic_advisor_text_cleaning import extract_relevant_info
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,7 +34,7 @@ PINECONE_API_KEY = os.getenv("PINECONE_API_KEY_ACADEMIC_ADVISOR")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 PINECONE_POOL_THREADS = 4
 
-MODEL_NAME = "llama3-70b-8192"
+MODEL_NAME = "llama3-8b-8192"
 #MODEL_NAME = "mixtral-8x7b-32768"
 
 
@@ -117,7 +120,8 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 @timeit
 def timed_invoke_google(query):
     #return tool_google.run(query)
-    return tool_google.results(query, 5)
+    #TODO test for different number of websites returned
+    return tool_google.results(query, 2)
 
 @timeit
 def set_google_cse_id(university):
@@ -148,7 +152,14 @@ def set_google_cse_id(university):
 global store
 store = {}
 
-
+#fonction to fetch content from the web calling scraping method from scraping.py
+def process_search_results(answer_search_engine):
+    urls = [result['link'] for result in answer_search_engine]
+    all_content = ""
+    for url in urls:
+        content = fetch_content_with_jinai(url)
+        all_content += f"\nContent from {url}:\n{content}\n"
+    return all_content
 
 # Fonction principale renommée
 @time_first_chunk
@@ -181,7 +192,29 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
         print("\n")
         print("\n")
     
+        #get the content from the search engine for each pages that the search engine returned
+        search_results = process_search_results(answer_search_engine)
 
+
+        print("\n")
+        print("\n")
+        print("Answer from jinai: \n")
+        print(search_results)
+        print("\n")
+        print("\n")
+
+
+
+        # Process the search results with Gemini model to get the cleaned text
+        cleaned_texts = extract_relevant_info(search_engine_query, search_results)
+
+        print("\n")
+        print("\n")
+        print("clean text is the following: \n")
+        print(cleaned_texts)
+        print("\n")
+        print("\n")
+ 
 
         GROQ_LLM = ChatGroq(temperature=0, model_name=MODEL_NAME, streaming=True)
 
@@ -213,7 +246,7 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
 
         #for r in with_message_history.stream(
         for r in chain.stream(
-            {"messages": [HumanMessage(content=content)],"university": university, "search_engine": answer_search_engine,"student_profile": student_profile, "chat_history": chat_history}
+            {"messages": [HumanMessage(content=content)],"university": university, "search_engine": cleaned_texts ,"student_profile": student_profile, "chat_history": chat_history}
             #config=config,
         ):
             #print(r.content, end="|")

@@ -40,20 +40,18 @@ async def academic_advisor_router_treatment(input_message, chat_history, univers
     print("La route choisi est general directives")
     print("\n")
     #TODO modify here for promt of the right route
-    prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_general_directives
-    search_engine_query = LLM_chain_reformulation(input_message, chat_history, student_profile, university)
-    #search_engine_query = input_message #for testing before going further
+    prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.general_prompt
+    
+    #TODO update to make the reformulation of the input message
+    #search_engine_query = LLM_chain_reformulation(input_message, chat_history, student_profile, university)
+    search_engine_query = input_message #for testing before going further
     method = "search_engine"
     keywords = ""
-    print(4)
     return search_engine_query, prompt_answering, student_profile, method, keywords
 
 
 
     '''
-
-
-
     #router_answer = rl(input_message)
     #print(router_answer)
     router_answer = "general_directives"
