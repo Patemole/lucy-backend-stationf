@@ -5090,3 +5090,68 @@ HTTP response body: {"error":{"code":"FORBIDDEN","message":"Request failed. You'
 2024-07-09 16:19:08 [INFO]: Montage des applications
 2024-07-09 16:19:08 [INFO]: Applications montées avec succès
 2024-07-09 16:19:08 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-10 15:16:42 [INFO]: Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-10 15:17:09 [INFO]: Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-10 15:18:05 [INFO]: Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-10 15:18:25 [INFO]: Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-10 15:18:59 [INFO]: Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-10 15:19:42 [INFO]: Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-10 15:20:15 [INFO]: Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-10 15:20:22 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-10 15:20:24 [INFO]: Démarrage de l'application
+2024-07-10 15:20:24 [INFO]: Création de l'application files
+2024-07-10 15:20:24 [INFO]: Application files créée avec succès
+2024-07-10 15:20:24 [INFO]: Création de l'application academic advisor
+2024-07-10 15:20:24 [INFO]: Application academic advisor créée avec succès
+2024-07-10 15:20:24 [INFO]: Montage des applications
+2024-07-10 15:20:24 [INFO]: Applications montées avec succès
+2024-07-10 15:20:24 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-10 15:20:39 [INFO]: Request: GET http://0.0.0.0:5001/
+2024-07-10 15:20:39 [INFO]: Response: 404
+2024-07-10 15:20:40 [INFO]: Request: GET http://0.0.0.0:5001/favicon.ico
+2024-07-10 15:20:40 [INFO]: Response: 404
+2024-07-10 15:21:07 [INFO]: Request: GET http://0.0.0.0:5001/favicon.ico
+2024-07-10 15:21:07 [INFO]: Response: 404
+2024-07-10 15:30:33 [INFO]: Found credentials in shared credentials file: ~/.aws/credentials
+2024-07-10 15:30:40 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-10 15:30:41 [INFO]: Démarrage de l'application
+2024-07-10 15:30:41 [INFO]: Création de l'application files
+2024-07-10 15:30:41 [INFO]: Application files créée avec succès
+2024-07-10 15:30:41 [INFO]: Création de l'application academic advisor
+2024-07-10 15:30:41 [INFO]: Application academic advisor créée avec succès
+2024-07-10 15:30:41 [INFO]: Montage des applications
+2024-07-10 15:30:41 [INFO]: Applications montées avec succès
+2024-07-10 15:30:41 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-10 15:31:06 [INFO]: Request: GET http://0.0.0.0:5001/
+2024-07-10 15:31:06 [INFO]: Response: 404
+2024-07-10 15:33:37 [INFO]: Request: GET http://0.0.0.0:5001/
+2024-07-10 15:33:37 [INFO]: Response: 404
+2024-07-11 08:50:14 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 08:50:16 [INFO]: Démarrage de l'application
+2024-07-11 08:50:16 [INFO]: Création de l'application files
+2024-07-11 08:50:16 [INFO]: Application files créée avec succès
+2024-07-11 08:50:16 [INFO]: Création de l'application academic advisor
+2024-07-11 08:50:16 [INFO]: Application academic advisor créée avec succès
+2024-07-11 08:50:16 [INFO]: Montage des applications
+2024-07-11 08:50:16 [INFO]: Applications montées avec succès
+2024-07-11 08:50:16 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 08:51:15 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/4be77fee-1c92-424f-9795-2b70dcab153c
+2024-07-11 08:51:17 [INFO]: Response: 200
+2024-07-11 08:51:17 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/4be77fee-1c92-424f-9795-2b70dcab153c
+2024-07-11 08:51:18 [INFO]: Response: 200
+2024-07-11 08:51:31 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 08:51:31 [INFO]: Response: 200
+2024-07-11 08:51:31 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 08:51:33 [INFO]: Response: 200
+2024-07-11 08:51:33 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 08:51:35 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 08:51:35 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-11 08:51:35 [INFO]: Response: 200
+2024-07-11 08:51:35 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 08:51:36 [INFO]: Response: 200
+2024-07-11 09:00:54 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 09:00:56 [INFO]: Response: 200
+2024-07-11 09:00:56 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 09:00:59 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 09:00:59 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 09:01:00 [INFO]: Response: 200
