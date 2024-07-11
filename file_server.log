@@ -5783,3 +5783,439 @@ HTTP response body: {"error":{"code":"FORBIDDEN","message":"Request failed. You'
 2024-07-10 20:52:15 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
 2024-07-10 20:52:16 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
 2024-07-10 20:52:17 [INFO]: Response: 200
+2024-07-11 11:12:51 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 11:12:52 [INFO]: Démarrage de l'application
+2024-07-11 11:12:52 [INFO]: Création de l'application files
+2024-07-11 11:12:52 [INFO]: Application files créée avec succès
+2024-07-11 11:12:52 [INFO]: Création de l'application academic advisor
+2024-07-11 11:12:52 [INFO]: Application academic advisor créée avec succès
+2024-07-11 11:12:52 [INFO]: Montage des applications
+2024-07-11 11:12:52 [INFO]: Applications montées avec succès
+2024-07-11 11:12:52 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 11:13:41 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-11 11:13:42 [INFO]: Response: 200
+2024-07-11 11:13:42 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-11 11:13:42 [INFO]: Response: 200
+2024-07-11 11:21:15 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 11:21:16 [INFO]: Démarrage de l'application
+2024-07-11 11:21:16 [INFO]: Création de l'application files
+2024-07-11 11:21:16 [INFO]: Application files créée avec succès
+2024-07-11 11:21:16 [INFO]: Création de l'application academic advisor
+2024-07-11 11:21:16 [INFO]: Application academic advisor créée avec succès
+2024-07-11 11:21:16 [INFO]: Montage des applications
+2024-07-11 11:21:16 [INFO]: Applications montées avec succès
+2024-07-11 11:21:16 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 11:39:44 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 11:39:45 [INFO]: Démarrage de l'application
+2024-07-11 11:39:45 [INFO]: Création de l'application files
+2024-07-11 11:39:45 [INFO]: Application files créée avec succès
+2024-07-11 11:39:45 [INFO]: Création de l'application academic advisor
+2024-07-11 11:39:45 [INFO]: Application academic advisor créée avec succès
+2024-07-11 11:39:45 [INFO]: Montage des applications
+2024-07-11 11:39:45 [INFO]: Applications montées avec succès
+2024-07-11 11:39:45 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 11:43:21 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 11:43:22 [INFO]: Démarrage de l'application
+2024-07-11 11:43:22 [INFO]: Création de l'application files
+2024-07-11 11:43:22 [INFO]: Application files créée avec succès
+2024-07-11 11:43:22 [INFO]: Création de l'application academic advisor
+2024-07-11 11:43:22 [INFO]: Application academic advisor créée avec succès
+2024-07-11 11:43:22 [INFO]: Montage des applications
+2024-07-11 11:43:22 [INFO]: Applications montées avec succès
+2024-07-11 11:43:22 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 11:48:32 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 11:48:33 [INFO]: Démarrage de l'application
+2024-07-11 11:48:33 [INFO]: Création de l'application files
+2024-07-11 11:48:33 [INFO]: Application files créée avec succès
+2024-07-11 11:48:33 [INFO]: Création de l'application academic advisor
+2024-07-11 11:48:33 [INFO]: Application academic advisor créée avec succès
+2024-07-11 11:48:33 [INFO]: Montage des applications
+2024-07-11 11:48:33 [INFO]: Applications montées avec succès
+2024-07-11 11:48:33 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 11:50:18 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 11:50:18 [INFO]: Démarrage de l'application
+2024-07-11 11:50:18 [INFO]: Création de l'application files
+2024-07-11 11:50:18 [INFO]: Application files créée avec succès
+2024-07-11 11:50:18 [INFO]: Création de l'application academic advisor
+2024-07-11 11:50:18 [INFO]: Application academic advisor créée avec succès
+2024-07-11 11:50:18 [INFO]: Montage des applications
+2024-07-11 11:50:18 [INFO]: Applications montées avec succès
+2024-07-11 11:50:18 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 11:54:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-11 11:54:05 [INFO]: Response: 200
+2024-07-11 11:54:05 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-11 11:54:05 [INFO]: Response: 200
+2024-07-11 11:54:19 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 11:54:19 [INFO]: Response: 200
+2024-07-11 11:54:19 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 11:54:20 [INFO]: Response: 200
+2024-07-11 11:54:20 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 11:54:21 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 11:54:22 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-11 11:54:22 [INFO]: Response: 200
+2024-07-11 11:54:22 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 11:54:22 [INFO]: Response: 200
+2024-07-11 11:54:43 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 11:54:44 [INFO]: Response: 200
+2024-07-11 11:54:44 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 11:54:45 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 11:54:45 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 11:54:45 [INFO]: Response: 200
+2024-07-11 11:55:25 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 11:55:25 [INFO]: Response: 200
+2024-07-11 11:55:25 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 11:55:26 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 11:55:27 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 11:55:27 [INFO]: Response: 200
+2024-07-11 11:55:34 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 11:55:35 [INFO]: Response: 200
+2024-07-11 11:55:35 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 11:55:35 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 11:55:36 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 11:55:36 [INFO]: Response: 200
+2024-07-11 12:27:19 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 12:27:20 [INFO]: Démarrage de l'application
+2024-07-11 12:27:20 [INFO]: Création de l'application files
+2024-07-11 12:27:20 [INFO]: Application files créée avec succès
+2024-07-11 12:27:20 [INFO]: Création de l'application academic advisor
+2024-07-11 12:27:20 [INFO]: Application academic advisor créée avec succès
+2024-07-11 12:27:20 [INFO]: Montage des applications
+2024-07-11 12:27:20 [INFO]: Applications montées avec succès
+2024-07-11 12:27:20 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 12:27:40 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 12:27:40 [INFO]: Response: 200
+2024-07-11 12:27:40 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 12:27:41 [INFO]: Response: 200
+2024-07-11 12:27:41 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 12:27:45 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-11 13:39:38 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 13:39:39 [INFO]: Démarrage de l'application
+2024-07-11 13:39:39 [INFO]: Création de l'application files
+2024-07-11 13:39:39 [INFO]: Application files créée avec succès
+2024-07-11 13:39:39 [INFO]: Création de l'application academic advisor
+2024-07-11 13:39:39 [INFO]: Application academic advisor créée avec succès
+2024-07-11 13:39:39 [INFO]: Montage des applications
+2024-07-11 13:39:39 [INFO]: Applications montées avec succès
+2024-07-11 13:39:39 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 13:40:01 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 13:40:01 [INFO]: Response: 200
+2024-07-11 13:40:01 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 13:40:03 [INFO]: Response: 200
+2024-07-11 13:40:03 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 13:40:05 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-11 15:12:49 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 15:12:49 [INFO]: Response: 200
+2024-07-11 15:12:49 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 15:12:51 [INFO]: Response: 200
+2024-07-11 15:12:51 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 15:12:54 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-11 15:15:21 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 15:15:23 [INFO]: Response: 200
+2024-07-11 15:15:23 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 15:15:26 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-11 17:29:43 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 17:29:44 [INFO]: Démarrage de l'application
+2024-07-11 17:29:44 [INFO]: Création de l'application files
+2024-07-11 17:29:44 [INFO]: Application files créée avec succès
+2024-07-11 17:29:44 [INFO]: Création de l'application academic advisor
+2024-07-11 17:29:44 [INFO]: Application academic advisor créée avec succès
+2024-07-11 17:29:44 [INFO]: Montage des applications
+2024-07-11 17:29:44 [INFO]: Applications montées avec succès
+2024-07-11 17:29:44 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 17:30:07 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:30:07 [INFO]: Response: 200
+2024-07-11 17:30:07 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:30:09 [INFO]: Response: 200
+2024-07-11 17:30:09 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:30:47 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 17:30:48 [INFO]: Démarrage de l'application
+2024-07-11 17:30:48 [INFO]: Création de l'application files
+2024-07-11 17:30:48 [INFO]: Application files créée avec succès
+2024-07-11 17:30:48 [INFO]: Création de l'application academic advisor
+2024-07-11 17:30:48 [INFO]: Application academic advisor créée avec succès
+2024-07-11 17:30:48 [INFO]: Montage des applications
+2024-07-11 17:30:48 [INFO]: Applications montées avec succès
+2024-07-11 17:30:48 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 17:31:00 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:31:01 [INFO]: Response: 200
+2024-07-11 17:31:01 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:51:50 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 17:51:50 [INFO]: Démarrage de l'application
+2024-07-11 17:51:50 [INFO]: Création de l'application files
+2024-07-11 17:51:50 [INFO]: Application files créée avec succès
+2024-07-11 17:51:50 [INFO]: Création de l'application academic advisor
+2024-07-11 17:51:50 [INFO]: Application academic advisor créée avec succès
+2024-07-11 17:51:50 [INFO]: Montage des applications
+2024-07-11 17:51:50 [INFO]: Applications montées avec succès
+2024-07-11 17:51:50 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 17:52:10 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:52:10 [INFO]: Response: 200
+2024-07-11 17:52:10 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:52:11 [INFO]: Response: 200
+2024-07-11 17:52:11 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:53:57 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 17:53:58 [INFO]: Démarrage de l'application
+2024-07-11 17:53:58 [INFO]: Création de l'application files
+2024-07-11 17:53:58 [INFO]: Application files créée avec succès
+2024-07-11 17:53:58 [INFO]: Création de l'application academic advisor
+2024-07-11 17:53:58 [INFO]: Application academic advisor créée avec succès
+2024-07-11 17:53:58 [INFO]: Montage des applications
+2024-07-11 17:53:58 [INFO]: Applications montées avec succès
+2024-07-11 17:53:58 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 17:54:18 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:54:19 [INFO]: Response: 200
+2024-07-11 17:54:19 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:55:26 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 17:55:29 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-11 17:55:29 [INFO]: Response: 200
+2024-07-11 17:55:29 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 17:55:30 [INFO]: Response: 200
+2024-07-11 17:56:15 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 17:56:16 [INFO]: Démarrage de l'application
+2024-07-11 17:56:16 [INFO]: Création de l'application files
+2024-07-11 17:56:16 [INFO]: Application files créée avec succès
+2024-07-11 17:56:16 [INFO]: Création de l'application academic advisor
+2024-07-11 17:56:16 [INFO]: Application academic advisor créée avec succès
+2024-07-11 17:56:16 [INFO]: Montage des applications
+2024-07-11 17:56:16 [INFO]: Applications montées avec succès
+2024-07-11 17:56:16 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 17:56:29 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:56:30 [INFO]: Response: 200
+2024-07-11 17:56:30 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:56:35 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 17:56:36 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 17:56:37 [INFO]: Response: 200
+2024-07-11 17:56:54 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:56:54 [INFO]: Response: 200
+2024-07-11 17:56:55 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:57:01 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 17:57:03 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 17:57:03 [INFO]: Response: 200
+2024-07-11 17:58:39 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:58:41 [INFO]: Response: 200
+2024-07-11 17:58:41 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:58:45 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 17:58:46 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 17:58:46 [INFO]: Response: 200
+2024-07-11 17:59:01 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:59:02 [INFO]: Response: 200
+2024-07-11 17:59:02 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:59:07 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 17:59:08 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 17:59:09 [INFO]: Response: 200
+2024-07-11 17:59:20 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:59:21 [INFO]: Response: 200
+2024-07-11 17:59:21 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:59:43 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:59:43 [INFO]: Response: 200
+2024-07-11 17:59:43 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 17:59:56 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 17:59:56 [INFO]: Response: 200
+2024-07-11 17:59:56 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 18:00:05 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 18:00:06 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 18:00:06 [INFO]: Response: 200
+2024-07-11 18:53:36 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 18:53:37 [INFO]: Démarrage de l'application
+2024-07-11 18:53:37 [INFO]: Création de l'application files
+2024-07-11 18:53:37 [INFO]: Application files créée avec succès
+2024-07-11 18:53:37 [INFO]: Création de l'application academic advisor
+2024-07-11 18:53:37 [INFO]: Application academic advisor créée avec succès
+2024-07-11 18:53:37 [INFO]: Montage des applications
+2024-07-11 18:53:37 [INFO]: Applications montées avec succès
+2024-07-11 18:53:37 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 18:53:51 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/b1637e58-ca0e-4886-9344-9c161f78d813
+2024-07-11 18:53:52 [INFO]: Response: 200
+2024-07-11 18:53:52 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/b1637e58-ca0e-4886-9344-9c161f78d813
+2024-07-11 18:53:52 [INFO]: Response: 200
+2024-07-11 18:53:58 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 18:53:58 [INFO]: Response: 200
+2024-07-11 18:53:58 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 18:53:58 [INFO]: Response: 200
+2024-07-11 18:53:58 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 18:54:02 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-11 18:54:02 [INFO]: Retrying request to /openai/v1/chat/completions in 47.000000 seconds
+2024-07-11 18:54:50 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-11 18:54:50 [INFO]: Retrying request to /openai/v1/chat/completions in 47.000000 seconds
+2024-07-11 18:55:38 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-11 18:58:07 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 18:58:07 [INFO]: Démarrage de l'application
+2024-07-11 18:58:07 [INFO]: Création de l'application files
+2024-07-11 18:58:07 [INFO]: Application files créée avec succès
+2024-07-11 18:58:07 [INFO]: Création de l'application academic advisor
+2024-07-11 18:58:07 [INFO]: Application academic advisor créée avec succès
+2024-07-11 18:58:07 [INFO]: Montage des applications
+2024-07-11 18:58:07 [INFO]: Applications montées avec succès
+2024-07-11 18:58:07 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 18:58:22 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 18:58:23 [INFO]: Response: 200
+2024-07-11 18:58:23 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 18:58:30 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 18:58:31 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-11 18:58:31 [INFO]: Response: 200
+2024-07-11 18:58:31 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 18:58:31 [INFO]: Response: 200
+2024-07-11 18:59:13 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 18:59:14 [INFO]: Response: 200
+2024-07-11 18:59:14 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 18:59:19 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 18:59:20 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 18:59:21 [INFO]: Response: 200
+2024-07-11 18:59:54 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 18:59:55 [INFO]: Response: 200
+2024-07-11 18:59:55 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 18:59:58 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 18:59:59 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 18:59:59 [INFO]: Response: 200
+2024-07-11 19:00:19 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 19:00:20 [INFO]: Response: 200
+2024-07-11 19:00:20 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:17:42 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 21:17:42 [INFO]: Démarrage de l'application
+2024-07-11 21:17:42 [INFO]: Création de l'application files
+2024-07-11 21:17:42 [INFO]: Application files créée avec succès
+2024-07-11 21:17:42 [INFO]: Création de l'application academic advisor
+2024-07-11 21:17:42 [INFO]: Application academic advisor créée avec succès
+2024-07-11 21:17:42 [INFO]: Montage des applications
+2024-07-11 21:17:42 [INFO]: Applications montées avec succès
+2024-07-11 21:17:43 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 21:18:04 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:18:04 [INFO]: Response: 200
+2024-07-11 21:18:04 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:18:06 [INFO]: Response: 200
+2024-07-11 21:18:06 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:18:13 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:18:14 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-11 21:18:14 [INFO]: Response: 200
+2024-07-11 21:18:14 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:18:14 [INFO]: Response: 200
+2024-07-11 21:19:25 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 21:19:26 [INFO]: Démarrage de l'application
+2024-07-11 21:19:26 [INFO]: Création de l'application files
+2024-07-11 21:19:26 [INFO]: Application files créée avec succès
+2024-07-11 21:19:26 [INFO]: Création de l'application academic advisor
+2024-07-11 21:19:26 [INFO]: Application academic advisor créée avec succès
+2024-07-11 21:19:26 [INFO]: Montage des applications
+2024-07-11 21:19:26 [INFO]: Applications montées avec succès
+2024-07-11 21:19:26 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 21:19:46 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:19:48 [INFO]: Response: 200
+2024-07-11 21:19:48 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:20:06 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:20:07 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:20:07 [INFO]: Response: 200
+2024-07-11 21:20:36 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:20:36 [INFO]: Response: 200
+2024-07-11 21:20:36 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:20:49 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:20:49 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:20:50 [INFO]: Response: 200
+2024-07-11 21:21:08 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:21:10 [INFO]: Response: 200
+2024-07-11 21:21:10 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:21:18 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:21:18 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:21:19 [INFO]: Response: 200
+2024-07-11 21:21:30 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:21:31 [INFO]: Response: 200
+2024-07-11 21:21:31 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:21:37 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:21:37 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:21:38 [INFO]: Response: 200
+2024-07-11 21:23:02 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 21:23:03 [INFO]: Démarrage de l'application
+2024-07-11 21:23:03 [INFO]: Création de l'application files
+2024-07-11 21:23:03 [INFO]: Application files créée avec succès
+2024-07-11 21:23:03 [INFO]: Création de l'application academic advisor
+2024-07-11 21:23:03 [INFO]: Application academic advisor créée avec succès
+2024-07-11 21:23:03 [INFO]: Montage des applications
+2024-07-11 21:23:03 [INFO]: Applications montées avec succès
+2024-07-11 21:23:03 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 21:23:09 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:23:10 [INFO]: Response: 200
+2024-07-11 21:23:10 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:23:15 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:23:16 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:23:16 [INFO]: Response: 200
+2024-07-11 21:24:06 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:24:07 [INFO]: Response: 200
+2024-07-11 21:24:07 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:24:10 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:24:11 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:24:11 [INFO]: Response: 200
+2024-07-11 21:24:30 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:24:31 [INFO]: Response: 200
+2024-07-11 21:24:31 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:25:00 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:25:00 [INFO]: Response: 200
+2024-07-11 21:25:00 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:25:15 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 21:25:16 [INFO]: Démarrage de l'application
+2024-07-11 21:25:16 [INFO]: Création de l'application files
+2024-07-11 21:25:16 [INFO]: Application files créée avec succès
+2024-07-11 21:25:16 [INFO]: Création de l'application academic advisor
+2024-07-11 21:25:16 [INFO]: Application academic advisor créée avec succès
+2024-07-11 21:25:16 [INFO]: Montage des applications
+2024-07-11 21:25:16 [INFO]: Applications montées avec succès
+2024-07-11 21:25:16 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 21:25:23 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:25:25 [INFO]: Response: 200
+2024-07-11 21:25:25 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:25:44 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 21:25:45 [INFO]: Démarrage de l'application
+2024-07-11 21:25:45 [INFO]: Création de l'application files
+2024-07-11 21:25:45 [INFO]: Application files créée avec succès
+2024-07-11 21:25:45 [INFO]: Création de l'application academic advisor
+2024-07-11 21:25:45 [INFO]: Application academic advisor créée avec succès
+2024-07-11 21:25:45 [INFO]: Montage des applications
+2024-07-11 21:25:45 [INFO]: Applications montées avec succès
+2024-07-11 21:25:45 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 21:25:50 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:25:52 [INFO]: Response: 200
+2024-07-11 21:25:52 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:26:01 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:26:01 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:26:02 [INFO]: Response: 200
+2024-07-11 21:26:35 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:26:36 [INFO]: Response: 200
+2024-07-11 21:26:36 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:26:44 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:26:44 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:26:44 [INFO]: Response: 200
+2024-07-11 21:26:58 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:26:59 [INFO]: Response: 200
+2024-07-11 21:26:59 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:27:07 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:27:08 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:27:09 [INFO]: Response: 200
+2024-07-11 21:38:35 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-11 21:38:35 [INFO]: Démarrage de l'application
+2024-07-11 21:38:35 [INFO]: Création de l'application files
+2024-07-11 21:38:35 [INFO]: Application files créée avec succès
+2024-07-11 21:38:35 [INFO]: Création de l'application academic advisor
+2024-07-11 21:38:35 [INFO]: Application academic advisor créée avec succès
+2024-07-11 21:38:35 [INFO]: Montage des applications
+2024-07-11 21:38:35 [INFO]: Applications montées avec succès
+2024-07-11 21:38:35 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-11 21:39:00 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:39:00 [INFO]: Response: 200
+2024-07-11 21:39:00 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:39:01 [INFO]: Response: 200
+2024-07-11 21:39:01 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:39:10 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:39:11 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-11 21:39:11 [INFO]: Response: 200
+2024-07-11 21:39:11 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:39:11 [INFO]: Response: 200
+2024-07-11 21:39:21 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:39:22 [INFO]: Response: 200
+2024-07-11 21:39:22 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:39:27 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:39:27 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:39:28 [INFO]: Response: 200
+2024-07-11 21:39:48 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-11 21:39:48 [INFO]: Response: 200
+2024-07-11 21:39:49 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-11 21:39:53 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-11 21:39:53 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-11 21:39:54 [INFO]: Response: 200
