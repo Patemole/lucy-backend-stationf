@@ -10,6 +10,16 @@ import os
 import time
 from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.chat_message_histories import ChatMessageHistory
+from langchain_community.chat_message_histories.dynamodb import DynamoDBChatMessageHistory
+import boto3
+from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory
+from datetime import datetime
+from langchain_core.runnables import Runnable
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_core.runnables import ConfigurableFieldSpec
+
+
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -18,6 +28,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 os.environ["GROQ_API_KEY"] = GROQ_API_KEY
 
 MODEL_NAME = "llama3-70b-8192"
+
+### To modify depending on the table name where you want to store the memory 
+TABLE_NAME = "DEV_Memory_academic_advisor"  
 
 # Fonction pour mesurer le temps d'exécution
 def timeit(func):
@@ -32,33 +45,83 @@ def timeit(func):
 
 
 
+# Create the history for the memory
+def get_aws_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
+    return AWSDynamoDBChatMessageHistory(
+        table=boto3.resource('dynamodb').Table('MVP_chat_academic_advisor'),
+        chat_id=chat_id,
+        # timestamp=datetime.now().isoformat(),
+        course_id=course_id,
+        username=username,
+        table_name=TABLE_NAME,
+        session_id=chat_id,
+                primary_key_name="chat_id",
+                key={
+                    "chat_id": chat_id,
+                    "timestamp": datetime.now().isoformat()
+                    },
+    )
 
 
 # Fonction principale renommée
-def LLM_chain_reformulation(content: str, chat_history):
+def LLM_chain_reformulation(content: str, course_id: str):
 
     GROQ_LLM = ChatGroq(temperature=0, model_name=MODEL_NAME, streaming=True)
 
 
-    #LES URLS SERONT ENVOYÉS DANS LES PARAMÈTRES DE LA FONCTION
-    prompt_search_engine = ChatPromptTemplate.from_messages(
+    standalone_system_prompt = """
+    Given a chat history: {history} and a follow-up question, rephrase the follow-up question to be a standalone question. \
+    Do NOT answer the question, just reformulate it if needed, otherwise return it as is. \
+    Only return the final standalone question with no preamble, postamble or explanation. \
+    """
+    standalone_question_prompt = ChatPromptTemplate.from_messages(
         [
-            (
-                "system",
-                """Given the following conversation and a follow up question (the HumanMessage), rephrase the follow up question to be a standalone question, in its original language.
-
-                    Chat History:
-                    {chat_history}
-                    Standalone question:
-                """
-            ),
-            MessagesPlaceholder(variable_name="messages"),
+            ("system", standalone_system_prompt),
+            # MessagesPlaceholder(variable_name="history"),
+            ("human", "{input}"),
         ]
     )
 
-    chain = prompt_search_engine | GROQ_LLM
+    reformulation_chain = standalone_question_prompt | GROQ_LLM # | StrOutputParser()# fix incompatible type
 
-    response = chain.invoke({"messages": [HumanMessage(content=content)], "chat_history": chat_history})
+    reformulation_chain_with_message_history = RunnableWithMessageHistory(
+        reformulation_chain,
+        get_aws_history,
+        input_messages_key="input",
+        history_messages_key="history",
+        history_factory_config=[
+            ConfigurableFieldSpec(
+                id="course_id",
+                annotation=str,
+                name="Course ID",
+                description="Unique identifier for the course.",
+                default="",
+                is_shared=True,
+            ),
+        ],
+    )
+
+    response = reformulation_chain.invoke({"input": content})
+
+    # #LES URLS SERONT ENVOYÉS DANS LES PARAMÈTRES DE LA FONCTION
+    # prompt_search_engine = ChatPromptTemplate.from_messages(
+    #     [
+    #         (
+    #             "system",
+    #             """Given the following conversation and a follow up question (the HumanMessage), rephrase the follow up question to be a standalone question, in its original language.
+
+    #                 Chat History:
+    #                 {chat_history}
+    #                 Standalone question:
+    #             """
+    #         ),
+    #         MessagesPlaceholder(variable_name="messages"),
+    #     ]
+    # )
+
+    # chain = prompt_search_engine | GROQ_LLM
+
+    # response = chain.invoke({"messages": [HumanMessage(content=content)], "chat_history": chat_history})
 
     return response.content
         
