@@ -64,7 +64,7 @@ def get_aws_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBC
 
 
 # Fonction principale renommée
-def LLM_chain_reformulation(content: str, course_id: str):
+def LLM_chain_reformulation(content: str, chat_id: str, username: str, course_id):
 
     GROQ_LLM = ChatGroq(temperature=0, model_name=MODEL_NAME, streaming=True)
 
@@ -77,7 +77,7 @@ def LLM_chain_reformulation(content: str, course_id: str):
     standalone_question_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", standalone_system_prompt),
-            # MessagesPlaceholder(variable_name="history"),
+            MessagesPlaceholder(variable_name="history", n_messages=1),
             ("human", "{input}"),
         ]
     )
@@ -91,6 +91,22 @@ def LLM_chain_reformulation(content: str, course_id: str):
         history_messages_key="history",
         history_factory_config=[
             ConfigurableFieldSpec(
+                id="chat_id",
+                annotation=str,
+                name="Chat ID",
+                description="Unique identifier for the chat.",
+                default="",
+                is_shared=True,
+            ),
+            ConfigurableFieldSpec(
+                id="username",
+                annotation=str,
+                name="User Name",
+                description="Unique name for the user.",
+                default="",
+                is_shared=True,
+            ),
+            ConfigurableFieldSpec(
                 id="course_id",
                 annotation=str,
                 name="Course ID",
@@ -101,7 +117,10 @@ def LLM_chain_reformulation(content: str, course_id: str):
         ],
     )
 
-    response = reformulation_chain.invoke({"input": content})
+    config = {"configurable": {"chat_id": chat_id, "username":username, "course_id": course_id}}
+    response = reformulation_chain_with_message_history.invoke({"input": content}, config=config)
+
+    return response.content
 
     # #LES URLS SERONT ENVOYÉS DANS LES PARAMÈTRES DE LA FONCTION
     # prompt_search_engine = ChatPromptTemplate.from_messages(
@@ -123,5 +142,5 @@ def LLM_chain_reformulation(content: str, course_id: str):
 
     # response = chain.invoke({"messages": [HumanMessage(content=content)], "chat_history": chat_history})
 
-    return response.content
+    # return response.content
         
