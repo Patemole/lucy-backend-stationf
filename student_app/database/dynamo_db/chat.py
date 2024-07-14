@@ -16,12 +16,28 @@ logger = logging.getLogger(__name__)
 
 #table = DynamoDBClient().client.Table("PROD_chat")
 def get_table(table = "dev" or "prod"):
+    """
+    Description: 
+    Get the table name and the table from AWS DynamoDB
+
+    Parameters:
+    table: 
+        - dev: get the development table
+        - prod: get the production table
+
+    Return:
+    table_name: name of the table
+    table_AWS: table in the AWS DynamoDB
+    """
     if table == "prod":
         print("No access to prod table in DynamoDB")
         return None
     elif table == "dev":
-        table_AWS = DynamoDBClient().client.Table("DEV_Memory_academic_advisor")
-    return table_AWS
+        table_name = "DEV_Memory_academic_advisor"
+        table_AWS = DynamoDBClient().client.Table(table_name)
+    return table_name, table_AWS
+
+
 
 
 '''
