@@ -13,6 +13,7 @@ from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.chat_message_histories import ChatMessageHistory
 from functools import wraps
 import time
+from datetime import datetime
 
 from pinecone import Pinecone
 from openai import OpenAI
@@ -21,6 +22,13 @@ import langchain_pinecone
 import langchain
 from langchain.schema import Document
 from typing import List
+
+# Import reformulation LLM
+from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
+# Import AWS memory 
+from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
+import boto3
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -107,10 +115,29 @@ def timeit(func):
     return wrapper
 
 # Fonction pour récupérer l'historique de session
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    if session_id not in store:
-        store[session_id] = ChatMessageHistory()
-    return store[session_id]
+# def get_session_history(session_id: str) -> AWSDynamoDBChatMessageHistory:
+#     if session_id not in store:
+#         store[session_id] = ChatMessageHistory()
+#     return store[session_id]
+
+# Create the history for the memory
+table_name, table_AWS = get_table("dev")
+def get_aws_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
+    return AWSDynamoDBChatMessageHistory(
+        table=table_AWS,
+        chat_id=chat_id,
+        # timestamp=datetime.now().isoformat(),
+        course_id=course_id,
+        username=username,
+        table_name=table_name,
+        session_id=chat_id,
+                primary_key_name="chat_id",
+                key={
+                    "chat_id": chat_id,
+                    "timestamp": datetime.now().isoformat()
+                    },
+    )
+
 
 # Fonction chronométrée pour invoquer Google Search API
 @timeit
