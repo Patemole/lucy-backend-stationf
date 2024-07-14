@@ -15,7 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 #table = DynamoDBClient().client.Table("PROD_chat")
-table = DynamoDBClient().client.Table("DEV_Memory_academic_advisor")
+def get_table(table = "dev" or "prod"):
+    if table == "prod":
+        print("No access to prod table in DynamoDB")
+        return None
+    elif table == "dev":
+        table_AWS = DynamoDBClient().client.Table("DEV_Memory_academic_advisor")
+    return table_AWS
 
 
 '''
@@ -136,7 +142,6 @@ async def store_message_async(
 
 
 class AWSDynamoDBChatMessageHistory(DynamoDBChatMessageHistory, BaseChatMessageHistory):
-
 
     def __init__(self, 
                  # New class
