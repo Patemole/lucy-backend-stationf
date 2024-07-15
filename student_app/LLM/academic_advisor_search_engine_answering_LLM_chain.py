@@ -32,6 +32,7 @@ from langchain_core.runnables import ConfigurableFieldSpec
 
 
 
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -192,7 +193,6 @@ def LLM_chain_search_engine_and_answering(content,
                                           keywords):
 
     set_google_cse_id(university)
-
 
 
     if method == "search_engine":
