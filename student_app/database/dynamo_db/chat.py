@@ -105,9 +105,13 @@ async def store_message_async(
         documents: List[Dict[str, Any]] = []):
     print(f"Attempting to store message for chat_id: {chat_id}, course_id: {course_id}, username: {username}")
     try:
+
+        # Generate a unique message_id
+        message_id = str(uuid.uuid4())
+
         # Insert the item into DynamoDB
         args = {
-            'message_id': str(uuid.uuid4()),
+            'message_id': message_id,
             'chat_id': chat_id,
             'timestamp': datetime.now().isoformat(),
             'course_id': course_id,
@@ -116,10 +120,15 @@ async def store_message_async(
         }
         if username == "TAI" and documents:
             args['documents'] = documents
+
         table.put_item(Item=args)
         print(f"Message stored successfully with message_id: {args['message_id']}")
+
+        # Return the message_id
+        return message_id
     except ClientError as e:
         error_code = e.response['Error']['Code']
         error_message = e.response['Error']['Message']
         print(f"Error inserting message into chat history: {error_code} - {error_message}")
+        return None
 

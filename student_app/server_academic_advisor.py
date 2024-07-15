@@ -3,6 +3,7 @@ import sys
 import os
 import asyncio
 import logging
+from openai import OpenAI
 from fastapi import APIRouter, FastAPI, HTTPException, Request, Response, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -11,6 +12,7 @@ from dotenv import load_dotenv
 from functools import wraps
 import time
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
+from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
@@ -42,6 +44,9 @@ PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
 
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+client = OpenAI()
 
 # FastAPI app configuration
 app = FastAPI(
@@ -57,6 +62,52 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+#############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
+
+async def count_words(input_message: str) -> int:
+    # Compte le nombre de mots dans la chaîne de caractères input_message
+    word_count = len(input_message.split())
+    print("\n")
+    print("This is the number of word in the input:")
+    print(word_count)
+    print("\n")
+    return word_count
+
+async def get_embedding(input_message: str, model="text-embedding-3-small"):
+   input_message = input_message.replace("\n", " ")
+   embeddings = client.embeddings.create(input = [input_message], model=model).data[0].embedding
+   print("\n")
+   print("This is the embeddings for the question:")
+   print(embeddings)
+   print("\n")
+   return embeddings
+
+
+async def count_student_questions(chat_history):
+    question_count = 0
+    if not chat_history:
+
+        print("\n")
+        print("This is the number of question per chat_id (first message here):")
+        print(question_count)
+        print("\n")
+        
+        return question_count
+    
+    for message in chat_history:
+        if message['username'].lower() != 'lucy':
+            question_count += 1
+    
+    print("\n")
+    print("This is the number of question per chat_id:")
+    print(question_count)
+    print("\n")
+    return question_count
+
+#############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
+
+
+
 #chat_router = APIRouter(prefix='/chat', tags=['chat'])
 
 # TRAITEMENT D'UN MESSAGE ÉLÈVE - Rajouter ici la fonction pour déterminer la route à choisir 
@@ -70,13 +121,15 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
-    
     # Récupérez l'historique de chat
     chat_history = await get_chat_history(chat_id)
     print(chat_history)
     
     # Stockez le message de manière asynchrone
     asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
+    # Lancer le comptage de mots de manière asynchrone sans attendre
+    # Créer des tâches pour le comptage de mots et la génération d'embeddings
+    
 
     # Selection of the route from the router + first LLM generation for query reformulation for the Search Engine (with follow-up questions)
     search_engine_query, prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message, chat_history)
@@ -127,13 +180,38 @@ async def save_ai_message(ai_message: InputQueryAI):
     chat_id = ai_message.chatSessionId
     course_id = ai_message.courseId
     username = ai_message.username
-    input_message = ai_message.message
+    input_message = ai_message.input_message
+    output_message = ai_message.message
     type = ai_message.type #Pas utilisé pour l'instant, on va faire la selection quand on récupérera le username if !== "Lucy" alors on mets "human" else "ai"
+    uid = ai_message.uid
+
+    print("input_message de l'utilisateur:")
+    print(input_message)
+    print("output_message de l'IA:")
+    print(output_message)
+    #Pour générer l'embedding de la réponse de Lucy
+    input_embeddings = await get_embedding(input_message)
+    output_embeddings = await get_embedding(output_message)
+
+    word_count_task = await count_words(input_message)
+
+    chat_history = await get_chat_history(chat_id)
+    number_of_question_per_chat_id = await count_student_questions(chat_history)
+    number_of_question_per_chat_id = number_of_question_per_chat_id + 1
+
+    
 
     try:
-        asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
+        message_id = await store_message_async(chat_id, username=username, course_id=course_id, message_body=output_message)
+        print(f"Stored message with ID: {message_id}")
 
-        return {"message": "AI message saved successfully"}
+        #data à récupérer et faire la logic 
+        feedback = 'no'
+        ask_for_advisor = 'no'
+
+        #Rajouter ici la fonction pour sauvegarder les informations dans la table analytics 
+        await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id)
+
     except Exception as e:
         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")

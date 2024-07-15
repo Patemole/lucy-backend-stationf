@@ -1,2 +1,1 @@
-web: gunicorn -w 1 -k uvicorn.workers.UvicornWorker airs.server_run:app --log-level debug --error-logfile -
-
+web: gunicorn -k uvicorn.workers.UvicornWorker student_app.server_run:app
