@@ -12,7 +12,7 @@ from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_community.chat_message_histories.dynamodb import DynamoDBChatMessageHistory
 import boto3
-from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory
+from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
 from datetime import datetime
 from langchain_core.runnables import Runnable
 from langchain_core.runnables.history import RunnableWithMessageHistory
@@ -46,14 +46,15 @@ def timeit(func):
 
 
 # Create the history for the memory
-def get_aws_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
+table_name, table_AWS = get_table("dev")
+def get_dynamoDB_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
     return AWSDynamoDBChatMessageHistory(
-        table=boto3.resource('dynamodb').Table('MVP_chat_academic_advisor'),
+        table=table_AWS,
         chat_id=chat_id,
         # timestamp=datetime.now().isoformat(),
         course_id=course_id,
         username=username,
-        table_name=TABLE_NAME,
+        table_name=table_name,
         session_id=chat_id,
                 primary_key_name="chat_id",
                 key={
@@ -77,7 +78,7 @@ def LLM_chain_reformulation(content: str, chat_id: str, username: str, course_id
     standalone_question_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", standalone_system_prompt),
-            MessagesPlaceholder(variable_name="history", n_messages=1),
+            MessagesPlaceholder(variable_name="history"),
             ("human", "{input}"),
         ]
     )
@@ -86,7 +87,7 @@ def LLM_chain_reformulation(content: str, chat_id: str, username: str, course_id
 
     reformulation_chain_with_message_history = RunnableWithMessageHistory(
         reformulation_chain,
-        get_aws_history,
+        get_dynamoDB_history,
         input_messages_key="input",
         history_messages_key="history",
         history_factory_config=[
