@@ -223,6 +223,9 @@ def LLM_chain_search_engine_and_answering(content,
                     prompt_answering,
                 ),
                 MessagesPlaceholder(variable_name="messages"),
+                (
+                    "user","{input}"
+                )
             ]
         )
 
@@ -232,7 +235,7 @@ def LLM_chain_search_engine_and_answering(content,
             chain,
             get_dynamoDB_history,
             input_messages_key="input",
-            history_messages_key="chat_history",
+            history_messages_key="messages",
             history_factory_config=[
                 ConfigurableFieldSpec(
                     id="chat_id",
@@ -323,7 +326,7 @@ def LLM_chain_search_engine_and_answering(content,
 
         #for r in with_message_history.stream(
         for r in chain.stream(
-            {"messages": [HumanMessage(content=content)],"university": university, "search_engine": rag_info,"student_profile": student_profile, "chat_history": chat_history}
+            {"messages": [HumanMessage(content=content)],"university": university, "search_engine": rag_info,"student_profile": student_profile}
             #config=config,
         ):
             #print(r.content, end="|")
@@ -370,7 +373,7 @@ def LLM_chain_search_engine_and_answering(content,
 
         #for r in with_message_history.stream(
         for r in chain.stream(
-            {"messages": [HumanMessage(content=search_engine_query)],"university": university, "student_profile": student_profile, "chat_history": chat_history}
+            {"messages": [HumanMessage(content=search_engine_query)],"university": university, "student_profile": student_profile}
             #config=config,
         ):
             #print(r.content, end="|")

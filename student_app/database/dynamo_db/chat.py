@@ -4,15 +4,23 @@ from botocore.exceptions import ClientError
 from datetime import datetime
 import uuid
 import time
+import os
 from functools import wraps
 from datetime import datetime
 from langchain_community.chat_message_histories.dynamodb import DynamoDBChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import BaseMessage 
 import logging
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
+
+load_dotenv()
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_REGION = os.getenv('AWS_DEFAULT_REGION')
 
 #table = DynamoDBClient().client.Table("PROD_chat")
 def get_table(table = "dev" or "prod"):
@@ -34,7 +42,8 @@ def get_table(table = "dev" or "prod"):
         return None
     elif table == "dev":
         table_name = "DEV_Memory_academic_advisor"
-        table_AWS = DynamoDBClient().client.Table(table_name)
+        AWS_client = DynamoDBClient().client
+        table_AWS = AWS_client.Table(table_name)
     return table_name, table_AWS
 
 
@@ -96,7 +105,7 @@ async def get_chat_history(chat_id: str):
         print(f"Error querying chat history: {error_code} - {error_message}")
         return []
 '''
-
+'''
 @timing_decorator
 async def get_chat_history(chat_id: str):
     print("\n")
@@ -155,7 +164,7 @@ async def store_message_async(
         error_message = e.response['Error']['Message']
         print(f"Error inserting message into chat history: {error_code} - {error_message}")
     
-
+'''
 
 
 

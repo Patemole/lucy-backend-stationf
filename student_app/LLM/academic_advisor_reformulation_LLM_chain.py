@@ -67,61 +67,68 @@ def get_dynamoDB_history(chat_id: str, username: str, course_id: str) -> AWSDyna
 # Fonction principale renommée
 def LLM_chain_reformulation(content: str, chat_id: str, username: str, course_id):
 
-    GROQ_LLM = ChatGroq(temperature=0, model_name=MODEL_NAME, streaming=True)
+    print("\n")
+    print("\n")
+    print(f"Initializing reformulation chain for follow-up questions....")
+
+    try:
+        GROQ_LLM = ChatGroq(temperature=0, model_name=MODEL_NAME, streaming=True)
 
 
-    standalone_system_prompt = """
-    Given a chat history: {history} and a follow-up question, rephrase the follow-up question to be a standalone question. \
-    Do NOT answer the question, just reformulate it if needed, otherwise return it as is. \
-    Only return the final standalone question with no preamble, postamble or explanation. \
-    """
-    standalone_question_prompt = ChatPromptTemplate.from_messages(
-        [
-            ("system", standalone_system_prompt),
-            MessagesPlaceholder(variable_name="history"),
-            ("human", "{input}"),
-        ]
-    )
+        standalone_system_prompt = """
+        Given a chat history: {messages} and a follow-up question, rephrase the follow-up question to be a standalone question. \
+        Do NOT answer the question, just reformulate it if needed, otherwise return it as is. \
+        Only return the final standalone question with no preamble, postamble or explanation. \
+        """
+        standalone_question_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", standalone_system_prompt),
+                MessagesPlaceholder(variable_name="messages"),
+                ("human", "{input}"),
+            ]
+        )
 
-    reformulation_chain = standalone_question_prompt | GROQ_LLM # | StrOutputParser()# fix incompatible type
+        reformulation_chain = standalone_question_prompt | GROQ_LLM # | StrOutputParser()# fix incompatible type
 
-    reformulation_chain_with_message_history = RunnableWithMessageHistory(
-        reformulation_chain,
-        get_dynamoDB_history,
-        input_messages_key="input",
-        history_messages_key="history",
-        history_factory_config=[
-            ConfigurableFieldSpec(
-                id="chat_id",
-                annotation=str,
-                name="Chat ID",
-                description="Unique identifier for the chat.",
-                default="",
-                is_shared=True,
-            ),
-            ConfigurableFieldSpec(
-                id="username",
-                annotation=str,
-                name="User Name",
-                description="Unique name for the user.",
-                default="",
-                is_shared=True,
-            ),
-            ConfigurableFieldSpec(
-                id="course_id",
-                annotation=str,
-                name="Course ID",
-                description="Unique identifier for the course.",
-                default="",
-                is_shared=True,
-            ),
-        ],
-    )
+        reformulation_chain_with_message_history = RunnableWithMessageHistory(
+            reformulation_chain,
+            get_dynamoDB_history,
+            input_messages_key="input",
+            history_messages_key="messages",
+            history_factory_config=[
+                ConfigurableFieldSpec(
+                    id="chat_id",
+                    annotation=str,
+                    name="Chat ID",
+                    description="Unique identifier for the chat.",
+                    default="",
+                    is_shared=True,
+                ),
+                ConfigurableFieldSpec(
+                    id="username",
+                    annotation=str,
+                    name="User Name",
+                    description="Unique name for the user.",
+                    default="",
+                    is_shared=True,
+                ),
+                ConfigurableFieldSpec(
+                    id="course_id",
+                    annotation=str,
+                    name="Course ID",
+                    description="Unique identifier for the course.",
+                    default="",
+                    is_shared=True,
+                ),
+            ],
+        )
 
-    config = {"configurable": {"chat_id": chat_id, "username":username, "course_id": course_id}}
-    response = reformulation_chain_with_message_history.invoke({"input": content}, config=config)
+        config = {"configurable": {"chat_id": chat_id, "username":username, "course_id": course_id}}
+        response = reformulation_chain_with_message_history.invoke({"input": content}, config=config)
 
-    return response.content
+        return response.content
+    except Exception as e:
+        print(e)
 
     # #LES URLS SERONT ENVOYÉS DANS LES PARAMÈTRES DE LA FONCTION
     # prompt_search_engine = ChatPromptTemplate.from_messages(
