@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from functools import wraps
 import time
-from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
+# from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
 from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
@@ -80,7 +80,10 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     # asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
 
     # Selection of the route from the router + first LLM generation for query reformulation for the Search Engine (with follow-up questions)
-    search_engine_query, prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message)
+    search_engine_query, prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message,
+                                                                                                                       chat_id,
+                                                                                                                       username,
+                                                                                                                       course_id)
 
     print(f"search_engine_query: {search_engine_query}, prompt_answering: {prompt_answering}, method: {method}, keywords: {keywords}")
 
@@ -104,40 +107,40 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     # avec le course_id qui correspond au cours que l'élève a demandé.
 
 
-# RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
-@app.get("/get_chat_history/{chat_id}")
-async def get_chat_history_route(chat_id: str):
-    return await get_chat_history(chat_id)
+# # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
+# @app.get("/get_chat_history/{chat_id}")
+# async def get_chat_history_route(chat_id: str):
+#     return await get_chat_history(chat_id)
 
 
 
-# SUPPRIMER L'HISTORIQUE DE CHAT CHAQUE CHARGEMENT DE LA PAGE - TO BE DEPRECIATED
-@app.post("/delete_chat_history/{chat_id}")
-async def delete_chat_history_route(chat_id: str):
-    try:
-        await delete_all_items_and_adding_first_message(chat_id)
-        return {"message": "Chat history deleted successfully"}
-    except Exception as e:
-        logging.error(f"Erreur lors de la suppression de l'historique du chat : {str(e)}")
-        raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
+# # SUPPRIMER L'HISTORIQUE DE CHAT CHAQUE CHARGEMENT DE LA PAGE - TO BE DEPRECIATED
+# @app.post("/delete_chat_history/{chat_id}")
+# async def delete_chat_history_route(chat_id: str):
+#     try:
+#         await delete_all_items_and_adding_first_message(chat_id)
+#         return {"message": "Chat history deleted successfully"}
+#     except Exception as e:
+#         logging.error(f"Erreur lors de la suppression de l'historique du chat : {str(e)}")
+#         raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
     
 
-# NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
-@app.post("/save_ai_message")
-async def save_ai_message(ai_message: InputQueryAI):
-    chat_id = ai_message.chatSessionId
-    course_id = ai_message.courseId
-    username = ai_message.username
-    input_message = ai_message.message
-    type = ai_message.type #Pas utilisé pour l'instant, on va faire la selection quand on récupérera le username if !== "Lucy" alors on mets "human" else "ai"
+# # NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
+# @app.post("/save_ai_message")
+# async def save_ai_message(ai_message: InputQueryAI):
+#     chat_id = ai_message.chatSessionId
+#     course_id = ai_message.courseId
+#     username = ai_message.username
+#     input_message = ai_message.message
+#     type = ai_message.type #Pas utilisé pour l'instant, on va faire la selection quand on récupérera le username if !== "Lucy" alors on mets "human" else "ai"
 
-    try:
-        asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
+#     try:
+#         asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
 
-        return {"message": "AI message saved successfully"}
-    except Exception as e:
-        logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
-        raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")
+#         return {"message": "AI message saved successfully"}
+#     except Exception as e:
+#         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
+#         raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")
 
 
 def create_app():
