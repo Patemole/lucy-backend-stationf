@@ -122,7 +122,7 @@ def timeit(func):
 
 # Create the history for the memory
 table_name, table_AWS = get_table("dev")
-def get_aws_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
+def get_dynamoDB_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
     return AWSDynamoDBChatMessageHistory(
         table=table_AWS,
         chat_id=chat_id,
@@ -216,6 +216,16 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
         )
 
         chain = prompt_search_engine | GROQ_LLM
+
+        chain_with_DynamoDB_history = RunnableWithMessageHistory(
+            chain,
+            get_dynamoDB_history,
+            input_messages_key="messages",
+            history_messages_key="messages",
+            
+            # primary_key_name="chat_id",
+            # key={"chat_id": chat_id, "timestamp": datetime.now().isoformat()},
+        )
 
         '''
         with_message_history = RunnableWithMessageHistory(
