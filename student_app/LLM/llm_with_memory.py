@@ -18,7 +18,7 @@ load_dotenv()
 
 
 # Class to create llm with memory from DynamoDB
-class CreateLLMWithDynamoDBMemory(RunnableWithMessageHistory):
+class CreateLLMWithDynamoDBMemory():
 
     # Constants
     MODEL_NAME = "llama3-70b-8192"
@@ -42,6 +42,11 @@ class CreateLLMWithDynamoDBMemory(RunnableWithMessageHistory):
             )
         return self.llm_prompt
     
+    # Get the prompt
+    def get_prompt(self):
+        # print(self.prompt)
+        return self.prompt
+    
 
     def get_dynamoDB_history(self, chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
         return AWSDynamoDBChatMessageHistory(
@@ -60,7 +65,7 @@ class CreateLLMWithDynamoDBMemory(RunnableWithMessageHistory):
         )
 
     # Create the llm chain with history
-    def create_llm_with_dynamoDB_memory(self):
+    def run_llm_with_dynamoDB_memory(self, content: str, chat_id: str, username: str, course_id: str):
         chain = self.llm_prompt | self.GROQ_LLM
 
         # Adding memory
@@ -87,7 +92,12 @@ class CreateLLMWithDynamoDBMemory(RunnableWithMessageHistory):
                 ),
             ],
         )
-        return chain_with_memory
+
+        config = {"configurable": {"chat_id": chat_id, "username":username, "course_id": course_id}}
+
+        for r in chain_with_memory.stream({'input': content}, config=config):
+            #print(r.content, end="|")
+            yield r.content + "|"
 
 
 
