@@ -104,6 +104,8 @@ async def get_chat_history(chat_id: str):
     print("\n")
     print("\n")
     print(f"Attempting to retrieve chat history for chat_id: {chat_id}")
+    # Get table
+    _, table = get_table("dev")
     try:
         response = table.query(
             KeyConditionExpression='chat_id = :chat_id',
@@ -132,6 +134,8 @@ async def store_message_async(
         username: str,
         documents: List[Dict[str, Any]] = []):
     print(f"Attempting to store message for chat_id: {chat_id}, course_id: {course_id}, username: {username}")
+    # Get table
+    _, table = get_table("dev")
     try:
         # Insert the item into DynamoDB
         args = {
