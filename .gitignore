@@ -1,5 +1,6 @@
 .env
 myenv/
+.ebextensions/
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
