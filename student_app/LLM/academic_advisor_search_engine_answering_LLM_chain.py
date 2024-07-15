@@ -27,7 +27,9 @@ from typing import List
 from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
 # Import AWS memory 
 from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
-import boto3
+from student_app.LLM.llm_with_memory import CreateLLMWithDynamoDBMemory
+from langchain_core.runnables import ConfigurableFieldSpec
+
 
 
 # Load environment variables from .env file
@@ -178,7 +180,16 @@ store = {}
 
 # Fonction principale renommée
 @time_first_chunk
-def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_answering, student_profile, chat_history, university, method, course_id, keywords):
+def LLM_chain_search_engine_and_answering(content, 
+                                          search_engine_query, 
+                                          prompt_answering, 
+                                          student_profile, 
+                                          chat_id, 
+                                          university, 
+                                          method, 
+                                          course_id, 
+                                          username,
+                                          keywords):
 
     set_google_cse_id(university)
 
@@ -217,14 +228,28 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
 
         chain = prompt_search_engine | GROQ_LLM
 
-        chain_with_DynamoDB_history = RunnableWithMessageHistory(
+        chain_with_memory = RunnableWithMessageHistory(
             chain,
             get_dynamoDB_history,
-            input_messages_key="messages",
-            history_messages_key="messages",
-            
-            # primary_key_name="chat_id",
-            # key={"chat_id": chat_id, "timestamp": datetime.now().isoformat()},
+            input_messages_key="input",
+            history_messages_key="chat_history",
+            history_factory_config=[
+                ConfigurableFieldSpec(
+                    id="chat_id",
+                    annotation=str,
+                    name="Chat ID",
+                ),
+                ConfigurableFieldSpec(
+                    id="username",
+                    annotation=str,
+                    name="Username",
+                ),
+                ConfigurableFieldSpec(
+                    id="course_id",
+                    annotation=str,
+                    name="Course ID",
+                ),
+            ],
         )
 
         '''
@@ -235,13 +260,23 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
         )
 
         config = {"configurable": {"session_id": "abc1"}}
-        '''
+        
 
         #for r in with_message_history.stream(
         for r in chain.stream(
             {"messages": [HumanMessage(content=content)],"university": university, "search_engine": answer_search_engine,"student_profile": student_profile, "chat_history": chat_history}
             #config=config,
         ):
+            #print(r.content, end="|")
+            yield r.content + "|"
+        '''
+        config = {"configurable": {"chat_id": chat_id, "username":username, "course_id": course_id}}
+
+        for r in chain_with_memory.stream({'input': content,
+                                           "university": university,
+                                           "search_engine": answer_search_engine,
+                                           "student_profile": student_profile}, 
+                                          config=config):
             #print(r.content, end="|")
             yield r.content + "|"
 
