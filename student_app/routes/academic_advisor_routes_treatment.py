@@ -34,14 +34,14 @@ async def academic_advisor_router_treatment(input_message, chat_history = None):
     print("\n")
 
 
-
+    reformulated_input = LLM_chain_reformulation(content=input_message)
 
     print("\n")
     print("La route choisi est general directives")
     print("\n")
     prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_general_directives
     #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-    search_engine_query = input_message #for testing before going further
+    search_engine_query = reformulated_input #for testing before going further
     method = "search_engine"
     keywords = ""
     return search_engine_query, prompt_answering, student_profile, method, keywords
