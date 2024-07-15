@@ -5403,3 +5403,155 @@ HTTP response body: {"error":{"code":"FORBIDDEN","message":"Request failed. You'
 2024-07-15 16:01:03 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
 2024-07-15 16:01:05 [INFO]: Response: 200
 2024-07-15 16:01:05 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:14:05 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-15 16:14:06 [INFO]: Démarrage de l'application
+2024-07-15 16:14:06 [INFO]: Création de l'application files
+2024-07-15 16:14:06 [INFO]: Application files créée avec succès
+2024-07-15 16:14:06 [INFO]: Création de l'application academic advisor
+2024-07-15 16:14:06 [INFO]: Application academic advisor créée avec succès
+2024-07-15 16:14:06 [INFO]: Montage des applications
+2024-07-15 16:14:06 [INFO]: Applications montées avec succès
+2024-07-15 16:14:06 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-15 16:14:15 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-15 16:14:15 [INFO]: Response: 404
+2024-07-15 16:14:15 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-15 16:14:15 [INFO]: Response: 404
+2024-07-15 16:14:19 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:14:19 [INFO]: Response: 200
+2024-07-15 16:14:19 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:14:19 [INFO]: Found credentials in environment variables.
+2024-07-15 16:14:21 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:14:22 [INFO]: Response: 200
+2024-07-15 16:14:22 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:14:25 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:14:26 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-15 16:14:26 [INFO]: Response: 200
+2024-07-15 16:14:26 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:14:26 [INFO]: Response: 404
+2024-07-15 16:15:09 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:15:11 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:15:13 [INFO]: Response: 200
+2024-07-15 16:15:13 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:15:15 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:15:17 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:15:17 [INFO]: Response: 404
+2024-07-15 16:15:59 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:16:01 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:16:02 [INFO]: Response: 200
+2024-07-15 16:16:02 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:16:05 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:16:06 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:16:06 [INFO]: Response: 404
+2024-07-15 16:16:32 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:16:33 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:16:35 [INFO]: Response: 200
+2024-07-15 16:16:35 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:16:37 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:16:39 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:16:39 [INFO]: Response: 404
+2024-07-15 16:18:59 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:19:02 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:19:03 [INFO]: Response: 200
+2024-07-15 16:19:03 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:19:05 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:19:07 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:19:07 [INFO]: Response: 404
+2024-07-15 16:20:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-15 16:20:14 [INFO]: Response: 404
+2024-07-15 16:20:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-15 16:20:14 [INFO]: Response: 404
+2024-07-15 16:20:21 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:20:23 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:20:24 [INFO]: Response: 200
+2024-07-15 16:20:24 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:20:26 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:20:28 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:20:28 [INFO]: Response: 404
+2024-07-15 16:24:15 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:24:17 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:24:19 [INFO]: Response: 200
+2024-07-15 16:24:19 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:24:22 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:24:24 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:24:24 [INFO]: Response: 404
+2024-07-15 16:28:54 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:28:54 [INFO]: Response: 200
+2024-07-15 16:28:54 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:28:57 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:28:59 [INFO]: Response: 200
+2024-07-15 16:28:59 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:29:01 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:29:03 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-15 16:29:03 [INFO]: Response: 200
+2024-07-15 16:29:03 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:29:03 [INFO]: Response: 404
+2024-07-15 16:33:54 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:33:57 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:33:59 [INFO]: Response: 200
+2024-07-15 16:33:59 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:34:02 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-15 16:34:02 [INFO]: Retrying request to /openai/v1/chat/completions in 3.000000 seconds
+2024-07-15 16:34:04 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:34:05 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:34:06 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:34:09 [INFO]: Response: 200
+2024-07-15 16:34:09 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:34:12 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-15 16:34:12 [INFO]: Retrying request to /openai/v1/chat/completions in 58.000000 seconds
+2024-07-15 16:34:12 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:34:12 [INFO]: Response: 404
+2024-07-15 16:35:11 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:35:12 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:35:12 [INFO]: Response: 404
+2024-07-15 16:35:36 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:35:38 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-15 16:35:38 [INFO]: Retrying request to /openai/v1/chat/completions in 12.000000 seconds
+2024-07-15 16:35:50 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:35:52 [INFO]: Response: 200
+2024-07-15 16:35:52 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:35:55 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-15 16:35:55 [INFO]: Retrying request to /openai/v1/chat/completions in 38.000000 seconds
+2024-07-15 16:36:34 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:36:36 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:36:36 [INFO]: Response: 404
+2024-07-15 16:41:13 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:41:13 [INFO]: Response: 200
+2024-07-15 16:41:13 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:41:16 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:41:18 [INFO]: Response: 200
+2024-07-15 16:41:18 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:41:20 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-15 16:41:20 [INFO]: Retrying request to /openai/v1/chat/completions in 28.000000 seconds
+2024-07-15 16:41:49 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:41:51 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-15 16:41:51 [INFO]: Response: 200
+2024-07-15 16:41:51 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:41:51 [INFO]: Response: 404
+2024-07-15 16:42:48 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:42:50 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:42:52 [INFO]: Response: 200
+2024-07-15 16:42:52 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:42:55 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-15 16:42:55 [INFO]: Retrying request to /openai/v1/chat/completions in 30.000000 seconds
+2024-07-15 16:43:26 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:43:28 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:43:28 [INFO]: Response: 404
+2024-07-15 16:46:13 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-15 16:46:14 [INFO]: Démarrage de l'application
+2024-07-15 16:46:14 [INFO]: Création de l'application files
+2024-07-15 16:46:14 [INFO]: Application files créée avec succès
+2024-07-15 16:46:14 [INFO]: Création de l'application academic advisor
+2024-07-15 16:46:14 [INFO]: Application academic advisor créée avec succès
+2024-07-15 16:46:14 [INFO]: Montage des applications
+2024-07-15 16:46:14 [INFO]: Applications montées avec succès
+2024-07-15 16:46:14 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-15 16:46:32 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-15 16:46:32 [INFO]: Found credentials in environment variables.
+2024-07-15 16:46:35 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:46:36 [INFO]: Response: 200
+2024-07-15 16:46:36 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-15 16:46:39 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+2024-07-15 16:46:39 [INFO]: Retrying request to /openai/v1/chat/completions in 11.000000 seconds
+2024-07-15 16:46:51 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-15 16:46:53 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-15 16:46:53 [INFO]: Response: 404

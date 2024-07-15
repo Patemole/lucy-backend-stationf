@@ -88,7 +88,17 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     print(f"search_engine_query: {search_engine_query}, prompt_answering: {prompt_answering}, method: {method}, keywords: {keywords}")
 
     #Second LLM generation with the search engine + Answer generation and sources 
-    return StreamingResponse(LLM_chain_search_engine_and_answering(input_message, search_engine_query, prompt_answering, student_profile, chat_id, university, method, course_id, username, keywords), media_type="text/event-stream")
+    return StreamingResponse(LLM_chain_search_engine_and_answering(input_message, 
+                                                                   search_engine_query, 
+                                                                   prompt_answering, 
+                                                                   student_profile, 
+                                                                   chat_id, 
+                                                                   university, 
+                                                                   method, 
+                                                                   course_id, 
+                                                                   username, 
+                                                                   keywords), 
+                                                                   media_type="text/event-stream")
 
 
     # Créez une réponse en streaming en passant l'historique de chat
