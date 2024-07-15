@@ -9,7 +9,7 @@ You can also skip lines when you feel it's necessary.
 
 Use the conversation history below to keep track of the discussion and answer as best you can. If there's no history, then it means this is the first message.
 Conversation history:
-{chat_history}
+{messages}
 '''
 
 #2
@@ -17,7 +17,7 @@ prompt_chitchat ='''
 You're Lucy, a conversationnal academic advisor assistant helping students at {university}. You are friendly in your interactions.
 
 Conversation history:
-{chat_history}
+{messages}
 
 This is the student profile if you need this informations to answer: {student_profile} 
 
@@ -76,7 +76,7 @@ You can also skip lines when you feel it's necessary.
 
 Use the conversation history below to keep track of the discussion and answer as best you can. If there's no history, then it means this is the first message.
 Conversation history:
-{chat_history}
+{messages}
 '''
 #4
 prompt_general_directives = '''
@@ -90,7 +90,7 @@ You can also skip lines when you feel it's necessary.
 
 Use the conversation history below to keep track of the discussion and answer as best you can. If there's no history, then it means this is the first message.
 Conversation history:
-{chat_history}
+{messages}
 '''
 #5
 prompt_class_suggestions = '''
@@ -104,7 +104,7 @@ You can also skip lines when you feel it's necessary.
 
 Use the conversation history below to keep track of the discussion and answer as best you can. If there's no history, then it means this is the first message.
 Conversation history:
-{chat_history}
+{messages}
 '''
 #6
 prompt_major_selection = '''
@@ -118,7 +118,7 @@ You can also skip lines when you feel it's necessary.
 
 Use the conversation history below to keep track of the discussion and answer as best you can. If there's no history, then it means this is the first message.
 Conversation history:
-{chat_history}
+{messages}
 '''
 #7
 prompt_career = '''
@@ -132,7 +132,7 @@ You can also skip lines when you feel it's necessary.
 
 Use the conversation history below to keep track of the discussion and answer as best you can. If there's no history, then it means this is the first message.
 Conversation history:
-{chat_history}
+{messages}
 '''
 #8
 prompt_contact_advisor = '''
@@ -146,7 +146,7 @@ You can also skip lines when you feel it's necessary.
 
 Use the conversation history below to keep track of the discussion and answer as best you can. If there's no history, then it means this is the first message.
 Conversation history:
-{chat_history}
+{messages}
 '''
 #9
 prompt_single_course = '''
@@ -160,14 +160,14 @@ You can also skip lines when you feel it's necessary.
 
 Use the conversation history below to keep track of the discussion and answer as best you can. If there's no history, then it means this is the first message.
 Conversation history:
-{chat_history}
+{messages}
 '''
 
 #10
 prompt_challenges = '''
 You're Lucy, a academic advisor assistant helping students at {university}, taking into account its history. Here is the conversation history:
 
-{chat_history}
+{messages}
 
 For your information this is the student profile if you need: {student_profile} 
 - Be friendly and show interest in the student

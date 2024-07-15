@@ -83,7 +83,7 @@ def LLM_chain_reformulation(content: str, chat_id: str, username: str, course_id
         standalone_question_prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", standalone_system_prompt),
-                MessagesPlaceholder(variable_name="messages"),
+                MessagesPlaceholder(variable_name="messages", n_messages=2),
                 ("human", "{input}"),
             ]
         )
