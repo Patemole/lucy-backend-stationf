@@ -1,6 +1,7 @@
 .env
-myenv/
-.ebextensions/
+myenv
+myenvcheck
+.ebextensions
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
