@@ -65,7 +65,9 @@ async def store_analytics_async(
         ask_for_advisor: str,
         interaction_position: int,
         word_count: int,
-        ai_message_id: str):
+        ai_message_id: str,
+        input_message: str,
+        output_message: str):
     print(f"Attempting to store message for ai_message_id: {ai_message_id}, course_id: {course_id}, uid: {uid}")
 
 
@@ -98,6 +100,8 @@ async def store_analytics_async(
             'interaction_position': Decimal(interaction_position),
             'word_count': Decimal(word_count),
             'ai_message_id': ai_message_id,
+            'input_text': input_message,
+            'output_text': output_message,
         }
         
         # Insérer l'élément dans DynamoDB
