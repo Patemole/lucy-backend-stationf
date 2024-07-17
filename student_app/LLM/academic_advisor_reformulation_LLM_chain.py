@@ -43,8 +43,9 @@ def timeit(func):
 
 
 # Fonction principale renommée
-def LLM_chain_reformulation(content: str, chat_history, student_profile, university):
-
+#TODO Uncomment first one depending on the prompt
+#def LLM_chain_reformulation(content: str, chat_history, student_profile, university):
+def LLM_chain_reformulation(content: str):
     print("reformulation of the user input")
 
     GROQ_LLM = ChatGroq(temperature=0, model_name=MODEL_NAME, streaming=True)
@@ -63,8 +64,8 @@ def LLM_chain_reformulation(content: str, chat_history, student_profile, univers
 
     chain = prompt_search_engine | GROQ_LLM 
 
-    response = chain.invoke({"messages": [HumanMessage(content=content)], "chat_history": chat_history, "student_profile": student_profile, "university":university})
+    response = chain.invoke({"messages": [HumanMessage(content=content)]})
 
-    print("Reformulated user input into search engine query : \n" + response.content) 
+    print("Reformulated user input into search engine query : \n\n" + response.content) 
     return response.content
         

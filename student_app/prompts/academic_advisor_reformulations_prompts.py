@@ -1,4 +1,4 @@
-prompt_reformulation_for_web_search = '''
+prompt_reformulation_for_web_search2 = '''
 You are an intelligent assistant that helps students find detailed and accurate information about their university-related queries. You need to augment their queries with additional context and keywords for more precise Google searches. 
 
 Given the student's query, profile, the history of the conversation it had as context and the university the student is in, generate a detailed search query for Google. 
@@ -23,3 +23,22 @@ Only return the query nothing else no introduction or paragrapha afterwards bu s
 
 Also do not say greetings or any other things just the query itself and never put the query inside "" or '' just the query itself
 '''
+
+prompt_reformulation_for_web_search = '''
+Based on the user's question, create a search query that captures the core information need and is likely to yield the most relevant results. The query should be specific, include keywords, and consider any potential synonyms or related terms to enhance search accuracy. Make sure to format the query in a way that aligns with common search engine practices.
+
+Example: 
+QUESTION = can i take econ0200 at the same time as econ0100
+
+QUERY = site:upenn.edu ECON 0200 prerequisites concurrent ECON 0100
+Always put site:upenn.edu before the query to get the most relevant results from the university website.
+
+
+QUERY = {messages}
+
+Also do not say greetings or any other things just the query itself and never put the query inside "" or '' just the query itself and only give out one answer of a simple and efficient query.
+
+Here is the optimized search query:
+
+'''
+

@@ -25,26 +25,56 @@ def timing_decorator(func):
 #Il faut rajouter un "search_engine", un "RAG" ou "nothing" en plus dans les paramètres a renvoyer pour savoir quoi utiliser ensuite dans la fonction qui asnwer 
 @timing_decorator
 async def academic_advisor_router_treatment(input_message, chat_history, university):
-    print(3)
+
+    #TODO modify here for inputting the right student profile 
     student_profile = "A junior in the engineering school majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
-    print("\n")
-    print("On entre dans la fonction pour choisir la route")
-    print(f"Message du student: {input_message}")
+    print("Routing in progress...")
     print("\n")
 
-
-
-
+    router_answer = rl(input_message)
+    print("The route chosen is:")
+    print(router_answer)
     print("\n")
-    print("La route choisi est general directives")
-    print("\n")
-    #TODO modify here for promt of the right route
-    prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.general_prompt
+
+    if router_answer.name == "politics":
+        prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_politics
+        #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
+        search_engine_query = input_message #Car il n'y a pas de reformulation ici 
+        method = "nothing"
+        keywords = ""
+        return search_engine_query, prompt_answering, student_profile, method, keywords
+        
+
+    elif router_answer.name == "chitchat":
+         prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_chitchat
+         search_engine_query = input_message #Car il n'y a pas de reformulation ici
+         method = "nothing"
+         keywords = ""
+         return search_engine_query, prompt_answering, student_profile, method, keywords
+         
+     
+
+     #if not politics or chitchat then it is general AA questions 
+    #else:
+    elif router_answer.name == None:
+         prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.general_prompt
+         print("Route is General AA")
+         print("\n")
+         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
+         search_engine_query =  LLM_chain_reformulation(input_message)
+         #search_engine_query = input_message #for testing before going further
+         method = "search_engine"
+         keywords = ""
+         return search_engine_query, prompt_answering, student_profile, method, keywords
     
     #TODO update to make the reformulation of the input message
+    #TODO: update to include the student profile and the university depending on the prompt and the LLM chain function
     #search_engine_query = LLM_chain_reformulation(input_message, chat_history, student_profile, university)
-    search_engine_query = input_message #for testing before going further
+    search_engine_query = LLM_chain_reformulation(input_message)
+    #search_engine_query = input_message #for testing before going further
+
+    
     method = "search_engine"
     keywords = ""
     return search_engine_query, prompt_answering, student_profile, method, keywords
@@ -52,9 +82,6 @@ async def academic_advisor_router_treatment(input_message, chat_history, univers
 
 
     '''
-    #router_answer = rl(input_message)
-    #print(router_answer)
-    router_answer = "general_directives"
 
     if router_answer.name == "politics":
         print("\n")
@@ -68,7 +95,7 @@ async def academic_advisor_router_treatment(input_message, chat_history, univers
         return search_engine_query, prompt_answering, student_profile, method, keywords
         
 
-    if router_answer.name == "chitchat":
+    elif router_answer.name == "chitchat":
          print("\n")
          print("La route choisi est le chitchat")
          print("\n")
@@ -79,6 +106,19 @@ async def academic_advisor_router_treatment(input_message, chat_history, univers
          keywords = ""
          return search_engine_query, prompt_answering, student_profile, method, keywords
          
+     
+     elif router_answer.name == None:
+         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_chitchat
+         print("\n")
+         print("La route choisi est la None")
+         print("\n")
+         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
+         search_engine_query =  LLM_chain_reformulation(input_message, chat_history)
+         #search_engine_query = input_message #for testing before going further
+         method = "nothing"
+         keywords = ""
+         return search_engine_query, prompt_answering, student_profile, method, keywords
+    
     
     if router_answer.name == "registration_tips":
          prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_registration_tips
@@ -153,20 +193,7 @@ async def academic_advisor_router_treatment(input_message, chat_history, univers
          method = "search_engine"
          keywords = ""
          return search_engine_query, prompt_answering, student_profile, method, keywords
-    
 
-
-    if router_answer.name == None:
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_chitchat
-         print("\n")
-         print("La route choisi est la None")
-         print("\n")
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query =  LLM_chain_reformulation(input_message, chat_history)
-         #search_engine_query = input_message #for testing before going further
-         method = "nothing"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
     
 
     '''

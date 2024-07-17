@@ -13,6 +13,8 @@ from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.chat_message_histories import ChatMessageHistory
 from functools import wraps
 import time
+import concurrent.futures
+
 #from langchain_core.output_parsers import StrOutputParser
 
 from pinecone import Pinecone
@@ -24,6 +26,8 @@ from langchain.schema import Document
 from typing import List
 from student_app.scraping.scraping import fetch_content_with_jinai
 from student_app.LLM.academic_advisor_text_cleaning import extract_relevant_info
+#TODO uncomment if reformulation on
+from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
 
 
 # Load environment variables from .env file
@@ -121,7 +125,7 @@ def get_session_history(session_id: str) -> BaseChatMessageHistory:
 def timed_invoke_google(query):
     #return tool_google.run(query)
     #TODO test for different number of websites returned
-    return tool_google.results(query, 2)
+    return tool_google.results(query, 3)
 
 @timeit
 def set_google_cse_id(university):
@@ -161,6 +165,63 @@ def process_search_results(answer_search_engine):
         all_content += f"\nContent from {url}:\n{content}\n"
     return all_content
 
+
+def chunk_text_by_words_with_overlap(text, max_words, overlap_words):
+    # Split the text into lines first
+    lines = text.split('\n')
+    
+    # Initialize variables
+    chunks = []
+    current_chunk = []
+    current_word_count = 0
+
+    for line in lines:
+        # Split each line into words
+        words = line.split()
+        line_word_count = len(words)
+
+        while words:
+            # Determine the number of words to take in this iteration
+            take_words = min(max_words - current_word_count, len(words))
+
+            # Add the words to the current chunk
+            current_chunk.extend(words[:take_words])
+            current_word_count += take_words
+            words = words[take_words:]
+
+            # If the current chunk has reached max_words, finalize it
+            if current_word_count >= max_words:
+                chunks.append(' '.join(current_chunk).strip())
+                # Prepare the next chunk with overlap
+                current_chunk = current_chunk[-overlap_words:] if overlap_words < max_words else current_chunk
+                current_word_count = len(current_chunk)
+
+    # Add the last chunk if any
+    if current_chunk:
+        chunks.append(' '.join(current_chunk).strip())
+
+    return chunks
+
+
+
+def extract_relevant_info_parallel(query, chunks):
+    relevant_chunks = []
+
+    def process_chunk(chunk, index):
+        result = extract_relevant_info(query, chunk)
+        return (index, chunk, result)
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(process_chunk, chunk, i) for i, chunk in enumerate(chunks)]
+        for future in concurrent.futures.as_completed(futures):
+            index, chunk, result = future.result()
+            if "1" in result: # Check if the result is "1"
+                relevant_chunks.append((index, chunk))
+
+    return relevant_chunks
+
+
+
 # Fonction principale renommée
 @time_first_chunk
 def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_answering, student_profile, chat_history, university, method, course_id, keywords):
@@ -175,46 +236,76 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
         global tool_google
         tool_google = GoogleSearchAPIWrapper()
 
+
+        print("Content = student query is : \n")
+        print(content)
         print("\n")
-        print("\n")
-        print("Search enginge query is : \n")
+
+        print("Search enginge query after reformulation is : \n")
         print(search_engine_query)
         print("\n")
-        print("\n")
 
+        """
+        #TODO erase if it works other way
+        #new_query = LLM_chain_reformulation(search_engine_query)
+
+        print("\n")
+        print("\n")
+        print("New query is : \n")
+        print(new_query)
+        print("\n")
+        print("\n")
+        """
+        
         # Utiliser la variable content et combined_urls dans l'appel à timed_invoke_google
         answer_search_engine = timed_invoke_google({f"{search_engine_query}"})
-
-        print("\n")
-        print("\n")
+        
+        
         print("Answer from the search engine: \n")
         print(answer_search_engine)
         print("\n")
-        print("\n")
-    
+        
+        """
         #get the content from the search engine for each pages that the search engine returned
-        search_results = process_search_results(answer_search_engine)
-
+        search_results_jinai = process_search_results(answer_search_engine)
 
         print("\n")
         print("\n")
         print("Answer from jinai: \n")
-        print(search_results)
+        print(search_results_jinai)
         print("\n")
         print("\n")
 
+        max_words_per_chunk = 100  # You can adjust the number of words as needed
+        overlap_words  = 10  # You can adjust the number of words as needed
+        chunks = chunk_text_by_words_with_overlap(search_results_jinai, max_words_per_chunk, overlap_words)
 
+        print("\n")
+        print("\n")
+        print("chunks: \n")
+        #for i, chunk in enumerate(chunks):
+        #    print(f"Chunk {i+1}:\n{chunk}\n")
+        print("\n")
+        print("\n")
 
         # Process the search results with Gemini model to get the cleaned text
-        cleaned_texts = extract_relevant_info(search_engine_query, search_results)
+        #TODO: test with search_engine_query or new_query or both concatenated
+        relevant_chunks = extract_relevant_info_parallel(search_engine_query, chunks)
+
+        # Concatenate relevant chunks with the desired format
+        separator = "\n---\n"  # Define a separator to indicate different chunks
+        concatenated_relevant_chunks = ""
+
+        for i, (index, chunk) in enumerate(relevant_chunks):
+            concatenated_relevant_chunks += f"Chunk {index + 1}:\n{chunk}\n{separator}"
 
         print("\n")
         print("\n")
-        print("clean text is the following: \n")
-        print(cleaned_texts)
+        print("Relevant chunks concatenated are the following: \n")
+        print(concatenated_relevant_chunks)
         print("\n")
         print("\n")
- 
+        """
 
         GROQ_LLM = ChatGroq(temperature=0, model_name=MODEL_NAME, streaming=True)
 
@@ -246,7 +337,7 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
 
         #for r in with_message_history.stream(
         for r in chain.stream(
-            {"messages": [HumanMessage(content=content)],"university": university, "search_engine": cleaned_texts ,"student_profile": student_profile, "chat_history": chat_history}
+            {"messages": [HumanMessage(content=content)],"university": university, "search_engine": answer_search_engine ,"student_profile": student_profile, "chat_history": chat_history}
             #config=config,
         ):
             #print(r.content, end="|")
@@ -261,7 +352,7 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
         rag_info = query_pinecone(search_engine_query, course_id, keywords)
         
 
-        print("\n")
+        
         print(rag_info)
         print("\n")
     
