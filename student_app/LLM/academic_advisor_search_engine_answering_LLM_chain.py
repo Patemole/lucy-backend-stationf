@@ -13,13 +13,10 @@ from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.chat_message_histories import ChatMessageHistory
 from functools import wraps
 import time
-<<<<<<< HEAD
 import concurrent.futures
 
 #from langchain_core.output_parsers import StrOutputParser
-=======
 from datetime import datetime
->>>>>>> jules-dev-AA
 
 from pinecone import Pinecone
 from openai import OpenAI

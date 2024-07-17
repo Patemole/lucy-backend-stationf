@@ -76,19 +76,13 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     # print(chat_history)
     
     # Stockez le message de manière asynchrone
-<<<<<<< HEAD
-    asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
-    # Selection of the route from the router + first LLM generation for query reformulation for the Search Engine (with follow-up questions)
-    search_engine_query, prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message, chat_history, university)
-=======
     # asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
 
     # Selection of the route from the router + first LLM generation for query reformulation for the Search Engine (with follow-up questions)
     search_engine_query, prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message,
                                                                                                                        chat_id,
                                                                                                                        username,
-                                                                                                                       course_id)
->>>>>>> jules-dev-AA
+                                                                                                                       course_id,)
 
     print(f"search_engine_query: {search_engine_query}, prompt_answering: {prompt_answering}, method: {method}, keywords: {keywords}")
 

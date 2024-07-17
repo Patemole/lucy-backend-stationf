@@ -1,10 +1,6 @@
 .env
-<<<<<<< HEAD
-newenv/
-=======
 .lucy_env/
 myenv/
->>>>>>> jules-dev-AA
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
