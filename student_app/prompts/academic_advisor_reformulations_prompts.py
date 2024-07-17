@@ -33,6 +33,9 @@ QUESTION = can i take econ0200 at the same time as econ0100
 QUERY = site:upenn.edu ECON 0200 prerequisites concurrent ECON 0100
 Always put site:upenn.edu before the query to get the most relevant results from the university website.
 
+Given a chat history: {messages} and a follow-up question, rephrase the follow-up question to be a standalone question. \
+Do NOT answer the question, just reformulate it if needed, otherwise return it as is. \
+Only return the final standalone question with no preamble, postamble or explanation. \
 
 QUERY = {messages}
 

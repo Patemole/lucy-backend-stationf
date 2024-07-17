@@ -24,15 +24,11 @@ def timing_decorator(func):
 
 #Il faut rajouter un "search_engine", un "RAG" ou "nothing" en plus dans les paramètres a renvoyer pour savoir quoi utiliser ensuite dans la fonction qui asnwer 
 @timing_decorator
-<<<<<<< HEAD
-async def academic_advisor_router_treatment(input_message, chat_history, university):
-=======
 async def academic_advisor_router_treatment(input_message, 
                                             chat_id, 
                                             username,
                                             course_id,
-                                            chat_history = None, ):
->>>>>>> jules-dev-AA
+                                            chat_history = None,):
 
     #TODO modify here for inputting the right student profile 
     student_profile = "A junior in the engineering school majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
@@ -40,7 +36,6 @@ async def academic_advisor_router_treatment(input_message,
     print("Routing in progress...")
     print("\n")
 
-<<<<<<< HEAD
     router_answer = rl(input_message)
     print("The route chosen is:")
     print(router_answer)
@@ -71,38 +66,16 @@ async def academic_advisor_router_treatment(input_message,
          print("Route is General AA")
          print("\n")
          #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query =  LLM_chain_reformulation(input_message)
+         reformulated_input = LLM_chain_reformulation(content=input_message, 
+                                                 chat_id=chat_id, 
+                                                 username=username,
+                                                 course_id=course_id)
+         print("The reformulated input is: ", reformulated_input)
+         search_engine_query = reformulated_input
          #search_engine_query = input_message #for testing before going further
          method = "search_engine"
          keywords = ""
          return search_engine_query, prompt_answering, student_profile, method, keywords
-    
-    #TODO update to make the reformulation of the input message
-    #TODO: update to include the student profile and the university depending on the prompt and the LLM chain function
-    #search_engine_query = LLM_chain_reformulation(input_message, chat_history, student_profile, university)
-    search_engine_query = LLM_chain_reformulation(input_message)
-    #search_engine_query = input_message #for testing before going further
-
-    
-=======
-
-    reformulated_input = LLM_chain_reformulation(content=input_message, 
-                                                 chat_id=chat_id, 
-                                                 username=username,
-                                                 course_id=course_id)
-    
-    print("The reformulated input is: ", reformulated_input)
-
-    print("\n")
-    print("La route choisi est general directives")
-    print("\n")
-    prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_general_directives
-    #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-    search_engine_query = reformulated_input #for testing before going further
->>>>>>> jules-dev-AA
-    method = "search_engine"
-    keywords = ""
-    return search_engine_query, prompt_answering, student_profile, method, keywords
 
 
 
