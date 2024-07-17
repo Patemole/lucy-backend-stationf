@@ -19,6 +19,25 @@ politics = Route(
         "don't you just love the president" "don't you just hate the president",
         "they're going to destroy this country!",
         "they will save the country!",
+        "do you support war ?",
+        "nazi",
+        "israel",
+        "palestine",
+        "trump",
+        "biden",
+        "obama",
+        "democrat",
+        "republican",
+        "war",
+        "election",
+        "racism",
+        "sexism",
+        "homophobia",
+        "transphobia",
+        "fascism",
+        "communism",
+        "socialism",
+        "terrorism",
     ],
 )
 
@@ -31,10 +50,27 @@ chitchat = Route(
         "lovely weather today",
         "the weather is horrendous",
         "let's go to the chippy",
+        "what is your name",
+        "How are you?",
+        "What is your favorite color?",
+        "What is your favorite food?",
+        "What is your favorite movie?",
+        "are we friends?",
+        "what is your favorite song?",
+        "do you love me?",
+        "let's be friends",
     ],
 )
 
 
+# we place both of our decisions together into single list
+routes = [politics, chitchat]
+
+
+rl = RouteLayer(encoder=encoder, routes=routes)
+
+
+"""
 #Conversation for registration help
 registration_tips  = Route(
     name="registration_tips",
@@ -155,8 +191,4 @@ challenges = Route(
 )
 
 
-# we place both of our decisions together into single list
-routes = [politics, chitchat, career, registration_tips, general_deadlines, class_suggestions, single_course, challenges, major_selection, contact_advisor]
-
-
-rl = RouteLayer(encoder=encoder, routes=routes)
+"""
