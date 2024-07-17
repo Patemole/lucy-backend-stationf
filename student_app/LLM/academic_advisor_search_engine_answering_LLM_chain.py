@@ -13,9 +13,13 @@ from langchain_google_community import GoogleSearchAPIWrapper
 from langchain_community.chat_message_histories import ChatMessageHistory
 from functools import wraps
 import time
+<<<<<<< HEAD
 import concurrent.futures
 
 #from langchain_core.output_parsers import StrOutputParser
+=======
+from datetime import datetime
+>>>>>>> jules-dev-AA
 
 from pinecone import Pinecone
 from openai import OpenAI
@@ -28,6 +32,16 @@ from student_app.scraping.scraping import fetch_content_with_jinai
 from student_app.LLM.academic_advisor_text_cleaning import extract_relevant_info
 #TODO uncomment if reformulation on
 from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
+
+
+# Import reformulation LLM
+from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
+# Import AWS memory 
+from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
+from student_app.LLM.llm_with_memory import CreateLLMWithDynamoDBMemory
+from langchain_core.runnables import ConfigurableFieldSpec
+
+
 
 
 # Load environment variables from .env file
@@ -115,10 +129,29 @@ def timeit(func):
     return wrapper
 
 # Fonction pour récupérer l'historique de session
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    if session_id not in store:
-        store[session_id] = ChatMessageHistory()
-    return store[session_id]
+# def get_session_history(session_id: str) -> AWSDynamoDBChatMessageHistory:
+#     if session_id not in store:
+#         store[session_id] = ChatMessageHistory()
+#     return store[session_id]
+
+# Create the history for the memory
+table_name, table_AWS = get_table("dev")
+def get_dynamoDB_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
+    return AWSDynamoDBChatMessageHistory(
+        table=table_AWS,
+        chat_id=chat_id,
+        # timestamp=datetime.now().isoformat(),
+        course_id=course_id,
+        username=username,
+        table_name=table_name,
+        session_id=chat_id,
+                primary_key_name="chat_id",
+                key={
+                    "chat_id": chat_id,
+                    "timestamp": datetime.now().isoformat()
+                    },
+    )
+
 
 # Fonction chronométrée pour invoquer Google Search API
 @timeit
@@ -224,10 +257,18 @@ def extract_relevant_info_parallel(query, chunks):
 
 # Fonction principale renommée
 @time_first_chunk
-def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_answering, student_profile, chat_history, university, method, course_id, keywords):
+def LLM_chain_search_engine_and_answering(content, 
+                                          search_engine_query, 
+                                          prompt_answering, 
+                                          student_profile, 
+                                          chat_id, 
+                                          university, 
+                                          method, 
+                                          course_id, 
+                                          username,
+                                          keywords):
 
     set_google_cse_id(university)
-
 
 
     if method == "search_engine":
@@ -320,10 +361,37 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
                     prompt_answering,
                 ),
                 MessagesPlaceholder(variable_name="messages"),
+                (
+                    "user","{input}"
+                )
             ]
         )
 
         chain = prompt_search_engine | GROQ_LLM 
+
+        chain_with_memory = RunnableWithMessageHistory(
+            chain,
+            get_dynamoDB_history,
+            input_messages_key="input",
+            history_messages_key="messages",
+            history_factory_config=[
+                ConfigurableFieldSpec(
+                    id="chat_id",
+                    annotation=str,
+                    name="Chat ID",
+                ),
+                ConfigurableFieldSpec(
+                    id="username",
+                    annotation=str,
+                    name="Username",
+                ),
+                ConfigurableFieldSpec(
+                    id="course_id",
+                    annotation=str,
+                    name="Course ID",
+                ),
+            ],
+        )
 
         '''
         with_message_history = RunnableWithMessageHistory(
@@ -333,13 +401,23 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
         )
 
         config = {"configurable": {"session_id": "abc1"}}
-        '''
+        
 
         #for r in with_message_history.stream(
         for r in chain.stream(
             {"messages": [HumanMessage(content=content)],"university": university, "search_engine": answer_search_engine ,"student_profile": student_profile, "chat_history": chat_history}
             #config=config,
         ):
+            #print(r.content, end="|")
+            yield r.content + "|"
+        '''
+        config = {"configurable": {"chat_id": chat_id, "username":username, "course_id": course_id}}
+
+        for r in chain_with_memory.stream({'input': content,
+                                           "university": university,
+                                           "search_engine": answer_search_engine,
+                                           "student_profile": student_profile}, 
+                                          config=config):
             #print(r.content, end="|")
             yield r.content + "|"
 
@@ -386,7 +464,7 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
 
         #for r in with_message_history.stream(
         for r in chain.stream(
-            {"messages": [HumanMessage(content=content)],"university": university, "search_engine": rag_info,"student_profile": student_profile, "chat_history": chat_history}
+            {"messages": [HumanMessage(content=content)],"university": university, "search_engine": rag_info,"student_profile": student_profile}
             #config=config,
         ):
             #print(r.content, end="|")
@@ -433,7 +511,7 @@ def LLM_chain_search_engine_and_answering(content, search_engine_query, prompt_a
 
         #for r in with_message_history.stream(
         for r in chain.stream(
-            {"messages": [HumanMessage(content=search_engine_query)],"university": university, "student_profile": student_profile, "chat_history": chat_history}
+            {"messages": [HumanMessage(content=search_engine_query)],"university": university, "student_profile": student_profile}
             #config=config,
         ):
             #print(r.content, end="|")
