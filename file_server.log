@@ -5602,3 +5602,12 @@ HTTP response body: {"error":{"code":"FORBIDDEN","message":"Request failed. You'
 2024-07-16 12:02:36 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
 2024-07-16 12:02:36 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
 2024-07-16 12:02:37 [INFO]: Response: 200
+2024-07-18 18:42:46 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-18 18:42:47 [INFO]: Démarrage de l'application
+2024-07-18 18:42:47 [INFO]: Création de l'application files
+2024-07-18 18:42:47 [INFO]: Application files créée avec succès
+2024-07-18 18:42:47 [INFO]: Création de l'application academic advisor
+2024-07-18 18:42:47 [INFO]: Application academic advisor créée avec succès
+2024-07-18 18:42:47 [INFO]: Montage des applications
+2024-07-18 18:42:47 [INFO]: Applications montées avec succès
+2024-07-18 18:42:47 [INFO]: Démarrage du serveur sur le port 5001
