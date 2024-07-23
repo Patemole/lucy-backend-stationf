@@ -14,11 +14,11 @@ import time
 from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
-from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import LLM_chain_search_engine_and_answering
+from student_app.LLM.academic_advisor_perplexity_LLM_chain import LLM_chain_perplexity
 from student_app.LLM.llm_with_memory import CreateLLMWithDynamoDBMemory
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
-
+from student_app.prompts.academic_advisor_perplexity_search_promtps import system
 # Logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -79,25 +79,24 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     # asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
 
     # Selection of the route from the router + first LLM generation for query reformulation for the Search Engine (with follow-up questions)
-    search_engine_query, prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message,
-                                                                                                                       chat_id,
-                                                                                                                       username,
-                                                                                                                       course_id,)
+    #prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message,chat_id,username,course_id,)
 
-    print(f"search_engine_query: {search_engine_query}, prompt_answering: {prompt_answering}, method: {method}, keywords: {keywords}")
+    student_profile = "Mathieu a junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
+    prompt_answering = system
 
+    #print(f"search_engine_query: {search_engine_query}, prompt_answering: {prompt_answering}, method: {method}, keywords: {keywords}")
+
+
+    print(f"prompt_answering: {prompt_answering}")
     #Second LLM generation with the search engine + Answer generation and sources 
-    return StreamingResponse(LLM_chain_search_engine_and_answering(input_message, 
-                                                                   search_engine_query, 
-                                                                   prompt_answering, 
-                                                                   student_profile, 
-                                                                   chat_id, 
-                                                                   university, 
-                                                                   method, 
-                                                                   course_id, 
-                                                                   username, 
-                                                                   keywords), 
-                                                                   media_type="text/event-stream")
+    return StreamingResponse(LLM_chain_perplexity(input_message,
+                                                  prompt_answering, 
+                                                  student_profile, 
+                                                  chat_id, 
+                                                  university, 
+                                                  course_id,
+                                                  username,), 
+                                                  media_type="text/event-stream")
 
 
     # Créez une réponse en streaming en passant l'historique de chat

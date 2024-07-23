@@ -1,0 +1,428 @@
+2024-07-18 20:54:10 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-18 20:54:10 [INFO]: Démarrage de l'application
+2024-07-18 20:54:10 [INFO]: Création de l'application files
+2024-07-18 20:54:10 [INFO]: Application files créée avec succès
+2024-07-18 20:54:10 [INFO]: Création de l'application academic advisor
+2024-07-18 20:54:10 [INFO]: Application academic advisor créée avec succès
+2024-07-18 20:54:10 [INFO]: Montage des applications
+2024-07-18 20:54:10 [INFO]: Applications montées avec succès
+2024-07-18 20:54:11 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-18 20:54:29 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-18 20:54:29 [INFO]: Response: 200
+2024-07-18 20:54:29 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-18 20:54:29 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-18 20:54:29 [INFO]: Found credentials in environment variables.
+2024-07-18 20:54:31 [WARNING]: Parent run afebc4e3-83e1-41ea-9fde-64f92ba6724b not found for run 01ce814f-784d-4f3c-9eb3-4f25ab331c22. Treating as a root run.
+2024-07-18 20:54:31 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 20:54:32 [INFO]: Response: 200
+2024-07-18 20:54:32 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-18 20:54:33 [WARNING]: Parent run e9d33af8-6cd6-4318-bd1d-e58dbe9454d5 not found for run f4badbcb-b686-4489-b018-4da66746898c. Treating as a root run.
+2024-07-18 21:02:25 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-18 21:02:25 [INFO]: Démarrage de l'application
+2024-07-18 21:02:25 [INFO]: Création de l'application files
+2024-07-18 21:02:25 [INFO]: Application files créée avec succès
+2024-07-18 21:02:25 [INFO]: Création de l'application academic advisor
+2024-07-18 21:02:25 [INFO]: Application academic advisor créée avec succès
+2024-07-18 21:02:25 [INFO]: Montage des applications
+2024-07-18 21:02:25 [INFO]: Applications montées avec succès
+2024-07-18 21:02:25 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-18 21:02:43 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-18 21:02:44 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-18 21:02:44 [INFO]: Found credentials in environment variables.
+2024-07-18 21:02:45 [WARNING]: Parent run 393ee88c-f0a7-4f76-917e-bb0ff0b0b969 not found for run 201a02ed-6663-4c1c-9f2e-400e347c3073. Treating as a root run.
+2024-07-18 21:02:45 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 21:02:46 [INFO]: Response: 200
+2024-07-18 21:02:46 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-18 21:02:47 [WARNING]: Parent run 7378719f-e71b-4ba2-b382-8fefb9436d23 not found for run ec60e77f-aa6d-45fd-b761-9970ff6bab48. Treating as a root run.
+2024-07-18 21:02:47 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 21:02:49 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-18 21:02:49 [INFO]: Response: 200
+2024-07-18 21:02:49 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-18 21:02:49 [INFO]: Response: 404
+2024-07-18 21:11:29 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-18 21:11:29 [INFO]: Response: 200
+2024-07-18 21:11:29 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-18 21:11:30 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-18 21:11:31 [WARNING]: Parent run 98960b09-ac61-4d8f-b98d-e141eb0bf624 not found for run 8b5f69cf-b059-4334-9768-5407f35b9d9f. Treating as a root run.
+2024-07-18 21:11:31 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 21:11:32 [INFO]: Response: 200
+2024-07-18 21:11:32 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-18 21:11:32 [WARNING]: Parent run daec6a87-ca64-426d-b5d7-96a6d942f395 not found for run 1e4bbad9-745f-4abc-94cf-74c064691ec7. Treating as a root run.
+2024-07-18 21:11:33 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 21:11:34 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-18 21:11:34 [INFO]: Response: 404
+2024-07-18 21:12:11 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-18 21:12:11 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-18 21:12:12 [WARNING]: Parent run 48fa6631-bc89-40e0-aaa9-4a5476f73a76 not found for run a5fdce09-86f0-4129-b87e-c6ef79035850. Treating as a root run.
+2024-07-18 21:12:12 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 21:12:13 [INFO]: Response: 200
+2024-07-18 21:12:13 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-18 21:12:14 [WARNING]: Parent run a4c1459c-a105-426d-89f4-d87f481696cb not found for run 0e90a894-5b7f-48d7-a731-b7105cc2c2dc. Treating as a root run.
+2024-07-18 21:12:14 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 21:12:16 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-18 21:12:16 [INFO]: Response: 404
+2024-07-18 21:12:33 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-18 21:12:34 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-18 21:12:34 [WARNING]: Parent run 96dfefd8-6f62-403a-be33-28c087625e92 not found for run 18edbd6e-f4aa-4011-8f3d-19583f6a8a96. Treating as a root run.
+2024-07-18 21:12:35 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 21:12:36 [INFO]: Response: 200
+2024-07-18 21:12:36 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-18 21:12:37 [WARNING]: Parent run 4f358f3e-bc1d-4701-95fa-3b2b09e66a52 not found for run 7038b381-fd6f-46f5-8a7c-7224b6fe7acc. Treating as a root run.
+2024-07-18 21:12:37 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-18 21:12:39 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-18 21:12:39 [INFO]: Response: 404
+2024-07-23 15:32:47 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 15:32:47 [INFO]: Démarrage de l'application
+2024-07-23 15:32:47 [INFO]: Création de l'application files
+2024-07-23 15:32:47 [INFO]: Application files créée avec succès
+2024-07-23 15:32:47 [INFO]: Création de l'application academic advisor
+2024-07-23 15:32:47 [INFO]: Application academic advisor créée avec succès
+2024-07-23 15:32:47 [INFO]: Montage des applications
+2024-07-23 15:32:47 [INFO]: Applications montées avec succès
+2024-07-23 15:32:47 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 15:33:33 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-23 15:33:33 [INFO]: Response: 404
+2024-07-23 15:33:33 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-23 15:33:33 [INFO]: Response: 404
+2024-07-23 15:33:47 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:33:48 [INFO]: Response: 200
+2024-07-23 15:33:48 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:33:48 [INFO]: Response: 200
+2024-07-23 15:34:50 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 15:34:51 [INFO]: Démarrage de l'application
+2024-07-23 15:34:51 [INFO]: Création de l'application files
+2024-07-23 15:34:51 [INFO]: Application files créée avec succès
+2024-07-23 15:34:51 [INFO]: Création de l'application academic advisor
+2024-07-23 15:34:51 [INFO]: Application academic advisor créée avec succès
+2024-07-23 15:34:51 [INFO]: Montage des applications
+2024-07-23 15:34:51 [INFO]: Applications montées avec succès
+2024-07-23 15:34:51 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 15:35:10 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:35:10 [INFO]: Response: 200
+2024-07-23 15:35:30 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 15:35:31 [INFO]: Démarrage de l'application
+2024-07-23 15:35:31 [INFO]: Création de l'application files
+2024-07-23 15:35:31 [INFO]: Application files créée avec succès
+2024-07-23 15:35:31 [INFO]: Création de l'application academic advisor
+2024-07-23 15:35:31 [INFO]: Application academic advisor créée avec succès
+2024-07-23 15:35:31 [INFO]: Montage des applications
+2024-07-23 15:35:31 [INFO]: Applications montées avec succès
+2024-07-23 15:35:31 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 15:35:36 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:35:36 [INFO]: Response: 200
+2024-07-23 15:36:30 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 15:36:30 [INFO]: Démarrage de l'application
+2024-07-23 15:36:30 [INFO]: Création de l'application files
+2024-07-23 15:36:30 [INFO]: Application files créée avec succès
+2024-07-23 15:36:30 [INFO]: Création de l'application academic advisor
+2024-07-23 15:36:30 [INFO]: Application academic advisor créée avec succès
+2024-07-23 15:36:30 [INFO]: Montage des applications
+2024-07-23 15:36:30 [INFO]: Applications montées avec succès
+2024-07-23 15:36:30 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 15:36:39 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:36:39 [INFO]: Response: 200
+2024-07-23 15:45:35 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 15:45:36 [INFO]: Démarrage de l'application
+2024-07-23 15:45:36 [INFO]: Création de l'application files
+2024-07-23 15:45:36 [INFO]: Application files créée avec succès
+2024-07-23 15:45:36 [INFO]: Création de l'application academic advisor
+2024-07-23 15:45:36 [INFO]: Application academic advisor créée avec succès
+2024-07-23 15:45:36 [INFO]: Montage des applications
+2024-07-23 15:45:36 [INFO]: Applications montées avec succès
+2024-07-23 15:45:36 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 15:45:48 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:45:48 [INFO]: Response: 200
+2024-07-23 15:45:48 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:45:48 [INFO]: Response: 200
+2024-07-23 15:49:31 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 15:49:31 [INFO]: Démarrage de l'application
+2024-07-23 15:49:31 [INFO]: Création de l'application files
+2024-07-23 15:49:31 [INFO]: Application files créée avec succès
+2024-07-23 15:49:31 [INFO]: Création de l'application academic advisor
+2024-07-23 15:49:31 [INFO]: Application academic advisor créée avec succès
+2024-07-23 15:49:31 [INFO]: Montage des applications
+2024-07-23 15:49:31 [INFO]: Applications montées avec succès
+2024-07-23 15:49:31 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 15:49:41 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:49:41 [INFO]: Response: 200
+2024-07-23 15:51:26 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 15:51:26 [INFO]: Démarrage de l'application
+2024-07-23 15:51:26 [INFO]: Création de l'application files
+2024-07-23 15:51:26 [INFO]: Application files créée avec succès
+2024-07-23 15:51:26 [INFO]: Création de l'application academic advisor
+2024-07-23 15:51:26 [INFO]: Application academic advisor créée avec succès
+2024-07-23 15:51:26 [INFO]: Montage des applications
+2024-07-23 15:51:26 [INFO]: Applications montées avec succès
+2024-07-23 15:51:26 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 15:51:32 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:51:32 [INFO]: Response: 200
+2024-07-23 15:57:30 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 15:57:31 [INFO]: Démarrage de l'application
+2024-07-23 15:57:31 [INFO]: Création de l'application files
+2024-07-23 15:57:31 [INFO]: Application files créée avec succès
+2024-07-23 15:57:31 [INFO]: Création de l'application academic advisor
+2024-07-23 15:57:31 [INFO]: Application academic advisor créée avec succès
+2024-07-23 15:57:31 [INFO]: Montage des applications
+2024-07-23 15:57:31 [INFO]: Applications montées avec succès
+2024-07-23 15:57:31 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 15:57:36 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:57:36 [INFO]: Response: 200
+2024-07-23 15:57:36 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:57:36 [INFO]: Response: 200
+2024-07-23 15:57:36 [WARNING]: Parent run 3686bd30-beca-4d92-bd2a-bfab1f86c0df not found for run e137242a-281f-47d6-b286-f7a5c68cf66c. Treating as a root run.
+2024-07-23 15:57:38 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 15:57:41 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-23 15:57:41 [INFO]: Response: 200
+2024-07-23 15:57:41 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 15:57:41 [INFO]: Response: 404
+2024-07-23 15:57:57 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:57:57 [INFO]: Response: 200
+2024-07-23 15:57:57 [WARNING]: Parent run 64bbd7bc-b319-477c-84f1-f2bc63165747 not found for run 6c4681b8-668a-4815-8eca-b3c6135d023f. Treating as a root run.
+2024-07-23 15:57:58 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 15:57:58 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 15:57:58 [INFO]: Response: 404
+2024-07-23 15:58:13 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 15:58:13 [INFO]: Response: 200
+2024-07-23 15:58:13 [WARNING]: Parent run 4dff3e08-5331-4878-b3f6-7d532a030659 not found for run c089b20d-9d58-480f-b70f-f969bd05e942. Treating as a root run.
+2024-07-23 15:58:14 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 15:58:15 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 15:58:15 [INFO]: Response: 404
+2024-07-23 16:09:34 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 16:09:35 [INFO]: Démarrage de l'application
+2024-07-23 16:09:35 [INFO]: Création de l'application files
+2024-07-23 16:09:35 [INFO]: Application files créée avec succès
+2024-07-23 16:09:35 [INFO]: Création de l'application academic advisor
+2024-07-23 16:09:35 [INFO]: Application academic advisor créée avec succès
+2024-07-23 16:09:35 [INFO]: Montage des applications
+2024-07-23 16:09:35 [INFO]: Applications montées avec succès
+2024-07-23 16:09:35 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 16:09:51 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:09:51 [INFO]: Response: 200
+2024-07-23 16:09:51 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:09:51 [INFO]: Response: 200
+2024-07-23 16:09:51 [WARNING]: Parent run ebf0e239-cdc5-4c85-9f29-159b28f0675e not found for run f85ffefe-4adf-40d6-b0cb-94f37b47adc0. Treating as a root run.
+2024-07-23 16:09:52 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:09:53 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-23 16:09:53 [INFO]: Response: 200
+2024-07-23 16:09:53 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:09:53 [INFO]: Response: 404
+2024-07-23 16:10:08 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:10:08 [INFO]: Response: 200
+2024-07-23 16:10:08 [WARNING]: Parent run 07b84341-cf02-4268-80aa-35936ec0e3e4 not found for run f551cd01-4b40-402e-99b7-353b873ff1b7. Treating as a root run.
+2024-07-23 16:10:09 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:10:09 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:10:09 [INFO]: Response: 404
+2024-07-23 16:10:19 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:10:19 [INFO]: Response: 200
+2024-07-23 16:10:19 [WARNING]: Parent run 84dde627-a596-44a8-b2b3-14d16a088c48 not found for run bde390c6-ffc7-4ab6-9b52-0b48500976b0. Treating as a root run.
+2024-07-23 16:10:21 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:10:25 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:10:25 [INFO]: Response: 404
+2024-07-23 16:12:12 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:12:12 [INFO]: Response: 200
+2024-07-23 16:12:12 [WARNING]: Parent run 87bdd08a-5098-40ef-a662-18b52bfbc82d not found for run 73f1f6f2-fbf6-47c3-bdbf-9a4b72e371f6. Treating as a root run.
+2024-07-23 16:12:13 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:12:17 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:12:17 [INFO]: Response: 404
+2024-07-23 16:12:29 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:12:29 [INFO]: Response: 200
+2024-07-23 16:12:29 [WARNING]: Parent run 95c444b1-ee64-4ee9-b35b-8b2c997fec46 not found for run 4c6e7f1b-218e-492d-b866-3d516e9ff080. Treating as a root run.
+2024-07-23 16:12:31 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:12:31 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:12:31 [INFO]: Response: 404
+2024-07-23 16:12:41 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:12:41 [INFO]: Response: 200
+2024-07-23 16:12:41 [WARNING]: Parent run c15b16b0-50b1-430a-bd79-1a9219e87063 not found for run fcfb1584-d2ae-4a7a-a1e0-35441a0a33fb. Treating as a root run.
+2024-07-23 16:12:42 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:12:44 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:12:44 [INFO]: Response: 404
+2024-07-23 16:12:56 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:12:56 [INFO]: Response: 200
+2024-07-23 16:12:56 [WARNING]: Parent run 87b1cff7-0b46-4d3f-b181-686ccc9d1f82 not found for run 2b374788-9ce9-4533-ab77-896114155984. Treating as a root run.
+2024-07-23 16:12:57 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:12:57 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:12:57 [INFO]: Response: 404
+2024-07-23 16:14:23 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:14:23 [INFO]: Response: 200
+2024-07-23 16:14:23 [WARNING]: Parent run b89fc17b-f715-4e01-b45b-3b01e2e2c62d not found for run 57f5c875-de21-4eba-99d4-dc21024062b4. Treating as a root run.
+2024-07-23 16:14:24 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:14:25 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:14:25 [INFO]: Response: 404
+2024-07-23 16:15:40 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-23 16:15:40 [INFO]: Response: 404
+2024-07-23 16:15:40 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-23 16:15:40 [INFO]: Response: 404
+2024-07-23 16:15:57 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:15:57 [INFO]: Response: 200
+2024-07-23 16:15:57 [WARNING]: Parent run 222364c8-6aa9-4015-936f-52531161256f not found for run 9732a62c-a5bd-4e7d-bef0-e28c8a06082c. Treating as a root run.
+2024-07-23 16:15:58 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:15:58 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:15:58 [INFO]: Response: 404
+2024-07-23 16:16:08 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:16:08 [INFO]: Response: 200
+2024-07-23 16:16:08 [WARNING]: Parent run 43be2000-f754-4435-b506-a4f9367802d5 not found for run 9dcd96bd-acd5-44cd-b6d0-6893e7ed9df3. Treating as a root run.
+2024-07-23 16:16:09 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:16:10 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:16:10 [INFO]: Response: 404
+2024-07-23 16:16:45 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:16:45 [INFO]: Response: 200
+2024-07-23 16:16:45 [WARNING]: Parent run 3e8c9756-1dee-40a2-bddf-e37135d1a017 not found for run 388b8838-efc0-4151-b335-20fef30c7057. Treating as a root run.
+2024-07-23 16:16:46 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:16:50 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:16:50 [INFO]: Response: 404
+2024-07-23 16:16:57 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:16:57 [INFO]: Response: 200
+2024-07-23 16:16:57 [WARNING]: Parent run 3fa9b04b-c926-4024-9587-5abe656791f0 not found for run 7c8d7479-c42d-4b9c-9fc7-bbcdc107d8f8. Treating as a root run.
+2024-07-23 16:16:58 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:17:00 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:17:00 [INFO]: Response: 404
+2024-07-23 16:17:21 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:17:21 [INFO]: Response: 200
+2024-07-23 16:17:21 [WARNING]: Parent run a41c6994-e6e1-4d8b-bde5-5d2555d3e2f5 not found for run 3a6a9e74-aa23-45bf-9a60-2209206d294e. Treating as a root run.
+2024-07-23 16:17:21 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:17:22 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:17:22 [INFO]: Response: 404
+2024-07-23 16:32:01 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:32:01 [INFO]: Response: 200
+2024-07-23 16:32:01 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:32:01 [INFO]: Response: 200
+2024-07-23 16:32:01 [WARNING]: Parent run ccef9725-3290-4054-b7b2-0fed97bdb42d not found for run c39af69c-4097-4183-bd84-8e6c86eda2b7. Treating as a root run.
+2024-07-23 16:32:02 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:32:03 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-23 16:32:03 [INFO]: Response: 200
+2024-07-23 16:32:03 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:32:03 [INFO]: Response: 404
+2024-07-23 16:32:14 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:32:14 [INFO]: Response: 200
+2024-07-23 16:32:14 [WARNING]: Parent run 13dfbdb8-2248-43af-8258-da1dc0801e91 not found for run be2d273e-b059-40f5-ace6-6a53fee4d6cb. Treating as a root run.
+2024-07-23 16:32:15 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:32:19 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:32:19 [INFO]: Response: 404
+2024-07-23 16:32:42 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:32:42 [INFO]: Response: 200
+2024-07-23 16:32:43 [WARNING]: Parent run 163a0390-b391-476f-9255-06687de434b4 not found for run 0832040e-0e53-4ab7-acf0-23cfd76705b4. Treating as a root run.
+2024-07-23 16:32:44 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:32:45 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:32:45 [INFO]: Response: 404
+2024-07-23 16:35:57 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:35:57 [INFO]: Response: 404
+2024-07-23 16:36:00 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:00 [INFO]: Response: 404
+2024-07-23 16:36:01 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/b6c36620-f3c5-456b-bf67-6b93dea702e7
+2024-07-23 16:36:01 [INFO]: Response: 404
+2024-07-23 16:36:02 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:02 [INFO]: Response: 404
+2024-07-23 16:36:02 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:02 [INFO]: Response: 404
+2024-07-23 16:36:02 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:02 [INFO]: Response: 404
+2024-07-23 16:36:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:03 [INFO]: Response: 404
+2024-07-23 16:36:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:03 [INFO]: Response: 404
+2024-07-23 16:36:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:03 [INFO]: Response: 404
+2024-07-23 16:36:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:04 [INFO]: Response: 404
+2024-07-23 16:36:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:04 [INFO]: Response: 404
+2024-07-23 16:36:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:04 [INFO]: Response: 404
+2024-07-23 16:36:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:04 [INFO]: Response: 404
+2024-07-23 16:36:05 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:05 [INFO]: Response: 404
+2024-07-23 16:36:05 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:05 [INFO]: Response: 404
+2024-07-23 16:36:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/b93be065-8bc5-454b-879d-04c3763ab4ec
+2024-07-23 16:36:21 [INFO]: Response: 404
+2024-07-23 16:36:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/be146aee-ed00-4529-ada0-3591c1cedef1
+2024-07-23 16:36:22 [INFO]: Response: 404
+2024-07-23 16:36:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/b93be065-8bc5-454b-879d-04c3763ab4ec
+2024-07-23 16:36:22 [INFO]: Response: 404
+2024-07-23 16:36:48 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:36:48 [INFO]: Response: 200
+2024-07-23 16:36:48 [WARNING]: Parent run 2426ac80-106b-4099-b09d-e667ad59b381 not found for run 18883548-7f33-4eb4-b870-a5b7bc4733ee. Treating as a root run.
+2024-07-23 16:36:49 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:36:56 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:36:56 [INFO]: Response: 404
+2024-07-23 16:37:43 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:37:43 [INFO]: Response: 200
+2024-07-23 16:37:43 [WARNING]: Parent run 298fc8b5-b5f7-401e-84b5-ec39219ed699 not found for run db653a84-3566-432c-927e-9eb1d5d26c43. Treating as a root run.
+2024-07-23 16:37:44 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:37:46 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:37:46 [INFO]: Response: 404
+2024-07-23 16:37:56 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:37:56 [INFO]: Response: 200
+2024-07-23 16:37:56 [WARNING]: Parent run 074d6796-7567-4e3f-b819-c45043b69692 not found for run 75ebab60-9ac0-461b-89b5-13d79cc52ff0. Treating as a root run.
+2024-07-23 16:37:57 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:37:58 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:37:58 [INFO]: Response: 404
+2024-07-23 16:38:09 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 16:38:09 [INFO]: Response: 200
+2024-07-23 16:38:09 [WARNING]: Parent run 92fb09f7-5580-44c1-9161-94c2113c2046 not found for run aea38ae6-eeba-49bb-b736-9bbd677c333e. Treating as a root run.
+2024-07-23 16:38:10 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 16:38:12 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 16:38:12 [INFO]: Response: 404
+2024-07-23 19:40:02 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 19:40:03 [INFO]: Démarrage de l'application
+2024-07-23 19:40:03 [INFO]: Création de l'application files
+2024-07-23 19:40:03 [INFO]: Application files créée avec succès
+2024-07-23 19:40:03 [INFO]: Création de l'application academic advisor
+2024-07-23 19:40:03 [INFO]: Application academic advisor créée avec succès
+2024-07-23 19:40:03 [INFO]: Montage des applications
+2024-07-23 19:40:03 [INFO]: Applications montées avec succès
+2024-07-23 19:40:03 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 19:40:11 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 19:40:11 [INFO]: Response: 200
+2024-07-23 19:40:11 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 19:40:11 [INFO]: Response: 200
+2024-07-23 19:40:11 [WARNING]: Parent run b2adbf3e-27bd-4682-8a2a-5392929ff01e not found for run 7c5260bd-2899-480f-96d1-7ff578376f62. Treating as a root run.
+2024-07-23 19:40:12 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 19:40:14 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-23 19:40:14 [INFO]: Response: 200
+2024-07-23 19:40:14 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 19:40:14 [INFO]: Response: 404
+2024-07-23 19:57:44 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 19:57:44 [INFO]: Response: 200
+2024-07-23 19:57:44 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 19:57:44 [INFO]: Response: 200
+2024-07-23 19:57:44 [WARNING]: Parent run f87bd389-7e83-4d46-a460-bdeadd58e1fb not found for run 43187cc8-f2a4-4e57-89a1-0116172efaea. Treating as a root run.
+2024-07-23 19:57:45 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 19:57:48 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-23 19:57:48 [INFO]: Response: 200
+2024-07-23 19:57:48 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 19:57:48 [INFO]: Response: 404
+2024-07-23 19:57:54 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 19:57:54 [INFO]: Response: 200
+2024-07-23 19:57:54 [WARNING]: Parent run 97fb175f-3728-42a7-a58a-541cac02711a not found for run 0e175577-086c-49cf-8b24-c3ec83d141b9. Treating as a root run.
+2024-07-23 19:57:54 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 19:57:57 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 19:57:57 [INFO]: Response: 404
+2024-07-23 19:58:18 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 19:58:18 [INFO]: Response: 200
+2024-07-23 19:58:18 [WARNING]: Parent run 9dc417f1-cc0b-4894-a381-545f8d1e6ab6 not found for run 12871b21-042e-4b74-b4e3-fe3dabf143c9. Treating as a root run.
+2024-07-23 19:58:19 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 19:58:20 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 19:58:20 [INFO]: Response: 404
+2024-07-23 19:58:32 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 19:58:32 [INFO]: Response: 200
+2024-07-23 19:58:32 [WARNING]: Parent run 3b0fa597-0ef5-4cb3-b70a-60b941843c5a not found for run 6804c496-4306-4265-83c8-ea7940c3c0e7. Treating as a root run.
+2024-07-23 19:58:33 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 19:58:35 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 19:58:35 [INFO]: Response: 404
+2024-07-23 20:02:27 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 20:02:28 [INFO]: Démarrage de l'application
+2024-07-23 20:02:28 [INFO]: Création de l'application files
+2024-07-23 20:02:28 [INFO]: Application files créée avec succès
+2024-07-23 20:02:28 [INFO]: Création de l'application academic advisor
+2024-07-23 20:02:28 [INFO]: Application academic advisor créée avec succès
+2024-07-23 20:02:28 [INFO]: Montage des applications
+2024-07-23 20:02:28 [INFO]: Applications montées avec succès
+2024-07-23 20:02:28 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 20:02:43 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 20:02:43 [INFO]: Response: 200
+2024-07-23 20:02:43 [WARNING]: Parent run 9b8c6f02-2b03-4e63-9b41-4dcaa0b79876 not found for run fdd5b4b2-ef32-409e-8347-1e80a8202f9c. Treating as a root run.
+2024-07-23 20:02:44 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 20:02:46 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 20:02:46 [INFO]: Response: 404

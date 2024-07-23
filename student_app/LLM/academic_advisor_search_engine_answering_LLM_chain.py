@@ -30,9 +30,6 @@ from student_app.LLM.academic_advisor_text_cleaning import extract_relevant_info
 #TODO uncomment if reformulation on
 from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
 
-
-# Import reformulation LLM
-from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
 # Import AWS memory 
 from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
 from student_app.LLM.llm_with_memory import CreateLLMWithDynamoDBMemory
