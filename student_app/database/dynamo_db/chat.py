@@ -9,7 +9,7 @@ from functools import wraps
 from datetime import datetime
 from langchain_community.chat_message_histories.dynamodb import DynamoDBChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.messages import BaseMessage 
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 import logging
 from dotenv import load_dotenv
 
@@ -254,9 +254,17 @@ class AWSDynamoDBChatMessageHistory(DynamoDBChatMessageHistory, BaseChatMessageH
 
 
     @property
-    def messages(self):
+    def messages(self) -> List[BaseMessage]:
+        import json
+
         items = self.get_chat_history()
-        messages = [items[i]['body'] for i in range(len(items))]
+        messages = []
+        for i in range(len(items)):
+            if items[i]['username'] == "Lucy":
+                messages.append(AIMessage(content=[str(items[i]['body'])]))
+            else:
+                messages.append(HumanMessage(content=[str(items[i]['body'])]))
+        print(messages)
         return messages
     
 
