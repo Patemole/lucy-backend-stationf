@@ -7,6 +7,10 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_models import ChatPerplexity
 from langchain_community.chat_message_histories import ChatMessageHistory
 from functools import wraps
+from student_app.database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
+from datetime import datetime
+from langchain_core.runnables import ConfigurableFieldSpec
+
 
 load_dotenv()
 
@@ -18,6 +22,7 @@ class PplxChatCompletion:
     def __init__(self):
         self.store = {}  # Local memory
         self.model = "llama-3-sonar-small-32k-online"  # Default model
+        self.table_name, self.table_AWS = get_table("dev")
 
     def change_model(self, model: str):
         available_models = [
@@ -42,13 +47,20 @@ class PplxChatCompletion:
         )
         return llm
 
-    def get_local_memory(self, session_id: str) -> BaseChatMessageHistory:
-        if session_id not in self.store:
-            self.store[session_id] = ChatMessageHistory()
-        return self.store[session_id]
-
-    def reset_local_memory(self):
-        self.store = {}
+    def get_AWS_history(self, chat_id, course_id, username) -> AWSDynamoDBChatMessageHistory:
+        return AWSDynamoDBChatMessageHistory(
+            table=self.table_AWS,
+            chat_id=chat_id,
+            course_id=course_id,
+            username=username,
+            table_name=self.table_name,
+            session_id=chat_id,
+                primary_key_name="chat_id",
+                key={
+                    "chat_id": chat_id,
+                    "timestamp": datetime.now().isoformat()
+                    },
+        )
 
     def set_prompt(self, system_prompt: str, user_prompt: str):
         self.prompt = ChatPromptTemplate.from_messages([
@@ -64,9 +76,26 @@ class PplxChatCompletion:
         chain = self.prompt | self.pplx_llm()
         chain_with_memory = RunnableWithMessageHistory(
             chain,
-            get_session_history=self.get_local_memory,
+            get_session_history=self.get_AWS_history,
             input_messages_key='input',
             history_messages_key='messages'
+            history_factory_config=[
+                ConfigurableFieldSpec(
+                    id="chat_id",
+                    annotation=str,
+                    name="Chat ID",
+                ),
+                ConfigurableFieldSpec(
+                    id="username",
+                    annotation=str,
+                    name="Username",
+                ),
+                ConfigurableFieldSpec(
+                    id="course_id",
+                    annotation=str,
+                    name="Course ID",
+                ),
+            ],
         )
         return chain_with_memory
 
@@ -84,11 +113,11 @@ class PplxChatCompletion:
 def LLM_chain_perplexity(content, prompt_answering, student_profile, chat_id, university, course_id, username):
     pplx = PplxChatCompletion()
 
-    human = content
+    human = "{input}"
     pplx.set_prompt(prompt_answering, human)
     
     content_dict = {"input": content, "university": university, "student_profile": student_profile}
-    config = {"configurable": {"session_id": chat_id}}
+    config = {"configurable": {"chat_id": chat_id, "username": username, "course_id": course_id}}
 
     for chunk in pplx.stream_llm(content=content_dict, config=config):
         print(chunk, end='')
