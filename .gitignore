@@ -1,6 +1,7 @@
 .env
 .lucy_env/
 myenv/
+myen/
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
