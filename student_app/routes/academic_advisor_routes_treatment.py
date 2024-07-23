@@ -31,7 +31,7 @@ async def academic_advisor_router_treatment(input_message,
                                             chat_history = None,):
 
     #TODO modify here for inputting the right student profile 
-    student_profile = "A junior in the engineering school majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
+    student_profile = "Mathieu a junior in the engineering school majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
     print("Routing in progress...")
     print("\n")
@@ -44,18 +44,15 @@ async def academic_advisor_router_treatment(input_message,
     if router_answer.name == "politics":
         prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_politics
         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-        search_engine_query = input_message #Car il n'y a pas de reformulation ici 
-        method = "nothing"
-        keywords = ""
-        return search_engine_query, prompt_answering, student_profile, method, keywords
+        search_engine_query = input_message #Car il n'y a pas de reformulation ici         keywords = ""
+        return search_engine_query, prompt_answering, student_profile
         
 
     elif router_answer.name == "chitchat":
          prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_chitchat
          search_engine_query = input_message #Car il n'y a pas de reformulation ici
-         method = "nothing"
          keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
+         return search_engine_query, prompt_answering, student_profile
          
      
 
