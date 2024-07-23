@@ -5611,3 +5611,36 @@ HTTP response body: {"error":{"code":"FORBIDDEN","message":"Request failed. You'
 2024-07-18 18:42:47 [INFO]: Montage des applications
 2024-07-18 18:42:47 [INFO]: Applications montées avec succès
 2024-07-18 18:42:47 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 13:55:11 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 13:55:11 [INFO]: Démarrage de l'application
+2024-07-23 13:55:11 [INFO]: Création de l'application files
+2024-07-23 13:55:11 [INFO]: Application files créée avec succès
+2024-07-23 13:55:11 [INFO]: Création de l'application academic advisor
+2024-07-23 13:55:11 [INFO]: Application academic advisor créée avec succès
+2024-07-23 13:55:11 [INFO]: Montage des applications
+2024-07-23 13:55:11 [INFO]: Applications montées avec succès
+2024-07-23 13:55:11 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-23 13:56:44 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/af2d352f-66cc-4cbe-9cf8-6ec643025827
+2024-07-23 13:56:45 [INFO]: Response: 200
+2024-07-23 13:56:45 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/af2d352f-66cc-4cbe-9cf8-6ec643025827
+2024-07-23 13:56:45 [INFO]: Response: 200
+2024-07-23 13:57:00 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 13:57:00 [INFO]: Response: 200
+2024-07-23 13:57:00 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 13:57:00 [INFO]: Response: 200
+2024-07-23 13:57:00 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-23 13:57:02 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 13:57:02 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-23 13:57:02 [INFO]: Response: 200
+2024-07-23 13:57:02 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 13:57:03 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 13:57:03 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 13:57:04 [INFO]: Response: 200
+2024-07-23 13:59:59 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-23 14:00:01 [INFO]: Response: 200
+2024-07-23 14:00:01 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-23 14:00:02 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-23 14:00:04 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-23 14:00:04 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 14:00:05 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-23 14:00:05 [INFO]: Response: 200
