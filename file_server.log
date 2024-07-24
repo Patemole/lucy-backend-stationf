@@ -973,3 +973,225 @@
 2024-07-23 18:09:50 [INFO]: Response: 200
 2024-07-23 18:09:50 [INFO]: Found credentials in environment variables.
 2024-07-23 18:09:54 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 400 Bad Request"
+2024-07-24 09:48:10 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-24 09:48:15 [INFO]: Démarrage de l'application
+2024-07-24 09:48:15 [INFO]: Création de l'application files
+2024-07-24 09:48:15 [INFO]: Application files créée avec succès
+2024-07-24 09:48:15 [INFO]: Création de l'application academic advisor
+2024-07-24 09:48:15 [INFO]: Application academic advisor créée avec succès
+2024-07-24 09:48:15 [INFO]: Montage des applications
+2024-07-24 09:48:15 [INFO]: Applications montées avec succès
+2024-07-24 09:48:15 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-24 09:48:40 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-24 09:48:40 [INFO]: Response: 404
+2024-07-24 09:48:40 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-24 09:48:40 [INFO]: Response: 404
+2024-07-24 09:48:55 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 09:48:55 [INFO]: Response: 200
+2024-07-24 09:48:55 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 09:48:55 [INFO]: Response: 200
+2024-07-24 09:48:55 [INFO]: Found credentials in environment variables.
+2024-07-24 09:49:00 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 09:49:01 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-24 09:49:01 [INFO]: Response: 200
+2024-07-24 09:49:01 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 09:49:01 [INFO]: Response: 404
+2024-07-24 09:49:21 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 09:49:21 [INFO]: Response: 200
+2024-07-24 09:49:23 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 09:49:27 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 09:49:27 [INFO]: Response: 404
+2024-07-24 09:49:55 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 09:49:55 [INFO]: Response: 200
+2024-07-24 09:49:58 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 09:49:59 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 09:49:59 [INFO]: Response: 404
+2024-07-24 09:50:27 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 09:50:27 [INFO]: Response: 200
+2024-07-24 09:50:30 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 09:50:33 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 09:50:33 [INFO]: Response: 404
+2024-07-24 09:55:17 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 09:55:17 [INFO]: Response: 200
+2024-07-24 09:55:21 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 09:55:24 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 09:55:24 [INFO]: Response: 404
+2024-07-24 09:55:32 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 09:55:32 [INFO]: Response: 200
+2024-07-24 09:55:35 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 09:55:39 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 09:55:39 [INFO]: Response: 404
+2024-07-24 09:55:52 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 09:55:52 [INFO]: Response: 200
+2024-07-24 09:55:54 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 09:55:59 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 09:55:59 [INFO]: Response: 404
+2024-07-24 10:01:24 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:01:25 [INFO]: Response: 200
+2024-07-24 10:01:25 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:01:25 [INFO]: Response: 200
+2024-07-24 10:01:29 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:01:30 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-24 10:01:30 [INFO]: Response: 200
+2024-07-24 10:01:30 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:01:30 [INFO]: Response: 404
+2024-07-24 10:01:35 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:01:35 [INFO]: Response: 200
+2024-07-24 10:01:38 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:01:42 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:01:42 [INFO]: Response: 404
+2024-07-24 10:01:48 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:01:48 [INFO]: Response: 200
+2024-07-24 10:01:51 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:01:53 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:01:53 [INFO]: Response: 404
+2024-07-24 10:02:22 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:02:22 [INFO]: Response: 200
+2024-07-24 10:02:25 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:02:29 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:02:29 [INFO]: Response: 404
+2024-07-24 10:03:04 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:03:04 [INFO]: Response: 200
+2024-07-24 10:03:07 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:03:10 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:03:10 [INFO]: Response: 404
+2024-07-24 10:03:29 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:03:29 [INFO]: Response: 200
+2024-07-24 10:03:32 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:03:38 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:03:38 [INFO]: Response: 404
+2024-07-24 10:04:03 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:04:03 [INFO]: Response: 200
+2024-07-24 10:04:05 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:04:12 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:04:12 [INFO]: Response: 404
+2024-07-24 10:10:05 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-24 10:10:07 [INFO]: Démarrage de l'application
+2024-07-24 10:10:07 [INFO]: Création de l'application files
+2024-07-24 10:10:07 [INFO]: Application files créée avec succès
+2024-07-24 10:10:07 [INFO]: Création de l'application academic advisor
+2024-07-24 10:10:07 [INFO]: Application academic advisor créée avec succès
+2024-07-24 10:10:07 [INFO]: Montage des applications
+2024-07-24 10:10:07 [INFO]: Applications montées avec succès
+2024-07-24 10:10:07 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-24 10:11:30 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-24 10:11:30 [INFO]: Response: 404
+2024-07-24 10:11:30 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-24 10:11:30 [INFO]: Response: 404
+2024-07-24 10:11:44 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:11:44 [INFO]: Response: 200
+2024-07-24 10:11:44 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:11:44 [INFO]: Response: 200
+2024-07-24 10:11:44 [INFO]: Found credentials in environment variables.
+2024-07-24 10:11:49 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:11:51 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-24 10:11:51 [INFO]: Response: 200
+2024-07-24 10:11:51 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:11:51 [INFO]: Response: 404
+2024-07-24 10:12:06 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:12:06 [INFO]: Response: 200
+2024-07-24 10:12:09 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:12:11 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:12:11 [INFO]: Response: 404
+2024-07-24 10:12:32 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:12:32 [INFO]: Response: 200
+2024-07-24 10:12:34 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:12:35 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:12:35 [INFO]: Response: 404
+2024-07-24 10:19:03 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-24 10:19:05 [INFO]: Démarrage de l'application
+2024-07-24 10:19:05 [INFO]: Création de l'application files
+2024-07-24 10:19:05 [INFO]: Application files créée avec succès
+2024-07-24 10:19:05 [INFO]: Création de l'application academic advisor
+2024-07-24 10:19:05 [INFO]: Application academic advisor créée avec succès
+2024-07-24 10:19:05 [INFO]: Montage des applications
+2024-07-24 10:19:05 [INFO]: Applications montées avec succès
+2024-07-24 10:19:05 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-24 10:19:54 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-24 10:19:54 [INFO]: Response: 404
+2024-07-24 10:19:54 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-24 10:19:54 [INFO]: Response: 404
+2024-07-24 10:20:43 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:20:43 [INFO]: Response: 200
+2024-07-24 10:20:43 [INFO]: Found credentials in environment variables.
+2024-07-24 10:20:48 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:20:51 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:20:51 [INFO]: Response: 404
+2024-07-24 10:21:13 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:21:13 [INFO]: Response: 200
+2024-07-24 10:21:17 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:21:19 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:21:19 [INFO]: Response: 404
+2024-07-24 10:21:28 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:21:29 [INFO]: Response: 200
+2024-07-24 10:21:32 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:21:34 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:21:34 [INFO]: Response: 404
+2024-07-24 10:21:42 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:21:42 [INFO]: Response: 200
+2024-07-24 10:21:45 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:21:48 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:21:48 [INFO]: Response: 404
+2024-07-24 10:22:04 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:22:04 [INFO]: Response: 200
+2024-07-24 10:22:04 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:22:04 [INFO]: Response: 200
+2024-07-24 10:22:08 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:22:10 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-24 10:22:10 [INFO]: Response: 200
+2024-07-24 10:22:10 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:22:10 [INFO]: Response: 404
+2024-07-24 10:22:23 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:22:23 [INFO]: Response: 200
+2024-07-24 10:22:26 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:22:29 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:22:29 [INFO]: Response: 404
+2024-07-24 10:23:12 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:23:12 [INFO]: Response: 200
+2024-07-24 10:23:15 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:23:17 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:23:17 [INFO]: Response: 404
+2024-07-24 10:25:54 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:25:54 [INFO]: Response: 200
+2024-07-24 10:25:58 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:26:02 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:26:02 [INFO]: Response: 404
+2024-07-24 10:26:41 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:26:41 [INFO]: Response: 200
+2024-07-24 10:26:45 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:26:48 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:26:48 [INFO]: Response: 404
+2024-07-24 10:27:02 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:27:02 [INFO]: Response: 200
+2024-07-24 10:27:05 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:27:07 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:27:07 [INFO]: Response: 404
+2024-07-24 10:30:03 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:30:03 [INFO]: Response: 200
+2024-07-24 10:30:08 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:30:10 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:30:10 [INFO]: Response: 404
+2024-07-24 10:44:58 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:44:58 [INFO]: Response: 200
+2024-07-24 10:44:58 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:44:58 [INFO]: Response: 200
+2024-07-24 10:45:02 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:45:04 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-24 10:45:04 [INFO]: Response: 200
+2024-07-24 10:45:04 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:45:04 [INFO]: Response: 404
+2024-07-24 10:45:48 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:45:48 [INFO]: Response: 200
+2024-07-24 10:45:51 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:45:54 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:45:54 [INFO]: Response: 404
+2024-07-24 10:46:19 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:46:19 [INFO]: Response: 200
+2024-07-24 10:46:22 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:46:26 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:46:26 [INFO]: Response: 404
+2024-07-24 10:46:41 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-24 10:46:41 [INFO]: Response: 200
+2024-07-24 10:46:44 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-24 10:46:48 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-24 10:46:48 [INFO]: Response: 404

@@ -74,7 +74,14 @@ class PplxChatCompletion:
              3. **Add Courses to Cart**: Select the desired courses and add them to your cart.
              4. **Request Courses**: During the Advance Registration period, submit your course requests. All requests are batch processed after the period ends, so timing within the period does not affect priority.
              5. **Confirm Registration**: After course requests are processed, confirm your schedule in Path@Penn. Make any necessary adjustments during the Course Selection period, also known as Add/Drop/Swap.
-             For detailed steps and tips, refer to [Penn Student Registration & Financial Services](https://srfs.upenn.edu/registration) and the [College of Arts & Sciences](https://www.college.upenn.edu/registration) pages."""),
+             For detailed steps and tips, refer to [Penn Student Registration & Financial Services](https://srfs.upenn.edu/registration) and the [College of Arts & Sciences](https://www.college.upenn.edu/registration) pages.
+             **Sources:**
+             - [Penn Student Registration & Financial Services](https://srfs.upenn.edu/registration)
+             - [College of Arts & Sciences](https://www.college.upenn.edu/registration)
+             **Related Questions:**
+             - What is the deadline to drop a course for the fall 2024?
+             - How do I get a copy of my transcript?
+             - Is there any compulsory courses?"""),
             MessagesPlaceholder("messages", n_messages=2),
             # MessagesPlaceholder("messages"),
             ("user", user_prompt),
@@ -139,7 +146,8 @@ def LLM_chain_perplexity(content, prompt_answering, student_profile, chat_id, un
     """
     pplx = PplxChatCompletion()
 
-    human = "{input}"
+    human = "{input}. Please only search information on this domain: site:upenn.edu. Please also provide the useful links to find the information and some related questions that could be useful to me."
+    
     pplx.set_prompt(prompt_answering, human)
 
     chain = pplx.create_chain_with_memory()

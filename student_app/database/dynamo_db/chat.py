@@ -261,9 +261,9 @@ class AWSDynamoDBChatMessageHistory(DynamoDBChatMessageHistory, BaseChatMessageH
         messages = []
         for i in range(len(items)):
             if items[i]['username'] == "Lucy":
-                messages.append(AIMessage(content=[str(items[i]['body'])]))
+                messages.append(AIMessage(content=str(items[i]['body'])))
             else:
-                messages.append(HumanMessage(content=[str(items[i]['body'])]))
+                messages.append(HumanMessage(content=str(items[i]['body'])))
         print(messages)
         return messages
     
