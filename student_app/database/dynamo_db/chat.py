@@ -5,6 +5,7 @@ from datetime import datetime
 import uuid
 import time
 import os
+import boto3
 from functools import wraps
 from datetime import datetime
 from langchain_community.chat_message_histories.dynamodb import DynamoDBChatMessageHistory
@@ -20,31 +21,20 @@ load_dotenv()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_REGION = os.getenv('AWS_DEFAULT_REGION')
 
-#table = DynamoDBClient().client.Table("PROD_chat")
-def get_table(table = "dev" or "prod"):
-    """
-    Description: 
-    Get the table name and the table from AWS DynamoDB
+# Configuration de la connexion à DynamoDB
+dynamodb = boto3.resource(
+    'dynamodb',
+    region_name="eu-west-3",  # Assurez-vous que la région est correcte
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+)
 
-    Parameters:
-    table: 
-        - dev: get the development table
-        - prod: get the production table
+# Référence à la table 
+#ADD AN ENVIRONMENT VARIABLE FOR TABLE
+TABLE_NAME = "dev_chat_academic_advisor"
+table = dynamodb.Table("dev_chat_academic_advisor")
 
-    Return:
-    table_name: name of the table
-    table_AWS: table in the AWS DynamoDB
-    """
-    if table == "prod":
-        print("No access to prod table in DynamoDB")
-        return None
-    elif table == "dev":
-        table_name = "DEV_Memory_academic_advisor"
-        AWS_client = DynamoDBClient().client
-        table_AWS = AWS_client.Table(table_name)
-    return table_name, table_AWS
 
 
 
