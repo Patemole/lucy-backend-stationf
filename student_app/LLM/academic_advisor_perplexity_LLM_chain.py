@@ -7,7 +7,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_community.chat_models import ChatPerplexity
 from langchain_community.chat_message_histories import ChatMessageHistory
 from functools import wraps
-from student_app.database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
+from student_app.database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, TABLE_NAME, table
 from datetime import datetime
 from langchain_core.runnables import ConfigurableFieldSpec
 
@@ -22,7 +22,8 @@ class PplxChatCompletion:
     def __init__(self):
         self.store = {}  # Local memory
         self.model = "llama-3-sonar-small-32k-online"  # Default model
-        self.table_name, self.table_AWS = get_table("dev")
+        self.table_name = TABLE_NAME
+        self.table_AWS = table
 
     def change_model(self, model: str):
         available_models = [

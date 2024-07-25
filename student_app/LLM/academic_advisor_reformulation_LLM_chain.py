@@ -16,7 +16,7 @@ from student_app.prompts.academic_advisor_reformulations_prompts import prompt_r
 prompt_answering = prompt_reformulation_for_web_search
 from langchain_community.chat_message_histories.dynamodb import DynamoDBChatMessageHistory
 import boto3
-from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
+from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, table, TABLE_NAME
 from datetime import datetime
 from langchain_core.runnables import Runnable
 from langchain_core.runnables.history import RunnableWithMessageHistory
@@ -33,8 +33,7 @@ os.environ["GROQ_API_KEY"] = GROQ_API_KEY
 
 MODEL_NAME = "llama3-70b-8192"
 
-### To modify depending on the table name where you want to store the memory 
-TABLE_NAME = "DEV_Memory_academic_advisor"  
+
 
 # Fonction pour mesurer le temps d'exécution
 def timeit(func):
@@ -50,15 +49,15 @@ def timeit(func):
 
 
 # Create the history for the memory
-table_name, table_AWS = get_table("dev")
+
 def get_dynamoDB_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
     return AWSDynamoDBChatMessageHistory(
-        table=table_AWS,
+        table=table,
         chat_id=chat_id,
         # timestamp=datetime.now().isoformat(),
         course_id=course_id,
         username=username,
-        table_name=table_name,
+        table_name=TABLE_NAME,
         session_id=chat_id,
                 primary_key_name="chat_id",
                 key={

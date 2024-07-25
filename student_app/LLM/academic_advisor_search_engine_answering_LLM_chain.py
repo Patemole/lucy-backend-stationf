@@ -31,8 +31,7 @@ from student_app.LLM.academic_advisor_text_cleaning import extract_relevant_info
 from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
 
 # Import AWS memory 
-from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, get_table
-from student_app.LLM.llm_with_memory import CreateLLMWithDynamoDBMemory
+from database.dynamo_db.chat import AWSDynamoDBChatMessageHistory, TABLE_NAME, table
 from langchain_core.runnables import ConfigurableFieldSpec
 
 
@@ -129,15 +128,14 @@ def timeit(func):
 #     return store[session_id]
 
 # Create the history for the memory
-table_name, table_AWS = get_table("dev")
 def get_dynamoDB_history(chat_id: str, username: str, course_id: str) -> AWSDynamoDBChatMessageHistory:
     return AWSDynamoDBChatMessageHistory(
-        table=table_AWS,
+        table=table,
         chat_id=chat_id,
         # timestamp=datetime.now().isoformat(),
         course_id=course_id,
         username=username,
-        table_name=table_name,
+        table_name=TABLE_NAME,
         session_id=chat_id,
                 primary_key_name="chat_id",
                 key={
