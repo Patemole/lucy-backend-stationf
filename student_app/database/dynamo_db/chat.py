@@ -5,10 +5,24 @@ from datetime import datetime
 import uuid
 import time
 from functools import wraps
+from dotenv import load_dotenv
+import os
 
 
-#table = DynamoDBClient().client.Table("PROD_chat")
-table = DynamoDBClient().client.Table("MVP_chat_academic_advisor")
+load_dotenv()
+
+
+AWS_TABLE_MESSAGE_PROD = os.getenv('AWS_TABLE_MESSAGE_PROD')
+#AWS_TABLE_MESSAGE_PREPROD = os.getenv('AWS_TABLE_MESSAGE_PREPROD')
+#AWS_TABLE_MESSAGE_DEV = os.getenv('AWS_TABLE_MESSAGE_DEV')
+
+
+#ADD AN ENVIRONMENT VARIABLE FOR TABLE NAME
+#table = DynamoDBClient().client.Table("MVP_chat_academic_advisor")
+
+table = DynamoDBClient().client.Table(AWS_TABLE_MESSAGE_PROD)
+#table = DynamoDBClient().client.Table(AWS_TABLE_MESSAGE_PREPROD)
+#table = DynamoDBClient().client.Table(AWS_TABLE_MESSAGE_DEV)
 
 
 '''
