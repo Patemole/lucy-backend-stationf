@@ -17,26 +17,18 @@ load_dotenv()
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
-AWS_REGION_PROD = os.getenv('AWS_REGION_PROD')
-#AWS_REGION_PREPROD = os.getenv('AWS_REGION_PREPROD')
-#AWS_REGION_DEV = os.getenv('AWS_REGION_DEV')
-
-AWS_TABLE_ANALYTICS_PROD = os.getenv('AWS_TABLE_ANALYTICS_PROD')
-#AWS_TABLE_ANALYTICS_PREPROD = os.getenv('AWS_TABLE_ANALYTICS_PREPROD')
-#AWS_TABLE_ANALYTICS_DEV = os.getenv('AWS_TABLE_ANALYTICS_DEV')
-
 
 # Configuration de la connexion à DynamoDB
 dynamodb = boto3.resource(
     'dynamodb',
-    region_name=AWS_REGION_PROD,  # Assurez-vous que la région est correcte
+    region_name="us-east-1",  # Assurez-vous que la région est correcte
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
 
 # Référence à la table 
 #ADD AN ENVIRONMENT VARIABLE FOR TABLE
-table = dynamodb.Table(AWS_TABLE_ANALYTICS_PROD)
+table = dynamodb.Table("prod_preprod_analytics")
 
 
 #table = DynamoDBClient().client.Table("PROD_chat")

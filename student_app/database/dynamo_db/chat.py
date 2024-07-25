@@ -6,46 +6,40 @@ import uuid
 import time
 from functools import wraps
 from dotenv import load_dotenv
+import boto3
 import os
+import json
 
 
 load_dotenv()
 
-
-AWS_TABLE_MESSAGE_PROD = os.getenv('AWS_TABLE_MESSAGE_PROD')
-#AWS_TABLE_MESSAGE_PREPROD = os.getenv('AWS_TABLE_MESSAGE_PREPROD')
-#AWS_TABLE_MESSAGE_DEV = os.getenv('AWS_TABLE_MESSAGE_DEV')
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 
-#ADD AN ENVIRONMENT VARIABLE FOR TABLE NAME
-#table = DynamoDBClient().client.Table("MVP_chat_academic_advisor")
+# Configuration de la connexion à DynamoDB
+dynamodb = boto3.resource(
+    'dynamodb',
+    region_name="us-east-1",  # Assurez-vous que la région est correcte
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+)
 
-table = DynamoDBClient().client.Table(AWS_TABLE_MESSAGE_PROD)
-#table = DynamoDBClient().client.Table(AWS_TABLE_MESSAGE_PREPROD)
-#table = DynamoDBClient().client.Table(AWS_TABLE_MESSAGE_DEV)
+# Référence à la table 
+#ADD AN ENVIRONMENT VARIABLE FOR TABLE
+table = dynamodb.Table("prod_preprod_chat_academic_advisor")
+
+
 
 
 '''
-async def get_chat_history(chat_id: str):
-    print("\n")
-    print("\n")
-    print("\n")
-    print("\n")
-    print(f"Attempting to retrieve chat history for chat_id: {chat_id}")
-    try:
-        response = table.query(
-            KeyConditionExpression='chat_id = :value',
-            ExpressionAttributeValues={':value': chat_id}
-        )
-        items = response.get('Items', [])
-        print(f"Retrieved {len(items)} items from chat history.")
-        return items
-    except ClientError as e:
-        error_code = e.response['Error']['Code']
-        error_message = e.response['Error']['Message']
-        print(f"Error querying chat history: {error_code} - {error_message}")
-        return []
+load_dotenv()
+
+#NEED TO CHANGE THE NAME OF THE TABLE 
+table = DynamoDBClient().client.Table("MVP_chat_academic_advisor")
 '''
+
+
 
 # Définir le décorateur
 def timing_decorator(func):
@@ -58,29 +52,7 @@ def timing_decorator(func):
         return result
     return wrapper
 
-'''
-@timing_decorator
-async def get_chat_history(chat_id: str):
-    print("\n")
-    print("\n")
-    print("\n")
-    print("\n")
-    print(f"Attempting to retrieve chat history for chat_id: {chat_id}")
-    try:
-        response = table.query(
-            KeyConditionExpression='chat_id = :chat_id',
-            ExpressionAttributeValues={':chat_id': chat_id},
-            ScanIndexForward=True  # Tri ascendant par timestamp (du plus ancien au plus récent)
-        )
-        items = response.get('Items', [])
-        print(f"Retrieved {len(items)} items from chat history.")
-        return items
-    except ClientError as e:
-        error_code = e.response['Error']['Code']
-        error_message = e.response['Error']['Message']
-        print(f"Error querying chat history: {error_code} - {error_message}")
-        return []
-'''
+
 
 @timing_decorator
 async def get_chat_history(chat_id: str):
