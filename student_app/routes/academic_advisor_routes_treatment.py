@@ -1,12 +1,8 @@
 import time
 from functools import wraps
 from student_app.routes.academic_advisor_routes import rl
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system
 
-from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import  LLM_chain_search_engine_and_answering
-import student_app.prompts.academic_advisor_search_engine_and_answering_prompts
-
-from student_app.LLM.academic_advisor_reformulation_LLM_chain import LLM_chain_reformulation
-#from airs.prompts.academic_advisor_reformulations_prompts import 
 
 
 
@@ -42,14 +38,14 @@ async def academic_advisor_router_treatment(input_message,
     print("\n")
 
     if router_answer.name == "politics":
-        prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_politics
+        prompt_answering = "no politics"
         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
         search_engine_query = input_message #Car il n'y a pas de reformulation ici         keywords = ""
         return search_engine_query, prompt_answering, student_profile
         
 
     elif router_answer.name == "chitchat":
-         prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_chitchat
+         prompt_answering = "chithchat"
          search_engine_query = input_message #Car il n'y a pas de reformulation ici
          keywords = ""
          return search_engine_query, prompt_answering, student_profile
@@ -59,7 +55,7 @@ async def academic_advisor_router_treatment(input_message,
      #if not politics or chitchat then it is general AA questions 
     #else:
     elif router_answer.name == None:
-         prompt_answering = student_app.prompts.academic_advisor_search_engine_and_answering_prompts.general_prompt
+         prompt_answering = system
          print("Route is General AA")
          print("\n")
          #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
@@ -73,123 +69,3 @@ async def academic_advisor_router_treatment(input_message,
          method = "search_engine"
          keywords = ""
          return search_engine_query, prompt_answering, student_profile, method, keywords
-
-
-
-    '''
-
-    if router_answer.name == "politics":
-        print("\n")
-        print("La route choisi est la politique")
-        print("\n")
-        prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_politics
-        #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-        search_engine_query = input_message #Car il n'y a pas de reformulation ici 
-        method = "nothing"
-        keywords = ""
-        return search_engine_query, prompt_answering, student_profile, method, keywords
-        
-
-    elif router_answer.name == "chitchat":
-         print("\n")
-         print("La route choisi est le chitchat")
-         print("\n")
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_chitchat
-         search_engine_query =  LLM_chain_reformulation(input_message, chat_history)
-         #search_engine_query = input_message #Car il n'y a pas de reformulation ici
-         method = "nothing"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-         
-     
-     elif router_answer.name == None:
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_chitchat
-         print("\n")
-         print("La route choisi est la None")
-         print("\n")
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query =  LLM_chain_reformulation(input_message, chat_history)
-         #search_engine_query = input_message #for testing before going further
-         method = "nothing"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-    
-    
-    if router_answer.name == "registration_tips":
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_registration_tips
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query = input_message #for testing before going further
-         method = "search_engine"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-         
-
-    if router_answer == "general_directives":
-        print("\n")
-        print("La route choisi est general directives")
-        print("\n")
-        prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_general_directives
-        #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-        search_engine_query = input_message #for testing before going further
-        method = "search_engine"
-        keywords = ""
-        return search_engine_query, prompt_answering, student_profile, method, keywords
-       
-
-    if router_answer.name == "class_suggestions":
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_class_suggestions
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query = input_message #for testing before going further
-         method = "search_engine"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-        
-
-    if router_answer.name == "major_selection":
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_major_selection
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query = input_message #for testing before going further
-         method = "search_engine"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-        
-
-    if router_answer.name == "career":
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_career
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query = input_message #for testing before going further
-         method = "search_engine"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-         
-
-    if router_answer.name == "contact_advisor":
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_contact_advisor
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query = input_message #for testing before going further
-         method = "search_engine"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-         
-
-    if router_answer.name == "single_course":
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_single_course
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query = input_message #for testing before going further
-         method = "RAG"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-        
-
-    if router_answer.name == "challenges":
-         prompt_answering = airs.prompts.academic_advisor_search_engine_and_answering_prompts.prompt_challenges
-         #search_engine_query =  LLM_chain_reformulation(input_message, chat_history, student_profile)
-         search_engine_query = input_message #for testing before going further
-         method = "search_engine"
-         keywords = ""
-         return search_engine_query, prompt_answering, student_profile, method, keywords
-
-    
-
-    '''
-         
