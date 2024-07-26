@@ -1,15 +1,12 @@
-
-import sys
 import os
-import asyncio
 import logging
-from fastapi import APIRouter, FastAPI, HTTPException, Request, Response, UploadFile, File, Form
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from functools import wraps
-import time
+
 # from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
 from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
@@ -17,7 +14,7 @@ from student_app.academic_advisor import academic_advisor_answer_generation
 from student_app.LLM.academic_advisor_perplexity_LLM_chain import LLM_chain_perplexity
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
-from student_app.prompts.academic_advisor_perplexity_search_promtps import system
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system
 # Logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -70,21 +67,9 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
-    # Récupérez l'historique de chat
-    # chat_history = await get_chat_history(chat_id)
-    # print(chat_history)
-    
-    # Stockez le message de manière asynchrone
-    # asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
-
-    # Selection of the route from the router + first LLM generation for query reformulation for the Search Engine (with follow-up questions)
-    #prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message,chat_id,username,course_id,)
-
+    #TODO: put student profile as param of the function and get it from firebase
     student_profile = "Mathieu a junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
     prompt_answering = system
-
-    #print(f"search_engine_query: {search_engine_query}, prompt_answering: {prompt_answering}, method: {method}, keywords: {keywords}")
-
 
     print(f"prompt_answering: {prompt_answering}")
     #Second LLM generation with the search engine + Answer generation and sources 
@@ -97,57 +82,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                                                   username,), 
                                                   media_type="text/event-stream")
 
-
-    # Créez une réponse en streaming en passant l'historique de chat
-    #return StreamingResponse(academic_advisor_answer_generation(input_message, chat_history), media_type="text/event-stream")
-
-    #Rajouter ici en paramètre le prompt + la bonne instance de search engine
-    #streaming_answer = LLM_chain_generation(input_message, chat_history)
-
-    #return StreamingResponse(streaming_answer, media_type="text/event-stream")
-    #Ancienne manière de récupérer le message
-    #return StreamingResponse(LLM_chain_generation(input_message, chat_history), media_type="text/event-stream")
-
-    # Il faudra appeler une autre fonction en fonction de si c'est l'academic advisor ou d'autres cours.
-    # Logic suivante : if course_id == "academic_advisor" : return StreamingResponse(academic_advisor_answer_generation(input_query.message, chat_history), media_type="text/event-stream")
-    # else : return StreamingResponse(socratic_answer_generation(input_query.message, chat_history, course_id), media_type="text/event-stream")
-    # avec le course_id qui correspond au cours que l'élève a demandé.
-
-
-# # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
-# @app.get("/get_chat_history/{chat_id}")
-# async def get_chat_history_route(chat_id: str):
-#     return await get_chat_history(chat_id)
-
-
-
-# # SUPPRIMER L'HISTORIQUE DE CHAT CHAQUE CHARGEMENT DE LA PAGE - TO BE DEPRECIATED
-# @app.post("/delete_chat_history/{chat_id}")
-# async def delete_chat_history_route(chat_id: str):
-#     try:
-#         await delete_all_items_and_adding_first_message(chat_id)
-#         return {"message": "Chat history deleted successfully"}
-#     except Exception as e:
-#         logging.error(f"Erreur lors de la suppression de l'historique du chat : {str(e)}")
-#         raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
-    
-
-# # NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
-# @app.post("/save_ai_message")
-# async def save_ai_message(ai_message: InputQueryAI):
-#     chat_id = ai_message.chatSessionId
-#     course_id = ai_message.courseId
-#     username = ai_message.username
-#     input_message = ai_message.message
-#     type = ai_message.type #Pas utilisé pour l'instant, on va faire la selection quand on récupérera le username if !== "Lucy" alors on mets "human" else "ai"
-
-#     try:
-#         asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
-
-#         return {"message": "AI message saved successfully"}
-#     except Exception as e:
-#         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
-#         raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")
 
 
 def create_app():

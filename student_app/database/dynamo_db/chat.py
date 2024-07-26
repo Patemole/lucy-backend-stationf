@@ -36,31 +36,6 @@ TABLE_NAME = "dev_chat_academic_advisor"
 table = dynamodb.Table("dev_chat_academic_advisor")
 
 
-
-
-
-'''
-async def get_chat_history(chat_id: str):
-    print("\n")
-    print("\n")
-    print("\n")
-    print("\n")
-    print(f"Attempting to retrieve chat history for chat_id: {chat_id}")
-    try:
-        response = table.query(
-            KeyConditionExpression='chat_id = :value',
-            ExpressionAttributeValues={':value': chat_id}
-        )
-        items = response.get('Items', [])
-        print(f"Retrieved {len(items)} items from chat history.")
-        return items
-    except ClientError as e:
-        error_code = e.response['Error']['Code']
-        error_message = e.response['Error']['Message']
-        print(f"Error querying chat history: {error_code} - {error_message}")
-        return []
-'''
-
 # Définir le décorateur
 def timing_decorator(func):
     @wraps(func)
@@ -71,93 +46,6 @@ def timing_decorator(func):
         print(f"{func.__name__} took {end_time - start_time} seconds")
         return result
     return wrapper
-
-'''
-@timing_decorator
-async def get_chat_history(chat_id: str):
-    print("\n")
-    print("\n")
-    print("\n")
-    print("\n")
-    print(f"Attempting to retrieve chat history for chat_id: {chat_id}")
-    try:
-        response = table.query(
-            KeyConditionExpression='chat_id = :chat_id',
-            ExpressionAttributeValues={':chat_id': chat_id},
-            ScanIndexForward=True  # Tri ascendant par timestamp (du plus ancien au plus récent)
-        )
-        items = response.get('Items', [])
-        print(f"Retrieved {len(items)} items from chat history.")
-        return items
-    except ClientError as e:
-        error_code = e.response['Error']['Code']
-        error_message = e.response['Error']['Message']
-        print(f"Error querying chat history: {error_code} - {error_message}")
-        return []
-'''
-'''
-@timing_decorator
-async def get_chat_history(chat_id: str):
-    print("\n")
-    print("\n")
-    print("\n")
-    print("\n")
-    print(f"Attempting to retrieve chat history for chat_id: {chat_id}")
-    # Get table
-    _, table = get_table("dev")
-    try:
-        response = table.query(
-            KeyConditionExpression='chat_id = :chat_id',
-            ExpressionAttributeValues={':chat_id': chat_id},
-            ScanIndexForward=True  # Tri ascendant par timestamp (du plus ancien au plus récent)
-        )
-        items = response.get('Items', [])
-        print(f"Retrieved {len(items)} items from chat history.")
-        
-        # Ne retourner que le username et le body
-        filtered_items = [{'username': item['username'], 'body': item['body']} for item in items]
-        
-        return filtered_items
-    except ClientError as e:
-        error_code = e.response['Error']['Code']
-        error_message = e.response['Error']['Message']
-        print(f"Error querying chat history: {error_code} - {error_message}")
-        return []
-    
-@timing_decorator
-async def store_message_async(
-        chat_id: str, 
-        course_id: str, 
-        message_body: str, 
-        #username: str = "TAI",
-        username: str,
-        documents: List[Dict[str, Any]] = []):
-    print(f"Attempting to store message for chat_id: {chat_id}, course_id: {course_id}, username: {username}")
-    # Get table
-    _, table = get_table("dev")
-    try:
-        # Insert the item into DynamoDB
-        args = {
-            'message_id': str(uuid.uuid4()),
-            'chat_id': chat_id,
-            'timestamp': datetime.now().isoformat(),
-            'course_id': course_id,
-            'body': message_body,
-            'username': username
-        }
-        if username == "TAI" and documents:
-            args['documents'] = documents
-        table.put_item(Item=args)
-        print(f"Message stored successfully with message_id: {args['message_id']}")
-    except ClientError as e:
-        error_code = e.response['Error']['Code']
-        error_message = e.response['Error']['Message']
-        print(f"Error inserting message into chat history: {error_code} - {error_message}")
-    
-'''
-
-
-
 
 
 class AWSDynamoDBChatMessageHistory(DynamoDBChatMessageHistory, BaseChatMessageHistory):
