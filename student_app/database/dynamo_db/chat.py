@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import boto3
 import os
 import json
+from typing import Optional
 
 
 load_dotenv()
@@ -117,3 +118,28 @@ async def store_message_async(
         error_message = e.response['Error']['Message']
         print(f"Error inserting message into chat history: {error_code} - {error_message}")
         return None
+    
+
+def get_messages_from_history(history_items: List, n: Optional[int] = None) -> List[Dict[str, str]]:
+    
+    if n is None:
+        items = history_items # Get all messages
+    elif n is not None and n%2 != 0:
+        n += 1
+        items = history_items[-n:]
+        print("Items: ", items)
+    elif n is not None and n%2 == 0:
+        items = history_items[-n:]
+        
+    messages = []
+
+    for item in items:
+        if item['username'] == "Lucy":
+            message_dict = {"role": "assistant", "content": item['body']}
+            messages.append(message_dict)
+        else:
+            message_dict = {"role": "user", "content": item['body']}
+            messages.append(message_dict)
+    
+    print(messages)
+    return messages

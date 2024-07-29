@@ -81,7 +81,6 @@ dynamodb = boto3.resource(
 
 # Référence à la table 
 #ADD AN ENVIRONMENT VARIABLE FOR TABLE
-TABLE_NAME = "dev_chat_academic_advisor"
 table = dynamodb.Table("dev_chat_academic_advisor")
 
 def get_chat_history(chat_id):
@@ -106,7 +105,7 @@ def get_chat_history(chat_id):
 
 
 ####################################################### GET "N" MESSAGES FROM CHAT HISTORY #######################################################
-def get_messages_from_history(history_items: get_chat_history, n: Optional[int] = None) -> List[Dict[str, str]]:
+def get_messages_from_history(history_items: List, n: Optional[int] = None) -> List[Dict[str, str]]:
     
     if n is None:
         items = history_items # Get all messages
