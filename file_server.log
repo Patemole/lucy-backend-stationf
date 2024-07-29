@@ -5732,3 +5732,800 @@ HTTP response body: {"error":{"code":"FORBIDDEN","message":"Request failed. You'
 2024-07-25 13:48:49 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
 2024-07-25 13:48:50 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
 2024-07-25 13:48:50 [INFO]: Response: 200
+2024-07-25 17:27:21 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:27:21 [INFO]: Démarrage de l'application
+2024-07-25 17:27:21 [INFO]: Création de l'application files
+2024-07-25 17:27:21 [INFO]: Application files créée avec succès
+2024-07-25 17:27:21 [INFO]: Création de l'application academic advisor
+2024-07-25 17:27:21 [INFO]: Application academic advisor créée avec succès
+2024-07-25 17:27:21 [INFO]: Montage des applications
+2024-07-25 17:27:21 [INFO]: Applications montées avec succès
+2024-07-25 17:27:21 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-25 17:27:38 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-25 17:27:39 [INFO]: Response: 200
+2024-07-25 17:27:39 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-25 17:27:39 [INFO]: Response: 200
+2024-07-25 17:29:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/e2d9bd73-6ed0-49ee-a96d-e8280b653e43
+2024-07-25 17:29:22 [INFO]: Response: 200
+2024-07-25 17:29:32 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:29:32 [INFO]: Response: 200
+2024-07-25 17:29:32 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:29:32 [INFO]: Response: 200
+2024-07-25 17:29:32 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:29:34 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:29:34 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-25 17:29:34 [INFO]: Response: 200
+2024-07-25 17:29:34 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:29:34 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:29:35 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:29:35 [INFO]: Response: 200
+2024-07-25 17:29:35 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/e2d9bd73-6ed0-49ee-a96d-e8280b653e43
+2024-07-25 17:29:35 [INFO]: Response: 200
+2024-07-25 17:29:38 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/77722781-85fe-4c58-9bea-295f6c7537bc
+2024-07-25 17:29:38 [INFO]: Response: 200
+2024-07-25 17:30:19 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:30:19 [INFO]: Response: 200
+2024-07-25 17:30:19 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:30:20 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:30:21 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:30:22 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:30:22 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:30:22 [INFO]: Response: 200
+2024-07-25 17:30:38 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:30:38 [INFO]: Response: 200
+2024-07-25 17:30:38 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:30:39 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:30:40 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:30:41 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:30:41 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:30:41 [INFO]: Response: 200
+2024-07-25 17:32:19 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:32:19 [INFO]: Response: 200
+2024-07-25 17:32:19 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:32:20 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:32:21 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:32:21 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:32:21 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:32:22 [INFO]: Response: 200
+2024-07-25 17:33:34 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:33:34 [INFO]: Response: 200
+2024-07-25 17:33:34 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:33:35 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:33:36 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:33:36 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:33:37 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:33:37 [INFO]: Response: 200
+2024-07-25 17:35:22 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:35:23 [INFO]: Response: 200
+2024-07-25 17:35:23 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:35:24 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:35:24 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:35:25 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:35:25 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:35:25 [INFO]: Response: 200
+2024-07-25 17:36:08 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:36:08 [INFO]: Response: 200
+2024-07-25 17:36:08 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:36:09 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:36:09 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:36:10 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:36:10 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:36:10 [INFO]: Response: 200
+2024-07-25 17:36:35 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:36:35 [INFO]: Response: 200
+2024-07-25 17:36:35 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:36:36 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:36:37 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:36:37 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:36:38 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:36:38 [INFO]: Response: 200
+2024-07-25 17:37:01 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:37:01 [INFO]: Response: 200
+2024-07-25 17:37:01 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:37:02 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:37:03 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:37:04 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:37:04 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:37:04 [INFO]: Response: 200
+2024-07-25 17:37:38 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:37:38 [INFO]: Response: 200
+2024-07-25 17:37:38 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:37:40 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:37:40 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:37:41 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:37:42 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:37:42 [INFO]: Response: 200
+2024-07-25 17:38:22 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:38:22 [INFO]: Response: 200
+2024-07-25 17:38:23 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:38:24 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:38:24 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:38:25 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:38:25 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:38:25 [INFO]: Response: 200
+2024-07-25 17:38:37 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:38:37 [INFO]: Response: 200
+2024-07-25 17:38:37 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:38:38 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:38:39 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:38:39 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:38:40 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:38:40 [INFO]: Response: 200
+2024-07-25 17:39:07 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:39:07 [INFO]: Response: 200
+2024-07-25 17:39:07 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:39:08 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:39:09 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:39:10 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:39:11 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:39:11 [INFO]: Response: 200
+2024-07-25 17:39:36 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/e2d9bd73-6ed0-49ee-a96d-e8280b653e43
+2024-07-25 17:39:36 [INFO]: Response: 200
+2024-07-25 17:45:08 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:45:08 [INFO]: Response: 200
+2024-07-25 17:45:08 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-25 17:45:08 [INFO]: Response: 200
+2024-07-25 17:45:09 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-25 17:45:09 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-25 17:45:10 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-25 17:45:10 [INFO]: Response: 200
+2024-07-25 17:45:10 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-25 17:45:10 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:45:11 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-25 17:45:11 [INFO]: Response: 200
+2024-07-26 13:18:55 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/edafb008-7d12-44d2-833f-216f5e653749
+2024-07-26 13:18:56 [INFO]: Response: 200
+2024-07-26 13:18:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/edafb008-7d12-44d2-833f-216f5e653749
+2024-07-26 13:18:56 [INFO]: Response: 200
+2024-07-26 13:27:18 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/bcaaa597-c73f-4bae-b3e1-639710231d24
+2024-07-26 13:27:19 [INFO]: Response: 200
+2024-07-26 13:27:19 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/bcaaa597-c73f-4bae-b3e1-639710231d24
+2024-07-26 13:27:19 [INFO]: Response: 200
+2024-07-26 14:20:21 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-26 14:20:22 [INFO]: Démarrage de l'application
+2024-07-26 14:20:22 [INFO]: Création de l'application files
+2024-07-26 14:20:22 [INFO]: Application files créée avec succès
+2024-07-26 14:20:22 [INFO]: Création de l'application academic advisor
+2024-07-26 14:20:22 [INFO]: Application academic advisor créée avec succès
+2024-07-26 14:20:22 [INFO]: Montage des applications
+2024-07-26 14:20:22 [INFO]: Applications montées avec succès
+2024-07-26 14:20:22 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-26 14:24:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/cff17898-3336-4828-b661-186717c25768
+2024-07-26 14:24:22 [INFO]: Response: 200
+2024-07-26 14:24:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/cff17898-3336-4828-b661-186717c25768
+2024-07-26 14:24:22 [INFO]: Response: 200
+2024-07-26 14:41:16 [INFO]: Request: OPTIONS http://localhost:5001/chat/student_profile
+2024-07-26 14:41:17 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5416d85a-b16a-45b1-bf88-4ca55ed26bc3
+2024-07-26 14:41:17 [INFO]: Response: 200
+2024-07-26 14:41:17 [INFO]: Response: 200
+2024-07-26 14:41:17 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-26 14:41:17 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5416d85a-b16a-45b1-bf88-4ca55ed26bc3
+2024-07-26 14:41:17 [INFO]: Response: 200
+2024-07-26 14:41:17 [INFO]: Response: 200
+2024-07-26 15:06:01 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-26 15:06:02 [INFO]: Démarrage de l'application
+2024-07-26 15:06:02 [INFO]: Création de l'application files
+2024-07-26 15:06:02 [INFO]: Application files créée avec succès
+2024-07-26 15:06:02 [INFO]: Création de l'application academic advisor
+2024-07-26 15:06:02 [INFO]: Application academic advisor créée avec succès
+2024-07-26 15:06:02 [INFO]: Montage des applications
+2024-07-26 15:06:02 [INFO]: Applications montées avec succès
+2024-07-26 15:06:02 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-26 15:09:04 [INFO]: Request: OPTIONS http://localhost:5001/chat/student_profile
+2024-07-26 15:09:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/8e371ce0-f2f5-49b4-93ad-24be5c1ac048
+2024-07-26 15:09:04 [INFO]: Response: 200
+2024-07-26 15:09:04 [INFO]: Response: 200
+2024-07-26 15:09:04 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-26 15:09:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/8e371ce0-f2f5-49b4-93ad-24be5c1ac048
+2024-07-26 15:09:04 [INFO]: Response: 200
+2024-07-26 15:09:04 [INFO]: Response: 200
+2024-07-26 15:13:11 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-26 15:13:12 [INFO]: Démarrage de l'application
+2024-07-26 15:13:12 [INFO]: Création de l'application files
+2024-07-26 15:13:12 [INFO]: Application files créée avec succès
+2024-07-26 15:13:12 [INFO]: Création de l'application academic advisor
+2024-07-26 15:13:12 [INFO]: Application academic advisor créée avec succès
+2024-07-26 15:13:12 [INFO]: Montage des applications
+2024-07-26 15:13:12 [INFO]: Applications montées avec succès
+2024-07-26 15:13:12 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-26 15:14:17 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-26 15:14:17 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/d427545f-2b7e-4b11-a4bc-e3e42d3e7c85
+2024-07-26 15:14:18 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-26 15:14:18 [INFO]: Response: 200
+2024-07-26 15:14:18 [INFO]: Response: 200
+2024-07-26 15:14:18 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/d427545f-2b7e-4b11-a4bc-e3e42d3e7c85
+2024-07-26 15:14:18 [INFO]: Response: 200
+2024-07-26 15:20:02 [INFO]: Request: OPTIONS http://localhost:5001/chat/student_profile
+2024-07-26 15:20:02 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/cf25ba3d-63cf-441c-9f91-7070fe0ac4d1
+2024-07-26 15:20:02 [INFO]: Response: 200
+2024-07-26 15:20:02 [INFO]: Response: 200
+2024-07-26 15:20:02 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-26 15:20:02 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/cf25ba3d-63cf-441c-9f91-7070fe0ac4d1
+2024-07-26 15:20:03 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-26 15:20:03 [INFO]: Response: 200
+2024-07-26 15:20:03 [INFO]: Response: 200
+2024-07-26 15:21:11 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-26 15:21:11 [INFO]: Démarrage de l'application
+2024-07-26 15:21:11 [INFO]: Création de l'application files
+2024-07-26 15:21:11 [INFO]: Application files créée avec succès
+2024-07-26 15:21:11 [INFO]: Création de l'application academic advisor
+2024-07-26 15:21:11 [INFO]: Application academic advisor créée avec succès
+2024-07-26 15:21:11 [INFO]: Montage des applications
+2024-07-26 15:21:11 [INFO]: Applications montées avec succès
+2024-07-26 15:21:11 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-26 15:21:50 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-26 15:21:50 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/895c5830-5d16-4bfc-93a8-429539638e75
+2024-07-26 15:21:51 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-26 15:21:51 [INFO]: Response: 200
+2024-07-26 15:21:51 [INFO]: Response: 200
+2024-07-26 15:21:51 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/895c5830-5d16-4bfc-93a8-429539638e75
+2024-07-26 15:21:51 [INFO]: Response: 200
+2024-07-26 15:28:44 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/895c5830-5d16-4bfc-93a8-429539638e75
+2024-07-26 15:28:44 [INFO]: Response: 200
+2024-07-26 15:28:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/895c5830-5d16-4bfc-93a8-429539638e75
+2024-07-26 15:28:59 [INFO]: Response: 200
+2024-07-26 15:34:47 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-26 15:34:47 [INFO]: Démarrage de l'application
+2024-07-26 15:34:47 [INFO]: Création de l'application files
+2024-07-26 15:34:47 [INFO]: Application files créée avec succès
+2024-07-26 15:34:47 [INFO]: Création de l'application academic advisor
+2024-07-26 15:34:47 [INFO]: Application academic advisor créée avec succès
+2024-07-26 15:34:47 [INFO]: Montage des applications
+2024-07-26 15:34:47 [INFO]: Applications montées avec succès
+2024-07-26 15:34:47 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-26 15:37:42 [INFO]: Request: OPTIONS http://localhost:5001/chat/student_profile
+2024-07-26 15:37:42 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/fb5bbe20-b863-46ef-b665-2955abcece60
+2024-07-26 15:37:43 [INFO]: Response: 200
+2024-07-26 15:37:43 [INFO]: Response: 200
+2024-07-26 15:37:43 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-26 15:37:43 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/fb5bbe20-b863-46ef-b665-2955abcece60
+2024-07-26 15:37:43 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-26 15:37:43 [INFO]: Response: 200
+2024-07-26 15:37:43 [INFO]: Response: 200
+2024-07-26 16:13:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/fb5bbe20-b863-46ef-b665-2955abcece60
+2024-07-26 16:13:35 [INFO]: Response: 200
+2024-07-26 16:38:24 [INFO]: Request: OPTIONS http://localhost:5001/chat/student_profile
+2024-07-26 16:38:24 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/4b507f63-0676-41c6-90c3-7c87e72716d2
+2024-07-26 16:38:25 [INFO]: Response: 200
+2024-07-26 16:38:25 [INFO]: Response: 200
+2024-07-26 16:38:25 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-26 16:38:25 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/4b507f63-0676-41c6-90c3-7c87e72716d2
+2024-07-26 16:38:25 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-26 16:38:26 [INFO]: Response: 200
+2024-07-26 16:38:26 [INFO]: Response: 200
+2024-07-27 12:12:35 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/4b507f63-0676-41c6-90c3-7c87e72716d2
+2024-07-27 12:12:35 [INFO]: Response: 200
+2024-07-27 12:20:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/4b507f63-0676-41c6-90c3-7c87e72716d2
+2024-07-27 12:20:59 [INFO]: Response: 200
+2024-07-27 12:22:00 [INFO]: Request: OPTIONS http://localhost:5001/chat/student_profile
+2024-07-27 12:22:00 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 12:22:00 [INFO]: Response: 200
+2024-07-27 12:22:00 [INFO]: Response: 200
+2024-07-27 12:22:00 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-27 12:22:00 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 12:22:01 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 12:22:01 [INFO]: Response: 200
+2024-07-27 12:22:01 [INFO]: Response: 200
+2024-07-27 12:30:54 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 12:30:54 [INFO]: Response: 200
+2024-07-27 12:37:44 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 12:37:44 [INFO]: Response: 200
+2024-07-27 12:55:18 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 12:55:18 [INFO]: Response: 200
+2024-07-27 12:55:18 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 12:55:18 [INFO]: Response: 200
+2024-07-27 13:04:19 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 13:04:19 [INFO]: Response: 200
+2024-07-27 13:04:19 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 13:04:19 [INFO]: Response: 200
+2024-07-27 13:04:52 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 13:04:52 [INFO]: Response: 200
+2024-07-27 13:04:52 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 13:04:52 [INFO]: Response: 200
+2024-07-27 13:10:57 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 13:10:57 [INFO]: Response: 200
+2024-07-27 13:10:57 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 13:10:57 [INFO]: Response: 200
+2024-07-27 14:11:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 14:11:56 [INFO]: Response: 200
+2024-07-27 14:22:19 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 14:22:19 [INFO]: Response: 200
+2024-07-27 14:22:19 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 14:22:19 [INFO]: Response: 200
+2024-07-27 14:33:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 14:33:59 [INFO]: Response: 200
+2024-07-27 14:33:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 14:33:59 [INFO]: Response: 200
+2024-07-27 14:54:48 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 14:54:48 [INFO]: Response: 200
+2024-07-27 15:07:16 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 15:07:16 [INFO]: Response: 200
+2024-07-27 15:07:54 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 15:07:54 [INFO]: Response: 200
+2024-07-27 15:20:44 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 15:20:44 [INFO]: Response: 200
+2024-07-27 15:21:42 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 15:21:42 [INFO]: Response: 200
+2024-07-27 15:50:23 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 15:50:23 [INFO]: Response: 200
+2024-07-27 15:50:23 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 15:50:23 [INFO]: Response: 200
+2024-07-27 15:50:23 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-27 15:50:24 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 15:50:25 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-27 15:50:25 [INFO]: Response: 200
+2024-07-27 15:50:25 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-27 15:50:26 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:50:26 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:50:26 [INFO]: Response: 200
+2024-07-27 15:50:54 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 15:50:54 [INFO]: Response: 200
+2024-07-27 15:50:54 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-27 15:50:55 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 15:50:56 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-27 15:50:56 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:50:57 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:50:57 [INFO]: Response: 200
+2024-07-27 15:51:09 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 15:51:09 [INFO]: Response: 200
+2024-07-27 15:51:09 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-27 15:51:10 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 15:51:11 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-27 15:51:11 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:51:12 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:51:12 [INFO]: Response: 200
+2024-07-27 15:51:36 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 15:51:36 [INFO]: Response: 200
+2024-07-27 15:51:36 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-27 15:51:37 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 15:51:37 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-27 15:51:37 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:51:38 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:51:38 [INFO]: Response: 200
+2024-07-27 15:52:04 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 15:52:04 [INFO]: Response: 200
+2024-07-27 15:52:04 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-27 15:52:05 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 15:52:06 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-27 15:52:06 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:52:06 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 15:52:06 [INFO]: Response: 200
+2024-07-27 15:55:11 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 15:55:11 [INFO]: Response: 200
+2024-07-27 15:55:11 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 15:55:11 [INFO]: Response: 200
+2024-07-27 16:10:00 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:10:00 [INFO]: Response: 200
+2024-07-27 16:10:00 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:10:00 [INFO]: Response: 200
+2024-07-27 16:11:07 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:11:07 [INFO]: Response: 200
+2024-07-27 16:20:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:20:03 [INFO]: Response: 200
+2024-07-27 16:50:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:50:06 [INFO]: Response: 200
+2024-07-27 16:51:28 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:51:29 [INFO]: Response: 200
+2024-07-27 16:51:29 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:51:29 [INFO]: Response: 200
+2024-07-27 16:51:42 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:51:42 [INFO]: Response: 200
+2024-07-27 16:51:42 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:51:42 [INFO]: Response: 200
+2024-07-27 16:52:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:52:34 [INFO]: Response: 200
+2024-07-27 16:52:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:52:34 [INFO]: Response: 200
+2024-07-27 16:58:13 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:58:13 [INFO]: Response: 200
+2024-07-27 16:58:13 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 16:58:13 [INFO]: Response: 200
+2024-07-27 17:01:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:01:21 [INFO]: Response: 200
+2024-07-27 17:01:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:01:21 [INFO]: Response: 200
+2024-07-27 17:01:27 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:01:27 [INFO]: Response: 200
+2024-07-27 17:01:27 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:01:27 [INFO]: Response: 200
+2024-07-27 17:01:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:01:59 [INFO]: Response: 200
+2024-07-27 17:01:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:01:59 [INFO]: Response: 200
+2024-07-27 17:03:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:03:14 [INFO]: Response: 200
+2024-07-27 17:03:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:03:14 [INFO]: Response: 200
+2024-07-27 17:04:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:04:14 [INFO]: Response: 200
+2024-07-27 17:04:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:04:14 [INFO]: Response: 200
+2024-07-27 17:04:43 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:04:43 [INFO]: Response: 200
+2024-07-27 17:04:43 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:04:43 [INFO]: Response: 200
+2024-07-27 17:05:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:05:59 [INFO]: Response: 200
+2024-07-27 17:05:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:05:59 [INFO]: Response: 200
+2024-07-27 17:06:30 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:06:31 [INFO]: Response: 200
+2024-07-27 17:06:31 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:06:31 [INFO]: Response: 200
+2024-07-27 17:12:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:12:06 [INFO]: Response: 200
+2024-07-27 17:12:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 17:12:06 [INFO]: Response: 200
+2024-07-27 17:12:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 17:12:14 [INFO]: Response: 200
+2024-07-27 17:12:18 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:12:18 [INFO]: Response: 200
+2024-07-27 17:16:19 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:16:19 [INFO]: Response: 200
+2024-07-27 17:16:19 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:16:19 [INFO]: Response: 200
+2024-07-27 17:24:09 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:24:09 [INFO]: Response: 200
+2024-07-27 17:24:09 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:24:09 [INFO]: Response: 200
+2024-07-27 17:24:58 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:24:58 [INFO]: Response: 200
+2024-07-27 17:24:58 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:24:58 [INFO]: Response: 200
+2024-07-27 17:26:33 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:26:33 [INFO]: Response: 200
+2024-07-27 17:26:33 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:26:33 [INFO]: Response: 200
+2024-07-27 17:39:31 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:39:31 [INFO]: Response: 200
+2024-07-27 17:39:31 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:39:31 [INFO]: Response: 200
+2024-07-27 17:39:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:39:34 [INFO]: Response: 200
+2024-07-27 17:39:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:39:34 [INFO]: Response: 200
+2024-07-27 17:39:38 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:39:38 [INFO]: Response: 200
+2024-07-27 17:39:38 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 17:39:38 [INFO]: Response: 200
+2024-07-27 18:02:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 18:02:04 [INFO]: Response: 200
+2024-07-27 18:02:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-27 18:02:04 [INFO]: Response: 200
+2024-07-27 18:02:33 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:02:33 [INFO]: Response: 200
+2024-07-27 18:02:41 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 18:02:41 [INFO]: Response: 200
+2024-07-27 18:03:23 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 18:03:23 [INFO]: Response: 200
+2024-07-27 18:03:23 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 18:03:23 [INFO]: Response: 200
+2024-07-27 18:18:41 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-27 18:18:42 [INFO]: Response: 200
+2024-07-27 18:20:12 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:20:12 [INFO]: Response: 200
+2024-07-27 18:21:31 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 18:21:31 [INFO]: Response: 200
+2024-07-27 18:21:31 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 18:21:32 [INFO]: Response: 200
+2024-07-27 18:21:32 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-27 18:21:33 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 18:21:33 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-27 18:21:33 [INFO]: Response: 200
+2024-07-27 18:21:33 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-27 18:21:34 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 18:21:35 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 18:21:35 [INFO]: Response: 200
+2024-07-27 18:29:26 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:29:26 [INFO]: Response: 200
+2024-07-27 18:38:09 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:38:09 [INFO]: Response: 200
+2024-07-27 18:46:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:46:04 [INFO]: Response: 200
+2024-07-27 18:47:10 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:47:10 [INFO]: Response: 200
+2024-07-27 18:50:10 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:50:10 [INFO]: Response: 200
+2024-07-27 18:50:29 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:50:29 [INFO]: Response: 200
+2024-07-27 18:50:39 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:50:39 [INFO]: Response: 200
+2024-07-27 18:50:46 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:50:46 [INFO]: Response: 200
+2024-07-27 18:50:57 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:50:57 [INFO]: Response: 200
+2024-07-27 18:51:05 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:51:05 [INFO]: Response: 200
+2024-07-27 18:51:13 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:51:13 [INFO]: Response: 200
+2024-07-27 18:51:20 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:51:20 [INFO]: Response: 200
+2024-07-27 18:51:58 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:51:58 [INFO]: Response: 200
+2024-07-27 18:56:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:56:06 [INFO]: Response: 200
+2024-07-27 18:57:20 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:57:21 [INFO]: Response: 200
+2024-07-27 18:57:29 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:57:29 [INFO]: Response: 200
+2024-07-27 18:57:38 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:57:38 [INFO]: Response: 200
+2024-07-27 18:57:52 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 18:57:52 [INFO]: Response: 200
+2024-07-27 18:58:11 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 18:58:11 [INFO]: Response: 200
+2024-07-27 18:58:11 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 18:58:11 [INFO]: Response: 200
+2024-07-27 18:58:11 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-27 18:58:12 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 18:58:13 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-27 18:58:13 [INFO]: Response: 200
+2024-07-27 18:58:13 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-27 18:58:13 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 18:58:13 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 18:58:14 [INFO]: Response: 200
+2024-07-27 18:58:32 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-27 18:58:32 [INFO]: Response: 200
+2024-07-27 18:58:32 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-27 18:58:33 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-27 18:58:34 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-27 18:58:34 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 18:58:35 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-27 18:58:35 [INFO]: Response: 200
+2024-07-27 20:33:55 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:33:56 [INFO]: Response: 200
+2024-07-27 20:33:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:33:56 [INFO]: Response: 200
+2024-07-27 20:34:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:34:22 [INFO]: Response: 200
+2024-07-27 20:34:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:34:22 [INFO]: Response: 200
+2024-07-27 20:39:07 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:39:07 [INFO]: Response: 200
+2024-07-27 20:39:07 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:39:07 [INFO]: Response: 200
+2024-07-27 20:54:49 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:54:49 [INFO]: Response: 200
+2024-07-27 20:54:49 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:54:49 [INFO]: Response: 200
+2024-07-27 20:54:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:54:56 [INFO]: Response: 200
+2024-07-27 20:54:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-27 20:54:56 [INFO]: Response: 200
+2024-07-28 00:35:40 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 00:35:40 [INFO]: Response: 200
+2024-07-28 00:35:40 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 00:35:40 [INFO]: Response: 200
+2024-07-28 00:39:33 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 00:39:33 [INFO]: Response: 200
+2024-07-28 00:39:33 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 00:39:33 [INFO]: Response: 200
+2024-07-28 00:47:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 00:47:34 [INFO]: Response: 200
+2024-07-28 00:47:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 00:47:34 [INFO]: Response: 200
+2024-07-28 00:47:48 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 00:47:48 [INFO]: Response: 200
+2024-07-28 00:47:48 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 00:47:48 [INFO]: Response: 200
+2024-07-28 00:47:52 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:47:52 [INFO]: Response: 200
+2024-07-28 00:47:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:47:56 [INFO]: Response: 200
+2024-07-28 00:47:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:47:56 [INFO]: Response: 200
+2024-07-28 00:48:01 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:48:01 [INFO]: Response: 200
+2024-07-28 00:48:01 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:48:01 [INFO]: Response: 200
+2024-07-28 00:48:55 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:48:55 [INFO]: Response: 200
+2024-07-28 00:48:55 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:48:55 [INFO]: Response: 200
+2024-07-28 00:48:58 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:48:58 [INFO]: Response: 200
+2024-07-28 00:48:58 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:48:58 [INFO]: Response: 200
+2024-07-28 00:49:52 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:49:52 [INFO]: Response: 200
+2024-07-28 00:49:52 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:49:52 [INFO]: Response: 200
+2024-07-28 00:49:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:49:59 [INFO]: Response: 200
+2024-07-28 00:49:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 00:49:59 [INFO]: Response: 200
+2024-07-28 10:59:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 10:59:15 [INFO]: Response: 200
+2024-07-28 10:59:15 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 10:59:15 [INFO]: Response: 200
+2024-07-28 10:59:17 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 10:59:17 [INFO]: Response: 200
+2024-07-28 12:19:44 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 12:19:44 [INFO]: Response: 200
+2024-07-28 12:19:44 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 12:19:44 [INFO]: Response: 200
+2024-07-28 18:06:09 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-28 18:06:10 [INFO]: Response: 200
+2024-07-28 18:06:10 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/Connf4P2TpKXXGooaQD5
+2024-07-28 18:06:10 [INFO]: Response: 200
+2024-07-28 18:07:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 18:07:59 [INFO]: Response: 200
+2024-07-28 18:08:11 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:08:11 [INFO]: Response: 200
+2024-07-28 18:08:12 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 18:08:12 [INFO]: Response: 200
+2024-07-28 18:14:30 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:14:31 [INFO]: Response: 200
+2024-07-28 18:14:31 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:14:31 [INFO]: Response: 200
+2024-07-28 18:17:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 18:17:22 [INFO]: Response: 200
+2024-07-28 18:20:24 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:20:24 [INFO]: Response: 200
+2024-07-28 18:20:24 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:20:24 [INFO]: Response: 200
+2024-07-28 18:20:59 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-28 18:20:59 [INFO]: Response: 200
+2024-07-28 18:20:59 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-28 18:20:59 [INFO]: Response: 200
+2024-07-28 18:20:59 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-28 18:21:00 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-28 18:21:00 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-28 18:21:00 [INFO]: Response: 200
+2024-07-28 18:21:00 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-28 18:21:01 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-28 18:21:01 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-28 18:21:01 [INFO]: Response: 200
+2024-07-28 18:22:33 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:22:37 [INFO]: Response: 200
+2024-07-28 18:23:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:23:36 [INFO]: Response: 200
+2024-07-28 18:23:36 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:23:36 [INFO]: Response: 200
+2024-07-28 18:24:07 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:24:07 [INFO]: Response: 200
+2024-07-28 18:24:07 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:24:07 [INFO]: Response: 200
+2024-07-28 18:24:11 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:24:11 [INFO]: Response: 200
+2024-07-28 18:24:11 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 18:24:13 [INFO]: Response: 200
+2024-07-28 18:24:15 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:24:17 [INFO]: Response: 200
+2024-07-28 18:24:18 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 18:24:18 [INFO]: Response: 200
+2024-07-28 18:24:20 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:24:20 [INFO]: Response: 200
+2024-07-28 18:24:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:24:23 [INFO]: Response: 200
+2024-07-28 18:26:38 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:26:38 [INFO]: Response: 200
+2024-07-28 18:26:40 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 18:26:40 [INFO]: Response: 200
+2024-07-28 18:26:41 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 18:26:41 [INFO]: Response: 200
+2024-07-28 18:29:02 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:29:03 [INFO]: Response: 200
+2024-07-28 18:41:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:41:04 [INFO]: Response: 200
+2024-07-28 18:41:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:41:04 [INFO]: Response: 200
+2024-07-28 18:41:39 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-28 18:41:39 [INFO]: Response: 200
+2024-07-28 18:41:39 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-28 18:41:39 [INFO]: Response: 200
+2024-07-28 18:41:39 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-28 18:41:40 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-28 18:41:41 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-28 18:41:41 [INFO]: Response: 200
+2024-07-28 18:41:41 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-28 18:41:41 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-28 18:41:42 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-28 18:41:42 [INFO]: Response: 200
+2024-07-28 18:43:11 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-28 18:43:11 [INFO]: Response: 200
+2024-07-28 18:43:11 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-28 18:43:12 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-28 18:43:13 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-28 18:43:13 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-28 18:43:13 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-28 18:43:14 [INFO]: Response: 200
+2024-07-28 18:43:44 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:43:44 [INFO]: Response: 200
+2024-07-28 18:43:44 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 18:43:44 [INFO]: Response: 200
+2024-07-28 18:52:01 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 18:52:01 [INFO]: Response: 200
+2024-07-28 18:52:01 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 18:52:01 [INFO]: Response: 200
+2024-07-28 19:06:35 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:06:35 [INFO]: Response: 200
+2024-07-28 19:20:53 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:20:53 [INFO]: Response: 200
+2024-07-28 19:21:19 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 19:21:19 [INFO]: Response: 200
+2024-07-28 19:21:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/5e01e811-6c87-4d3e-965b-c1148d514f94
+2024-07-28 19:21:21 [INFO]: Response: 200
+2024-07-28 19:21:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/27f987bc-48d4-4b36-ae3e-4290b54a22a2
+2024-07-28 19:21:22 [INFO]: Response: 200
+2024-07-28 19:21:23 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c191c6b9-93aa-4ee2-b67a-c4154d87cddc
+2024-07-28 19:21:23 [INFO]: Response: 200
+2024-07-28 19:21:24 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:21:24 [INFO]: Response: 200
+2024-07-28 19:34:26 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:34:26 [INFO]: Response: 200
+2024-07-28 19:39:46 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:39:47 [INFO]: Response: 200
+2024-07-28 19:41:05 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:41:05 [INFO]: Response: 200
+2024-07-28 19:41:50 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:41:50 [INFO]: Response: 200
+2024-07-28 19:42:18 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:42:18 [INFO]: Response: 200
+2024-07-28 19:42:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:42:56 [INFO]: Response: 200
+2024-07-28 19:43:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:43:59 [INFO]: Response: 200
+2024-07-28 19:44:57 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:44:57 [INFO]: Response: 200
+2024-07-28 19:48:00 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:48:01 [INFO]: Response: 200
+2024-07-28 19:48:01 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:48:01 [INFO]: Response: 200
+2024-07-28 19:48:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:48:03 [INFO]: Response: 200
+2024-07-28 19:48:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/07cd1136-f953-4688-98fb-898d949d6a52
+2024-07-28 19:48:03 [INFO]: Response: 200
+2024-07-29 10:09:09 [INFO]: Request: OPTIONS http://localhost:5001/chat/student_profile
+2024-07-29 10:09:09 [INFO]: Response: 200
+2024-07-29 10:09:09 [INFO]: Request: POST http://localhost:5001/chat/student_profile
+2024-07-29 10:09:09 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:09:10 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 10:09:11 [INFO]: Response: 200
+2024-07-29 10:09:11 [INFO]: Response: 200
+2024-07-29 10:09:11 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:09:11 [INFO]: Response: 200
+2024-07-29 10:09:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:09:56 [INFO]: Response: 200
+2024-07-29 10:09:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:09:56 [INFO]: Response: 200
+2024-07-29 10:10:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:10:06 [INFO]: Response: 200
+2024-07-29 10:10:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:10:06 [INFO]: Response: 200
+2024-07-29 10:10:31 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:10:31 [INFO]: Response: 200
+2024-07-29 10:10:31 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:10:31 [INFO]: Response: 200
+2024-07-29 10:10:47 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 10:10:47 [INFO]: Response: 200
+2024-07-29 10:10:47 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 10:10:47 [INFO]: Response: 200
+2024-07-29 10:10:47 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-29 10:10:48 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 10:10:49 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-29 10:10:49 [INFO]: Response: 200
+2024-07-29 10:10:49 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 10:10:49 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 10:10:49 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 10:10:50 [INFO]: Response: 200
+2024-07-29 10:11:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:11:56 [INFO]: Response: 200
+2024-07-29 10:11:56 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/c130d62b-55d6-4e57-8644-1ce2d843d039
+2024-07-29 10:11:56 [INFO]: Response: 200
+2024-07-29 10:12:16 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/89ba67d3-68ea-4f0f-bc78-405db44f3f8a
+2024-07-29 10:12:16 [INFO]: Response: 200
+2024-07-29 10:12:16 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/89ba67d3-68ea-4f0f-bc78-405db44f3f8a
+2024-07-29 10:12:16 [INFO]: Response: 200
+2024-07-29 10:12:41 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/89ba67d3-68ea-4f0f-bc78-405db44f3f8a
+2024-07-29 10:12:41 [INFO]: Response: 200
+2024-07-29 10:12:41 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/89ba67d3-68ea-4f0f-bc78-405db44f3f8a
+2024-07-29 10:12:41 [INFO]: Response: 200
+2024-07-29 10:13:25 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 10:13:25 [INFO]: Response: 200
+2024-07-29 10:13:25 [INFO]: file_cache is only supported with oauth2client<4.0.0
+2024-07-29 10:13:26 [INFO]: HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 10:13:26 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 10:13:27 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 10:13:27 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 10:13:27 [INFO]: Response: 200

@@ -14,9 +14,12 @@ import time
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.model.input_query import InputQuery, InputQueryAI
+from student_app.model.student_profile import StudentProfile
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
 from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import LLM_chain_search_engine_and_answering
+from student_app.profiling.profile_generation import LLM_profile_generation
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
@@ -215,6 +218,33 @@ async def save_ai_message(ai_message: InputQueryAI):
     except Exception as e:
         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")
+    
+
+
+
+#Endpoint for generate a student profile based on onboarding informations
+@app.post("/student_profile")
+async def create_student_profile(profile: StudentProfile):
+    academic_advisor = profile.academic_advisor
+    faculty = profile.faculty
+    major = profile.major
+    minor = profile.minor
+    name = profile.name
+    university = profile.university
+    year = year = profile.year
+
+    student_profile_prompt_answering = system
+
+    
+    try:
+        student_profile = LLM_profile_generation(student_profile_prompt_answering, name, academic_advisor, year, university, faculty, major, minor)
+        return {"student_profile": student_profile}
+    
+
+    except Exception as e:
+        logging.error(f"Error creating student profile: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error creating student profile")
+
 
 
 def create_app():
