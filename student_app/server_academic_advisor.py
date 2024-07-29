@@ -12,6 +12,7 @@ from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
+from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system
