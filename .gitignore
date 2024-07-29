@@ -1,6 +1,5 @@
 .env
 .lucy_env/
-myenv/
 myen/
 *.pyc
 *.log
