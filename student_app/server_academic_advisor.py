@@ -68,7 +68,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
     #TODO: put student profile as param of the function and get it from firebase
-    student_profile = "Mathieu a junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
+    student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
     prompt_answering = system
 
     print(f"prompt_answering: {prompt_answering}")

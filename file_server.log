@@ -1477,3 +1477,153 @@
 2024-07-26 15:35:16 [INFO]: Response: 200
 2024-07-26 15:35:16 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
 2024-07-26 15:35:16 [INFO]: Response: 404
+2024-07-29 09:41:19 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 09:41:19 [INFO]: Démarrage de l'application
+2024-07-29 09:41:19 [INFO]: Création de l'application files
+2024-07-29 09:41:19 [INFO]: Application files créée avec succès
+2024-07-29 09:41:19 [INFO]: Création de l'application academic advisor
+2024-07-29 09:41:19 [INFO]: Application academic advisor créée avec succès
+2024-07-29 09:41:19 [INFO]: Montage des applications
+2024-07-29 09:41:19 [INFO]: Applications montées avec succès
+2024-07-29 09:41:19 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 09:42:22 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 09:42:23 [INFO]: Démarrage de l'application
+2024-07-29 09:42:23 [INFO]: Création de l'application files
+2024-07-29 09:42:23 [INFO]: Application files créée avec succès
+2024-07-29 09:42:23 [INFO]: Création de l'application academic advisor
+2024-07-29 09:42:23 [INFO]: Application academic advisor créée avec succès
+2024-07-29 09:42:23 [INFO]: Montage des applications
+2024-07-29 09:42:23 [INFO]: Applications montées avec succès
+2024-07-29 09:42:23 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 09:43:43 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 09:43:44 [INFO]: Démarrage de l'application
+2024-07-29 09:43:44 [INFO]: Création de l'application files
+2024-07-29 09:43:44 [INFO]: Application files créée avec succès
+2024-07-29 09:43:44 [INFO]: Création de l'application academic advisor
+2024-07-29 09:43:44 [INFO]: Application academic advisor créée avec succès
+2024-07-29 09:43:44 [INFO]: Montage des applications
+2024-07-29 09:43:44 [INFO]: Applications montées avec succès
+2024-07-29 09:43:44 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 09:44:49 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 09:44:49 [INFO]: Response: 404
+2024-07-29 09:44:49 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 09:44:49 [INFO]: Response: 404
+2024-07-29 09:45:00 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:45:00 [INFO]: Response: 200
+2024-07-29 09:45:00 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:45:00 [INFO]: Response: 200
+2024-07-29 09:45:00 [INFO]: Found credentials in environment variables.
+2024-07-29 09:45:00 [WARNING]: Parent run 3785b031-7fc9-41cf-8147-5b1eeb4e6c62 not found for run 504d8f84-3b62-49d3-893a-fb5888506539. Treating as a root run.
+2024-07-29 09:45:02 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:45:02 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-29 09:45:02 [INFO]: Response: 200
+2024-07-29 09:45:02 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:45:02 [INFO]: Response: 404
+2024-07-29 09:46:48 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 09:46:49 [INFO]: Démarrage de l'application
+2024-07-29 09:46:49 [INFO]: Création de l'application files
+2024-07-29 09:46:49 [INFO]: Application files créée avec succès
+2024-07-29 09:46:49 [INFO]: Création de l'application academic advisor
+2024-07-29 09:46:49 [INFO]: Application academic advisor créée avec succès
+2024-07-29 09:46:49 [INFO]: Montage des applications
+2024-07-29 09:46:49 [INFO]: Applications montées avec succès
+2024-07-29 09:46:49 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 09:46:56 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:46:56 [INFO]: Response: 200
+2024-07-29 09:46:56 [INFO]: Found credentials in environment variables.
+2024-07-29 09:46:56 [WARNING]: Parent run 6592dc16-1d17-400f-b543-95359d56492b not found for run 51c2705f-63e9-4210-9cf8-ac1d1e3c6c78. Treating as a root run.
+2024-07-29 09:46:58 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:47:05 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:47:05 [INFO]: Response: 404
+2024-07-29 09:47:33 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:47:33 [INFO]: Response: 200
+2024-07-29 09:47:34 [WARNING]: Parent run 0637f9e0-08df-4e58-a9c6-eee90ae41661 not found for run bf272725-0481-486e-b621-6bec314803ba. Treating as a root run.
+2024-07-29 09:47:35 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:47:38 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:47:39 [INFO]: Response: 404
+2024-07-29 09:47:45 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:47:45 [INFO]: Response: 200
+2024-07-29 09:47:45 [WARNING]: Parent run 5034e4c7-84df-4713-80e8-69d5e094ffcf not found for run 0b988330-2657-4173-80e8-b99f252b12c4. Treating as a root run.
+2024-07-29 09:47:46 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:47:52 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:47:52 [INFO]: Response: 404
+2024-07-29 09:48:04 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:48:04 [INFO]: Response: 200
+2024-07-29 09:48:04 [WARNING]: Parent run 5812008f-28dd-417b-abb6-804c788a782f not found for run 1b33b088-e770-42cc-a645-dc40082efea0. Treating as a root run.
+2024-07-29 09:48:06 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:48:10 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:48:10 [INFO]: Response: 404
+2024-07-29 09:53:30 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 09:53:31 [INFO]: Démarrage de l'application
+2024-07-29 09:53:31 [INFO]: Création de l'application files
+2024-07-29 09:53:31 [INFO]: Application files créée avec succès
+2024-07-29 09:53:31 [INFO]: Création de l'application academic advisor
+2024-07-29 09:53:31 [INFO]: Application academic advisor créée avec succès
+2024-07-29 09:53:31 [INFO]: Montage des applications
+2024-07-29 09:53:31 [INFO]: Applications montées avec succès
+2024-07-29 09:53:31 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 09:54:09 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:54:09 [INFO]: Response: 200
+2024-07-29 09:54:09 [INFO]: Found credentials in environment variables.
+2024-07-29 09:54:09 [WARNING]: Parent run 7ec2b629-cb82-44b0-af2d-60efd0e37fa8 not found for run bf890ce1-ee45-4708-bed8-606d37d59e45. Treating as a root run.
+2024-07-29 09:54:11 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:54:19 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:54:19 [INFO]: Response: 404
+2024-07-29 09:55:15 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 09:55:15 [INFO]: Démarrage de l'application
+2024-07-29 09:55:15 [INFO]: Création de l'application files
+2024-07-29 09:55:15 [INFO]: Application files créée avec succès
+2024-07-29 09:55:15 [INFO]: Création de l'application academic advisor
+2024-07-29 09:55:15 [INFO]: Application academic advisor créée avec succès
+2024-07-29 09:55:15 [INFO]: Montage des applications
+2024-07-29 09:55:15 [INFO]: Applications montées avec succès
+2024-07-29 09:55:16 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 09:55:22 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:55:22 [INFO]: Response: 200
+2024-07-29 09:55:22 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:55:22 [INFO]: Response: 200
+2024-07-29 09:55:22 [INFO]: Found credentials in environment variables.
+2024-07-29 09:55:22 [WARNING]: Parent run 20c84af1-f4ef-4ea0-9405-a3168f4ed9e3 not found for run 160c6269-236b-46ba-bc99-870c7ea48cc5. Treating as a root run.
+2024-07-29 09:55:24 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:55:29 [INFO]: Request: OPTIONS http://localhost:5001/chat/save_ai_message
+2024-07-29 09:55:29 [INFO]: Response: 200
+2024-07-29 09:55:29 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:55:29 [INFO]: Response: 404
+2024-07-29 09:56:07 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 09:56:07 [INFO]: Démarrage de l'application
+2024-07-29 09:56:07 [INFO]: Création de l'application files
+2024-07-29 09:56:07 [INFO]: Application files créée avec succès
+2024-07-29 09:56:07 [INFO]: Création de l'application academic advisor
+2024-07-29 09:56:07 [INFO]: Application academic advisor créée avec succès
+2024-07-29 09:56:07 [INFO]: Montage des applications
+2024-07-29 09:56:07 [INFO]: Applications montées avec succès
+2024-07-29 09:56:07 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 09:56:15 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:56:15 [INFO]: Response: 200
+2024-07-29 09:56:15 [INFO]: Found credentials in environment variables.
+2024-07-29 09:56:15 [WARNING]: Parent run f3a945f7-4d5e-4d60-891c-798c0141ee11 not found for run 9cb34e7f-06c9-4254-a93d-d3c6ee1ce44c. Treating as a root run.
+2024-07-29 09:56:17 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:56:23 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:56:23 [INFO]: Response: 404
+2024-07-29 09:56:56 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:56:56 [INFO]: Response: 200
+2024-07-29 09:56:57 [WARNING]: Parent run 05afacec-fdd3-4b94-9c88-40d1a3af28b4 not found for run a78de088-7778-4ead-b063-fc0697804007. Treating as a root run.
+2024-07-29 09:56:58 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:57:04 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:57:04 [INFO]: Response: 404
+2024-07-29 09:57:15 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 09:57:16 [INFO]: Démarrage de l'application
+2024-07-29 09:57:16 [INFO]: Création de l'application files
+2024-07-29 09:57:16 [INFO]: Application files créée avec succès
+2024-07-29 09:57:16 [INFO]: Création de l'application academic advisor
+2024-07-29 09:57:16 [INFO]: Application academic advisor créée avec succès
+2024-07-29 09:57:16 [INFO]: Montage des applications
+2024-07-29 09:57:16 [INFO]: Applications montées avec succès
+2024-07-29 09:57:16 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 09:57:24 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 09:57:24 [INFO]: Response: 200
+2024-07-29 09:57:24 [INFO]: Found credentials in environment variables.
+2024-07-29 09:57:24 [WARNING]: Parent run 18f6e862-d439-490c-8c31-191a4793ffe5 not found for run d67dfa4c-b4ca-4abe-a2af-9063694bb30a. Treating as a root run.
+2024-07-29 09:57:26 [INFO]: HTTP Request: POST https://api.perplexity.ai/chat/completions "HTTP/1.1 200 OK"
+2024-07-29 09:57:30 [INFO]: Request: POST http://localhost:5001/chat/save_ai_message
+2024-07-29 09:57:30 [INFO]: Response: 404
