@@ -2,6 +2,8 @@
 .lucy_env/
 myenv/
 myen/
+*.pyc
+*.log
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
