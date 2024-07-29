@@ -21,7 +21,7 @@ class PplxChatCompletion:
 
     def __init__(self):
         self.store = {}  # Local memory
-        self.model = "llama-3-sonar-small-32k-online"  # Default model
+        self.model = "llama-3-sonar-large-32k-online"  # Default model
         self.table_name = TABLE_NAME
         self.table_AWS = table
 
@@ -147,7 +147,10 @@ def LLM_chain_perplexity(content, prompt_answering, student_profile, chat_id, un
     """
     pplx = PplxChatCompletion()
 
-    human = "my student profil is: {student_profile} and my question is {input}. Please only search information on this domain: site:upenn.edu . And be specific to the student profile. Please also provide the useful links to find the information and some related questions that could be useful to me."
+    human = """my student profil is: {student_profile} and my question is {input}. 
+                Please only search information on this domain: site:upenn.edu and refine the search with the student profile. 
+                Only mention my {student_profile} info when needed.
+            """
     
     pplx.set_prompt(prompt_answering, human)
 
