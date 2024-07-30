@@ -12,10 +12,12 @@ from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
-from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
+from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
+from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system
+from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 # Logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -40,6 +42,9 @@ PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
 
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+# Perplexity
+PPLX_API_KEY = os.getenv('PPLX_API_KEY')
 
 # FastAPI app configuration
 app = FastAPI(
@@ -68,20 +73,47 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
-    #TODO: put student profile as param of the function and get it from firebase
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
-    prompt_answering = system
 
-    print(f"prompt_answering: {prompt_answering}")
-    #Second LLM generation with the search engine + Answer generation and sources 
-    return StreamingResponse(LLM_chain_perplexity(input_message,
-                                                  prompt_answering, 
-                                                  student_profile, 
-                                                  chat_id, 
-                                                  university, 
-                                                  course_id,
-                                                  username,), 
-                                                  media_type="text/event-stream")
+    # Get all items from chat history
+    history_items = await get_chat_history(chat_id=chat_id)
+
+    # Retrieve the "n" messages from the items of the chat history
+    messages = get_messages_from_history(history_items, n=2)
+
+    # System prompt reformating
+    system_prompt = reformat_prompt(prompt=system, university=university)
+
+    # User prompt reformating
+    user_prompt = reformat_prompt(prompt=user_with_profil, input=input_message, student_profile=student_profile)
+
+    # Set prompt with history
+    prompt = set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages)
+
+    # Async storage of the input
+    await store_message_async(chat_id=chat_id, course_id=course_id, message_body=input_message, username=username)
+
+    # Stream response from Perplexity LLM with history 
+    return StreamingResponse(LLM_pplx_stream_with_history(
+        PPLX_API_KEY=PPLX_API_KEY,
+        prompt=prompt,
+    ), media_type="text/event-stream")
+
+
+    # #TODO: put student profile as param of the function and get it from firebase
+    # student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
+    # prompt_answering = system
+
+    # print(f"prompt_answering: {prompt_answering}")
+    # #Second LLM generation with the search engine + Answer generation and sources 
+    # return StreamingResponse(LLM_chain_perplexity(input_message,
+    #                                               prompt_answering, 
+    #                                               student_profile, 
+    #                                               chat_id, 
+    #                                               university, 
+    #                                               course_id,
+    #                                               username,), 
+    #                                               media_type="text/event-stream")
 
 
 

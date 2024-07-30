@@ -133,6 +133,17 @@ def get_messages_from_history(history_items: List, n: Optional[int] = None) -> L
 ####################################################### GET "N" MESSAGES FROM CHAT HISTORY #######################################################
 
 
+####################################################### REFORMAT SYSTEM CONTENT #######################################################
+def reformat_system_prompt(system_prompt: str, **kwargs) -> str:
+    try:
+        return system_prompt.format(**kwargs)
+    except KeyError as e:
+        missing_key = str(e).strip("'")
+        raise ValueError(f"Missing required placeholder: {missing_key}")
+
+####################################################### REFORMAT SYSTEM CONTENT #######################################################
+
+
 ####################################################### SET PROMPT WITH HISTORY #######################################################
 def set_prompt_with_history(system_prompt: str, chat_history: List[Dict[str, str]], user_prompt: str) -> List[Dict[str, str]]:
 
@@ -234,35 +245,58 @@ def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
 
 
 
-####################################################### TESTING #######################################################    
-## Stream perplexity API
-system_prompt = "Be precise and concise. "
+# ####################################################### TESTING #######################################################    
+# ## Stream perplexity API
+# system = """Act as an academic advisor named Lucy from {university}. 
+# Your goal is to assist students with general guidance and provide recommendations based solely on information from {university}'s official website: site:upenn.edu.
 
-# TODO: Create user prompt function to include input content
-user_input = "What did you say for my visa ?"
+# Format your response as follows and stricly highlight 3 sections with bold titles answer, sources and related questions in this exact order: 
 
-## Invoke perplexity API
-# run_perplexity_API(PPLX_API_KEY=PPLX_API_KEY, system_prompt=system_prompt, user_input=user_input)
+# [Provide a concise, informative answer to the student's query, using only information from {university}'s website. Use bullet points and bold titles for clarity when appropriate.]
+# \n\n**Sources**:
+# [List at least 2-3 specific URLs from site:upenn.edu that support your answer. Format as a numbered list.]
+# \n\n**Related Questions**:
+# [Suggest 3 potential follow-up questions the student might have, based on your response. Present as an unordered list of bullet points.]
 
-# for content in run_perplexity_API_stream(PPLX_API_KEY=PPLX_API_KEY, system_prompt=system_prompt, user_input=user_input):
+
+# Important guidelines:
+# Only use information only and only from site:upenn.edu 
+# Do not reference or use data from any other sources.
+# If the query cannot be answered using the available information, clearly state this and suggest where the student might find the information within the university system.
+# Ensure your guidance is clear, concise, and actionable.
+# Tailor your tone to be helpful and supportive, appropriate for a university advisor.
+# Use markdown formatting to enhance readability (e.g., bold for emphasis, headers for sections).
+# """
+
+# # # TODO: Create user prompt function to include input content
+# user_input = "What did you say for my visa ?"
+
+# # ## Invoke perplexity API
+# # # run_perplexity_API(PPLX_API_KEY=PPLX_API_KEY, system_prompt=system_prompt, user_input=user_input)
+
+# # # for content in run_perplexity_API_stream(PPLX_API_KEY=PPLX_API_KEY, system_prompt=system_prompt, user_input=user_input):
+# # #     print(content, end='', flush=True)
+
+# # ## Get chat history
+# history_items = get_chat_history(chat_id="8d35f7b1-41e5-4dfe-a33d-4592f768d5d5")
+# # # print(history_items)
+
+# # ## Get messages from chat history
+# messages = get_messages_from_history(history_items=history_items, n=8)
+# # print('lenght of messages: ', len(messages))
+
+# ## Reformat system prompt
+# new_system_prompt = reformat_system_prompt(system_prompt=system)
+# print(new_system_prompt)
+
+# # ## Set prompt with history
+# prompt = set_prompt_with_history(system_prompt=new_system_prompt, user_prompt=user_input, chat_history=messages)
+
+
+# # ## Stream perplexity API with history
+# for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
 #     print(content, end='', flush=True)
 
-## Get chat history
-history_items = get_chat_history(chat_id="8d35f7b1-41e5-4dfe-a33d-4592f768d5d5")
-# print(history_items)
+# """
 
-## Get messages from chat history
-messages = get_messages_from_history(history_items=history_items, n=8)
-print('lenght of messages: ', len(messages))
-
-## Set prompt with history
-prompt = set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_input, chat_history=messages)
-
-
-## Stream perplexity API with history
-for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
-    print(content, end='', flush=True)
-
-
-
-####################################################### TESTING #######################################################    
+# ####################################################### TESTING #######################################################    
