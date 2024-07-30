@@ -15,4 +15,6 @@ class InputQueryAI(BaseModel):
     username: str
     message: str
     type: str
+    uid: str
+    input_message: str
         

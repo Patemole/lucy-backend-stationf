@@ -1,11 +1,15 @@
 import os
+import time
 import requests
 import json
+import logging
+
 from typing import Optional, List, Dict
 
 import boto3
 from botocore.exceptions import ClientError
 
+from student_app.database.dynamo_db.chat import store_message_async
 
 from dotenv import load_dotenv
 
@@ -207,49 +211,54 @@ def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str)
 ####################################################### STREAM PERPLEXITY API #######################################################    
 
 
-####################################################### STREAM PERPLEXITY API WITH HISTORY #######################################################    
-def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
+####################################################### STREAM PERPLEXITY API WITH HISTORY #######################################################  
+def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]], chat_id: str, course_id: str, username: str):
     url = "https://api.perplexity.ai/chat/completions"  # Ensure this is the correct endpoint
-    payload = {
-        "model": "llama-3-sonar-small-32k-online",
-        "messages": messages,
-        "max_tokens": 30,
-        "temperature": 0,
-        # "top_p": 0.9,
-        # "return_citations": True,
-        # "return_images": False,
-        "stream": True,
-        # "top_k": 1024,
-        # "presence_penalty": 0,
-        # "frequency_penalty": 1
-    }
-    headers = {
+
+    if isinstance(messages, list) and all(isinstance(message, dict) for message in messages): 
+        
+        print(f"Messages: \n\n {messages} \n\n")
+
+        payload = {
+            "model": "llama-3-sonar-small-32k-online",
+            "messages": messages,
+            "max_tokens": 100,
+            "temperature": 0,
+            "stream": True,
+        }
+        headers = {
         "accept": "application/json",
         "content-type": "application/json",
         "authorization": f"Bearer {PPLX_API_KEY}"
-    }
+        }
 
-    with requests.post(url, json=payload, headers=headers, stream=True) as response:
-        response.raise_for_status()
-        for line in response.iter_lines():
-            if line:
-                try:
-                    chunk = json.loads(line.decode('utf-8').split('data: ')[1])
-                    if chunk['choices'][0]['delta'].get('content'):
-                        yield chunk['choices'][0]['delta']['content'] + "|"
-                except Exception as e:
-                    print("Error occured while streaming the chunks : ", e)
-                    continue
+        with requests.post(url, json=payload, headers=headers, stream=True) as response:
+            try:
+                response = requests.post(url, json=payload, headers=headers, stream=True)
+                response.raise_for_status()  # Will raise an HTTPError for bad responses
+                for line in response.iter_lines():
+                    if line:
+                        try:
+                            chunk = json.loads(line.decode('utf-8').split('data: ')[1])
+                            if chunk['choices'][0]['delta'].get('content'):
+                                yield chunk['choices'][0]['delta']['content'] + "|"
+                                if chunk['choices'][0].get('finish_reason') == "stop":
+                                    message = chunk['choices'][0]['message']['content']
+                                    store_message_async(chat_id=chat_id, course_id=course_id, username=username, message_body=message)
+                        except json.JSONDecodeError as json_err:
+                            logging.error(f"JSON decoding error: {json_err}")
+                        except Exception as e:
+                            logging.error(f"Error occurred while processing chunk: {e}")
+            except requests.exceptions.HTTPError as http_err:
+                logging.error(f"HTTP error occurred: {http_err} - Response: {response.text}")
+            except Exception as e:
+                logging.error(f"An unexpected error occurred: {e}")
+    else:
+        raise ValueError("Invalid input. Messages must be a list of dictionaries.")
+    
+    
 ####################################################### STREAM PERPLEXITY API WITH HISTORY ####################################################### 
 
-
-####################################################### RUN STREAM PERPLEXITY API WITH HISTORY ####################################################### 
-def LLM_lucy_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
-    for content in LLM_pplx_stream_with_history(PPLX_API_KEY, messages):
-        print(content, end="")
-        yield content + "|"
-
-####################################################### RUN STREAM PERPLEXITY API WITH HISTORY ####################################################### 
 
 
 
