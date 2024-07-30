@@ -9,17 +9,31 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from functools import wraps
 
+
 # from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
+
+import time
+from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
+from student_app.database.dynamo_db.analytics import store_analytics_async
+
 from student_app.model.input_query import InputQuery, InputQueryAI
+from student_app.model.student_profile import StudentProfile
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
+
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
 from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
 
-from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
+from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import LLM_chain_search_engine_and_answering
+from student_app.profiling.profile_generation import LLM_profile_generation
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system
+
+
+
+from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 # Logging configuration
 logging.basicConfig(
@@ -49,8 +63,10 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 client = OpenAI()
 
+
 # Perplexity
 PPLX_API_KEY = os.getenv('PPLX_API_KEY')
+
 
 # FastAPI app configuration
 app = FastAPI(
@@ -124,6 +140,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
+
 
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
@@ -236,6 +253,33 @@ async def save_ai_message(ai_message: InputQueryAI):
     except Exception as e:
         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")
+    
+
+
+
+#Endpoint for generate a student profile based on onboarding informations
+@app.post("/student_profile")
+async def create_student_profile(profile: StudentProfile):
+    academic_advisor = profile.academic_advisor
+    faculty = profile.faculty
+    major = profile.major
+    minor = profile.minor
+    name = profile.name
+    university = profile.university
+    year = year = profile.year
+
+    student_profile_prompt_answering = system_profile
+
+    
+    try:
+        student_profile = LLM_profile_generation(student_profile_prompt_answering, name, academic_advisor, year, university, faculty, major, minor)
+        return {"student_profile": student_profile}
+    
+
+    except Exception as e:
+        logging.error(f"Error creating student profile: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error creating student profile")
+
 
 
 def create_app():

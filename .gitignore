@@ -1,6 +1,10 @@
 .env
 .lucy_env/
 myen/*
+myenv/*
+myenvcheck/*
+.ebextensions/*
+
 *.pyc
 *.log
 
@@ -9,5 +13,3 @@ myen/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-# Fichier Test
-TEST/*
