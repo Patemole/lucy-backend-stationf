@@ -120,16 +120,18 @@ async def store_message_async(
         return None
     
 
-def get_messages_from_history(history_items: List, n: Optional[int] = None) -> List[Dict[str, str]]:
-    
+@timing_decorator
+async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> List[Dict[str, str]]:
+    filtered_items = await get_chat_history(chat_id)
+
     if n is None:
-        items = history_items # Get all messages
+        items = filtered_items # Get all messages
     elif n is not None and n%2 != 0:
         n += 1
-        items = history_items[-n:]
+        items = filtered_items[-n:]
         print("Items: ", items)
     elif n is not None and n%2 == 0:
-        items = history_items[-n:]
+        items = filtered_items[-n:]
         
     messages = []
 
@@ -142,5 +144,6 @@ def get_messages_from_history(history_items: List, n: Optional[int] = None) -> L
             messages.append(message_dict)
     
     # print(messages)
+    print(f"Retrieved {len(messages)} messages from chat history.")
     return messages
 

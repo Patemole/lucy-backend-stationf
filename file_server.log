@@ -1744,3 +1744,324 @@
 2024-07-29 19:48:51 [INFO]: Response: 404
 2024-07-29 19:49:07 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
 2024-07-29 19:49:08 [INFO]: Response: 500
+2024-07-29 22:22:59 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 22:23:00 [INFO]: Démarrage de l'application
+2024-07-29 22:23:00 [INFO]: Création de l'application files
+2024-07-29 22:23:00 [INFO]: Application files créée avec succès
+2024-07-29 22:23:00 [INFO]: Création de l'application academic advisor
+2024-07-29 22:23:00 [INFO]: Application academic advisor créée avec succès
+2024-07-29 22:23:00 [INFO]: Montage des applications
+2024-07-29 22:23:00 [INFO]: Applications montées avec succès
+2024-07-29 22:23:00 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 22:23:13 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:23:13 [INFO]: Response: 404
+2024-07-29 22:23:13 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:23:13 [INFO]: Response: 404
+2024-07-29 22:24:15 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 22:24:15 [INFO]: Response: 200
+2024-07-29 22:24:15 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 22:24:16 [INFO]: Response: 500
+2024-07-29 22:25:56 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 22:25:56 [INFO]: Démarrage de l'application
+2024-07-29 22:25:56 [INFO]: Création de l'application files
+2024-07-29 22:25:56 [INFO]: Application files créée avec succès
+2024-07-29 22:25:56 [INFO]: Création de l'application academic advisor
+2024-07-29 22:25:56 [INFO]: Application academic advisor créée avec succès
+2024-07-29 22:25:56 [INFO]: Montage des applications
+2024-07-29 22:25:56 [INFO]: Applications montées avec succès
+2024-07-29 22:25:56 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 22:26:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:26:06 [INFO]: Response: 404
+2024-07-29 22:26:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:26:06 [INFO]: Response: 404
+2024-07-29 22:26:17 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 22:26:18 [INFO]: Response: 500
+2024-07-29 22:34:20 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 22:34:21 [INFO]: Démarrage de l'application
+2024-07-29 22:34:21 [INFO]: Création de l'application files
+2024-07-29 22:34:21 [INFO]: Application files créée avec succès
+2024-07-29 22:34:21 [INFO]: Création de l'application academic advisor
+2024-07-29 22:34:21 [INFO]: Application academic advisor créée avec succès
+2024-07-29 22:34:21 [INFO]: Montage des applications
+2024-07-29 22:34:21 [INFO]: Applications montées avec succès
+2024-07-29 22:34:21 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 22:34:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:34:34 [INFO]: Response: 404
+2024-07-29 22:34:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:34:34 [INFO]: Response: 404
+2024-07-29 22:34:39 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 22:34:39 [INFO]: Response: 200
+2024-07-29 22:34:39 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 22:34:40 [INFO]: Response: 500
+2024-07-29 22:42:06 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 22:42:07 [INFO]: Démarrage de l'application
+2024-07-29 22:42:07 [INFO]: Création de l'application files
+2024-07-29 22:42:07 [INFO]: Application files créée avec succès
+2024-07-29 22:42:07 [INFO]: Création de l'application academic advisor
+2024-07-29 22:42:07 [INFO]: Application academic advisor créée avec succès
+2024-07-29 22:42:07 [INFO]: Montage des applications
+2024-07-29 22:42:07 [INFO]: Applications montées avec succès
+2024-07-29 22:42:07 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 22:42:30 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:42:30 [INFO]: Response: 404
+2024-07-29 22:42:30 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:42:30 [INFO]: Response: 404
+2024-07-29 22:42:40 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 22:42:41 [INFO]: Response: 500
+2024-07-29 22:57:53 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 22:57:54 [INFO]: Démarrage de l'application
+2024-07-29 22:57:54 [INFO]: Création de l'application files
+2024-07-29 22:57:54 [INFO]: Application files créée avec succès
+2024-07-29 22:57:54 [INFO]: Création de l'application academic advisor
+2024-07-29 22:57:54 [INFO]: Application academic advisor créée avec succès
+2024-07-29 22:57:54 [INFO]: Montage des applications
+2024-07-29 22:57:54 [INFO]: Applications montées avec succès
+2024-07-29 22:57:54 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 22:58:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:58:04 [INFO]: Response: 404
+2024-07-29 22:58:04 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 22:58:04 [INFO]: Response: 404
+2024-07-29 22:58:15 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 22:58:15 [INFO]: Response: 200
+2024-07-29 22:58:15 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 22:58:16 [INFO]: Response: 500
+2024-07-29 23:06:52 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 23:06:53 [INFO]: Démarrage de l'application
+2024-07-29 23:06:53 [INFO]: Création de l'application files
+2024-07-29 23:06:53 [INFO]: Application files créée avec succès
+2024-07-29 23:06:53 [INFO]: Création de l'application academic advisor
+2024-07-29 23:06:53 [INFO]: Application academic advisor créée avec succès
+2024-07-29 23:06:53 [INFO]: Montage des applications
+2024-07-29 23:06:53 [INFO]: Applications montées avec succès
+2024-07-29 23:06:53 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 23:07:10 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 23:07:10 [INFO]: Response: 404
+2024-07-29 23:07:10 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 23:07:10 [INFO]: Response: 404
+2024-07-29 23:07:18 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 23:07:19 [INFO]: Response: 500
+2024-07-29 23:10:04 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 23:10:05 [INFO]: Démarrage de l'application
+2024-07-29 23:10:05 [INFO]: Création de l'application files
+2024-07-29 23:10:05 [INFO]: Application files créée avec succès
+2024-07-29 23:10:05 [INFO]: Création de l'application academic advisor
+2024-07-29 23:10:05 [INFO]: Application academic advisor créée avec succès
+2024-07-29 23:10:05 [INFO]: Montage des applications
+2024-07-29 23:10:05 [INFO]: Applications montées avec succès
+2024-07-29 23:10:05 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 23:10:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 23:10:22 [INFO]: Response: 404
+2024-07-29 23:10:22 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 23:10:22 [INFO]: Response: 404
+2024-07-29 23:10:30 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 23:10:30 [INFO]: Response: 200
+2024-07-29 23:10:30 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 23:10:30 [INFO]: Response: 500
+2024-07-29 23:59:01 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-29 23:59:01 [INFO]: Démarrage de l'application
+2024-07-29 23:59:01 [INFO]: Création de l'application files
+2024-07-29 23:59:01 [INFO]: Application files créée avec succès
+2024-07-29 23:59:01 [INFO]: Création de l'application academic advisor
+2024-07-29 23:59:01 [INFO]: Application academic advisor créée avec succès
+2024-07-29 23:59:01 [INFO]: Montage des applications
+2024-07-29 23:59:01 [INFO]: Applications montées avec succès
+2024-07-29 23:59:02 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-29 23:59:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 23:59:21 [INFO]: Response: 404
+2024-07-29 23:59:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-29 23:59:21 [INFO]: Response: 404
+2024-07-29 23:59:37 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 23:59:37 [INFO]: Response: 200
+2024-07-29 23:59:37 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-29 23:59:38 [INFO]: Response: 500
+2024-07-30 00:01:15 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:01:16 [INFO]: Démarrage de l'application
+2024-07-30 00:01:16 [INFO]: Création de l'application files
+2024-07-30 00:01:16 [INFO]: Application files créée avec succès
+2024-07-30 00:01:16 [INFO]: Création de l'application academic advisor
+2024-07-30 00:01:16 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:01:16 [INFO]: Montage des applications
+2024-07-30 00:01:16 [INFO]: Applications montées avec succès
+2024-07-30 00:01:16 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:01:57 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:01:57 [INFO]: Response: 404
+2024-07-30 00:01:57 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:01:57 [INFO]: Response: 404
+2024-07-30 00:02:08 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:02:08 [INFO]: Response: 500
+2024-07-30 00:13:44 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:13:45 [INFO]: Démarrage de l'application
+2024-07-30 00:13:45 [INFO]: Création de l'application files
+2024-07-30 00:13:45 [INFO]: Application files créée avec succès
+2024-07-30 00:13:45 [INFO]: Création de l'application academic advisor
+2024-07-30 00:13:45 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:13:45 [INFO]: Montage des applications
+2024-07-30 00:13:45 [INFO]: Applications montées avec succès
+2024-07-30 00:13:45 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:13:58 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:13:58 [INFO]: Response: 404
+2024-07-30 00:13:58 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:13:58 [INFO]: Response: 404
+2024-07-30 00:14:12 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:14:12 [INFO]: Response: 200
+2024-07-30 00:14:12 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:14:13 [INFO]: Response: 500
+2024-07-30 00:15:12 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:15:12 [INFO]: Démarrage de l'application
+2024-07-30 00:15:12 [INFO]: Création de l'application files
+2024-07-30 00:15:12 [INFO]: Application files créée avec succès
+2024-07-30 00:15:12 [INFO]: Création de l'application academic advisor
+2024-07-30 00:15:12 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:15:12 [INFO]: Montage des applications
+2024-07-30 00:15:12 [INFO]: Applications montées avec succès
+2024-07-30 00:15:12 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:15:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:15:21 [INFO]: Response: 404
+2024-07-30 00:15:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:15:21 [INFO]: Response: 404
+2024-07-30 00:15:24 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:15:24 [INFO]: Response: 500
+2024-07-30 00:28:48 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:28:49 [INFO]: Démarrage de l'application
+2024-07-30 00:28:49 [INFO]: Création de l'application files
+2024-07-30 00:28:49 [INFO]: Application files créée avec succès
+2024-07-30 00:28:49 [INFO]: Création de l'application academic advisor
+2024-07-30 00:28:49 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:28:49 [INFO]: Montage des applications
+2024-07-30 00:28:49 [INFO]: Applications montées avec succès
+2024-07-30 00:28:49 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:29:31 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:29:31 [INFO]: Response: 404
+2024-07-30 00:29:31 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:29:31 [INFO]: Response: 404
+2024-07-30 00:29:34 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:29:34 [INFO]: Response: 200
+2024-07-30 00:29:34 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:29:35 [ERROR]: Error while retrieving 'n' messages from chat history items: object list can't be used in 'await' expression
+2024-07-30 00:29:35 [INFO]: Response: 500
+2024-07-30 00:33:09 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:33:10 [INFO]: Démarrage de l'application
+2024-07-30 00:33:10 [INFO]: Création de l'application files
+2024-07-30 00:33:10 [INFO]: Application files créée avec succès
+2024-07-30 00:33:10 [INFO]: Création de l'application academic advisor
+2024-07-30 00:33:10 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:33:10 [INFO]: Montage des applications
+2024-07-30 00:33:10 [INFO]: Applications montées avec succès
+2024-07-30 00:33:10 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:33:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:33:34 [INFO]: Response: 404
+2024-07-30 00:33:34 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:33:34 [INFO]: Response: 404
+2024-07-30 00:33:37 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:33:38 [ERROR]: Error while retrieving 'n' messages from chat history items: object list can't be used in 'await' expression
+2024-07-30 00:33:38 [INFO]: Response: 500
+2024-07-30 00:35:39 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:35:40 [INFO]: Démarrage de l'application
+2024-07-30 00:35:40 [INFO]: Création de l'application files
+2024-07-30 00:35:40 [INFO]: Application files créée avec succès
+2024-07-30 00:35:40 [INFO]: Création de l'application academic advisor
+2024-07-30 00:35:40 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:35:40 [INFO]: Montage des applications
+2024-07-30 00:35:40 [INFO]: Applications montées avec succès
+2024-07-30 00:35:40 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:35:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:35:59 [INFO]: Response: 404
+2024-07-30 00:35:59 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:35:59 [INFO]: Response: 404
+2024-07-30 00:36:01 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:36:02 [ERROR]: Error while retrieving 'n' messages from chat history items: object list can't be used in 'await' expression
+2024-07-30 00:36:02 [INFO]: Response: 500
+2024-07-30 00:40:32 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:40:32 [INFO]: Démarrage de l'application
+2024-07-30 00:40:32 [INFO]: Création de l'application files
+2024-07-30 00:40:32 [INFO]: Application files créée avec succès
+2024-07-30 00:40:32 [INFO]: Création de l'application academic advisor
+2024-07-30 00:40:32 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:40:32 [INFO]: Montage des applications
+2024-07-30 00:40:32 [INFO]: Applications montées avec succès
+2024-07-30 00:40:32 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:40:53 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:40:53 [INFO]: Response: 404
+2024-07-30 00:40:53 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:40:53 [INFO]: Response: 404
+2024-07-30 00:40:57 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:40:57 [INFO]: Response: 200
+2024-07-30 00:40:57 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:40:58 [INFO]: Response: 200
+2024-07-30 00:42:56 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:42:57 [INFO]: Démarrage de l'application
+2024-07-30 00:42:57 [INFO]: Création de l'application files
+2024-07-30 00:42:57 [INFO]: Application files créée avec succès
+2024-07-30 00:42:57 [INFO]: Création de l'application academic advisor
+2024-07-30 00:42:57 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:42:57 [INFO]: Montage des applications
+2024-07-30 00:42:57 [INFO]: Applications montées avec succès
+2024-07-30 00:42:57 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:43:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:43:06 [INFO]: Response: 404
+2024-07-30 00:43:06 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:43:06 [INFO]: Response: 404
+2024-07-30 00:43:09 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:43:11 [INFO]: Response: 200
+2024-07-30 00:45:07 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:45:08 [INFO]: Démarrage de l'application
+2024-07-30 00:45:08 [INFO]: Création de l'application files
+2024-07-30 00:45:08 [INFO]: Application files créée avec succès
+2024-07-30 00:45:08 [INFO]: Création de l'application academic advisor
+2024-07-30 00:45:08 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:45:08 [INFO]: Montage des applications
+2024-07-30 00:45:08 [INFO]: Applications montées avec succès
+2024-07-30 00:45:08 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:46:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:46:21 [INFO]: Response: 404
+2024-07-30 00:46:21 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:46:21 [INFO]: Response: 404
+2024-07-30 00:46:24 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:46:26 [INFO]: Response: 200
+2024-07-30 00:49:27 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:49:27 [INFO]: Démarrage de l'application
+2024-07-30 00:49:27 [INFO]: Création de l'application files
+2024-07-30 00:49:27 [INFO]: Application files créée avec succès
+2024-07-30 00:49:27 [INFO]: Création de l'application academic advisor
+2024-07-30 00:49:27 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:49:27 [INFO]: Montage des applications
+2024-07-30 00:49:27 [INFO]: Applications montées avec succès
+2024-07-30 00:49:27 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:49:38 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:49:38 [INFO]: Response: 404
+2024-07-30 00:49:38 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:49:38 [INFO]: Response: 404
+2024-07-30 00:49:42 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:49:43 [INFO]: Response: 200
+2024-07-30 00:55:30 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:55:31 [INFO]: Démarrage de l'application
+2024-07-30 00:55:31 [INFO]: Création de l'application files
+2024-07-30 00:55:31 [INFO]: Application files créée avec succès
+2024-07-30 00:55:31 [INFO]: Création de l'application academic advisor
+2024-07-30 00:55:31 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:55:31 [INFO]: Montage des applications
+2024-07-30 00:55:31 [INFO]: Applications montées avec succès
+2024-07-30 00:55:31 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:56:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:56:14 [INFO]: Response: 404
+2024-07-30 00:56:14 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:56:14 [INFO]: Response: 404
+2024-07-30 00:56:17 [INFO]: Request: OPTIONS http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:56:17 [INFO]: Response: 200
+2024-07-30 00:56:17 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:56:18 [INFO]: Response: 200
+2024-07-30 00:57:55 [INFO]: HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2024-07-30 00:57:55 [INFO]: Démarrage de l'application
+2024-07-30 00:57:55 [INFO]: Création de l'application files
+2024-07-30 00:57:55 [INFO]: Application files créée avec succès
+2024-07-30 00:57:55 [INFO]: Création de l'application academic advisor
+2024-07-30 00:57:55 [INFO]: Application academic advisor créée avec succès
+2024-07-30 00:57:55 [INFO]: Montage des applications
+2024-07-30 00:57:55 [INFO]: Applications montées avec succès
+2024-07-30 00:57:56 [INFO]: Démarrage du serveur sur le port 5001
+2024-07-30 00:58:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:58:03 [INFO]: Response: 404
+2024-07-30 00:58:03 [INFO]: Request: GET http://localhost:5001/chat/get_chat_history/6f9b98d4-7f92-4f7b-abe5-71c2c634edb2
+2024-07-30 00:58:03 [INFO]: Response: 404
+2024-07-30 00:58:07 [INFO]: Request: POST http://localhost:5001/chat/send_message_socratic_langgraph
+2024-07-30 00:58:08 [INFO]: Response: 200
