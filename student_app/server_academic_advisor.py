@@ -1,7 +1,8 @@
 import os
 import asyncio
 import logging
-from fastapi import FastAPI, Request, Response
+from openai import OpenAI
+from fastapi import APIRouter, FastAPI, HTTPException, Request, Response, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -12,7 +13,8 @@ from functools import wraps
 from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
-from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history, LLM_lucy_stream_with_history
+from student_app.database.dynamo_db.analytics import store_analytics_async
+from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
 from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
 
@@ -43,6 +45,9 @@ PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
 
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+client = OpenAI()
 
 # Perplexity
 PPLX_API_KEY = os.getenv('PPLX_API_KEY')
@@ -60,6 +65,52 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+#############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
+
+async def count_words(input_message: str) -> int:
+    # Compte le nombre de mots dans la chaîne de caractères input_message
+    word_count = len(input_message.split())
+    print("\n")
+    print("This is the number of word in the input:")
+    print(word_count)
+    print("\n")
+    return word_count
+
+async def get_embedding(input_message: str, model="text-embedding-3-small"):
+   input_message = input_message.replace("\n", " ")
+   embeddings = client.embeddings.create(input = [input_message], model=model).data[0].embedding
+   print("\n")
+   print("This is the embeddings for the question:")
+   print(embeddings)
+   print("\n")
+   return embeddings
+
+
+async def count_student_questions(chat_history):
+    question_count = 0
+    if not chat_history:
+
+        print("\n")
+        print("This is the number of question per chat_id (first message here):")
+        print(question_count)
+        print("\n")
+        
+        return question_count
+    
+    for message in chat_history:
+        if message['username'].lower() != 'lucy':
+            question_count += 1
+    
+    print("\n")
+    print("This is the number of question per chat_id:")
+    print(question_count)
+    print("\n")
+    return question_count
+
+#############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
+
+
 
 #chat_router = APIRouter(prefix='/chat', tags=['chat'])
 
@@ -106,41 +157,70 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     except:
         logging.error(f"Error while setting prompt with history: {str(e)}")
 
-    # async storage of the input
+    # Async storage of the input
     try:
-        asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
+        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
     except Exception as e:
         logging.error(f"Error while storing the input message: {str(e)}")
 
     # Stream the response
-    def event_stream():
-        for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
-            # print(content, end='', flush=True)
-            yield content + "|"
+    # def event_stream():
+    #     for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
+    #         # print(content, end='', flush=True)
+    #         yield content + "|"
 
     # Stream response from Perplexity LLM with history 
     try:
-        # return StreamingResponse(LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt), media_type="text/event-stream")
-        return StreamingResponse(event_stream(), media_type="text/event-stream")
+        return StreamingResponse(LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, 
+                                                              messages=prompt,
+                                                              chat_id=chat_id,
+                                                              course_id=course_id,
+                                                              username=username), media_type="text/event-stream")
+        # return StreamingResponse(event_stream(), media_type="text/event-stream")
     except Exception as e:
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
 
+# NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
+@app.post("/save_ai_message")
+async def save_ai_message(ai_message: InputQueryAI):
+    chat_id = ai_message.chatSessionId
+    course_id = ai_message.courseId
+    username = ai_message.username
+    input_message = ai_message.input_message
+    output_message = ai_message.message
+    type = ai_message.type #Pas utilisé pour l'instant, on va faire la selection quand on récupérera le username if !== "Lucy" alors on mets "human" else "ai"
+    uid = ai_message.uid
 
-    # #TODO: put student profile as param of the function and get it from firebase
-    # student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
-    # prompt_answering = system
+    print("input_message de l'utilisateur:")
+    print(input_message)
+    print("output_message de l'IA:")
+    print(output_message)
+    #Pour générer l'embedding de la réponse de Lucy
+    input_embeddings = await get_embedding(input_message)
+    output_embeddings = await get_embedding(output_message)
 
-    # print(f"prompt_answering: {prompt_answering}")
-    # #Second LLM generation with the search engine + Answer generation and sources 
-    # return StreamingResponse(LLM_chain_perplexity(input_message,
-    #                                               prompt_answering, 
-    #                                               student_profile, 
-    #                                               chat_id, 
-    #                                               university, 
-    #                                               course_id,
-    #                                               username,), 
-    #                                               media_type="text/event-stream")
+    word_count_task = await count_words(input_message)
 
+    chat_history = await get_chat_history(chat_id)
+    number_of_question_per_chat_id = await count_student_questions(chat_history)
+    number_of_question_per_chat_id = number_of_question_per_chat_id + 1
+
+    
+
+    try:
+        message_id = await store_message_async(chat_id, username=username, course_id=course_id, message_body=output_message)
+        print(f"Stored message with ID: {message_id}")
+
+        #data à récupérer et faire la logic 
+        feedback = 'no'
+        ask_for_advisor = 'no'
+
+        #Rajouter ici la fonction pour sauvegarder les informations dans la table analytics 
+        await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id, input_message=input_message, output_message=output_message)
+
+    except Exception as e:
+        logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")
 
 
 def create_app():
