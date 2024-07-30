@@ -171,14 +171,29 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Stream response from Perplexity LLM with history 
     try:
-        return StreamingResponse(LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, 
-                                                              messages=prompt,
-                                                              chat_id=chat_id,
-                                                              course_id=course_id,
-                                                              username=username), media_type="text/event-stream")
+        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt), media_type="text/event-stream")
         # return StreamingResponse(event_stream(), media_type="text/event-stream")
     except Exception as e:
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
+
+
+# RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
+@app.get("/get_chat_history/{chat_id}")
+async def get_chat_history_route(chat_id: str):
+    return await get_chat_history(chat_id)
+
+
+
+# SUPPRIMER L'HISTORIQUE DE CHAT CHAQUE CHARGEMENT DE LA PAGE - TO BE DEPRECIATED
+@app.post("/delete_chat_history/{chat_id}")
+async def delete_chat_history_route(chat_id: str):
+    try:
+        await delete_all_items_and_adding_first_message(chat_id)
+        return {"message": "Chat history deleted successfully"}
+    except Exception as e:
+        logging.error(f"Erreur lors de la suppression de l'historique du chat : {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
+
 
 # NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
 @app.post("/save_ai_message")
