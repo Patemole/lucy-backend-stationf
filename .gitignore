@@ -1,4 +1,6 @@
 .env
+.lucy_env/
+myen/*
 myenv/*
 myenvcheck/*
 .ebextensions/*
@@ -10,3 +12,4 @@ myenvcheck/*
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+

@@ -7,7 +7,7 @@ load_dotenv()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_REGION = os.getenv('AWS_REGION')
+AWS_REGION = os.getenv('AWS_DEFAULT_REGION')
 
 
 class DynamoDBClient:
@@ -25,6 +25,7 @@ class DynamoDBClient:
                     region_name = AWS_REGION
                 )
                 print("DynamoDBClient initialized successfully")
+                print("AWS Region: ", AWS_REGION)
             except Exception as e:
                 print(f"Failed to initialize DynamoDBClient: {e}")
         else:
