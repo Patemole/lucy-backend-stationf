@@ -1,5 +1,3 @@
-
-import sys
 import os
 import asyncio
 import logging
@@ -10,19 +8,33 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from functools import wraps
+
+
+# from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
+
 import time
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
 from student_app.database.dynamo_db.analytics import store_analytics_async
+
 from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.model.student_profile import StudentProfile
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
+
+from student_app.database.dynamo_db.analytics import store_analytics_async
+from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
+from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
+from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
+
 from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import LLM_chain_search_engine_and_answering
 from student_app.profiling.profile_generation import LLM_profile_generation
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system
 
-from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
+
+from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
+from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 # Logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -50,6 +62,11 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 client = OpenAI()
+
+
+# Perplexity
+PPLX_API_KEY = os.getenv('PPLX_API_KEY')
+
 
 # FastAPI app configuration
 app = FastAPI(
@@ -124,39 +141,57 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
-    # Récupérez l'historique de chat
-    chat_history = await get_chat_history(chat_id)
-    print(chat_history)
-    
-    # Stockez le message de manière asynchrone
-    asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
-    # Lancer le comptage de mots de manière asynchrone sans attendre
-    # Créer des tâches pour le comptage de mots et la génération d'embeddings
-    
 
-    # Selection of the route from the router + first LLM generation for query reformulation for the Search Engine (with follow-up questions)
-    search_engine_query, prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message, chat_history)
+    student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
-    print(f"search_engine_query: {search_engine_query}, prompt_answering: {prompt_answering}, method: {method}, keywords: {keywords}")
+    # Get all items from chat history
+    # try:
+    #     history_items = await get_chat_history(chat_id=chat_id)
+    # except Exception as e:
+    #     logging.error(f"Error while retrieving chat history items : {str(e)}")
 
-    #Second LLM generation with the search engine + Answer generation and sources 
-    return StreamingResponse(LLM_chain_search_engine_and_answering(input_message, search_engine_query, prompt_answering, student_profile, chat_history, university, method, course_id, keywords), media_type="text/event-stream")
+    # Retrieve the "n" messages from the items of the chat history
+    try:
+        messages = await get_messages_from_history(chat_id=chat_id, n=2)
+    except Exception as e:
+        logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
+    # System prompt reformating
+    try:
+        system_prompt = await reformat_prompt(prompt=system, university=university)
+    except Exception as e:
+        logging.error(f"Error while reformating system prompt: {str(e)}")
 
-    # Créez une réponse en streaming en passant l'historique de chat
-    #return StreamingResponse(academic_advisor_answer_generation(input_message, chat_history), media_type="text/event-stream")
+    # User prompt reformating
+    try:
+        user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, student_profile=student_profile)
+    except Exception as e:
+        logging.error(f"Error while reformating user prompt: {str(e)}")
 
-    #Rajouter ici en paramètre le prompt + la bonne instance de search engine
-    #streaming_answer = LLM_chain_generation(input_message, chat_history)
+    # Set prompt with history
+    try:
+        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages)
+    except:
+        logging.error(f"Error while setting prompt with history: {str(e)}")
 
-    #return StreamingResponse(streaming_answer, media_type="text/event-stream")
-    #Ancienne manière de récupérer le message
-    #return StreamingResponse(LLM_chain_generation(input_message, chat_history), media_type="text/event-stream")
+    # Async storage of the input
+    try:
+        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+    except Exception as e:
+        logging.error(f"Error while storing the input message: {str(e)}")
 
-    # Il faudra appeler une autre fonction en fonction de si c'est l'academic advisor ou d'autres cours.
-    # Logic suivante : if course_id == "academic_advisor" : return StreamingResponse(academic_advisor_answer_generation(input_query.message, chat_history), media_type="text/event-stream")
-    # else : return StreamingResponse(socratic_answer_generation(input_query.message, chat_history, course_id), media_type="text/event-stream")
-    # avec le course_id qui correspond au cours que l'élève a demandé.
+    # Stream the response
+    # def event_stream():
+    #     for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
+    #         # print(content, end='', flush=True)
+    #         yield content + "|"
+
+    # Stream response from Perplexity LLM with history 
+    try:
+        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt), media_type="text/event-stream")
+        # return StreamingResponse(event_stream(), media_type="text/event-stream")
+    except Exception as e:
+        logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
@@ -175,7 +210,7 @@ async def delete_chat_history_route(chat_id: str):
     except Exception as e:
         logging.error(f"Erreur lors de la suppression de l'historique du chat : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
-    
+
 
 # NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
 @app.post("/save_ai_message")
@@ -233,7 +268,7 @@ async def create_student_profile(profile: StudentProfile):
     university = profile.university
     year = year = profile.year
 
-    student_profile_prompt_answering = system
+    student_profile_prompt_answering = system_profile
 
     
     try:

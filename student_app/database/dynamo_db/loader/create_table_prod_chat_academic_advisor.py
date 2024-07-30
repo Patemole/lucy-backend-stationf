@@ -119,7 +119,7 @@ def create_chat_table():
     try:
         # Création de la table MVP_chat_academic_advisor
         table = dynamodb.create_table(
-            TableName='MVP_chat_academic_advisor',
+            TableName='DEV_Memory_academic_advisor',
             KeySchema=[
                 {
                     'AttributeName': 'chat_id',  # Nom de l'attribut pour la clé de partition
