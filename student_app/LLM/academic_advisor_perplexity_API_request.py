@@ -74,101 +74,15 @@ def run_perplexity_API(PPLX_API_KEY, system_prompt, user_input):
 ####################################################### INVOKE PERPLEXITY API #######################################################
 
 
-####################################################### RETRIEVE CHAT HISTORY #######################################################
-# Configuration de la connexion à DynamoDB
-dynamodb = boto3.resource(
-    'dynamodb',
-    region_name="eu-west-3",  # Assurez-vous que la région est correcte
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
-)
-
-# Référence à la table 
-#ADD AN ENVIRONMENT VARIABLE FOR TABLE
-table = dynamodb.Table("dev_chat_academic_advisor")
-
-def get_chat_history(chat_id):
-        print("\n")
-        print(f"Attempting to retrieve chat history for chat_id: {chat_id}")
-        try:
-            response = table.query(
-                KeyConditionExpression='chat_id = :chat_id',
-                ExpressionAttributeValues={':chat_id': chat_id},
-                ScanIndexForward=True  # Tri ascendant par timestamp (du plus ancien au plus récent)
-            )
-            items = response.get('Items', [])
-            print(f"Retrieved {len(items)} items from chat history.")
-
-            return items
-        except ClientError as e:
-            error_code = e.response['Error']['Code']
-            error_message = e.response['Error']['Message']
-            print(f"Error querying chat history: {error_code} - {error_message}")
-            return []
-####################################################### RETRIEVE CHAT HISTORY #######################################################
-
-
-####################################################### GET "N" MESSAGES FROM CHAT HISTORY #######################################################
-def get_messages_from_history(history_items: List, n: Optional[int] = None) -> List[Dict[str, str]]:
-    
-    if n is None:
-        items = history_items # Get all messages
-    elif n is not None and n%2 != 0:
-        n += 1
-        items = history_items[-n:]
-        print("Items: ", items)
-    elif n is not None and n%2 == 0:
-        items = history_items[-n:]
-        
-    messages = []
-
-    for item in items:
-        if item['username'] == "Lucy":
-            message_dict = {"role": "assistant", "content": item['body']}
-            messages.append(message_dict)
-        else:
-            message_dict = {"role": "user", "content": item['body']}
-            messages.append(message_dict)
-    
-    print(messages)
-    return messages
-
-    
-####################################################### GET "N" MESSAGES FROM CHAT HISTORY #######################################################
-
-
-####################################################### REFORMAT SYSTEM CONTENT #######################################################
-def reformat_system_prompt(system_prompt: str, **kwargs) -> str:
-    try:
-        return system_prompt.format(**kwargs)
-    except KeyError as e:
-        missing_key = str(e).strip("'")
-        raise ValueError(f"Missing required placeholder: {missing_key}")
-
-####################################################### REFORMAT SYSTEM CONTENT #######################################################
-
-
-####################################################### SET PROMPT WITH HISTORY #######################################################
-def set_prompt_with_history(system_prompt: str, chat_history: List[Dict[str, str]], user_prompt: str) -> List[Dict[str, str]]:
-
-    messages = [
-        {
-            "role": "system",
-            "content": system_prompt
-        },
-        *chat_history,
-        {
-            "role": "user",
-            "content": user_prompt
-        }
-    ]
-    print(messages)
-    return messages
-####################################################### SET PROMPT WITH HISTORY #######################################################
-
 
 ####################################################### STREAM PERPLEXITY API #######################################################    
 def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str):
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
+    PPLX_API_KEY = os.getenv("PPLX_API_KEY")
+
     url = "https://api.perplexity.ai/chat/completions"  # Ensure this is the correct endpoint
     payload = {
         "model": "llama-3-sonar-small-32k-online",
@@ -212,7 +126,14 @@ def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str)
 
 
 ####################################################### STREAM PERPLEXITY API WITH HISTORY #######################################################  
-def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]], chat_id: str, course_id: str, username: str):
+def LLM_pplx_stream_with_history(messages: List[Dict[str, str]]):
+    from dotenv import load_dotenv
+    import os
+
+    load_dotenv()
+    PPLX_API_KEY = os.getenv("PPLX_API_KEY")
+
+
     url = "https://api.perplexity.ai/chat/completions"  # Ensure this is the correct endpoint
 
     if isinstance(messages, list) and all(isinstance(message, dict) for message in messages): 
@@ -222,7 +143,7 @@ def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]], c
         payload = {
             "model": "llama-3-sonar-small-32k-online",
             "messages": messages,
-            "max_tokens": 100,
+            "max_tokens": 300,
             "temperature": 0,
             "stream": True,
         }
@@ -242,9 +163,6 @@ def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]], c
                             chunk = json.loads(line.decode('utf-8').split('data: ')[1])
                             if chunk['choices'][0]['delta'].get('content'):
                                 yield chunk['choices'][0]['delta']['content'] + "|"
-                                if chunk['choices'][0].get('finish_reason') == "stop":
-                                    message = chunk['choices'][0]['message']['content']
-                                    store_message_async(chat_id=chat_id, course_id=course_id, username=username, message_body=message)
                         except json.JSONDecodeError as json_err:
                             logging.error(f"JSON decoding error: {json_err}")
                         except Exception as e:
