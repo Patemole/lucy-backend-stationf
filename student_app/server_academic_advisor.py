@@ -65,7 +65,7 @@ client = OpenAI()
 
 
 # Perplexity
-PPLX_API_KEY = os.getenv('PPLX_API_KEY')
+# PPLX_API_KEY = os.getenv('PPLX_API_KEY')
 
 
 # FastAPI app configuration
