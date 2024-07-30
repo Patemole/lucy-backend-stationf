@@ -21,7 +21,7 @@ AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 # Configuration de la connexion à DynamoDB
 dynamodb = boto3.resource(
     'dynamodb',
-    region_name="us-east-1",  # Assurez-vous que la région est correcte
+    region_name="eu-west-3",  # Assurez-vous que la région est correcte
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
@@ -141,5 +141,6 @@ def get_messages_from_history(history_items: List, n: Optional[int] = None) -> L
             message_dict = {"role": "user", "content": item['body']}
             messages.append(message_dict)
     
-    print(messages)
+    # print(messages)
     return messages
+
