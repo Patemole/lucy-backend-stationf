@@ -1,0 +1,1 @@
+web: gunicorn -k uvicorn.workers.UvicornWorker student_app.server_run:app

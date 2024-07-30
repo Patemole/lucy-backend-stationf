@@ -12,6 +12,7 @@ import json
 from typing import Optional
 
 
+
 load_dotenv()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -118,6 +119,7 @@ async def store_message_async(
         error_message = e.response['Error']['Message']
         print(f"Error inserting message into chat history: {error_code} - {error_message}")
         return None
+
     
 
 @timing_decorator
