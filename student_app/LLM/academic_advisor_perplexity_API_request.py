@@ -215,13 +215,13 @@ def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
         "messages": messages,
         "max_tokens": 30,
         "temperature": 0,
-        "top_p": 0.9,
-        "return_citations": True,
-        "return_images": False,
+        # "top_p": 0.9,
+        # "return_citations": True,
+        # "return_images": False,
         "stream": True,
-        "top_k": 1024,
-        "presence_penalty": 0,
-        "frequency_penalty": 1
+        # "top_k": 1024,
+        # "presence_penalty": 0,
+        # "frequency_penalty": 1
     }
     headers = {
         "accept": "application/json",
@@ -236,12 +236,20 @@ def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
                 try:
                     chunk = json.loads(line.decode('utf-8').split('data: ')[1])
                     if chunk['choices'][0]['delta'].get('content'):
-                        yield chunk['choices'][0]['delta']['content']
-                except (json.JSONDecodeError, IndexError):
+                        yield chunk['choices'][0]['delta']['content'] + "|"
+                except Exception as e:
+                    print("Error occured while streaming the chunks : ", e)
                     continue
 ####################################################### STREAM PERPLEXITY API WITH HISTORY ####################################################### 
 
 
+####################################################### RUN STREAM PERPLEXITY API WITH HISTORY ####################################################### 
+def LLM_lucy_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
+    for content in LLM_pplx_stream_with_history(PPLX_API_KEY, messages):
+        print(content, end="")
+        yield content + "|"
+
+####################################################### RUN STREAM PERPLEXITY API WITH HISTORY ####################################################### 
 
 
 
@@ -269,7 +277,7 @@ def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
 # """
 
 # # # TODO: Create user prompt function to include input content
-# user_input = "What did you say for my visa ?"
+# user_input = "how do i register at upenn ?"
 
 # # ## Invoke perplexity API
 # # # run_perplexity_API(PPLX_API_KEY=PPLX_API_KEY, system_prompt=system_prompt, user_input=user_input)
@@ -286,7 +294,7 @@ def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
 # # print('lenght of messages: ', len(messages))
 
 # ## Reformat system prompt
-# new_system_prompt = reformat_system_prompt(system_prompt=system)
+# new_system_prompt = reformat_system_prompt(system_prompt=system, university="UPenn")
 # print(new_system_prompt)
 
 # # ## Set prompt with history
@@ -294,9 +302,12 @@ def LLM_pplx_stream_with_history(PPLX_API_KEY, messages: List[Dict[str, str]]):
 
 
 # # ## Stream perplexity API with history
-# for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
-#     print(content, end='', flush=True)
+# # for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
+# #     print(content, end='', flush=True)
 
-# """
+# ## Use Lucy
+# LLM_lucy_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt)
+
+
 
 # ####################################################### TESTING #######################################################    

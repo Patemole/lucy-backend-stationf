@@ -1,4 +1,5 @@
 import os
+import asyncio
 import logging
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,7 +12,7 @@ from functools import wraps
 from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 from student_app.academic_advisor import academic_advisor_answer_generation
-from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
+from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history, LLM_lucy_stream_with_history
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
 from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
 
@@ -76,28 +77,53 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
     # Get all items from chat history
-    history_items = await get_chat_history(chat_id=chat_id)
+    # try:
+    #     history_items = await get_chat_history(chat_id=chat_id)
+    # except Exception as e:
+    #     logging.error(f"Error while retrieving chat history items : {str(e)}")
 
     # Retrieve the "n" messages from the items of the chat history
-    messages = get_messages_from_history(history_items, n=2)
+    try:
+        messages = await get_messages_from_history(chat_id=chat_id, n=2)
+    except Exception as e:
+        logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
     # System prompt reformating
-    system_prompt = reformat_prompt(prompt=system, university=university)
+    try:
+        system_prompt = await reformat_prompt(prompt=system, university=university)
+    except Exception as e:
+        logging.error(f"Error while reformating system prompt: {str(e)}")
 
     # User prompt reformating
-    user_prompt = reformat_prompt(prompt=user_with_profil, input=input_message, student_profile=student_profile)
+    try:
+        user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, student_profile=student_profile)
+    except Exception as e:
+        logging.error(f"Error while reformating user prompt: {str(e)}")
 
     # Set prompt with history
-    prompt = set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages)
+    try:
+        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages)
+    except:
+        logging.error(f"Error while setting prompt with history: {str(e)}")
 
-    # Async storage of the input
-    await store_message_async(chat_id=chat_id, course_id=course_id, message_body=input_message, username=username)
+    # async storage of the input
+    try:
+        asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
+    except Exception as e:
+        logging.error(f"Error while storing the input message: {str(e)}")
+
+    # Stream the response
+    def event_stream():
+        for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
+            # print(content, end='', flush=True)
+            yield content + "|"
 
     # Stream response from Perplexity LLM with history 
-    return StreamingResponse(LLM_pplx_stream_with_history(
-        PPLX_API_KEY=PPLX_API_KEY,
-        prompt=prompt,
-    ), media_type="text/event-stream")
+    try:
+        # return StreamingResponse(LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt), media_type="text/event-stream")
+        return StreamingResponse(event_stream(), media_type="text/event-stream")
+    except Exception as e:
+        logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
 
 
     # #TODO: put student profile as param of the function and get it from firebase
