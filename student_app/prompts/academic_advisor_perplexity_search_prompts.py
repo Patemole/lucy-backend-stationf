@@ -110,7 +110,7 @@ Your goal is to help student with general directives and propose recommendations
 - Keep your answer concise with a maximum of 100 words.
 
 """
-=======
+
 system_profile = """
 Create a profile sentence for the student using the provided details. Ensure to include their username, university, faculty, major, minor, year, and academic advisor.
 example of profile:

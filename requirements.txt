@@ -176,3 +176,4 @@ websockets==12.0
 xarray==2024.5.0
 yarl==1.9.4
 zipp==3.19.2
+phospho==0.3.30
