@@ -1,4 +1,4 @@
-predefined_messages = [
+predefined_messages_prompt = [
     {
         "role": "user", 
         "content": "Hello Lucy, can you help me with the different enquiries I have at {university}?"

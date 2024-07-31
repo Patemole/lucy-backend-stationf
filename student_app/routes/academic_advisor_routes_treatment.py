@@ -19,11 +19,7 @@ def timing_decorator(func):
 
 #Il faut rajouter un "search_engine", un "RAG" ou "nothing" en plus dans les paramètres a renvoyer pour savoir quoi utiliser ensuite dans la fonction qui asnwer 
 @timing_decorator
-async def academic_advisor_router_treatment(input_message, 
-                                            chat_id, 
-                                            username,
-                                            course_id,
-                                            chat_history = None,):
+async def academic_advisor_router_treatment(input_message: str):
 
     print("Routing in progress...")
     print("\n")
@@ -53,6 +49,7 @@ async def academic_advisor_router_treatment(input_message,
      #if not politics or chitchat then it is general AA questions 
     #else:
     elif router_answer.name == None:
-         prompt_answering = "normal"
+         prompt_answering = prompts.system_normal_search
          question_type = "normal"
+    print(f"ROUTE RESULTS: {question_type}")
     return prompt_answering, question_type

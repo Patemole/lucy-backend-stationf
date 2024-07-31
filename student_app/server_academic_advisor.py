@@ -17,17 +17,18 @@ from student_app.model.student_profile import StudentProfile
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_chitchat
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
-from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
-from student_app.prompts.academic_advisor_predefined_messages import predefined_messages
+from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history, reformat_messages
+from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt
 
 from student_app.profiling.profile_generation import LLM_profile_generation
 
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
+from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
 
 
@@ -65,7 +66,7 @@ client = OpenAI()
 #Phospho
 PHOSPHO_KEY = os.getenv('PHOSPHO_KEY')
 PHOSPHO_PROJECT_ID = os.getenv('PHOSPHO_PROJECT_ID')
-phospho.init(api_key='b08542208fd42d8640c0f88d006f31c9cc11453ec5f489e160cfcefa1028cac5bcd4d4ab43bcba45a6052081a22c56b8', project_id='38fc0ee240ee43a7bac2a36419258dcd')
+phospho.init(api_key=PHOSPHO_KEY, project_id=PHOSPHO_PROJECT_ID)
 
 
 
@@ -142,7 +143,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
-
+    prompt_answering, question_type = await academic_advisor_router_treatment(input_message=input_message)
+    
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
     # Get all items from chat history
@@ -152,22 +154,40 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     #     logging.error(f"Error while retrieving chat history items : {str(e)}")
 
     # Retrieve the "n" messages from the items of the chat history
+
+    predefined_messages = []
+
     try:
         messages = await get_messages_from_history(chat_id=chat_id, n=2)
     except Exception as e:
         logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
-    # System prompt reformating
-    try:
-        system_prompt = await reformat_prompt(prompt=system_normal_search, university=university)
-    except Exception as e:
-        logging.error(f"Error while reformating system prompt: {str(e)}")
 
-    # User prompt reformating
-    try:
-        user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, student_profile=student_profile)
-    except Exception as e:
-        logging.error(f"Error while reformating user prompt: {str(e)}")
+    if question_type == "normal":
+        # System prompt reformating
+        try:
+            system_prompt = await reformat_prompt(prompt=system_normal_search, university=university)
+        except Exception as e:
+            logging.error(f"Error while reformating system prompt: {str(e)}")
+
+        # User prompt reformating
+        try:
+            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, student_profile=student_profile)
+        except Exception as e:
+            logging.error(f"Error while reformating user prompt: {str(e)}")
+
+        # Predefined messages reformatings
+        try:
+            predefined_messages = await reformat_messages(messages=predefined_messages_prompt, university=university)
+        except Exception as e:
+            logging.error(f"Error while reformating predefined_messages: {str(e)}")
+
+    elif question_type == "chitchat":
+        try:
+            system_prompt = await reformat_prompt(prompt=system_chitchat, university=university)
+        except Exception as e:
+            logging.error(f"Error while reformating system prompt: {str(e)}")
+        user_prompt = input_message
 
     # Set prompt with history
     try:
@@ -193,6 +213,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         # return StreamingResponse(event_stream(), media_type="text/event-stream")
     except Exception as e:
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
+
+
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
@@ -234,8 +256,8 @@ async def save_ai_message(ai_message: InputQueryAI):
 
 
     #Pour générer l'embedding de la réponse de Lucy
-    input_embeddings = await get_embedding(input_message)
-    output_embeddings = await get_embedding(output_message)
+    #input_embeddings = await get_embedding(input_message)
+    #output_embeddings = await get_embedding(output_message)
 
     word_count_task = await count_words(input_message)
 
@@ -254,7 +276,7 @@ async def save_ai_message(ai_message: InputQueryAI):
         ask_for_advisor = 'no'
 
         #Rajouter ici la fonction pour sauvegarder les informations dans la table analytics 
-        await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id, input_message=input_message, output_message=output_message)
+        #await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id, input_message=input_message, output_message=output_message)
 
     except Exception as e:
         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")

@@ -27,6 +27,23 @@ async def reformat_prompt(prompt: str, **kwargs) -> str:
 
 
 @timing_decorator
+async def reformat_messages(messages: List[Dict[str, str]], **kwargs) -> List[Dict[str, str]]:
+    reformatted_messages = []
+    for message in messages:
+        try:
+            reformatted_content = message['content'].format(**kwargs)
+            reformatted_messages.append({
+                "role": message['role'],
+                "content": reformatted_content
+            })
+            print("Message was correctly reformatted")
+        except KeyError as e:
+            missing_key = str(e).strip("'")
+            raise ValueError(f"Missing required placeholder: {missing_key}")
+    return reformatted_messages
+
+
+@timing_decorator
 async def set_prompt_with_history(system_prompt: str, 
                                   chat_history: List[Dict[str, str]], 
                                   user_prompt: str, 
