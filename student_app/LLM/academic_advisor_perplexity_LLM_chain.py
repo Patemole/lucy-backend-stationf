@@ -123,6 +123,7 @@ class PplxChatCompletion:
         for chunk in llm_chain.stream(content, config=config):
             yield chunk.content + "|"
 
+
     def invoke_llm(self, content: dict, config):
         llm_chain = self.create_chain_with_memory()
         response = llm_chain.invoke(content, config)

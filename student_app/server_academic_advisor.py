@@ -14,7 +14,7 @@ from student_app.academic_advisor import academic_advisor_answer_generation
 from student_app.LLM.academic_advisor_perplexity_LLM_chain import LLM_chain_perplexity
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search
 # Logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -69,7 +69,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     #TODO: put student profile as param of the function and get it from firebase
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
-    prompt_answering = system
+    prompt_answering = system_normal_search
 
     print(f"prompt_answering: {prompt_answering}")
     #Second LLM generation with the search engine + Answer generation and sources 
