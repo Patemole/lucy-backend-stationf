@@ -143,7 +143,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
-    prompt_answering, question_type = await academic_advisor_router_treatment(input_message=input_message)
+    prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
     
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
@@ -166,7 +166,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     if question_type == "normal":
         # System prompt reformating
         try:
-            system_prompt = await reformat_prompt(prompt=system_normal_search, university=university)
+            system_prompt = await reformat_prompt(prompt=prompt_answering, university=university)
         except Exception as e:
             logging.error(f"Error while reformating system prompt: {str(e)}")
 
@@ -184,7 +184,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     elif question_type == "chitchat":
         try:
-            system_prompt = await reformat_prompt(prompt=system_chitchat, university=university)
+            system_prompt = await reformat_prompt(prompt=prompt_answering, university=university)
         except Exception as e:
             logging.error(f"Error while reformating system prompt: {str(e)}")
         user_prompt = input_message
@@ -209,7 +209,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Stream response from Perplexity LLM with history 
     try:
-        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt), media_type="text/event-stream")
+        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
         # return StreamingResponse(event_stream(), media_type="text/event-stream")
     except Exception as e:
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")

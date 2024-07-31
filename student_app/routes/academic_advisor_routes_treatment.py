@@ -32,24 +32,29 @@ async def academic_advisor_router_treatment(input_message: str):
     if router_answer.name == "politics":
         prompt_answering = prompts.system_politics
         question_type = "politics"
+        model = "llama-3-sonar-small-32k-chat"
         
 
     elif router_answer.name == "chitchat":
          prompt_answering = prompts.system_chitchat
          question_type = "chitchat"
+         model = "llama-3-sonar-small-32k-chat"
          
     elif router_answer.name == "problem":
         prompt_answering = prompts.system_problem
         question_type = "problem"
+        model = "llama-3.1-sonar-small-128k-online"
+
         
     elif router_answer.name == "major_selection":
          prompt_answering = prompts.system_major_selection
          question_type = "major_selection"
+         model = "llama-3.1-sonar-small-128k-online"
      
      #if not politics or chitchat then it is general AA questions 
     #else:
     elif router_answer.name == None:
          prompt_answering = prompts.system_normal_search
          question_type = "normal"
-    print(f"ROUTE RESULTS: {question_type}")
-    return prompt_answering, question_type
+    print(f"ROUTE RESULTS: {question_type} and MODEL: {model}")
+    return prompt_answering, question_type, model

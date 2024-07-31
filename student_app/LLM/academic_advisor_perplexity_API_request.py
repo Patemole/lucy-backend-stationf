@@ -35,10 +35,10 @@ models = [
 ]
 
 ####################################################### INVOKE PERPLEXITY API #######################################################
-def run_perplexity_API(PPLX_API_KEY, system_prompt, user_input):
+def run_perplexity_API(PPLX_API_KEY, model, system_prompt, user_input):
     url = "https://api.perplexity.ai/chat/completions"
     payload = {
-        "model": "llama-3.1-sonar-small-128k-online",
+        "model": model,
         "messages": [
             {
                 "role": "system",
@@ -78,7 +78,7 @@ def run_perplexity_API(PPLX_API_KEY, system_prompt, user_input):
 
 
 ####################################################### STREAM PERPLEXITY API #######################################################    
-def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str):
+def run_perplexity_API_stream(PPLX_API_KEY, model, system_prompt: str, user_input: str):
     from dotenv import load_dotenv
     import os
 
@@ -87,7 +87,7 @@ def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str)
 
     url = "https://api.perplexity.ai/chat/completions"  # Ensure this is the correct endpoint
     payload = {
-        "model": "llama-3.1-sonar-small-128k-online",
+        "model": model,
         "messages": [
             {
                 "role": "system",
@@ -128,7 +128,7 @@ def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str)
 
 
 ####################################################### STREAM PERPLEXITY API WITH HISTORY #######################################################  
-def LLM_pplx_stream_with_history(messages: List[Dict[str, str]]):
+def LLM_pplx_stream_with_history(messages: List[Dict[str, str]], model):
     from dotenv import load_dotenv
     import os
 
@@ -143,7 +143,7 @@ def LLM_pplx_stream_with_history(messages: List[Dict[str, str]]):
         print(f"Messages: \n\n {messages} \n\n")
 
         payload = {
-            "model": "llama-3.1-sonar-small-128k-online",
+            "model": model,
             "messages": messages,
             #"max_tokens": 500,
             "temperature": 0,
