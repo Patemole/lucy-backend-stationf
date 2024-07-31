@@ -85,7 +85,7 @@ def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str)
 
     url = "https://api.perplexity.ai/chat/completions"  # Ensure this is the correct endpoint
     payload = {
-        "model": "llama-3-sonar-small-32k-online",
+        "model": "llama-3.1-sonar-large-128k-online",
         "messages": [
             {
                 "role": "system",
@@ -141,7 +141,7 @@ def LLM_pplx_stream_with_history(messages: List[Dict[str, str]]):
         print(f"Messages: \n\n {messages} \n\n")
 
         payload = {
-            "model": "llama-3-sonar-small-32k-online",
+            "model": "llama-3-sonar-large-32k-online",
             "messages": messages,
             "max_tokens": 300,
             "temperature": 0,
