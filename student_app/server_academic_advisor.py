@@ -25,8 +25,8 @@ from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
 from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
+from student_app.prompts.academic_advisor_predefined_messages import predefined_messages
 
-from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import LLM_chain_search_engine_and_answering
 from student_app.profiling.profile_generation import LLM_profile_generation
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system
 
@@ -170,7 +170,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Set prompt with history
     try:
-        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages)
+        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
     except:
         logging.error(f"Error while setting prompt with history: {str(e)}")
 
