@@ -127,7 +127,7 @@ async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Li
 
     filtered_items = await get_chat_history(chat_id)
 
-    # Determine how many items to retrieve
+    # Ensure of getting even number of messages (user + lucy)
     if n is None:
         items = filtered_items  # Get all messages
     elif n % 2 != 0:  # If n is odd
@@ -147,6 +147,20 @@ async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Li
             message_dict = {"role": current_role, "content": item['body']}
        
         messages.append(message_dict)
+
+    # Check if the last message is an assistant message
+    if messages[-1]['role'] == 'assistant':
+        # Add an empty assistant message at the end
+        messages.append({"role": "assistant", "content": ""})
+        # raise Exception("The last message is not an assistant message.")
+    
+    # Check if the first message is a user message
+    if messages[0]['role'] != 'user':
+        # Add an empty user message at the beginning
+        messages.insert(0, {'role': 'user', 'content': ''})
+        print("WARNING/ERROR: The first message was not a user message. An empty user message was added at the beginning of the list.")
+        # raise Exception("The first message is not a user message.")
+    
 
     print(f"Retrieved {len(messages)} messages from chat history.")
     return messages
