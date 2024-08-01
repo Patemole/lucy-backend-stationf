@@ -145,7 +145,7 @@ async def LLM_pplx_stream_with_history(messages: List[Dict[str, str]]):
         payload = {
             "model": "llama-3-sonar-small-32k-online",
             "messages": messages,
-            "max_tokens": 300,
+            "max_tokens": 500,
             "temperature": 0,
             "stream": True,
         }
