@@ -128,7 +128,7 @@ async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Li
     filtered_items = await get_chat_history(chat_id)
 
     # Ensure of getting even number of messages (user + lucy)
-    if n is None:
+    if n is None :
         items = filtered_items  # Get all messages
     elif n % 2 != 0:  # If n is odd
         n += 1  # Make it even
@@ -136,17 +136,20 @@ async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Li
     else:  # If n is even
         items = filtered_items[-n:]
 
-    messages = []
+    messages = [
+        {"role": "assistant" if item['username'] == "Lucy" else "user", "content": item['body']}
+        for item in items
+    ]
 
-    for item in items:
-        if item['username'] == "Lucy":
-            current_role = "assistant"
-            message_dict = {"role": current_role, "content": item['body']}
-        else:
-            current_role = "user"
-            message_dict = {"role": current_role, "content": item['body']}
+    # for item in items:
+    #     if item['username'] == "Lucy":
+    #         current_role = "assistant"
+    #         message_dict = {"role": current_role, "content": item['body']}
+    #     else:
+    #         current_role = "user"
+    #         message_dict = {"role": current_role, "content": item['body']}
        
-        messages.append(message_dict)
+    #     messages.append(message_dict)
 
     #TODO: Verify and adapt to make sure the format is correct
     # if filtered_items is not None:

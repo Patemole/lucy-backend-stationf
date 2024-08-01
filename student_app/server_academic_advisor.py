@@ -9,9 +9,6 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from functools import wraps
 
-
-# from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
-
 import time
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
 from student_app.database.dynamo_db.analytics import store_analytics_async
@@ -27,7 +24,8 @@ from student_app.database.dynamo_db.chat import get_chat_history, store_message_
 from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
 
 from student_app.profiling.profile_generation import LLM_profile_generation
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search
+from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt
 
 
 
@@ -157,7 +155,13 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # System prompt reformating
     try:
-        system_prompt = await reformat_prompt(prompt=system, university=university)
+        system_prompt = await reformat_prompt(prompt=system_normal_search, university=university)
+    except Exception as e:
+        logging.error(f"Error while reformating system prompt: {str(e)}")
+
+    # Predefined messages prompt reformating
+    try:
+        predefined_messages = await reformat_prompt(prompt=predefined_messages_prompt, university=university)
     except Exception as e:
         logging.error(f"Error while reformating system prompt: {str(e)}")
 
@@ -169,7 +173,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Set prompt with history
     try:
-        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages)
+        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
     except:
         logging.error(f"Error while setting prompt with history: {str(e)}")
 
