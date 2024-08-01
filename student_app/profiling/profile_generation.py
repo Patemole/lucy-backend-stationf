@@ -3,7 +3,7 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from dotenv import load_dotenv
 import os
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system
+from student_app.prompts.academic_advisor_profil_generation_prompts import system
 
 prompt_answering = system
 
