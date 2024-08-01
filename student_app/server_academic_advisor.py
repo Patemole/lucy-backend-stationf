@@ -161,13 +161,13 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Predefined messages prompt reformating
     try:
-        predefined_messages = await reformat_messages(messages=predefined_messages_prompt, university=university)
+        predefined_messages = await reformat_messages(messages=predefined_messages_prompt, university=university, student_profile=student_profile)
     except Exception as e:
         logging.error(f"Error while reformating the predefined messages: {str(e)}")
 
     # User prompt reformating
     try:
-        user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, student_profile=student_profile)
+        user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message)
     except Exception as e:
         logging.error(f"Error while reformating user prompt: {str(e)}")
 
