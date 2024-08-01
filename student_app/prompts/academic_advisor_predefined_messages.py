@@ -1,7 +1,7 @@
 predefined_messages_prompt = [
     {
         "role": "user", 
-        "content": "Hello Lucy, can you help me with the different enquiries I have at {university}?"
+        "content": "Hello Lucy, here is my student profile: {student_profile}. Based on my student profile, can you help me with the different enquiries I have at {university}?"
     },
     {
         "role": "assistant", 
