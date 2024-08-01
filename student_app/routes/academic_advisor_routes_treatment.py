@@ -1,7 +1,7 @@
 import time
 from functools import wraps
 from student_app.routes.academic_advisor_routes import rl
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search
 
 
 
