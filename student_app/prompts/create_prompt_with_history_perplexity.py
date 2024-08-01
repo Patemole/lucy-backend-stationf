@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 import time
 from functools import wraps
+from student_app.prompts.perplexity_prompt_checker import pplx_messages_format_validation
 
 
 
@@ -64,6 +65,9 @@ async def set_prompt_with_history(system_prompt: str,
             "content": user_prompt
         }
     ]
+
+    print("Checking the formatting ...")
+    pplx_messages_format_validation(messages)
     print("The list of messages for the prompt was correctly formated with history messages.")
     return messages
 
@@ -98,7 +102,7 @@ async def set_prompt_with_history(system_prompt: str,
 #             "content": "Hello!"
 #         },
 #         {
-#             "role": "assistant",
+#             "role": "user",
 #             "content": "Hi there!"
 #         }
 #     ]
