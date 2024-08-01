@@ -21,7 +21,7 @@ from student_app.academic_advisor import academic_advisor_answer_generation
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
-from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
+from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, reformat_messages ,set_prompt_with_history
 
 from student_app.profiling.profile_generation import LLM_profile_generation
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search
@@ -161,9 +161,9 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Predefined messages prompt reformating
     try:
-        predefined_messages = await reformat_prompt(prompt=predefined_messages_prompt, university=university)
+        predefined_messages = await reformat_messages(messages=predefined_messages_prompt, university=university)
     except Exception as e:
-        logging.error(f"Error while reformating system prompt: {str(e)}")
+        logging.error(f"Error while reformating the predefined messages: {str(e)}")
 
     # User prompt reformating
     try:

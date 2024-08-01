@@ -20,11 +20,28 @@ def timing_decorator(func):
 @timing_decorator
 async def reformat_prompt(prompt: str, **kwargs) -> str:
     try:
+        new_prompt = prompt.format(**kwargs)
         print("Prompt was correctly reformated")
-        return prompt.format(**kwargs)
+        return new_prompt
     except KeyError as e:
         missing_key = str(e).strip("'")
         raise ValueError(f"Missing required placeholder: {missing_key}")
+    
+@timing_decorator
+async def reformat_messages(messages: List[Dict[str, str]], **kwargs) -> List[Dict[str, str]]:
+    reformatted_messages = []
+    for message in messages:
+        try:
+            reformatted_content = message['content'].format(**kwargs)
+            reformatted_messages.append({
+                "role": message['role'],
+                "content": reformatted_content
+            })
+            print("Message was correctly reformatted")
+        except KeyError as e:
+            missing_key = str(e).strip("'")
+            raise ValueError(f"Missing required placeholder: {missing_key}")
+    return reformatted_messages
 
 
 @timing_decorator
