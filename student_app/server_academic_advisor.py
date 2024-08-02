@@ -24,7 +24,7 @@ from student_app.database.dynamo_db.chat import get_chat_history, store_message_
 from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, reformat_messages ,set_prompt_with_history
 
 from student_app.profiling.profile_generation import LLM_profile_generation
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_normal_search_V2, system_fusion
 from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt
 
 
@@ -149,21 +149,21 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Retrieve the "n" messages from the items of the chat history
     try:
-        messages = await get_messages_from_history(chat_id=chat_id, n=2)
+        messages = await get_messages_from_history(chat_id=chat_id, n=6)
     except Exception as e:
         logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
     # System prompt reformating
     try:
-        system_prompt = await reformat_prompt(prompt=system_normal_search, university=university)
+        system_prompt = await reformat_prompt(prompt=system_fusion, university=university, domain="site:upenn.edu", student_profile=student_profile)
     except Exception as e:
         logging.error(f"Error while reformating system prompt: {str(e)}")
 
     # Predefined messages prompt reformating
-    try:
-        predefined_messages = await reformat_messages(messages=predefined_messages_prompt, university=university, student_profile=student_profile)
-    except Exception as e:
-        logging.error(f"Error while reformating the predefined messages: {str(e)}")
+    # try:
+    #     predefined_messages = await reformat_messages(messages=predefined_messages_prompt, university=university, student_profile=student_profile)
+    # except Exception as e:
+    #     logging.error(f"Error while reformating the predefined messages: {str(e)}")
 
     # User prompt reformating
     try:
@@ -173,7 +173,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Set prompt with history
     try:
-        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
+        # prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
+        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages)
     except:
         logging.error(f"Error while setting prompt with history: {str(e)}")
 
