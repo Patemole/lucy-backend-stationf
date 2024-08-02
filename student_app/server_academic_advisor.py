@@ -1,6 +1,8 @@
 import os
 import asyncio
 import logging
+import datetime
+
 from openai import OpenAI
 from fastapi import APIRouter, FastAPI, HTTPException, Request, Response, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,6 +34,10 @@ from student_app.prompts.academic_advisor_predefined_messages import predefined_
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
+
+# Today's date
+date = datetime.date.today()
+
 # Logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -155,7 +161,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # System prompt reformating
     try:
-        system_prompt = await reformat_prompt(prompt=system_fusion, university=university, domain="site:upenn.edu", student_profile=student_profile)
+        system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain="site:upenn.edu", student_profile=student_profile)
     except Exception as e:
         logging.error(f"Error while reformating system prompt: {str(e)}")
 
