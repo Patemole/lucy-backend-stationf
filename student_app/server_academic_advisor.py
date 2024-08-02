@@ -27,7 +27,7 @@ from student_app.prompts.create_prompt_with_history_perplexity import reformat_p
 
 from student_app.profiling.profile_generation import LLM_profile_generation
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_normal_search_V2, system_fusion
-from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt
+from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt, predefined_messages_prompt_V2
 
 
 
@@ -166,10 +166,10 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         logging.error(f"Error while reformating system prompt: {str(e)}")
 
     # Predefined messages prompt reformating
-    # try:
-    #     predefined_messages = await reformat_messages(messages=predefined_messages_prompt, university=university, student_profile=student_profile)
-    # except Exception as e:
-    #     logging.error(f"Error while reformating the predefined messages: {str(e)}")
+    try:
+        predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university=university, student_profile=student_profile)
+    except Exception as e:
+        logging.error(f"Error while reformating the predefined messages: {str(e)}")
 
     # User prompt reformating
     try:
@@ -180,7 +180,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     # Set prompt with history
     try:
         # prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
-        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages)
+        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
     except:
         logging.error(f"Error while setting prompt with history: {str(e)}")
 

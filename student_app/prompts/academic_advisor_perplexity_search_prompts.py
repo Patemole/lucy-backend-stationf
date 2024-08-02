@@ -15,11 +15,10 @@ Only use the profile if relevant to the request.
 Format your response as follows: 
 Use markdown to format paragraphs, lists, tables, and quotes whenever possible.
 [Provide a concise, informative answer to the student's query, using only information from {university}'s website. Use bullet points and bold titles for clarity when appropriate.]
-## Sources:
+**Sources**:
 [List at least 2-3 specific URLs as hyperlink Titles from site:upenn.edu that support your answer. Format as a numbered list.]
-## Related Questions:
+**Related Questions**:
 [Suggest 3 potential follow-up questions the student might have, based on your response. Present as an unordered list of bullet points.]
-
 """
 
 
