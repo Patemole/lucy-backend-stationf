@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from student_app.server_files import create_app as create_files_app
 from student_app.server_academic_advisor import create_app as create_academic_advisor_app
+from student_app.server_feedback import create_app as create_feedback_app
 
 
 # Configurer le logging
@@ -40,6 +41,8 @@ async def log_request(request, call_next):
     return response
 
 
+
+
 # Chemins relatifs
 static_dir = os.path.join(os.path.dirname(__file__), "../analytics/analytics_teacher")
 static_dir_academic_advisor = os.path.join(os.path.dirname(__file__), "../analytics_academic")
@@ -56,27 +59,27 @@ app.mount("/static/teacher", StaticFiles(directory=static_dir), name="static_tea
 app.mount("/static/academic_advisor", StaticFiles(directory=static_dir_academic_advisor), name="static_academic_advisor")
 
 
-'''
-# Configurer le serveur pour servir les fichiers statiques - un pour l'academic advisor, l'autre pour le teacher
-static_dir = "/Users/gregoryhissiger/Lucy-platform-v1/back_socratic/analytics/generated_html" #Le graphe d'origine pour les professeurs
-static_dir_academic_advisor = "/Users/gregoryhissiger/pinecone_client_test" #Le graphe d'origine pour les professeurs
 
-app.mount("/static/teacher", StaticFiles(directory=static_dir), name="static_teacher")
-app.mount("/static/academic_advisor", StaticFiles(directory=static_dir_academic_advisor), name="static_academic_advisor")
-'''
+
 try:
     print("Création de l'application files")
     logger.info("Création de l'application files")
+
     files_app = create_files_app()
     if files_app is None:
         print("Application files n'a pas été créée")
         logger.error("Application files n'a pas été créée")
+
     else:
         print("Application files créée avec succès")
         logger.info("Application files créée avec succès")
 
+
+
+
     print("Création de l'application academic advisor")
     logger.info("Création de l'application academic advisor")
+
     chat_app = create_academic_advisor_app()
     if chat_app is None:
         print("Application academic advisor n'a pas été créée")
@@ -85,14 +88,36 @@ try:
         print("Application academic advisor créée avec succès")
         logger.info("Application academic advisor créée avec succès")
 
+    
+    print("Création de l'application feedback")
+    logger.info("Création de l'application feedback")
+
+    feedback_app = create_feedback_app()
+    if feedback_app is None:
+        print("Application feedback n'a pas été créée")
+        logger.error("Application feedback n'a pas été créée")
+    else:
+        print("Application feedback créée avec succès")
+        logger.info("Application feedback créée avec succès")
+
+
+
     print("Montage des applications")
     logger.info("Montage des applications")
+
     if files_app:
         app.mount("/files", files_app)
+
     if chat_app:
         app.mount("/chat", chat_app)
+
+    if feedback_app:
+        app.mount("/feedback", feedback_app)
+
     print("Applications montées avec succès")
     logger.info("Applications montées avec succès")
+
+
 except Exception as e:
     print(f"Erreur lors de la création ou du montage des applications: {e}")
     logger.exception("Erreur lors de la création ou du montage des applications: %s", e)
