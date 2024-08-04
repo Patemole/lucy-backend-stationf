@@ -138,11 +138,13 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     username = input_query.username
     input_message = input_query.message
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
+    student_profile = input_query.student_profile
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
-
-    student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
+    
+    print(f"Student profil from firestore : {student_profile}")
+    #student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
     # Get all items from chat history
     # try:
