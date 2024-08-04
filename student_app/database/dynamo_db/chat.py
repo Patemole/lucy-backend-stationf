@@ -124,28 +124,36 @@ async def store_message_async(
 
 @timing_decorator
 async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> List[Dict[str, str]]:
+    print(11)
 
     filtered_items = await get_chat_history(chat_id)
-
+    print(12)
     # Ensure of getting even number of messages (user + lucy)
     if n is None:
+        print(13)
         items = filtered_items  # Get all messages
+        print(14)
     elif n % 2 != 0:  # If n is odd
+        print(15)
         n += 1  # Make it even
         items = filtered_items[-n:]
+        print(16)
     else:  # If n is even
+        print(17)
         items = filtered_items[-n:]
+        print(18)
 
     messages = []
 
     for item in items:
+        print(19)
         if item['username'] == "Lucy":
             current_role = "assistant"
             message_dict = {"role": current_role, "content": item['body']}
         else:
             current_role = "user"
             message_dict = {"role": current_role, "content": item['body']}
-       
+        print(20)
         messages.append(message_dict)
 
     #TODO: Verify and adapt to make sure the format is correct

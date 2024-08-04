@@ -29,4 +29,3 @@ predefined_messages_prompt = [
          - Is there any compulsory courses?"""
     }
 ]
-

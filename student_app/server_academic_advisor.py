@@ -142,9 +142,10 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
-
-    prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
     
+    prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
+
+
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
     # Get all items from chat history
@@ -157,12 +158,16 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     predefined_messages = []
 
+    print(1)
+
     try:
         messages = await get_messages_from_history(chat_id=chat_id, n=2)
     except Exception as e:
         logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
+    curr_message = messages + input_message
 
+    print(2)
     if question_type == "normal":
         # System prompt reformating
         try:
@@ -189,6 +194,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             logging.error(f"Error while reformating system prompt: {str(e)}")
         user_prompt = input_message
 
+
+    print(3)
     # Set prompt with history
     try:
         prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
@@ -197,6 +204,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Async storage of the input
     try:
+        print(4)
         await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
     except Exception as e:
         logging.error(f"Error while storing the input message: {str(e)}")
@@ -209,6 +217,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Stream response from Perplexity LLM with history 
     try:
+        print(5)
         return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
         # return StreamingResponse(event_stream(), media_type="text/event-stream")
     except Exception as e:
