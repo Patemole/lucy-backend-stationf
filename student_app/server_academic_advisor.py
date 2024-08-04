@@ -129,8 +129,6 @@ async def count_student_questions(chat_history):
 
 #############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
 
-
-
 #chat_router = APIRouter(prefix='/chat', tags=['chat'])
 
 # TRAITEMENT D'UN MESSAGE ÉLÈVE - Rajouter ici la fonction pour déterminer la route à choisir 
@@ -144,6 +142,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
+    prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
 
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
@@ -159,25 +158,31 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     except Exception as e:
         logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
-    # System prompt reformating
-    try:
-        system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain="site:upenn.edu", student_profile=student_profile)
-    except Exception as e:
-        logging.error(f"Error while reformating system prompt: {str(e)}")
+    predefined_messages = []
 
-    # Predefined messages prompt reformating
-    try:
-        predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university=university, student_profile=student_profile)
-    except Exception as e:
-        logging.error(f"Error while reformating the predefined messages: {str(e)}")
+    if question_type == "normal":
+        try:
+            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain="site:upenn.edu", student_profile=student_profile)
+        except Exception as e:
+            logging.error(f"Error while reformating system prompt: {str(e)}")
 
-    # User prompt reformating
-    try:
-        user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message)
-    except Exception as e:
-        logging.error(f"Error while reformating user prompt: {str(e)}")
+        try:
+            predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university=university, student_profile=student_profile)
+        except Exception as e:
+            logging.error(f"Error while reformating the predefined messages: {str(e)}")
 
-    # Set prompt with history
+        try:
+            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain="site:upenn.edu")
+        except Exception as e:
+            logging.error(f"Error while reformating user prompt: {str(e)}")
+
+    elif question_type == "chitchat":
+        try:
+            system_prompt = await reformat_prompt(prompt=prompt_answering, university=university)
+        except Exception as e:
+            logging.error(f"Error while reformating system prompt: {str(e)}")
+        user_prompt = input_message
+
     try:
         # prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
         prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
@@ -198,7 +203,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Stream response from Perplexity LLM with history 
     try:
-        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt), media_type="text/event-stream")
+        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
         # return StreamingResponse(event_stream(), media_type="text/event-stream")
     except Exception as e:
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
