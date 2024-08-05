@@ -31,10 +31,10 @@ def pplx_messages_format_validation(messages):
     if not all(isinstance(item, dict) for item in messages):
         raise NotListOfDictError("The list does not contain only dictionaries.")
     
-    # Rule 3: Each dict should have exactly 2 keys ("role" and "content")
+    # Rule 3: Each dict should have exactly 2 keys ("role" and "content") in order
     for item in messages:
-        if set(item.keys()) != {"role", "content"}:
-            raise InvalidKeysError("Each dictionary must have exactly 'role' and 'content' keys.")
+        if list(item.keys()) != ["role", "content"]:
+            raise InvalidKeysError("Each dictionary must have exactly 'role' and 'content' keys in that order.")
     
     # Rule 4: The value of the role key can only be "user", "assistant", or "system"
     valid_roles = {"user", "assistant", "system"}
@@ -104,7 +104,7 @@ def run_tests():
     
     # Test 3: Each dict should have exactly 2 keys ("role" and "content")
     try:
-        pplx_messages_format_validation([{"role": "user"}])
+        pplx_messages_format_validation([{"role": "Hello"}, {"content": "user"}])
     except InvalidKeysError:
         print("Test 3 passed.")
     except ValidationError:
@@ -202,4 +202,4 @@ def run_tests():
         print("Test 12 failed.")
 
 # Run tests
-# run_tests()
+run_tests()
