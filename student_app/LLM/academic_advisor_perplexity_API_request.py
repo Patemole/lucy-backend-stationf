@@ -3,21 +3,27 @@ import time
 import requests
 import json
 import logging
+from functools import wraps
 
-from typing import Optional, List, Dict
-
-import boto3
-from botocore.exceptions import ClientError
-
-from student_app.database.dynamo_db.chat import store_message_async
+from typing import List, Dict
 
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 PPLX_API_KEY = os.getenv("PPLX_API_KEY")
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+
+
+# Define the decorator
+def timing_decorator(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time} seconds")
+        return result
+    return wrapper
 
 
 # All the available models on Perplexity
@@ -128,56 +134,51 @@ def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str)
 
 
 ####################################################### STREAM PERPLEXITY API WITH HISTORY #######################################################  
-def LLM_pplx_stream_with_history(messages: List[Dict[str, str]]):
-    from dotenv import load_dotenv
-    import os
-
+@timing_decorator
+async def LLM_pplx_stream_with_history(messages: List[Dict[str, str]], model="llama-3-sonar-small-32k-online"):
     load_dotenv()
     PPLX_API_KEY = os.getenv("PPLX_API_KEY")
 
-
-    url = "https://api.perplexity.ai/chat/completions"  # Ensure this is the correct endpoint
+    url = "https://api.perplexity.ai/chat/completions"
 
     if isinstance(messages, list) and all(isinstance(message, dict) for message in messages): 
-        
         print(f"Messages: \n\n {messages} \n\n")
 
         payload = {
-            "model": "llama-3.1-sonar-small-128k-online",
+            "model": model,
             "messages": messages,
-            #"max_tokens": 500,
+            "max_tokens": 500,
             "temperature": 0,
             "stream": True,
         }
         headers = {
-        "accept": "application/json",
-        "content-type": "application/json",
-        "authorization": f"Bearer {PPLX_API_KEY}"
+            "accept": "application/json",
+            "content-type": "application/json",
+            "authorization": f"Bearer {PPLX_API_KEY}"
         }
 
-        with requests.post(url, json=payload, headers=headers, stream=True) as response:
-            try:
-                response = requests.post(url, json=payload, headers=headers, stream=True)
-                response.raise_for_status()  # Will raise an HTTPError for bad responses
-                for line in response.iter_lines():
-                    if line:
-                        try:
-                            chunk = json.loads(line.decode('utf-8').split('data: ')[1])
-                            if chunk['choices'][0]['delta'].get('content'):
-                                yield chunk['choices'][0]['delta']['content'] + "|"
-                        except json.JSONDecodeError as json_err:
-                            logging.error(f"JSON decoding error: {json_err}")
-                        except Exception as e:
-                            logging.error(f"Error occurred while processing chunk: {e}")
-            except requests.exceptions.HTTPError as http_err:
-                logging.error(f"HTTP error occurred: {http_err} - Response: {response.text}")
-            except Exception as e:
-                logging.error(f"An unexpected error occurred: {e}")
+        try:
+            response = requests.post(url, json=payload, headers=headers, stream=True)
+            response.raise_for_status()
+            for line in response.iter_lines():
+                if line:
+                    try:
+                        chunk = json.loads(line.decode('utf-8').split('data: ')[1])
+                        if chunk['choices'][0]['delta'].get('content'):
+                            yield chunk['choices'][0]['delta']['content'] + "|"
+                    except json.JSONDecodeError as json_err:
+                        logging.error(f"JSON decoding error: {json_err}")
+                    except Exception as e:
+                        logging.error(f"Error occurred while processing chunk: {e}")
+        except requests.exceptions.HTTPError as http_err:
+            logging.error(f"HTTP error occurred: {http_err} - Response: {response.text}")
+        except Exception as e:
+            logging.error(f"An unexpected error occurred: {e}")
     else:
         raise ValueError("Invalid input. Messages must be a list of dictionaries.")
     
     
-####################################################### STREAM PERPLEXITY API WITH HISTORY ####################################################### 
+####################################################### STREAM PERPLEXITY API WITH HISTORY #######################################################
 
 
 
@@ -237,6 +238,9 @@ def LLM_pplx_stream_with_history(messages: List[Dict[str, str]]):
 # ## Use Lucy
 # LLM_lucy_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt)
 
+# prompt =  [{'role': 'system', 'content': "Act as an academic advisor named Lucy from upenn. \nYour goal is to assist students with general guidance and provide recommendations based solely on information from upenn's official website: site:upenn.edu.\n\nFormat your response as follows and stricly highlight 3 sections with bold titles answer, sources and related questions in this exact order: \n\n[Provide a concise, informative answer to the student's query, using only information from upenn's website. Use bullet points and bold titles for clarity when appropriate.]\n\n\n**Sources**:\n[List at least 2-3 specific URLs from site:upenn.edu that support your answer. Format as a numbered list.]\n\n\n**Related Questions**:\n[Suggest 3 potential follow-up questions the student might have, based on your response. Present as an unordered list of bullet points.]\n\n\nImportant guidelines:\nOnly use information only and only from site:upenn.edu \nDo not reference or use data from any other sources.\nIf the query cannot be answered using the available information, clearly state this and suggest where the student might find the information within the university system.\nEnsure your guidance is clear, concise, and actionable.\nTailor your tone to be helpful and supportive, appropriate for a university advisor.\nUse markdown formatting to enhance readability (e.g., bold for emphasis, headers for sections).\n"}, {'role': 'user', 'content': 'what is econ0100 about ?'}, {'role': 'assistant', 'content': '**What is Econ 0100 about?**\n\nEcon 0100, titled "Introduction to Micro Economics," is an introductory course that provides an overview of economic analysis and its applications. The course covers key concepts such as the theory of supply and demand, costs and revenues of the firm under different market structures (perfect competition, monopoly, and oligopoly), pricing of factors of production, income distribution, and the theory of international trade. This course primarily focuses on microeconomics and is suitable for students with a background in mathematics and data science, as it involves the application of economic principles to real-world scenarios.\n\n**Sources**:\n1. [https://catalog.upenn.edu/courses/econ/](https://catalog.upenn.edu/courses/econ/)\n2. [https://economics.sas.upenn.edu/undergraduate/course-information](https://economics.sas.upenn.edu/undergraduate/course-information)\n\n**Related Questions**:\n- What are the specific prerequisites for Econ 0100?\n- How does Econ 0100 align with my minor in Mathematics and Data Science?\n- Can I take Econ 0100 as part of my minor in Mathematics and Data Science?'}, {'role': 'user', 'content': '\nmy student profil is: Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship and my question is whatsup ?. \nPlease only search information on this domain: site:upenn.edu and refine the search with the student profile. \nOnly mention my Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship info when needed.\n'}] 
+
+# LLM_pplx_stream_with_history(messages=prompt)
 
 
 # ####################################################### TESTING #######################################################    

@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 import time
 from functools import wraps
+from student_app.prompts.perplexity_prompt_checker import pplx_messages_format_validation
 
 
 
@@ -19,11 +20,28 @@ def timing_decorator(func):
 @timing_decorator
 async def reformat_prompt(prompt: str, **kwargs) -> str:
     try:
+        new_prompt = prompt.format(**kwargs)
         print("Prompt was correctly reformated")
-        return prompt.format(**kwargs)
+        return new_prompt
     except KeyError as e:
         missing_key = str(e).strip("'")
         raise ValueError(f"Missing required placeholder: {missing_key}")
+    
+@timing_decorator
+async def reformat_messages(messages: List[Dict[str, str]], **kwargs) -> List[Dict[str, str]]:
+    reformatted_messages = []
+    for message in messages:
+        try:
+            reformatted_content = message['content'].format(**kwargs)
+            reformatted_messages.append({
+                "role": message['role'],
+                "content": reformatted_content
+            })
+            print("Message was correctly reformatted")
+        except KeyError as e:
+            missing_key = str(e).strip("'")
+            raise ValueError(f"Missing required placeholder: {missing_key}")
+    return reformatted_messages
 
 
 @timing_decorator
@@ -47,6 +65,9 @@ async def set_prompt_with_history(system_prompt: str,
             "content": user_prompt
         }
     ]
+
+    print("Checking the formatting ...")
+    pplx_messages_format_validation(messages)
     print("The list of messages for the prompt was correctly formated with history messages.")
     return messages
 
@@ -81,7 +102,7 @@ async def set_prompt_with_history(system_prompt: str,
 #             "content": "Hello!"
 #         },
 #         {
-#             "role": "assistant",
+#             "role": "user",
 #             "content": "Hi there!"
 #         }
 #     ]
