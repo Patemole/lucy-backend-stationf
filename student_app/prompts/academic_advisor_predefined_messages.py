@@ -1,7 +1,7 @@
-predefined_messages = [
+predefined_messages_prompt = [
     {
         "role": "user", 
-        "content": "Hello Lucy, can you help me with the different enquiries I have at {university}?"
+        "content": "Hello Lucy, here is my student profile: {student_profile}. Based on my student profile, can you help me with the different enquiries I have at {university}?"
     },
     {
         "role": "assistant", 
@@ -30,3 +30,14 @@ predefined_messages = [
     }
 ]
 
+
+predefined_messages_prompt_V2 = [
+    {
+        "role": "user", 
+        "content": "Hello Lucy, here is my student profile: {student_profile}. Based on my student profile, can you help me with the different enquiries I have at {university}?"
+    },
+    {
+        "role": "assistant", 
+        "content": "Hello, I will be glad to help you with any questions you have about your student life at {university}."
+    }
+]

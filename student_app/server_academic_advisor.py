@@ -1,11 +1,14 @@
 import os
 import asyncio
 import logging
+import datetime
+
 from openai import OpenAI
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
+from functools import wraps
 import phospho
 
 import time
@@ -19,16 +22,17 @@ from student_app.database.dynamo_db.new_instance_chat import delete_all_items_an
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
-from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, set_prompt_with_history
-from student_app.prompts.academic_advisor_predefined_messages import predefined_messages
+from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, reformat_messages ,set_prompt_with_history
 
 from student_app.profiling.profile_generation import LLM_profile_generation
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_normal_search_V2, system_fusion
+from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt, predefined_messages_prompt_V2
 
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
-
+# Today's date
+date = datetime.date.today()
 
 # Logging configuration
 logging.basicConfig(
@@ -126,8 +130,6 @@ async def count_student_questions(chat_history):
 
 #############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
 
-
-
 #chat_router = APIRouter(prefix='/chat', tags=['chat'])
 
 # TRAITEMENT D'UN MESSAGE ÉLÈVE - Rajouter ici la fonction pour déterminer la route à choisir 
@@ -142,9 +144,11 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
+    prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
     
     print(f"Student profil from firestore : {student_profile}")
     #student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
+
 
     # Get all items from chat history
     # try:
@@ -154,23 +158,35 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Retrieve the "n" messages from the items of the chat history
     try:
-        messages = await get_messages_from_history(chat_id=chat_id, n=2)
+        messages = await get_messages_from_history(chat_id=chat_id, n=6)
     except Exception as e:
         logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
-    # System prompt reformating
-    try:
-        system_prompt = await reformat_prompt(prompt=system, university=university)
-    except Exception as e:
-        logging.error(f"Error while reformating system prompt: {str(e)}")
+    predefined_messages = []
 
-    # User prompt reformating
-    try:
-        user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, student_profile=student_profile)
-    except Exception as e:
-        logging.error(f"Error while reformating user prompt: {str(e)}")
+    if question_type == "normal":
+        try:
+            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain="site:upenn.edu", student_profile=student_profile)
+        except Exception as e:
+            logging.error(f"Error while reformating system prompt: {str(e)}")
 
-    # Set prompt with history
+        try:
+            predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university=university, student_profile=student_profile)
+        except Exception as e:
+            logging.error(f"Error while reformating the predefined messages: {str(e)}")
+
+        try:
+            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain="site:upenn.edu")
+        except Exception as e:
+            logging.error(f"Error while reformating user prompt: {str(e)}")
+
+    elif question_type == "chitchat":
+        try:
+            system_prompt = await reformat_prompt(prompt=prompt_answering, university=university)
+        except Exception as e:
+            logging.error(f"Error while reformating system prompt: {str(e)}")
+        user_prompt = input_message
+
     try:
         prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
     except:
@@ -190,7 +206,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # Stream response from Perplexity LLM with history 
     try:
-        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt), media_type="text/event-stream")
+        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
         # return StreamingResponse(event_stream(), media_type="text/event-stream")
     except Exception as e:
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
