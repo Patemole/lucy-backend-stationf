@@ -4,12 +4,12 @@ import logging
 import datetime
 
 from openai import OpenAI
-from fastapi import APIRouter, FastAPI, HTTPException, Request, Response, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 from dotenv import load_dotenv
 from functools import wraps
+import phospho
 
 import time
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
@@ -18,7 +18,6 @@ from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.model.input_query import InputQuery, InputQueryAI
 from student_app.model.student_profile import StudentProfile
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
-from student_app.academic_advisor import academic_advisor_answer_generation
 
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
@@ -29,9 +28,6 @@ from student_app.profiling.profile_generation import LLM_profile_generation
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_normal_search_V2, system_fusion
 from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt, predefined_messages_prompt_V2
 
-
-
-from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
@@ -49,6 +45,7 @@ logging.basicConfig(
     ]
 )
 
+
 # Environment variables
 load_dotenv()
 
@@ -63,12 +60,16 @@ PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-
 client = OpenAI()
-
 
 # Perplexity
 # PPLX_API_KEY = os.getenv('PPLX_API_KEY')
+
+#Phospho
+PHOSPHO_KEY = os.getenv('PHOSPHO_KEY')
+PHOSPHO_PROJECT_ID = os.getenv('PHOSPHO_PROJECT_ID')
+phospho.init(api_key='b08542208fd42d8640c0f88d006f31c9cc11453ec5f489e160cfcefa1028cac5bcd4d4ab43bcba45a6052081a22c56b8', project_id='38fc0ee240ee43a7bac2a36419258dcd')
+
 
 
 # FastAPI app configuration
@@ -139,12 +140,15 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     username = input_query.username
     input_message = input_query.message
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
+    student_profile = input_query.student_profile
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
     prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
+    
+    print(f"Student profil from firestore : {student_profile}")
+    #student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
-    student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
     # Get all items from chat history
     # try:
@@ -184,7 +188,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         user_prompt = input_message
 
     try:
-        # prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
         prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
     except:
         logging.error(f"Error while setting prompt with history: {str(e)}")
@@ -242,6 +245,11 @@ async def save_ai_message(ai_message: InputQueryAI):
     print(input_message)
     print("output_message de l'IA:")
     print(output_message)
+
+
+    phospho.log(input=input_message, output=output_message)
+
+
     #Pour générer l'embedding de la réponse de Lucy
     input_embeddings = await get_embedding(input_message)
     output_embeddings = await get_embedding(output_message)
@@ -269,6 +277,7 @@ async def save_ai_message(ai_message: InputQueryAI):
         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")
     
+
 
 
 

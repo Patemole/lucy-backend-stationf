@@ -7,6 +7,7 @@ class InputQuery(BaseModel):
     username: str
     message: str
     university: str
+    student_profile: str
 
 
 class InputQueryAI(BaseModel):
