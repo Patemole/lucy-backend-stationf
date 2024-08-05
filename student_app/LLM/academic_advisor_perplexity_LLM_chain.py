@@ -21,7 +21,7 @@ class PplxChatCompletion:
 
     def __init__(self):
         self.store = {}  # Local memory
-        self.model = "llama-3-sonar-large-32k-online"  # Default model
+        self.model = "llama-3.1-sonar-large-128k-online"  # Default model
         self.table_name = TABLE_NAME
         self.table_AWS = table
 
