@@ -162,7 +162,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     if question_type == "normal":
         try:
-            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain="site:upenn.edu", student_profile=student_profile)
+            system_prompt = await reformat_prompt(prompt=prompt_answering, university=university, date=date, domain="site:upenn.edu", student_profile=student_profile)
         except Exception as e:
             logging.error(f"Error while reformating system prompt: {str(e)}")
 

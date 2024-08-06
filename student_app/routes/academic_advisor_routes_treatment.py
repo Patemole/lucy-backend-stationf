@@ -37,7 +37,8 @@ async def academic_advisor_router_treatment(input_message: str):
      #if not politics or chitchat then it is general AA questions 
     #else:
     elif router_answer.name == None:
-         prompt_answering = prompts.system_normal_search
+        #  prompt_answering = prompts.system_normal_search
+         prompt_answering = prompts.system_COT
          question_type = "normal"
          model = "llama-3.1-sonar-small-128k-online"
     print(f"ROUTE RESULTS: {question_type} and MODEL: {model}")
