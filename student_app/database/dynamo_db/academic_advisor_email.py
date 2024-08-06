@@ -27,7 +27,8 @@ dynamodb = boto3.resource(
 
 # Référence à la table 
 #table = dynamodb.Table("prod_dev_academic_advisor_email") 
-table = dynamodb.Table("prod_preprod_academic_advisor_email")
+#table = dynamodb.Table("prod_preprod_academic_advisor_email")
+table = dynamodb.Table("prod_prod_academic_advisor_email")
 
 # Définir le décorateur
 def timing_decorator(func):
