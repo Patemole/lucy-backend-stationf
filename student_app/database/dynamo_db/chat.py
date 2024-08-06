@@ -31,7 +31,8 @@ dynamodb = boto3.resource(
 # Référence à la table 
 #ADD AN ENVIRONMENT VARIABLE FOR TABLE
 #table = dynamodb.Table("dev_chat_academic_advisor")
-table = dynamodb.Table("prod_preprod_chat_academic_advisor")
+#table = dynamodb.Table("prod_preprod_chat_academic_advisor")
+table = dynamodb.Table("prod_prod_chat_academic_advisor")
 
 
 
