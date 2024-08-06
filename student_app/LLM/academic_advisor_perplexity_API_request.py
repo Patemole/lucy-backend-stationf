@@ -36,13 +36,15 @@ models = [
     "llama-3-8b-instruct", 
     "llama-3-70b-instruct", 
     "mixtral-8x7b-instruct",
+    "llama-3.1-sonar-small-128k-online",
+    "llama-3.1-sonar-large-128k-online"
 ]
 
 ####################################################### INVOKE PERPLEXITY API #######################################################
 def run_perplexity_API(PPLX_API_KEY, system_prompt, user_input):
     url = "https://api.perplexity.ai/chat/completions"
     payload = {
-        "model": "llama-3-sonar-small-32k-online",
+        "model": "llama-3.1-sonar-small-128k-online",
         "messages": [
             {
                 "role": "system",
@@ -91,7 +93,7 @@ def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str)
 
     url = "https://api.perplexity.ai/chat/completions"  # Ensure this is the correct endpoint
     payload = {
-        "model": "llama-3-sonar-small-32k-online",
+        "model": "llama-3.1-sonar-small-128k-online",
         "messages": [
             {
                 "role": "system",
