@@ -14,18 +14,18 @@ load_dotenv()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_REGION_DEV = os.getenv('AWS_REGION_DEV')
+#AWS_REGION_DEV = os.getenv('AWS_REGION_DEV')
 
 # Configuration de la connexion à DynamoDB
 dynamodb = boto3.resource(
     'dynamodb',
-    region_name=AWS_REGION_DEV,
+    region_name="us-east-1",
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
 
 # Référence à la table 
-table = dynamodb.Table("prod_dev_academic_advisor_email")
+table = dynamodb.Table("prod_preprod_academic_advisor_email") #prod_dev_academic_advisor_email
 
 # Définir le décorateur
 def timing_decorator(func):
