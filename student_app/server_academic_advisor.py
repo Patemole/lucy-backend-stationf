@@ -150,6 +150,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     print(f"Student profil from firestore : {student_profile}")
     #student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
+    domain = f"site:{university}.edu"
 
     # Get all items from chat history
     # try:
@@ -167,7 +168,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     if question_type == "normal":
         try:
-            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain="site:upenn.edu", student_profile=student_profile)
+            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain=domain, student_profile=student_profile)
         except Exception as e:
             logging.error(f"Error while reformating system prompt: {str(e)}")
 
@@ -177,7 +178,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             logging.error(f"Error while reformating the predefined messages: {str(e)}")
 
         try:
-            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain="site:upenn.edu")
+            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain=domain)
         except Exception as e:
             logging.error(f"Error while reformating user prompt: {str(e)}")
 
