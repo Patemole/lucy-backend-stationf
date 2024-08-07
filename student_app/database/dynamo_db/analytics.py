@@ -21,17 +21,17 @@ AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 # Configuration de la connexion à DynamoDB
 dynamodb = boto3.resource(
     'dynamodb',
-    #region_name="eu-west-3",
-    region_name="us-east-1",
+    region_name="eu-west-3",
+    #region_name="us-east-1",
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
 
 # Référence à la table 
 #ADD AN ENVIRONMENT VARIABLE FOR TABLE
-#table = dynamodb.Table("prod_dev_analytics")
+table = dynamodb.Table("prod_dev_analytics")
 #table = dynamodb.Table("prod_preprod_analytics")
-table = dynamodb.Table("prod_prod_analytics")
+#table = dynamodb.Table("prod_prod_analytics")
 
 
 #table = DynamoDBClient().client.Table("PROD_chat")
