@@ -26,12 +26,14 @@ from student_app.prompts.create_prompt_with_history_perplexity import reformat_p
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
 from student_app.profiling.profile_generation import LLM_profile_generation
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_normal_search_V2, system_fusion, system_COT
+from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_normal_search_V2, system_fusion, system_chitchat
 from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt, predefined_messages_prompt_V2
+from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
 from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
+from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 # Today's date
 date = datetime.date.today()
 
@@ -150,6 +152,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
     print(f"Student profil from firestore : {student_profile}")
 
+    domain = f"site:{university}.edu"
 
     # Get all items from chat history
     # try:
@@ -167,7 +170,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     if question_type == "normal":
         try:
-            system_prompt = await reformat_prompt(prompt=system_COT, university="University of Pennsylvania", date=date, domain="site:upenn.edu", student_profile=student_profile)
+            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain=domain, student_profile=student_profile)
         except Exception as e:
             logging.error(f"Error while reformating system prompt: {str(e)}")
 
@@ -177,13 +180,13 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             logging.error(f"Error while reformating the predefined messages: {str(e)}")
 
         try:
-            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain="site:upenn.edu")
+            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain=domain)
         except Exception as e:
             logging.error(f"Error while reformating user prompt: {str(e)}")
 
     elif question_type == "chitchat":
         try:
-            system_prompt = await reformat_prompt(prompt=prompt_answering, university="university of pennsylvania")
+            system_prompt = await reformat_prompt(prompt=system_chitchat, university=university, student_profile=student_profile)
         except Exception as e:
             logging.error(f"Error while reformating system prompt: {str(e)}")
         user_prompt = input_message
@@ -297,7 +300,7 @@ async def create_student_profile(profile: StudentProfile):
 
     
     try:
-        student_profile = LLM_profile_generation(student_profile_prompt_answering, name, academic_advisor, year, university, faculty, major, minor)
+        student_profile = LLM_profile_generation(name, academic_advisor, year, university, faculty, major, minor)
         return {"student_profile": student_profile}
     
 
