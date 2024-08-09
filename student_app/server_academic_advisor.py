@@ -142,8 +142,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     course_id = input_query.course_id  # Get course_id from input_query
     username = input_query.username
     input_message = input_query.message
-    # university = input_query.university #A rajouter pour avoir le bon search engine par la suite
-    # student_profile = input_query.student_profile
+    university = input_query.university #A rajouter pour avoir le bon search engine par la suite
+    student_profile = input_query.student_profile
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
