@@ -175,6 +175,3 @@ async def get_chat_history_as_text(chat_id: str):
         error_message = e.response['Error']['Message']
         print(f"Error querying chat history: {error_code} - {error_message}")
         return []
-    
-
-get_chat_history_as_text("1eaf3b4f-44a9-4fb5-9d66-b442d0086b51")
