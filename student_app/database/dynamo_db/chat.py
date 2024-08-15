@@ -10,6 +10,7 @@ import boto3
 import os
 import json
 from typing import Optional
+from student_app.prompts.perplexity_pydantic_prompt_checker import Message, Chat
 
 
 
@@ -125,7 +126,7 @@ async def store_message_async(
     
 
 @timing_decorator
-async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> List[Dict[str, str]]:
+async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Chat:
 
     filtered_items = await get_chat_history(chat_id)
 
@@ -138,37 +139,42 @@ async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Li
     else:  # If n is even
         items = filtered_items[-n:]
 
-    messages = [
-        {"role": "assistant" if item['username'] == "Lucy" else "user", "content": item['body']}
-        for item in items
-    ]
+    # messages = [
+    #     {"role": "assistant" if item['username'] == "Lucy" else "user", "content": item['body']}
+    #     for item in items
+    # ]
 
-    # for item in items:
-    #     if item['username'] == "Lucy":
-    #         current_role = "assistant"
-    #         message_dict = {"role": current_role, "content": item['body']}
-    #     else:
-    #         current_role = "user"
-    #         message_dict = {"role": current_role, "content": item['body']}
-       
-    #     messages.append(message_dict)
+    # Pydantic
+    chat = Chat(chat=[Message(role="assistant" if item['username'] == "Lucy" else "user", content=item['body']) for item in items])
+    chat_json = chat.model_dump()
+    formated_chat = chat_json["chat"]
 
-    #TODO: Verify and adapt to make sure the format is correct
-    # if filtered_items is not None:
-    #     # Check if the last message is an assistant message
-    #     if messages[-1]['role'] == 'assistant':
-    #         # Add an empty assistant message at the end
-    #         messages.append({"role": "assistant", "content": ""})
-    #         # raise Exception("The last message is not an assistant message.")
+    print(f"Retrieved {len(formated_chat)} messages from chat history.")
+    return formated_chat
+
+
+@timing_decorator
+async def get_chat_history_as_text(chat_id: str):
+    try:
+        response = table.query(
+            KeyConditionExpression='chat_id = :chat_id',
+            ExpressionAttributeValues={':chat_id': chat_id},
+            ScanIndexForward=True  # Tri ascendant par timestamp (du plus ancien au plus récent)
+        )
+        items = response.get('Items', [])
+        # print(f"Retrieved {len(items)} items from chat history.")
         
-    #     # Check if the first message is a user message
-    #     if messages[0]['role'] != 'user':
-    #         # Add an empty user message at the beginning
-    #         messages.insert(0, {'role': 'user', 'content': ''})
-    #         print("WARNING/ERROR: The first message was not a user message. An empty user message was added at the beginning of the list.")
-    #         # raise Exception("The first message is not a user message.")
+        # Format the messages
+        messages = []
+        for item in items:
+            messages.append(f"{item['username'].upper()}: {item['body']}")
+
+        return "\n".join(messages)
+    except ClientError as e:
+        error_code = e.response['Error']['Code']
+        error_message = e.response['Error']['Message']
+        print(f"Error querying chat history: {error_code} - {error_message}")
+        return []
     
 
-    print(f"Retrieved {len(messages)} messages from chat history.")
-    return messages
-
+get_chat_history_as_text("1eaf3b4f-44a9-4fb5-9d66-b442d0086b51")
