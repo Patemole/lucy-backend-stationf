@@ -132,13 +132,13 @@ class RunLlm:
                 try:
                     from student_app.LLM.groq_api import get_keywords
                     keyword = get_keywords(input_message)
+                    print(keyword)
                 except Exception as e:
                     logging.error(f"Error while getting the keyword with groq: {str(e)}")
 
                 try:
                     from third_party_api_clients.exa.exa_api import exa_api_url_and_summary
-                    exa_search_results = exa_api_url_and_summary(query=input_message, keyword=keyword, domain=domain)
-                    print(exa_search_results)
+                    exa_search_results = await exa_api_url_and_summary(query=input_message, keyword=keyword, domain=domain)
                 except Exception as e:
                     logging.error(f"Error while searching the web with EXA API: {str(e)}")
 
