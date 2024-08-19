@@ -21,16 +21,17 @@ from student_app.database.dynamo_db.new_instance_chat import delete_all_items_an
 
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
+from student_app.LLM.LLM_config import RunLlm
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
 from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, reformat_messages ,set_prompt_with_history
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
 from student_app.profiling.profile_generation import LLM_profile_generation
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_normal_search_V2, system_fusion, system_chitchat
+from student_app.prompts.academic_advisor_prompts import system_normal_search, system_normal_search_V2, system_fusion, system_chitchat
 from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt, predefined_messages_prompt_V2
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
+from student_app.prompts.academic_advisor_prompts import system_profile
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
@@ -146,74 +147,19 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     student_profile = input_query.student_profile
 
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
-
-    prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
     
-    student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
     print(f"Student profil from firestore : {student_profile}")
+    #student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
-    domain = f"site:{university}.edu"
+    # Choose LLM API in the class RunLlm:
+    lucy_exa = RunLlm("exa")
 
-    # Get all items from chat history
-    # try:
-    #     history_items = await get_chat_history(chat_id=chat_id)
-    # except Exception as e:
-    #     logging.error(f"Error while retrieving chat history items : {str(e)}")
-
-    # Retrieve the "n" messages from the items of the chat history
-    try:
-        messages = await get_messages_from_history(chat_id=chat_id, n=6)
-    except Exception as e:
-        logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
-
-    predefined_messages = []
-
-    if question_type == "normal":
-        try:
-            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain=domain, student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating system prompt: {str(e)}")
-
-        try:
-            predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university="university of pennsylvania", student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating the predefined messages: {str(e)}")
-
-        try:
-            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain=domain)
-        except Exception as e:
-            logging.error(f"Error while reformating user prompt: {str(e)}")
-
-    elif question_type == "chitchat":
-        try:
-            system_prompt = await reformat_prompt(prompt=system_chitchat, university=university, student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating system prompt: {str(e)}")
-        user_prompt = input_message
-
-    try:
-        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
-    except:
-        logging.error(f"Error while setting prompt with history: {str(e)}")
-
-    # Async storage of the input
-    try:
-        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
-    except Exception as e:
-        logging.error(f"Error while storing the input message: {str(e)}")
-
-    # Stream the response
-    # def event_stream():
-    #     for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
-    #         # print(content, end='', flush=True)
-    #         yield content + "|"
-
-    # Stream response from Perplexity LLM with history 
-    try:
-        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
-        # return StreamingResponse(event_stream(), media_type="text/event-stream")
-    except Exception as e:
-        logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
+    lucy_exa.run_llm(input_message=input_message, 
+                     student_profile=student_profile, 
+                     university=university, 
+                     chat_id=chat_id, 
+                     course_id=course_id, 
+                     username=username)
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)

@@ -154,7 +154,7 @@ async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Ch
 
 
 @timing_decorator
-async def get_chat_history_as_text(chat_id: str):
+def get_chat_history_as_text(chat_id: str):
     try:
         response = table.query(
             KeyConditionExpression='chat_id = :chat_id',
@@ -175,3 +175,5 @@ async def get_chat_history_as_text(chat_id: str):
         error_message = e.response['Error']['Message']
         print(f"Error querying chat history: {error_code} - {error_message}")
         return []
+
+get_chat_history_as_text('1eaf3b4f-44a9-4fb5-9d66-b442d0086b51')
