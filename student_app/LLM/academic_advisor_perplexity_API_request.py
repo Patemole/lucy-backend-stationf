@@ -135,7 +135,7 @@ def run_perplexity_API_stream(PPLX_API_KEY, system_prompt: str, user_input: str)
 
 ####################################################### STREAM PERPLEXITY API WITH HISTORY #######################################################  
 @timing_decorator
-async def LLM_pplx_stream_with_history(messages: List[Dict[str, str]], model="llama-3-sonar-small-32k-online"):
+async def LLM_pplx_stream_with_history(messages: List[Dict[str, str]], model: str):
     load_dotenv()
     PPLX_API_KEY = os.getenv("PPLX_API_KEY")
 

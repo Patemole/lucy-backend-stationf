@@ -32,7 +32,7 @@ async def llm_answer_with_groq_async(messages: List[Dict[str, str]], model: str)
         stream_response = groq_client.chat.completions.create(
             messages=messages,
             model=model,
-            temperature=0.4,
+            temperature=0.1,
             stream=True,
         )
 

@@ -107,6 +107,7 @@ class RunLlm:
 
             from student_app.database.dynamo_db.chat import store_message_async
 
+            from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
             from student_app.database.dynamo_db.chat import store_message_async, get_messages_from_history
             from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, reformat_messages ,set_prompt_with_history
             from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
@@ -129,16 +130,17 @@ class RunLlm:
             predefined_messages = []
 
             if question_type == "normal":
-                try:
-                    from student_app.LLM.groq_api import get_keywords
-                    keyword = get_keywords(input_message)
-                    print(keyword)
-                except Exception as e:
-                    logging.error(f"Error while getting the keyword with groq: {str(e)}")
+                # try:
+                #     from student_app.LLM.groq_api import get_keywords
+                #     keyword = get_keywords(input_message)
+                #     print(keyword)
+                # except Exception as e:
+                #     logging.error(f"Error while getting the keyword with groq: {str(e)}")
 
                 try:
                     from third_party_api_clients.exa.exa_api import exa_api_url_and_summary
-                    exa_search_results, _ = await exa_api_url_and_summary(query=input_message, keyword=keyword, domain=domain)
+                    # exa_search_results, _ = await exa_api_url_and_summary(query=input_message, domain=domain,  keyword=keyword)
+                    exa_search_results, _ = await exa_api_url_and_summary(query=input_message, domain=domain)
                 except Exception as e:
                     logging.error(f"Error while searching the web with EXA API: {str(e)}")
 
@@ -146,14 +148,14 @@ class RunLlm:
                     import datetime 
                     date = datetime.date.today()
 
-                    system_prompt = await reformat_prompt(prompt=prompt_answering, university=university, date=date, domain=domain, student_profile=student_profile, search_results=exa_search_results)
+                    system_prompt = await reformat_prompt(prompt=prompt_answering, university=university, date=date, student_profile=student_profile, search_results=exa_search_results)
                 except Exception as e:
                     logging.error(f"Error while reformating system prompt: {str(e)}")
 
-                try:
-                    predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university="university of pennsylvania", student_profile=student_profile)
-                except Exception as e:
-                    logging.error(f"Error while reformating the predefined messages: {str(e)}")
+                # try:
+                #     predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university="university of pennsylvania", student_profile=student_profile)
+                # except Exception as e:
+                #     logging.error(f"Error while reformating the predefined messages: {str(e)}")
 
                 try:
                     from student_app.prompts.academic_advisor_user_prompts import user_exa
@@ -181,7 +183,8 @@ class RunLlm:
 
             # Stream response from Perplexity LLM with history 
             try:
-                return StreamingResponse(llm_answer_with_groq_async(messages=prompt, model=model), media_type="text/event-stream")
+                # return StreamingResponse(llm_answer_with_groq_async(messages=prompt, model=model), media_type="text/event-stream")
+                return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
             except Exception as e:
                 logging.error(f"Error while streaming response from Groq LLM with history: {str(e)}") 
 
