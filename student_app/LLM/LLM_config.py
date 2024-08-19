@@ -32,7 +32,7 @@ class RunLlm:
             from student_app.prompts.academic_advisor_user_prompts import user_with_profil
             from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
-            prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
+            prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message, llm_api=self.llm)
             
             # student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
             print(f"Student profil from firestore : {student_profile}")
@@ -51,7 +51,7 @@ class RunLlm:
                     import datetime 
                     date = datetime.date.today()
 
-                    system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain=domain, student_profile=student_profile)
+                    system_prompt = await reformat_prompt(prompt=prompt_answering, university=university, date=date, domain=domain, student_profile=student_profile)
                 except Exception as e:
                     logging.error(f"Error while reformating system prompt: {str(e)}")
 
@@ -67,7 +67,7 @@ class RunLlm:
 
             elif question_type == "chitchat":
                 try:
-                    system_prompt = await reformat_prompt(prompt=system_chitchat, university=university, student_profile=student_profile)
+                    system_prompt = await reformat_prompt(prompt=prompt_answering, university=university, student_profile=student_profile)
                 except Exception as e:
                     logging.error(f"Error while reformating system prompt: {str(e)}")
                 user_prompt = input_message
@@ -99,11 +99,25 @@ class RunLlm:
 
         ### EXA ###
         if self.llm == "exa":
+
+            import logging
+            import datetime
+
+            from fastapi.responses import StreamingResponse
+
+            from student_app.database.dynamo_db.chat import store_message_async
+
+            from student_app.database.dynamo_db.chat import store_message_async, get_messages_from_history
+            from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, reformat_messages ,set_prompt_with_history
+            from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
+
+            from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt, predefined_messages_prompt_V2
+            from student_app.prompts.academic_advisor_user_prompts import user_with_profil
+            from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
             
-            from student_app.prompts.academic_advisor_prompts import system_exa
             from student_app.LLM.groq_api import llm_answer_with_groq_async
 
-            prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
+            prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message, llm_api=self.llm)
 
             domain = f"{university}.edu"
 
@@ -124,6 +138,7 @@ class RunLlm:
                 try:
                     from third_party_api_clients.exa.exa_api import exa_api_url_and_summary
                     exa_search_results = exa_api_url_and_summary(query=input_message, keyword=keyword, domain=domain)
+                    print(exa_search_results)
                 except Exception as e:
                     logging.error(f"Error while searching the web with EXA API: {str(e)}")
 
@@ -131,7 +146,7 @@ class RunLlm:
                     import datetime 
                     date = datetime.date.today()
 
-                    system_prompt = await reformat_prompt(prompt=system_exa, university=university, date=date, domain=domain, student_profile=student_profile, search_results=exa_search_results)
+                    system_prompt = await reformat_prompt(prompt=prompt_answering, university=university, date=date, domain=domain, student_profile=student_profile, search_results=exa_search_results)
                 except Exception as e:
                     logging.error(f"Error while reformating system prompt: {str(e)}")
 
@@ -148,7 +163,7 @@ class RunLlm:
 
             elif question_type == "chitchat":
                 try:
-                    system_prompt = await reformat_prompt(prompt=system_chitchat, university=university, student_profile=student_profile)
+                    system_prompt = await reformat_prompt(prompt=prompt_answering, university=university, student_profile=student_profile)
                 except Exception as e:
                     logging.error(f"Error while reformating system prompt: {str(e)}")
                 user_prompt = input_message
@@ -166,10 +181,9 @@ class RunLlm:
 
             # Stream response from Perplexity LLM with history 
             try:
-                return StreamingResponse(llm_answer_with_groq_async(messages=prompt), media_type="text/event-stream")
-                # return StreamingResponse(event_stream(), media_type="text/event-stream")
+                return StreamingResponse(llm_answer_with_groq_async(messages=prompt, model=model), media_type="text/event-stream")
             except Exception as e:
-                logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}") 
+                logging.error(f"Error while streaming response from Groq LLM with history: {str(e)}") 
 
 
 

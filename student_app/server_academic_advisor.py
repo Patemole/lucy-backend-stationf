@@ -151,15 +151,20 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     print(f"Student profil from firestore : {student_profile}")
     #student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
 
-    # Choose LLM API in the class RunLlm:
-    lucy_exa = RunLlm("exa")
+    # LANCEMENT DU LLM
+    try: 
+        # Choose LLM API in the class RunLlm:
+        lucy_exa = RunLlm("exa") # perplexity or exa
 
-    lucy_exa.run_llm(input_message=input_message, 
-                     student_profile=student_profile, 
-                     university=university, 
-                     chat_id=chat_id, 
-                     course_id=course_id, 
-                     username=username)
+        return await lucy_exa.run_llm(input_message=input_message,
+                                                    student_profile=student_profile, 
+                                                    university=university, 
+                                                    chat_id=chat_id, 
+                                                    course_id=course_id, 
+                                                    username=username)
+    except Exception as e:
+        logging.error(f"Erreur lors de l'envoi du message : {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de l'envoi du message")
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)

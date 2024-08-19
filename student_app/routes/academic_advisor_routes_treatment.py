@@ -1,7 +1,8 @@
 import time
 from functools import wraps
+from typing import Literal
 from student_app.routes.academic_advisor_routes import rl
-import student_app.prompts.academic_advisor_perplexity_search_prompts as prompts
+import student_app.prompts.academic_advisor_prompts as prompts
 
 
 
@@ -19,7 +20,7 @@ def timing_decorator(func):
 
 #Il faut rajouter un "search_engine", un "RAG" ou "nothing" en plus dans les paramètres a renvoyer pour savoir quoi utiliser ensuite dans la fonction qui asnwer 
 @timing_decorator
-async def academic_advisor_router_treatment(input_message: str):
+async def academic_advisor_router_treatment(input_message: str, llm_api: str = Literal["perplexity", "exa"]):
 
     print("Routing in progress...")
     print("\n")
@@ -29,18 +30,29 @@ async def academic_advisor_router_treatment(input_message: str):
     print(router_answer)
     print("\n")
     if router_answer.name == "chitchat":
-         prompt_answering = prompts.system_chitchat
-         question_type = "chitchat"
-         model = "llama-3-sonar-small-32k-chat"
+         if llm_api == "perplexity":
+            prompt_answering = prompts.system_chitchat
+            question_type = "chitchat"
+            model = "llama-3-sonar-small-32k-chat"
+         elif llm_api == "exa":
+            prompt_answering = prompts.system_chitchat
+            question_type = "chitchat"
+            model = "llama3-70b-8192"
      
 
      #if not politics or chitchat then it is general AA questions 
     #else:
     elif router_answer.name == None:
-        #  prompt_answering = prompts.system_normal_search
-         prompt_answering = prompts.system_COT
-         question_type = "normal"
-         model = "llama-3.1-sonar-small-128k-online"
+         if llm_api == "perplexity":
+            prompt_answering = prompts.system_fusion
+            question_type = "normal"
+            model = "llama-3.1-sonar-small-128k-online"
+         elif llm_api == "exa":
+            prompt_answering = prompts.system_exa
+            question_type = "normal"
+            model = "llama3-70b-8192"
+        
+         
     print(f"ROUTE RESULTS: {question_type} and MODEL: {model}")
     return prompt_answering, question_type, model
 

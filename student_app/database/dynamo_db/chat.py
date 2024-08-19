@@ -10,7 +10,6 @@ import boto3
 import os
 import json
 from typing import Optional
-from student_app.prompts.perplexity_pydantic_prompt_checker import Message, Chat
 
 
 
@@ -126,7 +125,7 @@ async def store_message_async(
     
 
 @timing_decorator
-async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Chat:
+async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> List[Dict[str, str]]:
 
     filtered_items = await get_chat_history(chat_id)
 
@@ -139,18 +138,13 @@ async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Ch
     else:  # If n is even
         items = filtered_items[-n:]
 
-    # messages = [
-    #     {"role": "assistant" if item['username'] == "Lucy" else "user", "content": item['body']}
-    #     for item in items
-    # ]
+    messages = [
+        {"role": "assistant" if item['username'] == "Lucy" else "user", "content": item['body']}
+        for item in items
+    ]
 
-    # Pydantic
-    chat = Chat(chat=[Message(role="assistant" if item['username'] == "Lucy" else "user", content=item['body']) for item in items])
-    chat_json = chat.model_dump()
-    formated_chat = chat_json["chat"]
-
-    print(f"Retrieved {len(formated_chat)} messages from chat history.")
-    return formated_chat
+    print(f"Retrieved {len(messages)} messages from chat history.")
+    return messages
 
 
 @timing_decorator
@@ -176,4 +170,3 @@ def get_chat_history_as_text(chat_id: str):
         print(f"Error querying chat history: {error_code} - {error_message}")
         return []
 
-get_chat_history_as_text('1eaf3b4f-44a9-4fb5-9d66-b442d0086b51')
