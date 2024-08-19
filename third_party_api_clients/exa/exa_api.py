@@ -23,7 +23,8 @@ def timing_decorator(func):
 async def exa_api_url_and_summary(query: str, keyword:str, domain: str):
         exa_client = Exa(api_key=os.environ.get("EXA_API_KEY"))
 
-        summary_prompt = f"Summarize the entire content in a comprehensive and informative manner using bullet points. Include all key points, details, and data presented on the website such as links, dates or numbers. Make sure that most information is related to the query of the user: {query}"
+        # summary_prompt = f"Summarize the entire content in a comprehensive and informative manner using bullet points. Include all key points, details, and data presented on the website such as links, dates or numbers. Make sure that most information is related to the query of the user: {query}"
+        summary_prompt = f"Summarize the entire content in a comprehensive and informative manner using bullet points. Include all key points, details, and data presented on the website such as links, dates or numbers."
 
         result = exa_client.search_and_contents(
             query,
@@ -48,7 +49,7 @@ async def exa_api_url_and_summary(query: str, keyword:str, domain: str):
 
         urls = [search.url for search in result.results]
 
-        # print(url_and_summary)
+        print(url_and_summary)
         return url_and_summary, urls
 
      

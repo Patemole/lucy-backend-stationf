@@ -12,7 +12,7 @@ def get_keywords(query: str) -> str:
             messages=[
                 {
                     "role": "system",
-                    "content": "Identify the primary academic or administrative topic of the user's query and synthetise only 1 keyword from the user's query that will be the most useful to answer and guide the student with no preamble or punctuation.",
+                    "content": "Identify the most specific keyword from the user's query with no preamble, postamble or explanation or punctuation. Output only 1 word.",
                 },
                 {
                     "role": "user",
