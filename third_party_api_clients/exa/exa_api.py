@@ -44,7 +44,9 @@ async def exa_api_url_and_summary(query: str, keyword:str, domain: str):
         }
         for search in result.results]
 
-        # print(url_and_summary)
-        return url_and_summary
+        urls = [search.url for search in result.results]
 
-# def exa_api_url
+        # print(url_and_summary)
+        return url_and_summary, urls
+
+     

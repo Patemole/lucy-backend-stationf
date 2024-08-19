@@ -138,7 +138,7 @@ class RunLlm:
 
                 try:
                     from third_party_api_clients.exa.exa_api import exa_api_url_and_summary
-                    exa_search_results = await exa_api_url_and_summary(query=input_message, keyword=keyword, domain=domain)
+                    exa_search_results, _ = await exa_api_url_and_summary(query=input_message, keyword=keyword, domain=domain)
                 except Exception as e:
                     logging.error(f"Error while searching the web with EXA API: {str(e)}")
 
