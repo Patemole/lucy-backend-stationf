@@ -132,6 +132,8 @@ async def get_messages_from_history(chat_id: str, n: Optional[int] = None) -> Li
     # Ensure of getting even number of messages (user + lucy)
     if n is None :
         items = filtered_items  # Get all messages
+    elif n == 0:
+        items = []
     elif n % 2 != 0:  # If n is odd
         n += 1  # Make it even
         items = filtered_items[-n:]

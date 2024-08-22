@@ -123,7 +123,7 @@ class RunLlm:
             domain = f"upenn.edu"
 
             try:
-                messages = await get_messages_from_history(chat_id=chat_id, n=0)
+                messages = await get_messages_from_history(chat_id=chat_id, n=6)
             except Exception as e:
                 logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 

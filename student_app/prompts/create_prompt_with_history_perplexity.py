@@ -69,6 +69,7 @@ async def set_prompt_with_history(system_prompt: str,
     print("Checking the formatting ...")
     pplx_messages_format_validation(messages)
     print("The list of messages for the prompt was correctly formated with history messages.")
+    print(f"\n{messages}\n")
     return messages
 
 # ############################################ TESTING ###############################################

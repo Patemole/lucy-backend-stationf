@@ -29,18 +29,22 @@ def get_keywords(query: str) -> str:
 
 async def llm_answer_with_groq_async(messages: List[Dict[str, str]], model: str):
         groq_client =  Groq(api_key=os.environ.get("GROQ_API_KEY"))
-        stream_response = groq_client.chat.completions.create(
-            messages=messages,
-            model=model,
-            temperature=0.6,
-            stream=True,
-        )
+        try:
+            stream_response = groq_client.chat.completions.create(
+                messages=messages,
+                model=model,
+                temperature=0.6,
+                stream=True,
+            )
 
-        for chunk in stream_response:
-            content = chunk.choices[0].delta.content
-            if content is not None:
-                yield content + "|"
-            else:
-                yield "|"
-            # print(chunk.choices[0].delta.content, end="")
-            # yield chunk.choices[0].delta.content + "|"
+            for chunk in stream_response:
+                content = chunk.choices[0].delta.content
+                if content is not None:
+                    yield content + "|"
+                else:
+                    yield "|"
+                # print(chunk.choices[0].delta.content, end="")
+                # yield chunk.choices[0].delta.content + "|"
+
+        except Exception as e:
+            print(e)
