@@ -29,7 +29,7 @@ async def exa_api_url_and_summary(query: str, domain: str, keyword:str = None):
         result = exa_client.search_and_contents(
             query,
             type="auto",
-            num_results=5,
+            num_results=10,
             # text={
             #     "include_html_tags": True
             # },
@@ -38,21 +38,23 @@ async def exa_api_url_and_summary(query: str, domain: str, keyword:str = None):
             summary={
                 "query": summary_prompt
             },
-            include_text=["2024"],
+            include_text=[keyword],
             # start_published_date="2023-12-31T23:00:01.000Z"
         )
 
-        url_and_summary = [{
-            "url": search.url,
-            "summary": search.summary 
-        }
-        for search in result.results]
+        # url_and_summary = [{
+        #     "url": search.url,
+        #     "summary": search.summary 
+        # }
+        # for search in result.results]
+
+        summary= [search.summary for search in result.results]
 
         urls = [search.url for search in result.results]
 
-        print(urls)
+        print(f"URLS: {urls}")
 
-        print(url_and_summary)
-        return url_and_summary, urls
+        print(f"SUMMARY: {summary}")
+        return summary, urls
 
      

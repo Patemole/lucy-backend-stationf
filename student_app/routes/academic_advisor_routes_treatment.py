@@ -37,7 +37,7 @@ async def academic_advisor_router_treatment(input_message: str, llm_api: str = L
          elif llm_api == "exa":
             prompt_answering = prompts.system_chitchat
             question_type = "chitchat"
-            model = "llama3-70b-8192"
+            model = "llama-3.1-8b-instant"
      
 
      #if not politics or chitchat then it is general AA questions 
@@ -48,13 +48,13 @@ async def academic_advisor_router_treatment(input_message: str, llm_api: str = L
             question_type = "normal"
             model = "llama-3.1-sonar-small-128k-online"
          elif llm_api == "exa":
-            prompt_answering = prompts.system_exa_V3
+            prompt_answering = prompts.system_exa_V4
             question_type = "normal"
-            # model = "llama3-70b-8192"
-            model = "llama-3.1-8b-instruct"
+            model = "llama-3.1-8b-instant"
         
          
     print(f"ROUTE RESULTS: {question_type} and MODEL: {model}")
+    print(f"PROMPT ANSWERING: {prompt_answering}")
     return prompt_answering, question_type, model
 
 
