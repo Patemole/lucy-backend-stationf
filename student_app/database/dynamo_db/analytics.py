@@ -1,5 +1,6 @@
 from typing import Any, Dict, List
 from third_party_api_clients.dynamo_db.dynamo_db_client import DynamoDBClient
+from datetime import datetime, timedelta
 from botocore.exceptions import ClientError
 from datetime import datetime
 import uuid
@@ -10,6 +11,7 @@ import boto3
 import os
 from dotenv import load_dotenv
 import json
+import logging
 
 
 load_dotenv()
@@ -70,7 +72,8 @@ async def store_analytics_async(
         word_count: int,
         ai_message_id: str,
         input_message: str,
-        output_message: str):
+        output_message: str,
+        university: str):
     print(f"Attempting to store message for ai_message_id: {ai_message_id}, course_id: {course_id}, uid: {uid}")
 
 
@@ -105,6 +108,7 @@ async def store_analytics_async(
             'ai_message_id': ai_message_id,
             'input_text': input_message,
             'output_text': output_message,
+            'university' : university,
         }
         
         # Insérer l'élément dans DynamoDB
@@ -115,3 +119,52 @@ async def store_analytics_async(
         error_code = e.response['Error']['Code']
         error_message = e.response['Error']['Message']
         print(f"Error inserting message into analytics database: {error_code} - {error_message}")
+
+
+
+
+
+async def fetch_request_data_from_dynamo(time_filter: str) -> Dict[str, Any]:
+    try:
+        now = datetime.utcnow()
+
+        # Calculate the start date based on the time filter
+        if time_filter == 'Today':
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif time_filter == 'Last Week':
+            start_date = now - timedelta(days=7)
+        elif time_filter == 'Last Month':
+            start_date = now - timedelta(days=30)
+        elif time_filter == 'Last Year':
+            start_date = now - timedelta(days=365)
+        else:
+            raise ValueError("Invalid time filter provided")
+
+        # Build the filter expression for DynamoDB query (only filtering by time for now)
+        filter_expression = "#createdAt BETWEEN :start AND :end"
+        expression_attribute_names = {"#createdAt": "createdAt"}
+        expression_attribute_values = {
+            ":start": start_date.isoformat(),
+            ":end": now.isoformat()
+        }
+
+        # Query DynamoDB
+        response = table.scan(
+            FilterExpression=filter_expression,
+            ExpressionAttributeNames=expression_attribute_names,
+            ExpressionAttributeValues=expression_attribute_values
+        )
+
+        items = response.get('Items', [])
+        count = len(items)
+        dates = [item['createdAt'] for item in items]
+
+        return {"count": count, "dates": dates}
+
+    except ClientError as e:
+        logging.error(f"Error querying DynamoDB: {str(e)}")
+        raise e
+
+    except Exception as e:
+        logging.error(f"Unexpected error: {str(e)}")
+        raise e

@@ -1,0 +1,3803 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="Search Classes" name="description"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+   <title>
+    Search Classes
+   </title>
+   <link href="/js/lfjs.css" rel="stylesheet"/>
+   <link href="/fonts/font-awesome/font-awesome.min.css" rel="stylesheet"/>
+   <link href="fose.css?1721933592987" rel="stylesheet"/>
+   <link href="/favicon.ico" rel="shortcut icon">
+    <script>
+     function isIOS() {
+				return ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator',	'iPad',	'iPhone', 'iPod'].includes(navigator.platform) || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+			}
+
+			if(isIOS()){
+				const viewportmeta = document.querySelector('meta[name=viewport]');
+				viewportmeta.setAttribute('content', "initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0");
+			}
+    </script>
+    <script>
+     var foseConfig = {
+			apiURL: "api/?page=fose",
+			context: "fose",
+			canCreateCart: true,
+			textAPIError: "Sorry, we were unable to process your request",
+			textLoading: "Loading...",
+			textSearching: "Searching...",
+			textNotOffered: "This course is not currently being offered",
+			textTooBroad: "Please enter at least one search [field, filter] to narrow your results",
+			textCriteriaInvalid: "Search criteria has errors, please fix all errors to continue",
+			textValueVaries: "Varies by section",
+			textAmbiguousCartTerm: "To view your primary cart, please select a specific term first",
+			textInvalidCartName: "Cart name is empty or contains an invalid character",
+			textCartIsReadOnly: "The specified cart is read-only and cannot be modified",
+			textSectionInCart: "This section is already in your cart",
+			textConfirmClearCart: "Are you sure you want to clear the contents of this cart?",
+			textUpdateCartFailed: "Your cart could not be updated, please try again.  Error:",
+			textRegisteredSection: "You are registered for this section",
+			textCourseTaken: "You have taken this course",
+			textCourseTakenEquiv: "You have taken an equivalent course",
+			textSectionCanceled: "This section has been canceled",
+			textSectionFull: "This section is full",
+			textNoResultsFound: "No Results Found",
+			textCartContents: "Cart Contents",
+			textSearchResults: "Search Results",
+			textError: "Error",
+			textCart: "Cart",
+			textPlan: "Plan",
+			textPlanSnapshot: "Snapshot",
+			textPlanNoTermAssigned: "No Term Assigned",
+			textPlanCourseNotOffered: "Course Not Offered",
+			textPlanOptionCleanedup: "Hide Past Terms",
+			textCouldNotProcessRequest: "Sorry, something went wrong and we were unable to process your request.  Please try again.",
+			textResetSearch: "Reset Search",
+			textClearCart: "Clear Cart",
+			textDeleteCart: "Delete Cart",
+			textSearchCriteria: "Search Criteria",
+			textShortTerm: "Term",
+			textSectionNumber: "Section Number",
+			textMeets: "Meets",
+			textInstructor: "Instructor",
+			textAddToCart: "ADD TO CART",
+			textRemoveFromCart: "REMOVE FROM CART",
+			textTermCalendar: "Term Calendar",
+			textSelectedSection: "Selected Section",
+			textShowAll: "SHOW ALL",
+			textCourse: "Course",
+			textCalendar: "Calendar",
+			textInstructorStaff: "Staff",
+			textInstructorTeam: "Team",
+			textSectionOnWaitlist: "You are on the waitlist for this section",
+			textSectionOnWaitlistPosition: "You are on the waitlist for this section in position:",
+			textTerm: "Term",
+			textManageCourse: "MANAGE COURSE",
+			textProgramsCatalogLink: "the Catalog",
+			textAdvisingPIN: "Advising PIN",
+			textCartAddSuccess: "Added {{ section.code }}",
+			textCartRemoveSuccess: "Removed {{ section.code }}",
+			textCartAddError: "Error - Could not add {{ section.code }}",
+			textCartRemoveError: "Error - Could not remove {{ section.code }}",
+			notifyOnCartOperations: true,
+			calendarGroups: "LEC,SEM,LAB",
+			calendarColors: ["#c6dbef,#08519c","#c7e9c0,#006d2c","#fee6ce,#d94801","#d9d9d9,#252525"],
+			calendarAssocSections: false,
+			calendarAssocSectionsIcon: true,
+			calendarAssocSectionsCrn: true,
+			calendarAssocSectionsMp: true,
+			calendarAssocSectionsInstr: true,
+			calendarAssocUpdateOnClick: false,
+			calendarTbaSections: true,
+			calendarTbaSectionsIcon: true,
+			calendarTbaSectionsTerm: false,
+			calendarTbaSectionsSectionNo: true,
+			calendarTbaSectionsSchd: true,
+			calendarTbaSectionsInstr: true,
+			calendarTbaUpdateOnClick: false,
+			itemName: "course",
+			itemsName: "courses",
+			textOverrideOverrideRequestsHead: "Permission Requests",
+			textOverrideNoneAvailable: "There are currently no permission requests for this course",
+			textOverrideAllProcessed: "Permission requests were successfully processed",
+			textOverrideSomeRequestsFailed: "Some permission requests could not be processed",
+			textOverrideRequestOverride: "Request permission for this course",
+			textOverrideOverrideRequest: "Permission Request",
+			textManageOverrides: "Manage Permissions",
+			textTimeTicketSubmitNotice: "<strong>The Submit Registration button is only available during add/drop/swap.</strong> Use the Submit Schedule button to request classes during Advance Registration.<br /><br />Advance Registration for Spring 2023 is open. The system will close at 11:59pm EST on 11/13/22.",
+			instructorOverrideMaxLength: "500",
+			courseRegex: "[A-Z\\-]{2,4}\\s?\\d{3,4}[A-Z]{0,4}",
+			searchRegexes: [{"regex":"[A-Za-z\\-]{2,4}\\s?\\d{3,4}[A-Za-z]{0,4}","appearsIn":"keyword","mapsTo":"alias"},{"regex":"^\\d{5}$","appearsIn":"keyword","mapsTo":"crn"}],
+			keepAliveInterval: "300",
+			cartShowHistorical: true,
+			cartShowRegistered: true,
+			cartShowWaitlist: true,
+			haveCART: true,
+			havePLAN: true,
+			fuseURL: "api/?page=sisproxy",
+			cartSubmitURL: "/courseleaf/courseleaf.cgi?page=/minireg&step=minireg&action=register&term_code={{term|raw}}",
+			cartSubmitAction: "show-cart-registration",
+			cartQuickAdd: null,
+			replacePreflightCrnWithCode: true,
+			fixFilteringLinkedSectionsJalot2354: true,
+			promotedScreens: {"empty-space":{"screen":"empty-space","limit":6,"title":"Have you Considered?","options":"rule=Promoted Classes"}},
+			collapse: {"groupByPrimary":"code,title","groupBySecondary":"srcdb","keyField":"crn","countFields":"schd","rollupFields":"notes","rollupSomeFields":"hasCartNote,hasRegisteredNote,hasWaitlistNote","rollupEveryFields":"hasWarnNote,isCancelled"},
+			sis: "banner",
+			userRecordURL: "api/?page=sisproxy",
+			codeMapping: {"schd:LEC":{"singular":"lecture","plural":"lecture"},"schd:IND":{"singular":"independent study","plural":"independent study"},"schd:CLN":{"singular":"clinical","plural":"clinical"},"schd:SEM":{"singular":"seminar","plural":"seminar"},"schd:MST":{"singular":"masters thesis","plural":"masters thesis"},"schd:LAB":{"singular":"laboratory","plural":"laboratory"},"schd:DIS":{"singular":"dissertation","plural":"dissertation"},"schd:STU":{"singular":"studio","plural":"studio"},"schd:REC":{"singular":"recitation","plural":"recitation"},"schd:FLD":{"singular":"field work","plural":"field work"}},
+			srcDBs: [{"code":"202430","name":"Fall 2024","short":"","contains":"","status":"clss-publish","flags":"hiderooms,permreq,regprefs"},{"code":"202420","name":"Summer 2024","short":"","contains":"","status":"clss-publish","flags":"permreq,regprefs"},{"code":"202410","name":"Spring 2024","short":"","contains":"","status":"historical","flags":"regprefs"},{"code":"202330","name":"Fall 2023","short":"Fall 2023","contains":"","status":"historical","flags":"permreq,regprefs"},{"code":"202320","name":"Summer 2023","short":"Summer 2023","contains":"","status":"historical","flags":"permreq,regprefs"},{"code":"202310","name":"Spring 2023","short":"Spring 2023","contains":"","status":"historical","flags":"permreq,regprefs"},{"code":"202230","name":"Fall 2022","short":"Fall 2022","contains":"","status":"historical","flags":"permreq,regprefs"},{"code":"202220","name":"Summer 2022","short":"Summer 2022","contains":"","status":"historical","flags":"permreq"}],
+			haveSAM: true,
+			authWindowFeatures: "height=600,width=800,left=100,top=100",
+			authURL: "https://idp.pennkey.upenn.edu/idp/profile/oidc/authorize?response_type=code&scope=openid+email+profile&client_id=courses.upenn.edu%2Fsam_rMReby8Vl3M1BiyVWMAT&redirect_uri=https%3A%2F%2Fcourses.upenn.edu%2Fsam%2Fcodetotoken",
+			textTermCalendarDisclaimer: "*Class breaks (including holidays) are not displayed. Consult the academic calendar for class breaks and individual class syllabi for exceptions to the published class meeting dates/times.",
+			displayTermCal: false
+		};
+    </script>
+   </link>
+  </meta>
+ </head>
+ <body class="user-anon screens--samenabled--on screens--isprod--on">
+  <div class="modal" id="modal">
+   <div class="modal__content" id="modal__content">
+   </div>
+  </div>
+  <header class="banner" role="banner">
+   <h1 class="banner__title">
+   </h1>
+   <div class="banner__auth">
+    <a class="anon-only" data-action="login" href="#">
+     <i aria-hidden="true" class="fa fa-sign-in">
+     </i>
+     Login
+    </a>
+    <div class="authed-only">
+     Welcome,
+     <span class="user-name">
+     </span>
+    </div>
+   </div>
+  </header>
+  <main class="panels">
+   <div class="panel panel--visible">
+    <div class="panel__content" tabindex="0">
+     <div class="panel__head">
+      <h2>
+       Search Classes
+      </h2>
+     </div>
+     <div class="panel__body" data-search-data-provider="search-panel">
+      <form id="search-form">
+       <div class="section" id="crit-section-1464624409188">
+        <div class="section__content" id="crit-content-1464624409188">
+         <div class="form-group">
+          <label class="sr-only" for="crit-srcdb">
+           Term
+          </label>
+          <select class="form-control" data-type="single-column" id="crit-srcdb" required="">
+           <option value="202430">
+            Fall 2024
+           </option>
+           <option value="202420">
+            Summer 2024
+           </option>
+           <option value="202410">
+            Spring 2024
+           </option>
+           <option value="202330">
+            Fall 2023
+           </option>
+           <option value="202320">
+            Summer 2023
+           </option>
+           <option value="202310">
+            Spring 2023
+           </option>
+           <option value="202230">
+            Fall 2022
+           </option>
+           <option value="202220">
+            Summer 2022
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-keyword">
+           Title, Subject, Instructor, Keyword
+          </label>
+          <input class="form-control" id="crit-keyword" placeholder="Title, Subject, Instructor, Keyword  " type="text"/>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-instmode">
+           Instruction Method
+          </label>
+          <select class="form-control" data-type="single-column" id="crit-instmode">
+           <option value="">
+            Instruction Method
+           </option>
+           <option value="IC">
+            In Class
+           </option>
+           <option value="AL">
+            Active Learning
+           </option>
+           <option value="CL">
+            Clinical Based Learning
+           </option>
+           <option value="DM">
+            Dissertation/Masters
+           </option>
+           <option value="FW">
+            Field Work
+           </option>
+           <option value="HY">
+            Hybrid
+           </option>
+           <option value="IS">
+            Independent Study
+           </option>
+           <option value="IN">
+            Internship
+           </option>
+           <option value="OL">
+            Online
+           </option>
+           <option value="RS">
+            Research
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <div>
+           <input id="crit-online_campus" type="checkbox" value="Y"/>
+           <label for="crit-online_campus">
+            Find courses available to students in online programs
+           </label>
+          </div>
+         </div>
+         <div class="form-group">
+          <div>
+           <input data-action="allowdefault;login" id="crit-no-overlap-cart" type="checkbox" value="Y"/>
+           <label for="crit-no-overlap-cart">
+            Don't Overlap Primary Cart
+           </label>
+          </div>
+         </div>
+         <div class="form-group">
+          <div class="course-management-indicator" id="course-management">
+           <input data-action="allowdefault;login" id="crit-course-management" type="checkbox" value="Y"/>
+           <label for="crit-course-management">
+            Show Courses I Manage
+           </label>
+          </div>
+         </div>
+         <div class="form-group">
+          <div class="course-management-indicator" id="course-management-pending">
+           <input data-action="allowdefault;login" id="crit-course-management-pending" type="checkbox" value="Y"/>
+           <label for="crit-course-management-pending">
+            Limit to Classes Pending Attention
+           </label>
+          </div>
+         </div>
+         <div class="form-group">
+          <button class="btn btn--full" data-action="search" id="search-button" type="submit">
+           SEARCH
+          </button>
+         </div>
+        </div>
+       </div>
+       <div class="section" id="crit-section-1592421602184">
+        <h3 class="section__title">
+         Suggestions
+        </h3>
+        <div class="section__content" id="crit-content-1592421602184">
+         <div class="form-group">
+          <button class="btn btn--full" data-action="open-programs" data-programs-type="" id="open_programs" type="button">
+           Explore Programs
+          </button>
+         </div>
+         <div class="form-group">
+         </div>
+         <div class="form-group">
+          <!-- holds handler -->
+         </div>
+         <div class="form-group">
+          <button class="btn btn--full" data-action="login,open-advising" id="button-advising" type="button">
+           Degree Audit &amp; Advising
+          </button>
+         </div>
+        </div>
+       </div>
+       <div class="section" id="crit-section-1592421542903">
+        <h3 class="section__title">
+         Carts
+        </h3>
+        <div class="section__content" id="crit-content-1592421542903">
+         <div class="form-group">
+          <button class="btn btn--full" data-action="login,primary-cart" id="primary-cart-button" type="button">
+           Primary Cart
+          </button>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-other-carts">
+           Other Carts
+          </label>
+          <select class="form-control" data-action="allowdefault;login,onchange:other-cart" id="crit-other-carts">
+           <option value="">
+            Select a Cart...
+           </option>
+          </select>
+         </div>
+        </div>
+       </div>
+       <div class="section" id="crit-section-1464797400962">
+        <h3 class="section__title">
+         ADVANCED SEARCH
+        </h3>
+        <div class="section__content" id="crit-content-1464797400962">
+         <div class="form-group">
+          <div class="meet-pat-rec">
+           <input data-action="allowdefault;custom-meet" id="crit-custom-meeting-pattern" type="checkbox" value=""/>
+           <label for="crit-custom-meeting-pattern">
+            <span class="label-text">
+             Exclude Times
+            </span>
+            <button aria-label="Edit custom meeting pattern" class="edit-meet-pat-button btn btn--primary" data-action="custom-meet" type="button">
+             edit
+            </button>
+           </label>
+          </div>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-subject">
+           Subject
+          </label>
+          <select class="form-control seligo-desktop" data-seligo-label="Subject" data-type="single-column" id="crit-subject">
+           <option value="">
+            Subject
+           </option>
+           <option value="MELC">
+            MELC - Middle Eastern Languages &amp; Cultures
+           </option>
+           <option value="AAMW">
+            AAMW - Art &amp; Archaeology of the Mediterranean World
+           </option>
+           <option value="ACCT">
+            ACCT - Accounting
+           </option>
+           <option value="ACFD">
+            ACFD - Academic Foundations
+           </option>
+           <option value="AFRC">
+            AFRC - Africana Studies
+           </option>
+           <option value="AFST">
+            AFST - African Studies Program
+           </option>
+           <option value="ALAN">
+            ALAN - Asian Languages
+           </option>
+           <option value="AMCS">
+            AMCS - Applied Math &amp; Computational Science
+           </option>
+           <option value="AMEL">
+            AMEL - AMEL
+           </option>
+           <option value="AMHR">
+            AMHR - Amharic
+           </option>
+           <option value="ANAT">
+            ANAT - Anatomy
+           </option>
+           <option value="ANCH">
+            ANCH - Ancient History
+           </option>
+           <option value="ANEL">
+            ANEL - Ancient Near East Languages
+           </option>
+           <option value="ANTH">
+            ANTH - Anthropology
+           </option>
+           <option value="APOP">
+            APOP - Applied Positive Psychology
+           </option>
+           <option value="ARAB">
+            ARAB - Arabic
+           </option>
+           <option value="ARCH">
+            ARCH - Architecture
+           </option>
+           <option value="ARTH">
+            ARTH - Art History
+           </option>
+           <option value="ASAM">
+            ASAM - Asian American Studies
+           </option>
+           <option value="ASLD">
+            ASLD - American Sign Language
+           </option>
+           <option value="ASTR">
+            ASTR - Astronomy
+           </option>
+           <option value="BAAS">
+            BAAS - Bachelor of Applied Arts and Sciences
+           </option>
+           <option value="BBCB">
+            BBCB - BBCB
+           </option>
+           <option value="BCHE">
+            BCHE - Biochemistry
+           </option>
+           <option value="BCS">
+            BCS - Bosnian-Croatian-Serbo
+           </option>
+           <option value="BDS">
+            BDS - Behavioral &amp; Decision Sciences
+           </option>
+           <option value="BE">
+            BE - Bioengineering
+           </option>
+           <option value="BENF">
+            BENF - Benjamin Franklin Seminars
+           </option>
+           <option value="BENG">
+            BENG - Bengali
+           </option>
+           <option value="BEPP">
+            BEPP - Business Economics &amp; Public Policy
+           </option>
+           <option value="BIOE">
+            BIOE - Bioethics
+           </option>
+           <option value="BIOL">
+            BIOL - Biology
+           </option>
+           <option value="BIOM">
+            BIOM - Biomedical Studies
+           </option>
+           <option value="BIOT">
+            BIOT - Biotechnology
+           </option>
+           <option value="BMB">
+            BMB - Biochemistry and Molecular Biophysics
+           </option>
+           <option value="BMIN">
+            BMIN - Biomedical Informatics
+           </option>
+           <option value="BSTA">
+            BSTA - Biostatistics
+           </option>
+           <option value="CAMB">
+            CAMB - Cell and Molecular Biology
+           </option>
+           <option value="CBE">
+            CBE - Chemical &amp; Biomolecular Engineering
+           </option>
+           <option value="CHEM">
+            CHEM - Chemistry
+           </option>
+           <option value="CHIC">
+            CHIC - Chichewa
+           </option>
+           <option value="CHIN">
+            CHIN - Chinese
+           </option>
+           <option value="CIMS">
+            CIMS - Cinema and Media Studies
+           </option>
+           <option value="CIS">
+            CIS - Computer and Information Science
+           </option>
+           <option value="CIT">
+            CIT - Computer and Information Technology
+           </option>
+           <option value="CLCH">
+            CLCH - Climate Change
+           </option>
+           <option value="CLSC">
+            CLSC - Classics
+           </option>
+           <option value="CLST">
+            CLST - Classical Studies
+           </option>
+           <option value="COGS">
+            COGS - Cognitive Science
+           </option>
+           <option value="COLL">
+            COLL - College
+           </option>
+           <option value="COML">
+            COML - Comparative Literature
+           </option>
+           <option value="COMM">
+            COMM - Communications
+           </option>
+           <option value="CPLN">
+            CPLN - City and Regional Planning
+           </option>
+           <option value="CRIM">
+            CRIM - Criminology
+           </option>
+           <option value="CRWR">
+            CRWR - Creative Writing
+           </option>
+           <option value="CZCH">
+            CZCH - Czech
+           </option>
+           <option value="DATA">
+            DATA - Data Analytics
+           </option>
+           <option value="DATS">
+            DATS - Data Science
+           </option>
+           <option value="DEMG">
+            DEMG - Demography
+           </option>
+           <option value="DIGC">
+            DIGC - Digital Culture
+           </option>
+           <option value="DSGN">
+            DSGN - Design
+           </option>
+           <option value="DTCH">
+            DTCH - Dutch
+           </option>
+           <option value="DYNM">
+            DYNM - Organizational Dynamics
+           </option>
+           <option value="EALC">
+            EALC - East Asian Languages &amp; Civilztn
+           </option>
+           <option value="EAS">
+            EAS - Engineering &amp; Applied Science
+           </option>
+           <option value="EASC">
+            EASC - Engineering and Applied Science
+           </option>
+           <option value="ECON">
+            ECON - Economics
+           </option>
+           <option value="EDCL">
+            EDCL - Chief Learning Officer
+           </option>
+           <option value="EDEN">
+            EDEN - Education Entrepreneurship
+           </option>
+           <option value="EDHE">
+            EDHE - Higher Education Management
+           </option>
+           <option value="EDMC">
+            EDMC - Mid-Career Education Leadership
+           </option>
+           <option value="EDME">
+            EDME - Medical Education
+           </option>
+           <option value="EDPR">
+            EDPR - Penn Residency
+           </option>
+           <option value="EDSC">
+            EDSC - School &amp; Mental Health Counseling
+           </option>
+           <option value="EDSL">
+            EDSL - School Leadership
+           </option>
+           <option value="EDTF">
+            EDTF - Teach for America MSED
+           </option>
+           <option value="EDUC">
+            EDUC - Education
+           </option>
+           <option value="EESC">
+            EESC - Earth and Environmental Science
+           </option>
+           <option value="EEUR">
+            EEUR - East European
+           </option>
+           <option value="ENGL">
+            ENGL - English
+           </option>
+           <option value="ENGR">
+            ENGR - Engineering
+           </option>
+           <option value="ENLT">
+            ENLT - English Literature
+           </option>
+           <option value="ENM">
+            ENM - Engineering Mathematics
+           </option>
+           <option value="ENMG">
+            ENMG - Energy Management and Policy
+           </option>
+           <option value="ENVS">
+            ENVS - Environmental Studies
+           </option>
+           <option value="EPID">
+            EPID - Epidemiology
+           </option>
+           <option value="ESE">
+            ESE - Electrical &amp; Systems Engineering
+           </option>
+           <option value="ETHC">
+            ETHC - ETHC
+           </option>
+           <option value="FIGS">
+            FIGS - Francophone, Italian, and Germanic Studies
+           </option>
+           <option value="FILP">
+            FILP - Filipino
+           </option>
+           <option value="FNAR">
+            FNAR - Fine Arts
+           </option>
+           <option value="FNCE">
+            FNCE - Finance
+           </option>
+           <option value="FOLK">
+            FOLK - Folklore
+           </option>
+           <option value="FREN">
+            FREN - French
+           </option>
+           <option value="FRSM">
+            FRSM - First-Year Seminar
+           </option>
+           <option value="GADS">
+            GADS - GADS
+           </option>
+           <option value="GAFL">
+            GAFL - Government Administration
+           </option>
+           <option value="GAS">
+            GAS - Graduate Arts &amp; Sciences
+           </option>
+           <option value="GBIO">
+            GBIO - Graduate Oral Biology
+           </option>
+           <option value="GCB">
+            GCB - Genomics &amp; Comp. Biology
+           </option>
+           <option value="GDSD">
+            GDSD - Graduate Doctor of Science in Dentistry
+           </option>
+           <option value="GENC">
+            GENC - Genetic Counseling
+           </option>
+           <option value="GLBS">
+            GLBS - Global Studies
+           </option>
+           <option value="GMPA">
+            GMPA - Global MPA
+           </option>
+           <option value="GOPH">
+            GOPH - Graduate Oral and Population Health
+           </option>
+           <option value="GREK">
+            GREK - Greek
+           </option>
+           <option value="GRMN">
+            GRMN - Germanic Languages
+           </option>
+           <option value="GSWS">
+            GSWS - Gender, Sexuality &amp; Women's Studies
+           </option>
+           <option value="GUJR">
+            GUJR - Gujarati
+           </option>
+           <option value="HCIN">
+            HCIN - Health Care Innovation
+           </option>
+           <option value="HCMG">
+            HCMG - Health Care Management
+           </option>
+           <option value="HEBR">
+            HEBR - Hebrew
+           </option>
+           <option value="HIND">
+            HIND - Hindi
+           </option>
+           <option value="HIST">
+            HIST - History
+           </option>
+           <option value="HPR">
+            HPR - Health Policy Research
+           </option>
+           <option value="HQS">
+            HQS - Healthcare Quality and Safety
+           </option>
+           <option value="HSOC">
+            HSOC - Health &amp; Societies
+           </option>
+           <option value="HSPV">
+            HSPV - Historic Preservation
+           </option>
+           <option value="HSSC">
+            HSSC - History &amp; Sociology of Science
+           </option>
+           <option value="HUNG">
+            HUNG - Hungarian
+           </option>
+           <option value="ICOM">
+            ICOM - Intercultural Communication
+           </option>
+           <option value="IGBO">
+            IGBO - Igbo
+           </option>
+           <option value="IMP">
+            IMP - IMP
+           </option>
+           <option value="IMPA">
+            IMPA - International MPA
+           </option>
+           <option value="IMUN">
+            IMUN - Immunology
+           </option>
+           <option value="INDO">
+            INDO - Indonesian
+           </option>
+           <option value="INSP">
+            INSP - International Studies
+           </option>
+           <option value="INTG">
+            INTG - Integrated Studies
+           </option>
+           <option value="INTR">
+            INTR - International Relations
+           </option>
+           <option value="INTS">
+            INTS - International Studies
+           </option>
+           <option value="IPD">
+            IPD - Integrated Product Design
+           </option>
+           <option value="IRIS">
+            IRIS - Irish Gaelic
+           </option>
+           <option value="ITAL">
+            ITAL - Italian
+           </option>
+           <option value="ITD">
+            ITD - ITD
+           </option>
+           <option value="JPAN">
+            JPAN - Japanese
+           </option>
+           <option value="JWST">
+            JWST - Jewish Studies Program
+           </option>
+           <option value="KAND">
+            KAND - Kannada
+           </option>
+           <option value="KORN">
+            KORN - Korean
+           </option>
+           <option value="KSOG">
+            KSOG - KSOG
+           </option>
+           <option value="LALS">
+            LALS - Latin American &amp; Latino Studies
+           </option>
+           <option value="LANG">
+            LANG - Languages
+           </option>
+           <option value="LARP">
+            LARP - Landscape Arch &amp; Regional Plan
+           </option>
+           <option value="LATN">
+            LATN - Latin
+           </option>
+           <option value="LAW">
+            LAW - Law
+           </option>
+           <option value="LAWM">
+            LAWM - Master in Law
+           </option>
+           <option value="LEAD">
+            LEAD - Leadership and Communication
+           </option>
+           <option value="LGIC">
+            LGIC - Logic, Information and Computation
+           </option>
+           <option value="LGST">
+            LGST - Legal Studies &amp; Business Ethics
+           </option>
+           <option value="LING">
+            LING - Linguistics
+           </option>
+           <option value="LSMP">
+            LSMP - Life Sciences Management Program
+           </option>
+           <option value="MALG">
+            MALG - Malagasy
+           </option>
+           <option value="MAPP">
+            MAPP - Master of Applied Positive Psychology
+           </option>
+           <option value="MATH">
+            MATH - Mathematics
+           </option>
+           <option value="MCS">
+            MCS - Master of Chemical Sciences
+           </option>
+           <option value="MEAM">
+            MEAM - Mechanical Engineering and Applied Mechanics
+           </option>
+           <option value="MED">
+            MED - Medical
+           </option>
+           <option value="MGEC">
+            MGEC - Management of Economics
+           </option>
+           <option value="MGMT">
+            MGMT - Management
+           </option>
+           <option value="MKTG">
+            MKTG - Marketing
+           </option>
+           <option value="MLA">
+            MLA - Master of Liberal Arts
+           </option>
+           <option value="MLYM">
+            MLYM - Malayalam
+           </option>
+           <option value="MMES">
+            MMES - Modern Middle Eastern Studies
+           </option>
+           <option value="MODM">
+            MODM - Modern Middle East Studies
+           </option>
+           <option value="MPHL">
+            MPHL - MPHL
+           </option>
+           <option value="MPHY">
+            MPHY - Medical Physics
+           </option>
+           <option value="MRTI">
+            MRTI - Marathi
+           </option>
+           <option value="MSCI">
+            MSCI - Military Science
+           </option>
+           <option value="MSE">
+            MSE - Materials Science and Engineer
+           </option>
+           <option value="MSSP">
+            MSSP - Social Policy
+           </option>
+           <option value="MTHS">
+            MTHS - Mathematical Sciences
+           </option>
+           <option value="MTR">
+            MTR - Master of Science in Translational Research
+           </option>
+           <option value="MUSA">
+            MUSA - Master of Urban Spatial Analytics
+           </option>
+           <option value="MUSC">
+            MUSC - Music
+           </option>
+           <option value="MUSI">
+            MUSI - Music Studies
+           </option>
+           <option value="NANO">
+            NANO - Nanotechnology
+           </option>
+           <option value="NELC">
+            NELC - Near Eastern Languages &amp; Civilization
+           </option>
+           <option value="NETS">
+            NETS - Network and Social Systems Engineering
+           </option>
+           <option value="NEUR">
+            NEUR - Neuroscience
+           </option>
+           <option value="NGG">
+            NGG - Neuroscience
+           </option>
+           <option value="NPLD">
+            NPLD - Nonprofit Leadership
+           </option>
+           <option value="NRSC">
+            NRSC - Neuroscience
+           </option>
+           <option value="NSCI">
+            NSCI - Naval Science
+           </option>
+           <option value="NURS">
+            NURS - Nursing
+           </option>
+           <option value="NUTR">
+            NUTR - NUTR
+           </option>
+           <option value="OIDD">
+            OIDD - Operations, Information and Decisions
+           </option>
+           <option value="ORGC">
+            ORGC - Organizational Anthropology
+           </option>
+           <option value="PASH">
+            PASH - Pashto
+           </option>
+           <option value="PCPR">
+            PCPR - Pre-College Program
+           </option>
+           <option value="PERS">
+            PERS - Persian
+           </option>
+           <option value="PHIL">
+            PHIL - Philosophy
+           </option>
+           <option value="PHRM">
+            PHRM - Pharmacology
+           </option>
+           <option value="PHYL">
+            PHYL - Physical and Life Sciences
+           </option>
+           <option value="PHYS">
+            PHYS - Physics
+           </option>
+           <option value="PLSH">
+            PLSH - Polish
+           </option>
+           <option value="PPE">
+            PPE - Philosophy, Politics, Economics
+           </option>
+           <option value="PROW">
+            PROW - Professional Writing
+           </option>
+           <option value="PRTG">
+            PRTG - Portuguese
+           </option>
+           <option value="PSCI">
+            PSCI - Political Science
+           </option>
+           <option value="PSHA">
+            PSHA - Penn Summer Humanities Academy
+           </option>
+           <option value="PSHS">
+            PSHS - Penn Summer High School
+           </option>
+           <option value="PSMA">
+            PSMA - Penn Summer Math Academy
+           </option>
+           <option value="PSPR">
+            PSPR - Penn Summer Prep Program
+           </option>
+           <option value="PSSA">
+            PSSA - Penn Summer Science Academy
+           </option>
+           <option value="PSYC">
+            PSYC - Psychology
+           </option>
+           <option value="PUBH">
+            PUBH - Public Health Studies
+           </option>
+           <option value="PUNJ">
+            PUNJ - Punjabi
+           </option>
+           <option value="QUEC">
+            QUEC - Quechua
+           </option>
+           <option value="REAL">
+            REAL - Real Estate
+           </option>
+           <option value="REES">
+            REES - Russian and East European Studies
+           </option>
+           <option value="REG">
+            REG - Regulation
+           </option>
+           <option value="RELC">
+            RELC - Religion and Culture
+           </option>
+           <option value="RELS">
+            RELS - Religious Studies
+           </option>
+           <option value="ROBO">
+            ROBO - Robotics
+           </option>
+           <option value="ROML">
+            ROML - Romance Languages
+           </option>
+           <option value="RUSS">
+            RUSS - Russian
+           </option>
+           <option value="SAIS">
+            SAIS - SAIS
+           </option>
+           <option value="SARB">
+            SARB - Sudanese Arabic
+           </option>
+           <option value="SAST">
+            SAST - South Asia Studies
+           </option>
+           <option value="SCMP">
+            SCMP - Scientific Computing
+           </option>
+           <option value="SCND">
+            SCND - Scandinavian
+           </option>
+           <option value="SDEI">
+            SDEI - Social Difference, Diversity, Equity &amp; Inclusion
+           </option>
+           <option value="SKRT">
+            SKRT - Sanskrit
+           </option>
+           <option value="SLAV">
+            SLAV - Slavic
+           </option>
+           <option value="SOCI">
+            SOCI - Sociology
+           </option>
+           <option value="SOCW">
+            SOCW - Social Welfare
+           </option>
+           <option value="SPAN">
+            SPAN - Spanish
+           </option>
+           <option value="SPRO">
+            SPRO - Scientific Process
+           </option>
+           <option value="SSPP">
+            SSPP - School of Social Policy and Practice
+           </option>
+           <option value="STAT">
+            STAT - Statistics and Data Science
+           </option>
+           <option value="STSC">
+            STSC - Science, Technology &amp; Society
+           </option>
+           <option value="SWAH">
+            SWAH - Swahili
+           </option>
+           <option value="SWED">
+            SWED - Swedish
+           </option>
+           <option value="SWRK">
+            SWRK - Social Work
+           </option>
+           <option value="TAML">
+            TAML - Tamil
+           </option>
+           <option value="TELU">
+            TELU - Telugu
+           </option>
+           <option value="THAI">
+            THAI - Thai
+           </option>
+           <option value="THAR">
+            THAR - Theatre Arts
+           </option>
+           <option value="TIBT">
+            TIBT - Tibetan
+           </option>
+           <option value="TIGR">
+            TIGR - Tigrinya
+           </option>
+           <option value="TURK">
+            TURK - Turkish
+           </option>
+           <option value="TWI">
+            TWI - Twi
+           </option>
+           <option value="UKRN">
+            UKRN - Ukrainian
+           </option>
+           <option value="URBS">
+            URBS - Urban Studies
+           </option>
+           <option value="URDU">
+            URDU - Urdu
+           </option>
+           <option value="VIET">
+            VIET - Vietnamese
+           </option>
+           <option value="VIPR">
+            VIPR - Viper
+           </option>
+           <option value="VLST">
+            VLST - Visual Studies
+           </option>
+           <option value="VSTG">
+            VSTG - VSTG
+           </option>
+           <option value="WH">
+            WH - Wharton Undergraduate
+           </option>
+           <option value="WHCP">
+            WHCP - WHCP
+           </option>
+           <option value="WHG">
+            WHG - Wharton Graduate
+           </option>
+           <option value="WOLF">
+            WOLF - Wolof
+           </option>
+           <option value="WRIT">
+            WRIT - WRIT
+           </option>
+           <option value="YDSH">
+            YDSH - Yiddish
+           </option>
+           <option value="YORB">
+            YORB - Yoruba
+           </option>
+           <option value="ZULU">
+            ZULU - Zulu
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-coll">
+           School
+          </label>
+          <select class="form-control" data-type="single-column" id="crit-coll">
+           <option value="">
+            School
+           </option>
+           <option value="C">
+            Annenberg School for Communication
+           </option>
+           <option value="G">
+            Graduate School of Education
+           </option>
+           <option value="L">
+            Penn Carey Law
+           </option>
+           <option value="M">
+            Perelman School of Medicine
+           </option>
+           <option value="A">
+            School of Arts &amp; Sciences
+           </option>
+           <option value="D">
+            School of Dental Medicine
+           </option>
+           <option value="E">
+            School of Engineering and Applied Science
+           </option>
+           <option value="N">
+            School of Nursing
+           </option>
+           <option value="S">
+            School of Social Policy &amp; Practice
+           </option>
+           <option value="V">
+            School of Veterinary Medicine
+           </option>
+           <option value="F">
+            Stuart Weitzman School of Design
+           </option>
+           <option value="W">
+            The Wharton School
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-coursetype">
+           Level
+          </label>
+          <select class="form-control" data-type="multiple-column" id="crit-coursetype">
+           <option value="">
+            Level
+           </option>
+           <option value="coursetype_ugrad">
+            Undergraduate
+           </option>
+           <option value="coursetype_grad">
+            Mixed Undergraduate/Graduate
+           </option>
+           <option value="coursetype_grad1">
+            Graduate/Professional
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-schd">
+           Schedule Type
+          </label>
+          <select class="form-control" data-type="single-column" id="crit-schd">
+           <option value="">
+            Schedule Type
+           </option>
+           <option value="LEC">
+            Lecture
+           </option>
+           <option value="CLN">
+            Clinical
+           </option>
+           <option value="SEM">
+            Seminar
+           </option>
+           <option value="LAB">
+            Laboratory
+           </option>
+           <option value="STU">
+            Studio
+           </option>
+           <option value="REC">
+            Recitation
+           </option>
+           <option value="FLD">
+            Field Work
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-hours">
+           Credit
+          </label>
+          <select class="form-control" data-type="single-column" id="crit-hours">
+           <option value="">
+            Credit
+           </option>
+           <option value="0.5">
+            0.5 Credits
+           </option>
+           <option value="1">
+            1 Credit
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-camp">
+           Campus/Online
+          </label>
+          <select class="form-control" data-type="single-column" id="crit-camp">
+           <option value="">
+            Campus/Online
+           </option>
+           <option value="ONL">
+            Online
+           </option>
+           <option value="PHL">
+            Philadelphia
+           </option>
+           <option value="SFO">
+            Wharton San Francisco
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-stat">
+           Class Status
+          </label>
+          <select class="form-control" data-type="single-column" id="crit-stat">
+           <option value="">
+            Class Status
+           </option>
+           <option value="A">
+            Open Classes
+           </option>
+           <option value="A,F">
+            Open or Full Classes
+           </option>
+           <option value="C">
+            Canceled Classes
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-session">
+           Part of Term
+          </label>
+          <select class="form-control" data-type="single-column" id="crit-session">
+           <option value="">
+            Part of Term
+           </option>
+           <option value="1W">
+            1 Week Intensive
+           </option>
+           <option value="DM">
+            Dental School
+           </option>
+           <option value="12W">
+            Fall/Spring 12 Wk
+           </option>
+           <option value="14W">
+            Fall/Spring 14 Wk
+           </option>
+           <option value="19W">
+            Fall/Spring 19 Wk
+           </option>
+           <option value="7W1">
+            Fall/Spring 1st 7 Wk
+           </option>
+           <option value="8W1">
+            Fall/Spring 1st 8 Wk
+           </option>
+           <option value="7W2">
+            Fall/Spring 2nd 7 Wk
+           </option>
+           <option value="8W2">
+            Fall/Spring 2nd 8 Wk
+           </option>
+           <option value="1">
+            Full Term
+           </option>
+           <option value="INT">
+            Intersession
+           </option>
+           <option value="L1">
+            Law School
+           </option>
+           <option value="LW">
+            Law School
+           </option>
+           <option value="MD">
+            Medical School
+           </option>
+           <option value="CMT">
+            Multi-term Course
+           </option>
+           <option value="2D">
+            Summer 10 Day Intensive
+           </option>
+           <option value="11D">
+            Summer 11 Wk
+           </option>
+           <option value="12D">
+            Summer 12 Week
+           </option>
+           <option value="6D1">
+            Summer 1st 6 Week
+           </option>
+           <option value="7D1">
+            Summer 1st 7 Wk
+           </option>
+           <option value="6D2">
+            Summer 2nd 6 Week
+           </option>
+           <option value="7D2">
+            Summer 2nd 7 Wk
+           </option>
+           <option value="8D">
+            Summer 8 Wk
+           </option>
+           <option value="5D1">
+            Summer Session I
+           </option>
+           <option value="5D2">
+            Summer Session II
+           </option>
+           <option value="VM">
+            Veterinary School
+           </option>
+           <option value="WMF">
+            Wharton Grad Full Semester
+           </option>
+           <option value="WM1">
+            Wharton Grad Q1/Q3
+           </option>
+           <option value="WM2">
+            Wharton Grad Q2/Q4
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-attribute_honors">
+           Honors Attribute
+          </label>
+          <select class="form-control" data-type="multiple-column" id="crit-attribute_honors">
+           <option value="">
+            Honors Attribute
+           </option>
+           <option value="attribute_honors_UNBF">
+            Ben Franklin Seminars
+           </option>
+           <option value="attribute_honors_WUJW">
+            WH UG JWS: Joseph Wharton Scholars
+           </option>
+           <option value="attribute_honors_UNCR">
+            University Scholar Research
+           </option>
+           <option value="attribute_honors_UNCS">
+            University Scholar Social Issues
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-attribute_univ">
+           University Attribute
+          </label>
+          <select class="form-control" data-type="multiple-column" id="crit-attribute_univ">
+           <option value="">
+            University Attribute
+           </option>
+           <option value="attribute_univ_UNPG">
+            Penn Global Seminars
+           </option>
+           <option value="attribute_univ_UNPP">
+            Designated SNF Paideia Program Course
+           </option>
+           <option value="attribute_univ_UNAS">
+            Academically Based Community Service Courses
+           </option>
+           <option value="attribute_univ_UNFF">
+            First Year Friendly
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-course_attributes">
+           Course Attribute
+          </label>
+          <select class="form-control seligo-desktop" data-seligo-label="Course Attribute" data-type="multiple-column" id="crit-course_attributes">
+           <option value="">
+            Course Attribute
+           </option>
+           <option value="course_attributes_UNAS">
+            Academically Based Community Service Courses (UNAS)
+           </option>
+           <option value="course_attributes_AAFA">
+            AFRC African American Studies (AAFA)
+           </option>
+           <option value="course_attributes_AAFD">
+            AFRC African Diaspora Studies (AAFD)
+           </option>
+           <option value="course_attributes_AAFS">
+            AFRC African Studies (AAFS)
+           </option>
+           <option value="course_attributes_AAFO">
+            AFRC History Course (AAFO)
+           </option>
+           <option value="course_attributes_AAFH">
+            AFRC Humanities (AAFH)
+           </option>
+           <option value="course_attributes_AAFM">
+            AFRC Methodology (AAFM)
+           </option>
+           <option value="course_attributes_AAFN">
+            AFRC Minor African American (AAFN)
+           </option>
+           <option value="course_attributes_AAFC">
+            AFRC Minor Caribbean or Latin American (AAFC)
+           </option>
+           <option value="course_attributes_AAFU">
+            AFRC Minor Upper Level (AAFU)
+           </option>
+           <option value="course_attributes_AAFR">
+            AFRC Research (AAFR)
+           </option>
+           <option value="course_attributes_AAFT">
+            AFRC Social Science (AAFT)
+           </option>
+           <option value="course_attributes_AANP">
+            ANCH Ancient &amp; Premod Hist Related Crs Other Dept (AANP)
+           </option>
+           <option value="course_attributes_AANB">
+            ANCH Greco-Roman Culture (AANB)
+           </option>
+           <option value="course_attributes_AANN">
+            ANCH Minor Courses (AANN)
+           </option>
+           <option value="course_attributes_AAAR">
+            ANTH Archaeology (AAAR)
+           </option>
+           <option value="course_attributes_AAAC">
+            ANTH Archaeology and Culture Minor (AAAC)
+           </option>
+           <option value="course_attributes_AABI">
+            ANTH Biological Anthropology (AABI)
+           </option>
+           <option value="course_attributes_AABE">
+            ANTH Biology, Environment, Health (AABE)
+           </option>
+           <option value="course_attributes_AAAM">
+            ANTH Ctr Analysis Archeology Material Minor (AAAM)
+           </option>
+           <option value="course_attributes_AACM">
+            ANTH Ctr Analysis Archeology Material Minor Relatd (AACM)
+           </option>
+           <option value="course_attributes_AACL">
+            ANTH Cultural and Linguistics (AACL)
+           </option>
+           <option value="course_attributes_AAEA">
+            ANTH Environmental Anthropology (AAEA)
+           </option>
+           <option value="course_attributes_AAMW">
+            ANTH Material Worlds, Landscapes, Archaeology (AAMW)
+           </option>
+           <option value="course_attributes_AAMA">
+            ANTH Medical Anthropology and Global Health (AAMA)
+           </option>
+           <option value="course_attributes_AANI">
+            ANTH Native Amer &amp; Indigenous Stds Minor Relatd (AANI)
+           </option>
+           <option value="course_attributes_AANA">
+            ANTH Native Amer &amp; Indigenous Stds Minor Thematic (AANA)
+           </option>
+           <option value="course_attributes_AAPE">
+            ANTH Political Ecology (AAPE)
+           </option>
+           <option value="course_attributes_AAPS">
+            ANTH Psychoanalytic Studies Minor Related (AAPS)
+           </option>
+           <option value="course_attributes_AAST">
+            ANTH Science, Technology and Environment (AAST)
+           </option>
+           <option value="course_attributes_AHAA">
+            ARTH Ancient (AHAA)
+           </option>
+           <option value="course_attributes_AHAE">
+            ARTH Elective Major/Minor (AHAE)
+           </option>
+           <option value="course_attributes_AHAG">
+            ARTH Geographic Non-Western (AHAG)
+           </option>
+           <option value="course_attributes_AHAR">
+            ARTH Medieval/Renaissance (AHAR)
+           </option>
+           <option value="course_attributes_AHAM">
+            ARTH Modern (AHAM)
+           </option>
+           <option value="course_attributes_HMS5">
+            ARTH PHD 500-Level Seminar (HMS5)
+           </option>
+           <option value="course_attributes_HMS7">
+            ARTH PHD 700-Level Seminar (HMS7)
+           </option>
+           <option value="course_attributes_HPAM">
+            ARTH PHD Post- Seminar (HPAM)
+           </option>
+           <option value="course_attributes_HPA7">
+            ARTH PHD Pre- Seminar (HPA7)
+           </option>
+           <option value="course_attributes_AHAS">
+            ARTH Survey (AHAS)
+           </option>
+           <option value="course_attributes_AASR">
+            ASAM Minor Related Courses (AASR)
+           </option>
+           <option value="course_attributes_EUCC">
+            ASCC Additional Natural Science (EUCC)
+           </option>
+           <option value="course_attributes_EUCS">
+            ASCC Cognitive Science (EUCS)
+           </option>
+           <option value="course_attributes_ALNN">
+            ASLD Minor Cross Disciplinary Elective (ALNN)
+           </option>
+           <option value="course_attributes_BAGW">
+            BAAS - Gateway Writing (BAGW)
+           </option>
+           <option value="course_attributes_BCSD">
+            BAAS-Cert- Soc Diff, Diversity, Equity, Inclusion (BCSD)
+           </option>
+           <option value="course_attributes_BCAP">
+            BAAS-Cert-Applied Positive Psychology (BCAP)
+           </option>
+           <option value="course_attributes_BCCC">
+            BAAS-Cert-Climate Change (BCCC)
+           </option>
+           <option value="course_attributes_BCCW">
+            BAAS-Cert-Creative Writing (BCCW)
+           </option>
+           <option value="course_attributes_BCDA">
+            BAAS-Cert-Data Analytics (BCDA)
+           </option>
+           <option value="course_attributes_BCDS">
+            BAAS-Cert-Digital Strategies (BCDS)
+           </option>
+           <option value="course_attributes_BCGS">
+            BAAS-Cert-Global Studies (BCGS)
+           </option>
+           <option value="course_attributes_BCIS">
+            BAAS-Cert-International Studies (BCIS)
+           </option>
+           <option value="course_attributes_BCLC">
+            BAAS-Cert-Leadership and Communication (BCLC)
+           </option>
+           <option value="course_attributes_BCNR">
+            BAAS-Cert-Neuroscience (BCNR)
+           </option>
+           <option value="course_attributes_BCOC">
+            BAAS-Cert-Organizational Culture and Collaboration (BCOC)
+           </option>
+           <option value="course_attributes_BCPW">
+            BAAS-Cert-Professional Writing (BCPW)
+           </option>
+           <option value="course_attributes_BCGR">
+            BAAS-Cert-Regional Studies (BCGR)
+           </option>
+           <option value="course_attributes_BCSF">
+            BAAS-Cert-Science Foundations (BCSF)
+           </option>
+           <option value="course_attributes_BCSF">
+            BAAS-Cert-Science Foundations (BCSF)
+           </option>
+           <option value="course_attributes_BCUP">
+            BAAS-Cert-Upskill (BCUP)
+           </option>
+           <option value="course_attributes_BBCS">
+            BAAS-Concentration-Creative Studies (BBCS)
+           </option>
+           <option value="course_attributes_BBDP">
+            BAAS-Concentration-Data Analytics and Psych Sci (BBDP)
+           </option>
+           <option value="course_attributes_BBDS">
+            BAAS-Concentration-Data Analytics and Social Sci (BBDS)
+           </option>
+           <option value="course_attributes_BBIS">
+            BAAS-Concentration-Individualized Studies (BBIS)
+           </option>
+           <option value="course_attributes_BBLC">
+            BAAS-Concentration-Leadership and Communication (BBLC)
+           </option>
+           <option value="course_attributes_BBLT">
+            BAAS-Concentration-Literature, Culture, Tradition (BBLT)
+           </option>
+           <option value="course_attributes_BBOS">
+            BAAS-Concentration-Organizational Studies (BBOS)
+           </option>
+           <option value="course_attributes_BBPL">
+            BAAS-Concentration-Physical and Life Sciences (BBPL)
+           </option>
+           <option value="course_attributes_BAGQ">
+            BAAS-Gateway Qualitative (BAGQ)
+           </option>
+           <option value="course_attributes_BAQV">
+            BAAS-Gateway Quantitative (BAQV)
+           </option>
+           <option value="course_attributes_BAGS">
+            BAAS-Gateway Scientific Process (BAGS)
+           </option>
+           <option value="course_attributes_BAQL">
+            BAAS-Qualitative (BAQL)
+           </option>
+           <option value="course_attributes_BAQN">
+            BAAS-Quantitative (BAQN)
+           </option>
+           <option value="course_attributes_BASP">
+            BAAS-Scientific Process (BASP)
+           </option>
+           <option value="course_attributes_BAWR">
+            BAAS-Writing (BAWR)
+           </option>
+           <option value="course_attributes_EUBE">
+            BE Career Path (EUBE)
+           </option>
+           <option value="course_attributes_EPBF">
+            BE PhD Bioengineering Fundamental Course (EPBF)
+           </option>
+           <option value="course_attributes_EPBS">
+            BE PhD BioMed Science Course (EPBS)
+           </option>
+           <option value="course_attributes_EPBM">
+            BE PhD Math Course (EPBM)
+           </option>
+           <option value="course_attributes_UNBF">
+            Ben Franklin Seminars (UNBF)
+           </option>
+           <option value="course_attributes_BUFA">
+            BFA History of Art Elective (BUFA)
+           </option>
+           <option value="course_attributes_ABEA">
+            BIOE Allocation (ABEA)
+           </option>
+           <option value="course_attributes_ABEC">
+            BIOE Clinical Ethics (ABEC)
+           </option>
+           <option value="course_attributes_ABEM">
+            BIOE Comparative (ABEM)
+           </option>
+           <option value="course_attributes_ABEH">
+            BIOE Historical Courses (ABEH)
+           </option>
+           <option value="course_attributes_ABEN">
+            BIOE Normative Courses (ABEN)
+           </option>
+           <option value="course_attributes_ABEP">
+            BIOE Policy and Culture (ABEP)
+           </option>
+           <option value="course_attributes_ABER">
+            BIOE Research Ethics (ABER)
+           </option>
+           <option value="course_attributes_ABES">
+            BIOE Seminar (ABES)
+           </option>
+           <option value="course_attributes_ABB2">
+            BIOL Additional Computational Biology Course (ABB2)
+           </option>
+           <option value="course_attributes_ABXD">
+            BIOL Additional Extra-Departmental Course (ABXD)
+           </option>
+           <option value="course_attributes_ABAM">
+            BIOL Additional Mechanisms of Disease Elective (ABAM)
+           </option>
+           <option value="course_attributes_ABAE">
+            BIOL Advanced Experimental Research (ABAE)
+           </option>
+           <option value="course_attributes_ABAN">
+            BIOL Advanced Neurobiology (ABAN)
+           </option>
+           <option value="course_attributes_ABCM">
+            BIOL Cellular, Molecular, &amp; Developmental Biology (ABCM)
+           </option>
+           <option value="course_attributes_ABIC">
+            BIOL Chemistry (ABIC)
+           </option>
+           <option value="course_attributes_ABCB">
+            BIOL Computational Biology (ABCB)
+           </option>
+           <option value="course_attributes_ABEE">
+            BIOL Ecology &amp; Evolutionary Biology (ABEE)
+           </option>
+           <option value="course_attributes_ABGD">
+            BIOL Genetic Disease (ABGD)
+           </option>
+           <option value="course_attributes_ABGG">
+            BIOL Genetics and Genomics (ABGG)
+           </option>
+           <option value="course_attributes_ABMD">
+            BIOL Mechanisms of Disease Elective (ABMD)
+           </option>
+           <option value="course_attributes_ABMI">
+            BIOL Microbes &amp; Infectious Disease (ABMI)
+           </option>
+           <option value="course_attributes_ABMC">
+            BIOL Molecular and Cell Biology (ABMC)
+           </option>
+           <option value="course_attributes_HPBI">
+            BIOL PhD Biology Elective (HPBI)
+           </option>
+           <option value="course_attributes_ABPN">
+            BIOL Principally Neurobiology (ABPN)
+           </option>
+           <option value="course_attributes_ABSM">
+            BIOL Subs for Molecular/Cell or Genetics/Genomics (ABSM)
+           </option>
+           <option value="course_attributes_ABSI">
+            BIOL Systems and Integrative Biology (ABSI)
+           </option>
+           <option value="course_attributes_ABPE">
+            BIOP Biophysics Elective (ABPE)
+           </option>
+           <option value="course_attributes_MPBR">
+            BSTA Biomedical Research Elective (MPBR)
+           </option>
+           <option value="course_attributes_MPEB">
+            BSTA Biostat Elective (MPEB)
+           </option>
+           <option value="course_attributes_EUCB">
+            CBE Minor Elective (EUCB)
+           </option>
+           <option value="course_attributes_ACFT">
+            CIMS Format &amp; Theory (ACFT)
+           </option>
+           <option value="course_attributes_ACHG">
+            CIMS History &amp; Geography (ACHG)
+           </option>
+           <option value="course_attributes_ACMN">
+            CIMS Non-American Cinema (ACMN)
+           </option>
+           <option value="course_attributes_ACMP">
+            CIMS Production &amp; Craft of Cinema (ACMP)
+           </option>
+           <option value="course_attributes_ACPR">
+            CIMS Production &amp; Practice (ACPR)
+           </option>
+           <option value="course_attributes_ACRL">
+            CIMS Related Course (ACRL)
+           </option>
+           <option value="course_attributes_EMCI">
+            CIS NonCIS Elective (EMCI)
+           </option>
+           <option value="course_attributes_EUCR">
+            CIS Restricted Technical Elective (EUCR)
+           </option>
+           <option value="course_attributes_EUCU">
+            CIS Unrestricted Technical Elective (EUCU)
+           </option>
+           <option value="course_attributes_ACLN">
+            CLST Classical Studies Minor Attribute (ACLN)
+           </option>
+           <option value="course_attributes_ACLB">
+            CLST Classical Studies Related Crs Other Dept (ACLB)
+           </option>
+           <option value="course_attributes_ACLS">
+            CLST Clscal Stds Civilizt &amp; Lang: Spec Cluster 3 (ACLS)
+           </option>
+           <option value="course_attributes_ACLV">
+            CLST Clscal Stds Med Arch Track: Adv Med Arch (ACLV)
+           </option>
+           <option value="course_attributes_ACLA">
+            CLST Clscal Stds Med Arch Track: Arch Sci Course (ACLA)
+           </option>
+           <option value="course_attributes_ACLI">
+            CLST Clscal Stds Med Arch Track: Intro Med Arch (ACLI)
+           </option>
+           <option value="course_attributes_ACLT">
+            CLST Theory Course in Archaeology (ACLT)
+           </option>
+           <option value="course_attributes_ACLL">
+            CMPL Advanced Literature or Film (ACLL)
+           </option>
+           <option value="course_attributes_ACLG">
+            CMPL Globalization and Culture (ACLG)
+           </option>
+           <option value="course_attributes_ACLO">
+            CMPL National Literature (ACLO)
+           </option>
+           <option value="course_attributes_ACLP">
+            CMPL Non Western or Post Colonial (ACLP)
+           </option>
+           <option value="course_attributes_ACLW">
+            CMPL Post Colonial Theory (ACLW)
+           </option>
+           <option value="course_attributes_ACLH">
+            CMPL Theory Elective (ACLH)
+           </option>
+           <option value="course_attributes_ACGN">
+            COGS Cognitive Neuroscience (ACGN)
+           </option>
+           <option value="course_attributes_ACGC">
+            COGS Computation and Cognition (ACGC)
+           </option>
+           <option value="course_attributes_ACGL">
+            COGS Language &amp; Mind (ACGL)
+           </option>
+           <option value="course_attributes_AULA">
+            COL Advanced Language (AULA)
+           </option>
+           <option value="course_attributes_AUOT">
+            COL Instruction: Non-English (AUOT)
+           </option>
+           <option value="course_attributes_AUMD">
+            COL- Masters Degree (AUMD)
+           </option>
+           <option value="course_attributes_AULP">
+            COL-ADMIN-LPS (AULP)
+           </option>
+           <option value="course_attributes_AULG">
+            COL-COURSE-Language (AULG)
+           </option>
+           <option value="course_attributes_AU16">
+            College 16 CU Requirement (AU16)
+           </option>
+           <option value="course_attributes_AUCC">
+            College FND Cross Cultural Analysis (AUCC)
+           </option>
+           <option value="course_attributes_AUCD">
+            College FND Cultural Diversity in US (AUCD)
+           </option>
+           <option value="course_attributes_AUFR">
+            College FND Formal Reasoning &amp; Analysis (AUFR)
+           </option>
+           <option value="course_attributes_AUQD">
+            College FND Quantitative Data Analysis (AUQD)
+           </option>
+           <option value="course_attributes_AUAL">
+            College-Sector - Arts &amp; Letters (AUAL)
+           </option>
+           <option value="course_attributes_AUHT">
+            College-Sector - History &amp; Tradition (AUHT)
+           </option>
+           <option value="course_attributes_AUHS">
+            College-Sector - Humanities &amp; Social Science (AUHS)
+           </option>
+           <option value="course_attributes_AUNM">
+            College-Sector - Natural Science Across the Disciplines (AUNM)
+           </option>
+           <option value="course_attributes_AUSO">
+            College-Sector - Society (AUSO)
+           </option>
+           <option value="course_attributes_AULW">
+            College-Sector - The Living World (AULW)
+           </option>
+           <option value="course_attributes_AUPW">
+            College-Sector - The Physical World (AUPW)
+           </option>
+           <option value="course_attributes_ACAA">
+            COMM Advocacy &amp; Activism (ACAA)
+           </option>
+           <option value="course_attributes_ACAP">
+            COMM Audiences &amp; Persuasion (ACAP)
+           </option>
+           <option value="course_attributes_ACCP">
+            COMM Communication and Public Service (ACCP)
+           </option>
+           <option value="course_attributes_ACCS">
+            COMM Culture &amp; Society (ACCS)
+           </option>
+           <option value="course_attributes_ACDN">
+            COMM Data &amp; Network Science (ACDN)
+           </option>
+           <option value="course_attributes_ACRM">
+            COMM Methods Course (ACRM)
+           </option>
+           <option value="course_attributes_ACPP">
+            COMM Politics &amp; Policy (ACPP)
+           </option>
+           <option value="course_attributes_ACRB">
+            CRIM Bio Psycho Social (ACRB)
+           </option>
+           <option value="course_attributes_ACRC">
+            CRIM Crim Justice Research (ACRC)
+           </option>
+           <option value="course_attributes_HPCR">
+            CRIM MS Criminology Elective (HPCR)
+           </option>
+           <option value="course_attributes_ACRS">
+            CRIM SocioPolitical (ACRS)
+           </option>
+           <option value="course_attributes_EUC2">
+            CSE Natural Science 2 (EUC2)
+           </option>
+           <option value="course_attributes_HPDM">
+            DEMG PhD Demography Elective (HPDM)
+           </option>
+           <option value="course_attributes_FMEM">
+            Design Cert EnergyManagement/Policy (FMEM)
+           </option>
+           <option value="course_attributes_FDRM">
+            Design PhD Research Method (FDRM)
+           </option>
+           <option value="course_attributes_FMUC">
+            Design Urban Content Requirement (FMUC)
+           </option>
+           <option value="course_attributes_UNPP">
+            Designated SNF Paideia Program Course (UNPP)
+           </option>
+           <option value="course_attributes_ADHE">
+            DHUM Digital Humanities Minor- Research (ADHE)
+           </option>
+           <option value="course_attributes_ADHC">
+            DHUM Digital Humanities Minor- Skills (ADHC)
+           </option>
+           <option value="course_attributes_EUDM">
+            DMD Elective (EUDM)
+           </option>
+           <option value="course_attributes_ADAH">
+            DSGN Art History (ADAH)
+           </option>
+           <option value="course_attributes_FCEM">
+            DSGN Design Cert Energy Management (FCEM)
+           </option>
+           <option value="course_attributes_FCID">
+            DSGN Design Cert Integrated Professional Design (FCID)
+           </option>
+           <option value="course_attributes_FCIB">
+            DSGN Design CERT IPD Bus Elective (FCIB)
+           </option>
+           <option value="course_attributes_FCIE">
+            DSGN Design Cert IPD Engineering Elective (FCIE)
+           </option>
+           <option value="course_attributes_FCTB">
+            DSGN Design CERT TB&amp;IM Elective (FCTB)
+           </option>
+           <option value="course_attributes_FMAR">
+            DSGN Design Masters ARCH Elective (FMAR)
+           </option>
+           <option value="course_attributes_FMCP">
+            DSGN Design Masters CPLN Elective (FMCP)
+           </option>
+           <option value="course_attributes_FMHP">
+            DSGN Design Masters HSPV Elective (FMHP)
+           </option>
+           <option value="course_attributes_FMLA">
+            DSGN Design Masters LARP Elective (FMLA)
+           </option>
+           <option value="course_attributes_FMAE">
+            DSGN Design MFA Elective (FMAE)
+           </option>
+           <option value="course_attributes_ADTH">
+            DSGN Theory (ADTH)
+           </option>
+           <option value="course_attributes_AGDR">
+            DTCH Dutch Related (AGDR)
+           </option>
+           <option value="course_attributes_AEAN">
+            EALC Chinese and Inner Asia (AEAN)
+           </option>
+           <option value="course_attributes_AEAI">
+            EALC Chinese Minor (AEAI)
+           </option>
+           <option value="course_attributes_AEAE">
+            EALC East Asian Area Studies (AEAE)
+           </option>
+           <option value="course_attributes_AEAH">
+            EALC East History (AEAH)
+           </option>
+           <option value="course_attributes_AEAU">
+            EALC East Humanities (AEAU)
+           </option>
+           <option value="course_attributes_AEAA">
+            EALC East Seminar (AEAA)
+           </option>
+           <option value="course_attributes_AEAS">
+            EALC East Social Sciences (AEAS)
+           </option>
+           <option value="course_attributes_AEAO">
+            EALC Honors (AEAO)
+           </option>
+           <option value="course_attributes_AEIL">
+            EALC Intensive Language (AEIL)
+           </option>
+           <option value="course_attributes_AEAJ">
+            EALC Japanese (AEAJ)
+           </option>
+           <option value="course_attributes_AEAP">
+            EALC Japanese Minor (AEAP)
+           </option>
+           <option value="course_attributes_AEAK">
+            EALC Korean (AEAK)
+           </option>
+           <option value="course_attributes_AEAR">
+            EALC Korean Minor (AEAR)
+           </option>
+           <option value="course_attributes_AETR">
+            EALC Transnational or Comparative East Asia (AETR)
+           </option>
+           <option value="course_attributes_AERA">
+            EASC Advanced Course (AERA)
+           </option>
+           <option value="course_attributes_AERE">
+            EASC Earth and Environmental Systems (AERE)
+           </option>
+           <option value="course_attributes_AERF">
+            EASC Field Course (AERF)
+           </option>
+           <option value="course_attributes_AERH">
+            EASC Geology Honors (AERH)
+           </option>
+           <option value="course_attributes_AERL">
+            EASC Living Systems (AERL)
+           </option>
+           <option value="course_attributes_AERP">
+            EASC Related Practical Experience (AERP)
+           </option>
+           <option value="course_attributes_AERB">
+            EASC Upper Level Biology Paleo Concentration (AERB)
+           </option>
+           <option value="course_attributes_AERG">
+            EASC Upper Level Geology Paleo Concentration (AERG)
+           </option>
+           <option value="course_attributes_EUNP">
+            ENG Engineering Entrepreneurship (EUNP)
+           </option>
+           <option value="course_attributes_AE19">
+            ENGL 19th Century Literature (AE19)
+           </option>
+           <option value="course_attributes_AE21">
+            ENGL 20th 21st Century Literature (AE21)
+           </option>
+           <option value="course_attributes_AE20">
+            ENGL 20th Century Literature (AE20)
+           </option>
+           <option value="course_attributes_AEAC">
+            ENGL Africana Literatures and Cultures (AEAC)
+           </option>
+           <option value="course_attributes_AECW">
+            ENGL Creative Writing Workshop Course Minor (AECW)
+           </option>
+           <option value="course_attributes_AEDD">
+            ENGL Difference and Diaspora (AEDD)
+           </option>
+           <option value="course_attributes_AEDR">
+            ENGL Drama (AEDR)
+           </option>
+           <option value="course_attributes_AEGS">
+            ENGL Gender and Sexuality (AEGS)
+           </option>
+           <option value="course_attributes_AEJW">
+            ENGL Journalistic Writing Minor (AEJW)
+           </option>
+           <option value="course_attributes_AETC">
+            ENGL Literary Theory and Cultural Studies (AETC)
+           </option>
+           <option value="course_attributes_AEB7">
+            ENGL Literature before  (AEB7)
+           </option>
+           <option value="course_attributes_AEB9">
+            ENGL Literature before  (AEB9)
+           </option>
+           <option value="course_attributes_AELJ">
+            ENGL Literature, Journalism &amp; Print Culture (AELJ)
+           </option>
+           <option value="course_attributes_AE18">
+            ENGL Long 18th Century (AE18)
+           </option>
+           <option value="course_attributes_AEMC">
+            ENGL Medieval/Renaissance Concentration Core (AEMC)
+           </option>
+           <option value="course_attributes_AEMR">
+            ENGL Medieval/Renaissance Core (AEMR)
+           </option>
+           <option value="course_attributes_AEPP">
+            ENGL Poetry and Poetics (AEPP)
+           </option>
+           <option value="course_attributes_AENV">
+            ENGL The Novel (AENV)
+           </option>
+           <option value="course_attributes_AETP">
+            ENGL Theory and Poetics (AETP)
+           </option>
+           <option value="course_attributes_AESB">
+            ENVS Biotic History Concentrations List (AESB)
+           </option>
+           <option value="course_attributes_AESD">
+            ENVS Data Analysis and Statistics Core (AESD)
+           </option>
+           <option value="course_attributes_AESL">
+            ENVS Earth Systems Concentrations List (AESL)
+           </option>
+           <option value="course_attributes_AESE">
+            ENVS Economics and Policy Core (AESE)
+           </option>
+           <option value="course_attributes_AESC">
+            ENVS Environmental Economics Concentrations List (AESC)
+           </option>
+           <option value="course_attributes_AESO">
+            ENVS Environmental Geology Concentrations List (AESO)
+           </option>
+           <option value="course_attributes_AEHH">
+            ENVS Environmental History Concentrations List (AEHH)
+           </option>
+           <option value="course_attributes_AESH">
+            ENVS Environmental Humanities (AESH)
+           </option>
+           <option value="course_attributes_AESN">
+            ENVS Environmental Natural Sciences (AESN)
+           </option>
+           <option value="course_attributes_AEPC">
+            ENVS Environmental Policy Concentrations List (AEPC)
+           </option>
+           <option value="course_attributes_AESS">
+            ENVS Environmental Social Sciences (AESS)
+           </option>
+           <option value="course_attributes_AESF">
+            ENVS Field Course Requirement (AESF)
+           </option>
+           <option value="course_attributes_AESY">
+            ENVS Geochemical Dynamics Concentration List (AESY)
+           </option>
+           <option value="course_attributes_AESG">
+            ENVS Geographical or Environmental Modeling Core (AESG)
+           </option>
+           <option value="course_attributes_AESR">
+            ENVS Global Politics &amp; International Rel Conc List (AESR)
+           </option>
+           <option value="course_attributes_AESI">
+            ENVS International Environmental Issues Conc List (AESI)
+           </option>
+           <option value="course_attributes_AESW">
+            ENVS Sustainability &amp; Environmental Mngmnt Conc (AESW)
+           </option>
+           <option value="course_attributes_AESM">
+            ENVS Sustainability &amp; Environmental Mngmnt Minor (AESM)
+           </option>
+           <option value="course_attributes_MPEP">
+            EPID Epidemiology Elective (MPEP)
+           </option>
+           <option value="course_attributes_EUEC">
+            ESE Circuits &amp; CE (EUEC)
+           </option>
+           <option value="course_attributes_EUEE">
+            ESE Elective (EUEE)
+           </option>
+           <option value="course_attributes_EUEI">
+            ESE Information &amp; Decision Systems (EUEI)
+           </option>
+           <option value="course_attributes_EUEN">
+            ESE Nanodevelopment &amp; Nanosystems (EUEN)
+           </option>
+           <option value="course_attributes_HPFT">
+            FIGS PhD Topics Course (HPFT)
+           </option>
+           <option value="course_attributes_UNFF">
+            First Year Friendly (UNFF)
+           </option>
+           <option value="course_attributes_AUFS">
+            First Year Seminar (AUFS)
+           </option>
+           <option value="course_attributes_UNFS">
+            First Year Seminar Course (UNFS)
+           </option>
+           <option value="course_attributes_AFAH">
+            FNAR Art History (AFAH)
+           </option>
+           <option value="course_attributes_AFDA">
+            FNAR Design, Animation, or Video Studio (AFDA)
+           </option>
+           <option value="course_attributes_AFDS">
+            FNAR Drawing Studio (AFDS)
+           </option>
+           <option value="course_attributes_AFPA">
+            FNAR Painting Studio (AFPA)
+           </option>
+           <option value="course_attributes_AFPS">
+            FNAR Photography Studio (AFPS)
+           </option>
+           <option value="course_attributes_AFSC">
+            FNAR Sculpture Studio &amp; Ceramic Studio (AFSC)
+           </option>
+           <option value="course_attributes_MPAE">
+            GCB Approach Elective (MPAE)
+           </option>
+           <option value="course_attributes_MPBS">
+            GCB Biol Spec Elective (MPBS)
+           </option>
+           <option value="course_attributes_UNGE">
+            Global Experience (UNGE)
+           </option>
+           <option value="course_attributes_AGME">
+            GMST Europe (AGME)
+           </option>
+           <option value="course_attributes_AGML">
+            GMST Literature or Written Culture (AGML)
+           </option>
+           <option value="course_attributes_AGMA">
+            GMST Minor- Art, Architecture, Music (AGMA)
+           </option>
+           <option value="course_attributes_AGMH">
+            GMST Minor- Medieval Studies History (AGMH)
+           </option>
+           <option value="course_attributes_AGMO">
+            GMST Outside of Europe (AGMO)
+           </option>
+           <option value="course_attributes_AGMR">
+            GMST Religion, Philosophy or Science (AGMR)
+           </option>
+           <option value="course_attributes_AGER">
+            GRMN German Related (AGER)
+           </option>
+           <option value="course_attributes_GVEP">
+            GSE Division- Education Policy (GVEP)
+           </option>
+           <option value="course_attributes_GVHE">
+            GSE Division- Higher Education (GVHE)
+           </option>
+           <option value="course_attributes_GVHQ">
+            GSE Division- Human Development &amp; Quant Methods (GVHQ)
+           </option>
+           <option value="course_attributes_GVLC">
+            GSE Division- Literacy, Culture, and IntNULLl Educ (GVLC)
+           </option>
+           <option value="course_attributes_GVTL">
+            GSE Division- Teaching, Learning, and Leadership (GVTL)
+           </option>
+           <option value="course_attributes_GDAQ">
+            GSE EDD Advanced Qualitative/Quantitative (GDAQ)
+           </option>
+           <option value="course_attributes_GDEM">
+            GSE EDD Higher Education Methods (GDEM)
+           </option>
+           <option value="course_attributes_GDQL">
+            GSE EDD Qualitative (GDQL)
+           </option>
+           <option value="course_attributes_GDRW">
+            GSE EDD Reading/Writing/Literacy Methods (GDRW)
+           </option>
+           <option value="course_attributes_GMAC">
+            GSE MSED Ed, Culture, Soc- Acad Based Comm Service (GMAC)
+           </option>
+           <option value="course_attributes_GMCS">
+            GSE MSED Ed, Culture, Soc- Community Service (GMCS)
+           </option>
+           <option value="course_attributes_GMLN">
+            GSE MSED Educational Linguistics Distribution (GMLN)
+           </option>
+           <option value="course_attributes_GMHD">
+            GSE MSED Human Development Distribution (GMHD)
+           </option>
+           <option value="course_attributes_GMIT">
+            GSE MSED IEDP Thematic Course (GMIT)
+           </option>
+           <option value="course_attributes_GMIE">
+            GSE MSED Intercultural Communication ELX Elective (GMIE)
+           </option>
+           <option value="course_attributes_GMQL">
+            GSE MSED Qualitative (GMQL)
+           </option>
+           <option value="course_attributes_GMQN">
+            GSE MSED Quantitative (GMQN)
+           </option>
+           <option value="course_attributes_GMRE">
+            GSE MSED Reading/Writing/Literacy Rsrch Elective (GMRE)
+           </option>
+           <option value="course_attributes_GMUA">
+            GSE MSED Urban Teaching Appr. Advanced Content (GMUA)
+           </option>
+           <option value="course_attributes_GMUC">
+            GSE MSED Urban Teaching Apprent Cont I (GMUC)
+           </option>
+           <option value="course_attributes_GMUD">
+            GSE MSED UrbTeach Cont II (GMUD)
+           </option>
+           <option value="course_attributes_GMUO">
+            GSE MSED UrbTeach Core Met (GMUO)
+           </option>
+           <option value="course_attributes_GMUI">
+            GSE MSED UrbTeach InteArts (GMUI)
+           </option>
+           <option value="course_attributes_GDEQ">
+            GSE PHD Ed Culture Advanced Qualitative Methods (GDEQ)
+           </option>
+           <option value="course_attributes_GDEN">
+            GSE PHD Ed Culture Advanced Quantitative Methods (GDEN)
+           </option>
+           <option value="course_attributes_GDEL">
+            GSE PHD Education Culture Qualitative Methods (GDEL)
+           </option>
+           <option value="course_attributes_GDET">
+            GSE PHD Education Culture Theory (GDET)
+           </option>
+           <option value="course_attributes_GDPL">
+            GSE PHD Education Policy Qualitative (GDPL)
+           </option>
+           <option value="course_attributes_GDPN">
+            GSE PHD Education Policy Quantitative (GDPN)
+           </option>
+           <option value="course_attributes_GDMC">
+            GSE PHD Education, Culture, Society Methods (GDMC)
+           </option>
+           <option value="course_attributes_GDLA">
+            GSE PHD Educational Linguistics Adv Qual/Quant (GDLA)
+           </option>
+           <option value="course_attributes_GDLC">
+            GSE PHD Educational Linguistics Options (GDLC)
+           </option>
+           <option value="course_attributes_GDLL">
+            GSE PHD Educational Linguistics Qualitative (GDLL)
+           </option>
+           <option value="course_attributes_GDLN">
+            GSE PHD Educational Linguistics Quantitative (GDLN)
+           </option>
+           <option value="course_attributes_GDHM">
+            GSE PHD Higher Education Methods (GDHM)
+           </option>
+           <option value="course_attributes_GDHN">
+            GSE PHD Higher Education Quantitative (GDHN)
+           </option>
+           <option value="course_attributes_GDRR">
+            GSE PHD Reading/Writing/Literacy Research (GDRR)
+           </option>
+           <option value="course_attributes_GMCL">
+            GSE-ADMIN-ChiefLearningOffcr (GMCL)
+           </option>
+           <option value="course_attributes_GMEP">
+            GSE-ADMIN-Education Policy (GMEP)
+           </option>
+           <option value="course_attributes_GMEC">
+            GSE-ADMIN-Exact (GMEC)
+           </option>
+           <option value="course_attributes_GMHE">
+            GSE-ADMIN-Higher Education (GMHE)
+           </option>
+           <option value="course_attributes_GMLC">
+            GSE-ADMIN-Litrcy,Cltr,&amp;Intl Ed (GMLC)
+           </option>
+           <option value="course_attributes_GMED">
+            GSE-ADMIN-Medical Education (GMED)
+           </option>
+           <option value="course_attributes_GMOT">
+            GSE-ADMIN-Other (GMOT)
+           </option>
+           <option value="course_attributes_AGWF">
+            GSWS Feminist Studies (AGWF)
+           </option>
+           <option value="course_attributes_AGWG">
+            GSWS Global Gender and Sexuality Studies (AGWG)
+           </option>
+           <option value="course_attributes_AGWH">
+            GSWS Health and Disabilities (AGWH)
+           </option>
+           <option value="course_attributes_AGWL">
+            GSWS LGBTQ Studies (AGWL)
+           </option>
+           <option value="course_attributes_AGGR">
+            GSWS Major Related (AGGR)
+           </option>
+           <option value="course_attributes_AGWT">
+            GSWS Theory (AGWT)
+           </option>
+           <option value="course_attributes_AHAF">
+            HIST Africa and the Middle East (AHAF)
+           </option>
+           <option value="course_attributes_AHCA">
+            HIST Concentration in American History (AHCA)
+           </option>
+           <option value="course_attributes_AHAH">
+            HIST Concentration in American History Related (AHAH)
+           </option>
+           <option value="course_attributes_AHCD">
+            HIST Concentration in Diplomatic History (AHCD)
+           </option>
+           <option value="course_attributes_AHDR">
+            HIST Concentration in Diplomatic History Related (AHDR)
+           </option>
+           <option value="course_attributes_AHCC">
+            HIST Concentration in Economic History (AHCC)
+           </option>
+           <option value="course_attributes_AHEC">
+            HIST Concentration in Economic History Related (AHEC)
+           </option>
+           <option value="course_attributes_AHCE">
+            HIST Concentration in European History (AHCE)
+           </option>
+           <option value="course_attributes_AHER">
+            HIST Concentration in European History Related (AHER)
+           </option>
+           <option value="course_attributes_AHCG">
+            HIST Concentration in Gender History (AHCG)
+           </option>
+           <option value="course_attributes_AHGR">
+            HIST Concentration in Gender History Related (AHGR)
+           </option>
+           <option value="course_attributes_AHCI">
+            HIST Concentration in Intellectual History (AHCI)
+           </option>
+           <option value="course_attributes_AHIR">
+            HIST Concentration in Intellectual History Related (AHIR)
+           </option>
+           <option value="course_attributes_AHCJ">
+            HIST Concentration in Jewish History (AHCJ)
+           </option>
+           <option value="course_attributes_AHJR">
+            HIST Concentration in Jewish History Related (AHJR)
+           </option>
+           <option value="course_attributes_AHCW">
+            HIST Concentration in World History (AHCW)
+           </option>
+           <option value="course_attributes_AHWR">
+            HIST Concentration in World History Related (AHWR)
+           </option>
+           <option value="course_attributes_AHES">
+            HIST East Asia and South Asia (AHES)
+           </option>
+           <option value="course_attributes_AHEA">
+            HIST Europe and Australia (AHEA)
+           </option>
+           <option value="course_attributes_AHGI">
+            HIST Global Issues (AHGI)
+           </option>
+           <option value="course_attributes_AHLA">
+            HIST Latin America and the Caribbean (AHLA)
+           </option>
+           <option value="course_attributes_AH18">
+            HIST Pre- (AH18)
+           </option>
+           <option value="course_attributes_AHEM">
+            HIST Seminar (AHEM)
+           </option>
+           <option value="course_attributes_AHTR">
+            HIST Transregional (AHTR)
+           </option>
+           <option value="course_attributes_AHUC">
+            HIST United States and Canada (AHUC)
+           </option>
+           <option value="course_attributes_MMYC">
+            HPR CHIPS Elective (MMYC)
+           </option>
+           <option value="course_attributes_MMYE">
+            HPR Elective (MMYE)
+           </option>
+           <option value="course_attributes_AHSI">
+            HSOC Bioethics Core (AHSI)
+           </option>
+           <option value="course_attributes_AHSB">
+            HSOC Bioethics Discipline (AHSB)
+           </option>
+           <option value="course_attributes_AHSD">
+            HSOC Disease and Culture (AHSD)
+           </option>
+           <option value="course_attributes_AHSG">
+            HSOC Global Health Concentration Elective (AHSG)
+           </option>
+           <option value="course_attributes_AHSE">
+            HSOC Health Policy and Law Concentration (AHSE)
+           </option>
+           <option value="course_attributes_AHSC">
+            HSOC Health Policy Core (AHSC)
+           </option>
+           <option value="course_attributes_AHFI">
+            HSOC Healthcare Finance Concentration (AHFI)
+           </option>
+           <option value="course_attributes_AHFC">
+            HSOC Healthcare Finance Core (AHFC)
+           </option>
+           <option value="course_attributes_AHSA">
+            HSOC Law and Society (AHSA)
+           </option>
+           <option value="course_attributes_AHSL">
+            HSOC Law, Politics and Public Policy (AHSL)
+           </option>
+           <option value="course_attributes_AHSM">
+            HSOC Major Related (AHSM)
+           </option>
+           <option value="course_attributes_AHSP">
+            HSOC Philosophical and Religious Foundations (AHSP)
+           </option>
+           <option value="course_attributes_AHSH">
+            HSOC Philosophical/Ethical (AHSH)
+           </option>
+           <option value="course_attributes_AHSO">
+            HSOC Political Economy (AHSO)
+           </option>
+           <option value="course_attributes_AHPH">
+            HSOC Public Health Core (AHPH)
+           </option>
+           <option value="course_attributes_AHPE">
+            HSOC Public Health Elective (AHPE)
+           </option>
+           <option value="course_attributes_AHSN">
+            HSOC Race, Gender and Health (AHSN)
+           </option>
+           <option value="course_attributes_AHSR">
+            HSOC Regional (AHSR)
+           </option>
+           <option value="course_attributes_AHSS">
+            HSOC Social and Institutional Context (AHSS)
+           </option>
+           <option value="course_attributes_AHST">
+            HSOC Technologies, Practices and Practitioners (AHST)
+           </option>
+           <option value="course_attributes_AHSW">
+            HSOC World Health (AHSW)
+           </option>
+           <option value="course_attributes_HDHM">
+            HSSC PHD MED Subfield (HDHM)
+           </option>
+           <option value="course_attributes_HDH8">
+            HSSC PHD Pre  Devs (HDH8)
+           </option>
+           <option value="course_attributes_HDHR">
+            HSSC PHD Research Seminar (HDHR)
+           </option>
+           <option value="course_attributes_HDHS">
+            HSSC PHD Science Subfield (HDHS)
+           </option>
+           <option value="course_attributes_HDHT">
+            HSSC PHD TECH Subfield (HDHT)
+           </option>
+           <option value="course_attributes_UNIS">
+            Hunstman International Studies (UNIS)
+           </option>
+           <option value="course_attributes_AIRH">
+            INTR International History (AIRH)
+           </option>
+           <option value="course_attributes_AIRP">
+            INTR International Political Economy Elective (AIRP)
+           </option>
+           <option value="course_attributes_AIRE">
+            INTR International Relations Elective (AIRE)
+           </option>
+           <option value="course_attributes_AIRS">
+            INTR International Security/Foreign Policy Elect (AIRS)
+           </option>
+           <option value="course_attributes_AIRN">
+            INTR Non-Western Elective (AIRN)
+           </option>
+           <option value="course_attributes_AJST">
+            JWST Jewish Studies - Biblical and Literature (AJST)
+           </option>
+           <option value="course_attributes_AJSB">
+            JWST Jewish Studies - Biblical Period (AJSB)
+           </option>
+           <option value="course_attributes_AJSH">
+            JWST Jewish Studies - Hebrew or Yiddish (AJSH)
+           </option>
+           <option value="course_attributes_AJSV">
+            JWST Jewish Studies - Modern and Literature (AJSV)
+           </option>
+           <option value="course_attributes_AJSM">
+            JWST Jewish Studies - Modern Period (AJSM)
+           </option>
+           <option value="course_attributes_AJSU">
+            JWST Jewish Studies - Rabbinic and Literature (AJSU)
+           </option>
+           <option value="course_attributes_AJSR">
+            JWST Jewish Studies - Rabbinic or Medieval Period (AJSR)
+           </option>
+           <option value="course_attributes_AJSC">
+            JWST Jewish Studies - Religion &amp; Culture Seminars (AJSC)
+           </option>
+           <option value="course_attributes_AJSL">
+            JWST Jewish Studies Lit - Original or Translation (AJSL)
+           </option>
+           <option value="course_attributes_AJSE">
+            JWST Minor- Jewish Studies Elective (AJSE)
+           </option>
+           <option value="course_attributes_ALCR">
+            LALX Criticism (ALCR)
+           </option>
+           <option value="course_attributes_ALHI">
+            LALX History (ALHI)
+           </option>
+           <option value="course_attributes_ALDI">
+            LALX Latinx Diaspora (ALDI)
+           </option>
+           <option value="course_attributes_ALRP">
+            LALX Regional Experience Prior to  (ALRP)
+           </option>
+           <option value="course_attributes_ALMR">
+            LALX Related Elective (ALMR)
+           </option>
+           <option value="course_attributes_ALSS">
+            LALX Social Science (ALSS)
+           </option>
+           <option value="course_attributes_LJME">
+            Law JD Additional MBE Elective (LJME)
+           </option>
+           <option value="course_attributes_LJBE">
+            Law JD Core MBE Elective (LJBE)
+           </option>
+           <option value="course_attributes_LJEL">
+            Law JD Experiential Learning (LJEL)
+           </option>
+           <option value="course_attributes_LJE2">
+            Law JD Experiential Learning II (LJE2)
+           </option>
+           <option value="course_attributes_LJGE">
+            Law JD General Elective (LJGE)
+           </option>
+           <option value="course_attributes_LJRA">
+            Law JD Regulatory/Administrative Elective (LJRA)
+           </option>
+           <option value="course_attributes_LGSH">
+            Law LLM Glo Security, Sustain, Human Rights (LGSH)
+           </option>
+           <option value="course_attributes_LIPT">
+            Law LLM Intel Property Tech (LIPT)
+           </option>
+           <option value="course_attributes_LIPF">
+            Law LLM Intel Property Tech Foundations (LIPF)
+           </option>
+           <option value="course_attributes_ALCE">
+            LGIC Logic, Information, and Computing Elective (ALCE)
+           </option>
+           <option value="course_attributes_ALCN">
+            LGIC Minor- Logic, Info, and Computing Elective (ALCN)
+           </option>
+           <option value="course_attributes_HDLA">
+            LING PHD Pre Approved Course (HDLA)
+           </option>
+           <option value="course_attributes_ALNR">
+            LING Related Courses (ALNR)
+           </option>
+           <option value="course_attributes_BMOG">
+            LPS MSOD Global and Cultural Organization (BMOG)
+           </option>
+           <option value="course_attributes_BMOL">
+            LPS MSOD Leadership Coaching Cohort (BMOL)
+           </option>
+           <option value="course_attributes_BMOC">
+            LPS MSOD Leading and Managing through Change (BMOC)
+           </option>
+           <option value="course_attributes_BMOO">
+            LPS MSOD Organizational Coaching (BMOO)
+           </option>
+           <option value="course_attributes_BMOS">
+            LPS MSOD Sustainable Development (BMOS)
+           </option>
+           <option value="course_attributes_AMAE">
+            MAEC Economics Elective (AMAE)
+           </option>
+           <option value="course_attributes_AMAM">
+            MAEC Mathematics Elective (AMAM)
+           </option>
+           <option value="course_attributes_AMMR">
+            MATH Elective (AMMR)
+           </option>
+           <option value="course_attributes_AMOR">
+            MATH Outside Math Related (AMOR)
+           </option>
+           <option value="course_attributes_MMBC">
+            MBE Clinical Ethics (MMBC)
+           </option>
+           <option value="course_attributes_MMBP">
+            MBE Policy (MMBP)
+           </option>
+           <option value="course_attributes_MMBR">
+            MBE Research Ethics (MMBR)
+           </option>
+           <option value="course_attributes_EMBC">
+            MBIOT BioChem Course (EMBC)
+           </option>
+           <option value="course_attributes_EMBT">
+            MBIOT BioTech I Course (EMBT)
+           </option>
+           <option value="course_attributes_EMMA">
+            MBIOT BTP Advance Elective (EMMA)
+           </option>
+           <option value="course_attributes_EMMP">
+            MBIOT BTP Quantitative Course (EMMP)
+           </option>
+           <option value="course_attributes_EMMV">
+            MBIOT BTT Advanced Elective (EMMV)
+           </option>
+           <option value="course_attributes_EMMM">
+            MBIOT BTT Quantitative Course (EMMM)
+           </option>
+           <option value="course_attributes_EMMB">
+            MBIOT Molecular Biology Track Course (EMMB)
+           </option>
+           <option value="course_attributes_MMBE">
+            MBMI Elective (MMBE)
+           </option>
+           <option value="course_attributes_BMCC">
+            MCS Core Courses (BMCC)
+           </option>
+           <option value="course_attributes_BMCE">
+            MCS Electives (BMCE)
+           </option>
+           <option value="course_attributes_MPHL">
+            MED MBE/JD BIOE Elective (MPHL)
+           </option>
+           <option value="course_attributes_ANNE">
+            MELC Ancient Near East Concentration Course (ANNE)
+           </option>
+           <option value="course_attributes_ANLT">
+            MELC Ancient Near East Literature in Translation (ANLT)
+           </option>
+           <option value="course_attributes_ANAH">
+            MELC Arabic and Hebrew Concentration Course (ANAH)
+           </option>
+           <option value="course_attributes_ANAC">
+            MELC Arabic and Islamic Concentration Course (ANAC)
+           </option>
+           <option value="course_attributes_ANAI">
+            MELC Arabic and Islamic History (ANAI)
+           </option>
+           <option value="course_attributes_ANAT">
+            MELC Arabic and Islamic Literature (ANAT)
+           </option>
+           <option value="course_attributes_ANAR">
+            MELC Arabic and Islamic Religion (ANAR)
+           </option>
+           <option value="course_attributes_ANBH">
+            MELC Biblical Hebrew Languages (ANBH)
+           </option>
+           <option value="course_attributes_ANEL">
+            MELC Egyptian Languages (ANEL)
+           </option>
+           <option value="course_attributes_ANHB">
+            MELC Hebrew/Judaica Biblical Literature (ANHB)
+           </option>
+           <option value="course_attributes_ANHC">
+            MELC Hebrew/Judaica Concentration Course (ANHC)
+           </option>
+           <option value="course_attributes_ANHM">
+            MELC Hebrew/Judaica Modern Hebrew Literature (ANHM)
+           </option>
+           <option value="course_attributes_ANHR">
+            MELC Hebrew/Judaica Rabbinic/Medieval Literature (ANHR)
+           </option>
+           <option value="course_attributes_ANML">
+            MELC Mesopotamian Languages (ANML)
+           </option>
+           <option value="course_attributes_ANPC">
+            MELC Persian Concentration Course (ANPC)
+           </option>
+           <option value="course_attributes_ANPH">
+            MELC Persian History (ANPH)
+           </option>
+           <option value="course_attributes_ANPL">
+            MELC Persian Literature (ANPL)
+           </option>
+           <option value="course_attributes_HDEL">
+            MELC PhD AncEg Lng&amp;Lit (HDEL)
+           </option>
+           <option value="course_attributes_HDAL">
+            MELC PhD Arab/Persian Literature (HDAL)
+           </option>
+           <option value="course_attributes_HDAI">
+            MELC PhD Arch Int&amp;Tchs (HDAI)
+           </option>
+           <option value="course_attributes_HDAS">
+            MELC PhD Art&amp;Archaeology (HDAS)
+           </option>
+           <option value="course_attributes_HDEA">
+            MELC PhD Art&amp;Clt AncEg (HDEA)
+           </option>
+           <option value="course_attributes_HDAH">
+            MELC PhD History Ancient Egypt (HDAH)
+           </option>
+           <option value="course_attributes_HDHC">
+            MELC PhD History&amp;Culture (HDHC)
+           </option>
+           <option value="course_attributes_HDEC">
+            MELC PhD Hst&amp;Clt AncEg (HDEC)
+           </option>
+           <option value="course_attributes_HDNI">
+            MELC PhD Islamics (HDNI)
+           </option>
+           <option value="course_attributes_HDNL">
+            MELC PhD Language (HDNL)
+           </option>
+           <option value="course_attributes_HDHL">
+            MELC PhD Language Ancient Egypt (HDHL)
+           </option>
+           <option value="course_attributes_HDMC">
+            MELC PhD Mesopotamia History &amp; Culture (HDMC)
+           </option>
+           <option value="course_attributes_HDML">
+            MELC PhD Mesopotamia Language (HDML)
+           </option>
+           <option value="course_attributes_BMER">
+            MES Envi Resilience and Adaptation Elective (BMER)
+           </option>
+           <option value="course_attributes_BMEB">
+            MES Environmental Biology Elective (BMEB)
+           </option>
+           <option value="course_attributes_BMEP">
+            MES Environmental Policy Elective (BMEP)
+           </option>
+           <option value="course_attributes_BMES">
+            MES Environmental Sustainability Elective (BMES)
+           </option>
+           <option value="course_attributes_BMEM">
+            MES Resource Management Elective (BMEM)
+           </option>
+           <option value="course_attributes_BMEU">
+            MES Urban Environment Elective (BMEU)
+           </option>
+           <option value="course_attributes_MMHP">
+            MHP Health Policy Elct (MMHP)
+           </option>
+           <option value="course_attributes_EMIB">
+            MIPD Business Elective (EMIB)
+           </option>
+           <option value="course_attributes_EMID">
+            MIPD Design Elective (EMID)
+           </option>
+           <option value="course_attributes_EMIE">
+            MIPD Engineering Elective (EMIE)
+           </option>
+           <option value="course_attributes_AMMF">
+            MMES Modern Middle East Stud - Foundation Course (AMMF)
+           </option>
+           <option value="course_attributes_AMMH">
+            MMES Modern Middle East Stud - Humanities Distrib (AMMH)
+           </option>
+           <option value="course_attributes_AMRS">
+            MMES Modern Middle East Stud - Research Seminars (AMRS)
+           </option>
+           <option value="course_attributes_AMMS">
+            MMES Modern Middle East Stud - Social Sci Distrib (AMMS)
+           </option>
+           <option value="course_attributes_MMPE">
+            MPH Environmental Health Track (MMPE)
+           </option>
+           <option value="course_attributes_MMPG">
+            MPH Generalist Track (MMPG)
+           </option>
+           <option value="course_attributes_MMPN">
+            MPH Generalist Track Required Track Elective (MMPN)
+           </option>
+           <option value="course_attributes_MMPW">
+            MPH Global Health Elective (MMPW)
+           </option>
+           <option value="course_attributes_MMPH">
+            MPH Global Health Track Required Track Elective (MMPH)
+           </option>
+           <option value="course_attributes_MMPJ">
+            MPH JD Law Elective (MMPJ)
+           </option>
+           <option value="course_attributes_MMPO">
+            MPH One Health Track Required Track Elective (MMPO)
+           </option>
+           <option value="course_attributes_MMPU">
+            MPH Public Health Elective (MMPU)
+           </option>
+           <option value="course_attributes_MMME">
+            MPHY Elective (MMME)
+           </option>
+           <option value="course_attributes_BMGN">
+            MSAG Engineering Geology Elective (BMGN)
+           </option>
+           <option value="course_attributes_BMGE">
+            MSAG Engineering Geology Foundation Elective (BMGE)
+           </option>
+           <option value="course_attributes_BMGV">
+            MSAG Environmental Geology Elective (BMGV)
+           </option>
+           <option value="course_attributes_BMGG">
+            MSAG Geochemistry Foundation Area (BMGG)
+           </option>
+           <option value="course_attributes_BMGC">
+            MSAG Geocomputations Foundation Area (BMGC)
+           </option>
+           <option value="course_attributes_BMGM">
+            MSAG Geomechanics Foundation Area (BMGM)
+           </option>
+           <option value="course_attributes_BMGH">
+            MSAG Ground Water Hydrology Elective (BMGH)
+           </option>
+           <option value="course_attributes_BMGO">
+            MSAG Hydrogeology Elective (BMGO)
+           </option>
+           <option value="course_attributes_MMCE">
+            MSCE Elective (MMCE)
+           </option>
+           <option value="course_attributes_EMCE">
+            MSE CBE Elective (EMCE)
+           </option>
+           <option value="course_attributes_EMIU">
+            MSE IPD Business Elective (EMIU)
+           </option>
+           <option value="course_attributes_EMIS">
+            MSE IPD Design Elective (EMIS)
+           </option>
+           <option value="course_attributes_EMIG">
+            MSE IPD Engineer Elective (EMIG)
+           </option>
+           <option value="course_attributes_EMRT">
+            MSE Robo Technology Elective (EMRT)
+           </option>
+           <option value="course_attributes_EMRE">
+            MSE Robotics General Elective (EMRE)
+           </option>
+           <option value="course_attributes_MMPY">
+            MSMP Medical Physics Elective (MMPY)
+           </option>
+           <option value="course_attributes_BMOA">
+            MSOD Applications (BMOA)
+           </option>
+           <option value="course_attributes_BMOF">
+            MSOD Foundations (BMOF)
+           </option>
+           <option value="course_attributes_BMOM">
+            MSOD Methods of Diagnosis and Evaluation (BMOM)
+           </option>
+           <option value="course_attributes_EMME">
+            MSSE Elective (EMME)
+           </option>
+           <option value="course_attributes_MMAS">
+            MSTR Analytical Skills (MMAS)
+           </option>
+           <option value="course_attributes_MMRM">
+            MSTR Research Methods (MMRM)
+           </option>
+           <option value="course_attributes_MMRC">
+            MSTR Responsible Conduct of Research (MMRC)
+           </option>
+           <option value="course_attributes_MMSW">
+            MSTR Scientific Writing (MMSW)
+           </option>
+           <option value="course_attributes_SMNP">
+            MSW Advanced Practice Elective (SMNP)
+           </option>
+           <option value="course_attributes_MMTB">
+            MTR Bioinformatics Elective (MMTB)
+           </option>
+           <option value="course_attributes_MMTD">
+            MTR Discovery Elective (MMTD)
+           </option>
+           <option value="course_attributes_MMTE">
+            MTR Entrepreneurial Science Elective (MMTE)
+           </option>
+           <option value="course_attributes_MMTR">
+            MTR Therapeutics and Regulation Elective (MMTR)
+           </option>
+           <option value="course_attributes_AMJP">
+            MUSC Jazz and Popular Music Elective (AMJP)
+           </option>
+           <option value="course_attributes_AMRE">
+            MUSC Minor Music Related (AMRE)
+           </option>
+           <option value="course_attributes_AMTH">
+            MUSC Music Tier Three Course (AMTH)
+           </option>
+           <option value="course_attributes_AMTW">
+            MUSC Music Tier Two Course (AMTW)
+           </option>
+           <option value="course_attributes_MPNQ">
+            NGG Quantitative Methods Course (MPNQ)
+           </option>
+           <option value="course_attributes_ABBU">
+            NRSC Cellular Neuroscience (ABBU)
+           </option>
+           <option value="course_attributes_ABBT">
+            NRSC Comp Neuroscience Theory &amp; Modeling Minor (ABBT)
+           </option>
+           <option value="course_attributes_ABBC">
+            NRSC Computational Neuroscience and Cog Sci Minor (ABBC)
+           </option>
+           <option value="course_attributes_ABBA">
+            NRSC Computational Neuroscience Application Minor (ABBA)
+           </option>
+           <option value="course_attributes_ABBF">
+            NRSC Computational Neuroscience Math Found Minor (ABBF)
+           </option>
+           <option value="course_attributes_ABBM">
+            NRSC Major Elective (ABBM)
+           </option>
+           <option value="course_attributes_ABBN">
+            NRSC Minor Course Elective (ABBN)
+           </option>
+           <option value="course_attributes_ABBS">
+            NRSC Systems and Behavior (ABBS)
+           </option>
+           <option value="course_attributes_ABBH">
+            NRSCHealthcare Management Elective Minor (ABBH)
+           </option>
+           <option value="course_attributes_NUGH">
+            NU GloblHealthMin Elec (NUGH)
+           </option>
+           <option value="course_attributes_NUGL">
+            NU GloblHealthMin Lang (NUGL)
+           </option>
+           <option value="course_attributes_NUHC">
+            NU HealthCommMin Elec (NUHC)
+           </option>
+           <option value="course_attributes_NUHH">
+            NU History, Health and the Humanities Minor Elec (NUHH)
+           </option>
+           <option value="course_attributes_NUHE">
+            NU Nursing and Health Services Mgmt Minor Add Elec (NUHE)
+           </option>
+           <option value="course_attributes_NUNH">
+            NU Nursing and Health Services Mgmt Minor NU Elec (NUNH)
+           </option>
+           <option value="course_attributes_NUWE">
+            NU Nursing and Health Services Mgmt Minor WH Elec (NUWE)
+           </option>
+           <option value="course_attributes_NUEC">
+            NU Nursing Elective (NUEC)
+           </option>
+           <option value="course_attributes_NUNE">
+            NU Nutrition Major Elective (NUNE)
+           </option>
+           <option value="course_attributes_NUNM">
+            NU Nutrition Minor Elective (NUNM)
+           </option>
+           <option value="course_attributes_NUAL">
+            NU Sector Arts &amp; Letters (NUAL)
+           </option>
+           <option value="course_attributes_NUGC">
+            NU Sector Global&amp;Cultural Studies (NUGC)
+           </option>
+           <option value="course_attributes_NUHT">
+            NU Sector History&amp;Traditions (NUHT)
+           </option>
+           <option value="course_attributes_NURS">
+            NU Sector ReaSys&amp;Relationship (NURS)
+           </option>
+           <option value="course_attributes_NUSS">
+            NU Sector Society&amp;Soc Struct (NUSS)
+           </option>
+           <option value="course_attributes_NMHB">
+            NURS MSN Health Care Admin Business Elective (NMHB)
+           </option>
+           <option value="course_attributes_NMLE">
+            NURS MSN Leadership Elective (NMLE)
+           </option>
+           <option value="course_attributes_NDCC">
+            NURS PHD Concentration Class (NDCC)
+           </option>
+           <option value="course_attributes_UNPG">
+            Penn Global Seminar (UNPG)
+           </option>
+           <option value="course_attributes_APLH">
+            PHIL History of Philosophy (APLH)
+           </option>
+           <option value="course_attributes_APHP">
+            PHIL Humanities and Political Science (APHP)
+           </option>
+           <option value="course_attributes_APLM">
+            PHIL Majors Seminar (APLM)
+           </option>
+           <option value="course_attributes_APLL">
+            PHIL Minor Logic (APLL)
+           </option>
+           <option value="course_attributes_APNS">
+            PHIL Natural, Social Sci, or Hist &amp; Socio of Sci (APNS)
+           </option>
+           <option value="course_attributes_HDPH">
+            PHIL PhD History of Philosophy (HDPH)
+           </option>
+           <option value="course_attributes_HDPM">
+            PHIL PhD Mtphys&amp;Epstlgy (HDPM)
+           </option>
+           <option value="course_attributes_HDPV">
+            PHIL PhD Value Theory (HDPV)
+           </option>
+           <option value="course_attributes_APLR">
+            PHIL Phil Related MPP (APLR)
+           </option>
+           <option value="course_attributes_APLS">
+            PHIL Philosophy of Science or Math (APLS)
+           </option>
+           <option value="course_attributes_APLG">
+            PHIL Related General Philosophy (APLG)
+           </option>
+           <option value="course_attributes_APLT">
+            PHIL Theoretical Philosophy (APLT)
+           </option>
+           <option value="course_attributes_APLV">
+            PHIL Value Theory (APLV)
+           </option>
+           <option value="course_attributes_APHA">
+            PHYS ADV ASTR Course (APHA)
+           </option>
+           <option value="course_attributes_APHS">
+            PHYS Business Elective (APHS)
+           </option>
+           <option value="course_attributes_APHC">
+            PHYS Comp Tech (APHC)
+           </option>
+           <option value="course_attributes_APHE">
+            PHYS Computer Elective (APHE)
+           </option>
+           <option value="course_attributes_APHL">
+            PHYS LAB Course (APHL)
+           </option>
+           <option value="course_attributes_APHB">
+            PHYS M Bio Sci Elective (APHB)
+           </option>
+           <option value="course_attributes_APPC">
+            PPE Choice and Behavior (APPC)
+           </option>
+           <option value="course_attributes_APPJ">
+            PPE Distributive Justice (APPJ)
+           </option>
+           <option value="course_attributes_APPE">
+            PPE Ethics &amp; Professions (APPE)
+           </option>
+           <option value="course_attributes_APPG">
+            PPE Globalization (APPG)
+           </option>
+           <option value="course_attributes_APPF">
+            PPE Philosophy Foundation (APPF)
+           </option>
+           <option value="course_attributes_APPP">
+            PPE Political Science (APPP)
+           </option>
+           <option value="course_attributes_APPT">
+            PPE Political Theory (APPT)
+           </option>
+           <option value="course_attributes_APPU">
+            PPE Public Policy &amp; Governance (APPU)
+           </option>
+           <option value="course_attributes_APPR">
+            PPE Rigorous Reasoning (APPR)
+           </option>
+           <option value="course_attributes_APSA">
+            PSCI American Politics (APSA)
+           </option>
+           <option value="course_attributes_APSC">
+            PSCI Comparative Politics (APSC)
+           </option>
+           <option value="course_attributes_APSI">
+            PSCI International Relations (APSI)
+           </option>
+           <option value="course_attributes_APAP">
+            PSCI Minor American Public Policy (APAP)
+           </option>
+           <option value="course_attributes_APID">
+            PSCI Minor International Development Minor (APID)
+           </option>
+           <option value="course_attributes_APSU">
+            PSCI Minor Survey Research and Analytics (APSU)
+           </option>
+           <option value="course_attributes_HDPA">
+            PSCI PhD American Politics (HDPA)
+           </option>
+           <option value="course_attributes_HDPC">
+            PSCI PhD Comparative Politics (HDPC)
+           </option>
+           <option value="course_attributes_HDPI">
+            PSCI PhD International Relations (HDPI)
+           </option>
+           <option value="course_attributes_HDPT">
+            PSCI PhD Political Theory (HDPT)
+           </option>
+           <option value="course_attributes_APSE">
+            PSCI Political Economy (APSE)
+           </option>
+           <option value="course_attributes_APSR">
+            PSCI Political Science Related Course (APSR)
+           </option>
+           <option value="course_attributes_APST">
+            PSCI Political Theory (APST)
+           </option>
+           <option value="course_attributes_APCI">
+            PSYC Biological Psychology (APCI)
+           </option>
+           <option value="course_attributes_APCC">
+            PSYC Cognitive Psychology (APCC)
+           </option>
+           <option value="course_attributes_APCN">
+            PSYC Consumer Psychology Minor Marketing Elective (APCN)
+           </option>
+           <option value="course_attributes_APCP">
+            PSYC Consumer Psychology Minor Psychology Elective (APCP)
+           </option>
+           <option value="course_attributes_APMR">
+            PSYC Major Related Elective (APMR)
+           </option>
+           <option value="course_attributes_HDYQ">
+            PSYC PhD Advanced Requirement (HDYQ)
+           </option>
+           <option value="course_attributes_HPPB">
+            PSYC PhD Brain Proseminar (HPPB)
+           </option>
+           <option value="course_attributes_HPPG">
+            PSYC PhD In&amp;Grp Proseminar (HPPG)
+           </option>
+           <option value="course_attributes_HPPM">
+            PSYC PhD Mind Proseminar (HPPM)
+           </option>
+           <option value="course_attributes_HDPS">
+            PSYC PhD Proseminar (HDPS)
+           </option>
+           <option value="course_attributes_APCS">
+            PSYC Social Psychology (APCS)
+           </option>
+           <option value="course_attributes_AREM">
+            REES 1801-1899 (AREM)
+           </option>
+           <option value="course_attributes_AREA">
+            REES Art History Content (AREA)
+           </option>
+           <option value="course_attributes_AREC">
+            REES Cinema Studies Content (AREC)
+           </option>
+           <option value="course_attributes_AREE">
+            REES Eastern Europe (AREE)
+           </option>
+           <option value="course_attributes_AREH">
+            REES History Content (AREH)
+           </option>
+           <option value="course_attributes_AREL">
+            REES Literature Content (AREL)
+           </option>
+           <option value="course_attributes_ARET">
+            REES Minor Comparative (ARET)
+           </option>
+           <option value="course_attributes_ARES">
+            REES Political Science Content (ARES)
+           </option>
+           <option value="course_attributes_AREJ">
+            REES Post 1900 (AREJ)
+           </option>
+           <option value="course_attributes_AREP">
+            REES Prior to 1800 (AREP)
+           </option>
+           <option value="course_attributes_ARER">
+            REES Russia (ARER)
+           </option>
+           <option value="course_attributes_AREO">
+            REES Social Science (AREO)
+           </option>
+           <option value="course_attributes_ARRS">
+            RELS Religious Studies Related (ARRS)
+           </option>
+           <option value="course_attributes_ARSS">
+            RELS Religious Studies Seminars (ARSS)
+           </option>
+           <option value="course_attributes_ARLF">
+            ROML French Research Requirement (ARLF)
+           </option>
+           <option value="course_attributes_ARLI">
+            ROML Italian Elective (ARLI)
+           </option>
+           <option value="course_attributes_ARIR">
+            ROML Italian Research Requirement (ARIR)
+           </option>
+           <option value="course_attributes_ARLS">
+            ROML Spanish Research Requirement (ARLS)
+           </option>
+           <option value="course_attributes_ASAR">
+            SAST South Asian Major Related (ASAR)
+           </option>
+           <option value="course_attributes_EMST">
+            SCMP Area Technology Elective (EMST)
+           </option>
+           <option value="course_attributes_EUHS">
+            SEAS Humanities (EUHS)
+           </option>
+           <option value="course_attributes_EUMS">
+            SEAS Math/Science/Engrng (EUMS)
+           </option>
+           <option value="course_attributes_EUMA">
+            SEAS Mathematics Elective (EUMA)
+           </option>
+           <option value="course_attributes_EUNS">
+            SEAS Natural Science (EUNS)
+           </option>
+           <option value="course_attributes_EUNM">
+            SEAS NETS Econ&amp;Netw Mkts (EUNM)
+           </option>
+           <option value="course_attributes_EUNC">
+            SEAS NETS Network &amp; Cloud (EUNC)
+           </option>
+           <option value="course_attributes_EUND">
+            SEAS NETS Network &amp; Dynamics (EUND)
+           </option>
+           <option value="course_attributes_EUNT">
+            SEAS NETS Tech &amp; Society (EUNT)
+           </option>
+           <option value="course_attributes_EUNE">
+            SEAS No Engineering Req (EUNE)
+           </option>
+           <option value="course_attributes_EUSS">
+            SEAS Social Science (EUSS)
+           </option>
+           <option value="course_attributes_EUSD">
+            SEAS SSE Design Elective (EUSD)
+           </option>
+           <option value="course_attributes_EUSI">
+            SEAS SSE Info Sys Elective (EUSI)
+           </option>
+           <option value="course_attributes_EUSP">
+            SEAS SSE SPA Elective (EUSP)
+           </option>
+           <option value="course_attributes_EUTB">
+            SEAS Tech,Business,Society (EUTB)
+           </option>
+           <option value="course_attributes_ASRM">
+            SOCI Applied Research Methods and Data Analysis (ASRM)
+           </option>
+           <option value="course_attributes_ASCM">
+            SOCI Cities, Markets and Global Economy (ASCM)
+           </option>
+           <option value="course_attributes_ASCD">
+            SOCI Culture and Diversity (ASCD)
+           </option>
+           <option value="course_attributes_ASFG">
+            SOCI Family Gender and Society (ASFG)
+           </option>
+           <option value="course_attributes_ASOG">
+            SOCI Global and International Studies (ASOG)
+           </option>
+           <option value="course_attributes_ASLS">
+            SOCI Law and Society (ASLS)
+           </option>
+           <option value="course_attributes_ASOL">
+            SOCI M Law Society (ASOL)
+           </option>
+           <option value="course_attributes_ASMD">
+            SOCI Medical Sociology (ASMD)
+           </option>
+           <option value="course_attributes_ASPI">
+            SOCI Population &amp; Immigration (ASPI)
+           </option>
+           <option value="course_attributes_ASOQ">
+            SOCI Quantitative Methods (ASOQ)
+           </option>
+           <option value="course_attributes_ASAM">
+            SOCI Sociology Advanced Methods (ASAM)
+           </option>
+           <option value="course_attributes_ASOM">
+            SOCI Sociology Major Related Elective (ASOM)
+           </option>
+           <option value="course_attributes_ASMS">
+            SOCI Sociology Minor Medical Sociology (ASMS)
+           </option>
+           <option value="course_attributes_ASOC">
+            SOCI Sociology of Culture (ASOC)
+           </option>
+           <option value="course_attributes_ASOF">
+            SOCI Sociology of Families and Populations (ASOF)
+           </option>
+           <option value="course_attributes_ASOH">
+            SOCI Sociology of Health and Medicine (ASOH)
+           </option>
+           <option value="course_attributes_ASOI">
+            SOCI Structures of Opportunity and Inequality (ASOI)
+           </option>
+           <option value="course_attributes_ASSO">
+            SOCI Structures of Opportunity and Inequality (ASSO)
+           </option>
+           <option value="course_attributes_ASOU">
+            SOCI Urban Sociology (ASOU)
+           </option>
+           <option value="course_attributes_SMST">
+            SP2 MSSP Theory Elective (SMST)
+           </option>
+           <option value="course_attributes_ASTB">
+            STSC Bio Technology and Biomedicine Concentration (ASTB)
+           </option>
+           <option value="course_attributes_ASTL">
+            STSC Elective (ASTL)
+           </option>
+           <option value="course_attributes_ASTE">
+            STSC Energy and Environment Elective (ASTE)
+           </option>
+           <option value="course_attributes_ASTG">
+            STSC Global Science &amp; Technology Elective (ASTG)
+           </option>
+           <option value="course_attributes_ASTI">
+            STSC Information and Organizations Elective (ASTI)
+           </option>
+           <option value="course_attributes_ASTS">
+            STSC Science, Nature and Culture Concentration (ASTS)
+           </option>
+           <option value="course_attributes_UNSA">
+            Study Abroad (UNSA)
+           </option>
+           <option value="course_attributes_SMNC">
+            SWSP Nonprofit Core (SMNC)
+           </option>
+           <option value="course_attributes_SMNE">
+            SWSP Nonprofit Elective (SMNE)
+           </option>
+           <option value="course_attributes_SDTC">
+            SWSP Social Work PhD Theory Course (SDTC)
+           </option>
+           <option value="course_attributes_ATAT">
+            THAR Advanced Topics (ATAT)
+           </option>
+           <option value="course_attributes_ATEL">
+            THAR Elective (ATEL)
+           </option>
+           <option value="course_attributes_ATNA">
+            THAR Minor Academic Course (ATNA)
+           </option>
+           <option value="course_attributes_ATNP">
+            THAR Minor Practical Course (ATNP)
+           </option>
+           <option value="course_attributes_UNCP">
+            University Scholar Capstone (UNCP)
+           </option>
+           <option value="course_attributes_UNCR">
+            University Scholar Research (UNCR)
+           </option>
+           <option value="course_attributes_UNCS">
+            University Scholar Social Issues (UNCS)
+           </option>
+           <option value="course_attributes_ARCT">
+            URBS Comparative and Theoretical Dimensions (ARCT)
+           </option>
+           <option value="course_attributes_ARDC">
+            URBS Discipline Cluster (ARDC)
+           </option>
+           <option value="course_attributes_ARHC">
+            URBS History of Cities (ARHC)
+           </option>
+           <option value="course_attributes_ARCD">
+            URBS Minor Child or Adolescent Development (ARCD)
+           </option>
+           <option value="course_attributes_AREV">
+            URBS Minor Ed Minor Policy Elective (AREV)
+           </option>
+           <option value="course_attributes_ARDT">
+            URBS Minor Elementary Education Track (ARDT)
+           </option>
+           <option value="course_attributes_ARMR">
+            URBS Minor Related Elective (ARMR)
+           </option>
+           <option value="course_attributes_ARST">
+            URBS Minor Secondary Education Track (ARST)
+           </option>
+           <option value="course_attributes_ARTL">
+            URBS Minor Teaching and Learning (ARTL)
+           </option>
+           <option value="course_attributes_ARUC">
+            URBS Minor Urban Context (ARUC)
+           </option>
+           <option value="course_attributes_ARED">
+            URBS Minor Urban Ed ABCS (ARED)
+           </option>
+           <option value="course_attributes_ARCA">
+            URBS Minor URED Capstone (ARCA)
+           </option>
+           <option value="course_attributes_ARPP">
+            URBS Public Policy &amp; Governance (ARPP)
+           </option>
+           <option value="course_attributes_ARBE">
+            URBS The Built Environment (ARBE)
+           </option>
+           <option value="course_attributes_AREF">
+            URBS Urban Economics/Finance (AREF)
+           </option>
+           <option value="course_attributes_UNVE">
+            VIPER Energy Course (UNVE)
+           </option>
+           <option value="course_attributes_AVAP">
+            VLST Architecture Practice and Technology (AVAP)
+           </option>
+           <option value="course_attributes_AVAC">
+            VLST Art and Culture of Seeing (AVAC)
+           </option>
+           <option value="course_attributes_AVPT">
+            VLST Art, Practice and Technology (AVPT)
+           </option>
+           <option value="course_attributes_AVPS">
+            VLST Philosophy and Science of Seeing (AVPS)
+           </option>
+           <option value="course_attributes_WUFL">
+            WH Foreign Lang Req (WUFL)
+           </option>
+           <option value="course_attributes_WGMC">
+            WH GMC: Global Modular Course (WGMC)
+           </option>
+           <option value="course_attributes_WUJW">
+            WH Joseph Wharton Scholars (WUJW)
+           </option>
+           <option value="course_attributes_WMBA">
+            WH MBA Course (WMBA)
+           </option>
+           <option value="course_attributes_WPRM">
+            WH PhD Res Methods Course (WPRM)
+           </option>
+           <option value="course_attributes_WPSS">
+            WH PhD Social Science Crse (WPSS)
+           </option>
+           <option value="course_attributes_WUAC">
+            WH UG ACCT Concentration (WUAC)
+           </option>
+           <option value="course_attributes_WUBE">
+            WH UG BHEC Conc Electives (WUBE)
+           </option>
+           <option value="course_attributes_WUBN">
+            WH UG BHEC Conc Electives (WUBN)
+           </option>
+           <option value="course_attributes_WUBD">
+            WH UG BUAN – Advanced Data Analysis (a) (WUBD)
+           </option>
+           <option value="course_attributes_WUBC">
+            WH UG BUAN – Data Collection (c) (WUBC)
+           </option>
+           <option value="course_attributes_WUBO">
+            WH UG BUAN – Optimization (o) (WUBO)
+           </option>
+           <option value="course_attributes_WUCP">
+            WH UG Capstone (WUCP)
+           </option>
+           <option value="course_attributes_WUCN">
+            WH UG CCP Non-US (WUCN)
+           </option>
+           <option value="course_attributes_WUCU">
+            WH UG CCP US (WUCU)
+           </option>
+           <option value="course_attributes_WUGE">
+            WH UG GEBS: Global Economy, Business, Society (WUGE)
+           </option>
+           <option value="course_attributes_WUHM">
+            WH UG Humanities (WUHM)
+           </option>
+           <option value="course_attributes_WUNM">
+            WH UG NSME: Natural Science, Math, Engineering (WUNM)
+           </option>
+           <option value="course_attributes_WUSS">
+            WH UG SS: Social Science (WUSS)
+           </option>
+           <option value="course_attributes_WUTI">
+            WH UG TIA: Technology, Innovations, Analytics (WUTI)
+           </option>
+           <option value="course_attributes_WUBS">
+            Wharton M&amp;T Global E,B,&amp;S (WUBS)
+           </option>
+           <option value="course_attributes_WMBS">
+            Wharton MBA Business Analytics Major Elec (WMBS)
+           </option>
+           <option value="course_attributes_WMBU">
+            Wharton MBA Business Analytics Major Elec Non-WH (WMBU)
+           </option>
+           <option value="course_attributes_WMBE">
+            Wharton MBA Business Econ &amp; Public Pol Major Elec (WMBE)
+           </option>
+           <option value="course_attributes_WMEI">
+            Wharton MBA Entrepreneurship &amp; Innov Major Elec (WMEI)
+           </option>
+           <option value="course_attributes_WMXC">
+            Wharton MBA Fixed Core Course Since 2012C (WMXC)
+           </option>
+           <option value="course_attributes_WMFC">
+            Wharton MBA Flex Core Course Since 2012C (WMFC)
+           </option>
+           <option value="course_attributes_WMMM">
+            Wharton MBA Multinational Management Major Elec (WMMM)
+           </option>
+           <option value="course_attributes_WMOE">
+            Wharton MBA Org Effectiveness Major Elec (WMOE)
+           </option>
+           <option value="course_attributes_WMPT">
+            Wharton MBA Preterm (WMPT)
+           </option>
+           <option value="course_attributes_WMRE">
+            Wharton MBA Real Estate Major Elec (WMRE)
+           </option>
+           <option value="course_attributes_WUSM">
+            Wharton Statistics Minor (WUSM)
+           </option>
+           <option value="course_attributes_WUAS">
+            Wharton UG Actuarial Science Concentration Elec (WUAS)
+           </option>
+           <option value="course_attributes_WUBA">
+            Wharton UG Business Analy (WUBA)
+           </option>
+           <option value="course_attributes_WUBP">
+            Wharton UG Business Econ &amp; Public Pol Conc Elec (WUBP)
+           </option>
+           <option value="course_attributes_WUEB">
+            Wharton UG Core - Global Econ, Bus &amp; Society (WUEB)
+           </option>
+           <option value="course_attributes_WUFG">
+            Wharton UG Core Flex GenEd (WUFG)
+           </option>
+           <option value="course_attributes_WUEO">
+            Wharton UG Environmental Planning &amp; Mgmt-Non WH (WUEO)
+           </option>
+           <option value="course_attributes_WUEM">
+            Wharton UG Environmental Policy &amp; Mgmt Conc Elec (WUEM)
+           </option>
+           <option value="course_attributes_WUFN">
+            Wharton UG Finance Concentration Elec (WUFN)
+           </option>
+           <option value="course_attributes_WUGA">
+            Wharton UG Global Analysis Concentration Elec (WUGA)
+           </option>
+           <option value="course_attributes_WUHP">
+            Wharton UG Health Care Mgmt &amp; Pol Conc Elec (WUHP)
+           </option>
+           <option value="course_attributes_WUIS">
+            Wharton UG Huntsman Program Elec (WUIS)
+           </option>
+           <option value="course_attributes_WULG">
+            Wharton UG Legal Studies &amp; Bus Ethics Conc Elec (WULG)
+           </option>
+           <option value="course_attributes_WUMG">
+            Wharton UG Management Concentration Elec (WUMG)
+           </option>
+           <option value="course_attributes_WUEI">
+            Wharton UG Management Concentration ENTI Elec (WUEI)
+           </option>
+           <option value="course_attributes_WUEC">
+            Wharton UG Managing E-Commerce Concentration Elec (WUEC)
+           </option>
+           <option value="course_attributes_WUMO">
+            Wharton UG MAOM (WUMO)
+           </option>
+           <option value="course_attributes_WUMC">
+            Wharton UG Marketing &amp; Comm Concentration Elec (WUMC)
+           </option>
+           <option value="course_attributes_WUMK">
+            Wharton UG Marketing Concentration Elec (WUMK)
+           </option>
+           <option value="course_attributes_WUOD">
+            Wharton UG OIDD Concentration Elec (WUOD)
+           </option>
+           <option value="course_attributes_WUDP">
+            Wharton UG OIDD Decision Process Track Elec (WUDP)
+           </option>
+           <option value="course_attributes_WUOI">
+            Wharton UG OIDD Information Systems Track Elec (WUOI)
+           </option>
+           <option value="course_attributes_WUOM">
+            Wharton UG OIDD Management Science Track Elec (WUOM)
+           </option>
+           <option value="course_attributes_WURE">
+            Wharton UG Real Estate Concentration Elec (WURE)
+           </option>
+           <option value="course_attributes_WURT">
+            Wharton UG Retailing Concentration Elec (WURT)
+           </option>
+           <option value="course_attributes_WURM">
+            Wharton UG Retailing Concentration Marketing Elec (WURM)
+           </option>
+           <option value="course_attributes_WURD">
+            Wharton UG RETG Design Comp (WURD)
+           </option>
+           <option value="course_attributes_WUSA">
+            Wharton UG SIAR Application (WUSA)
+           </option>
+           <option value="course_attributes_WUSE">
+            Wharton UG Social Impact Concentration Elec (WUSE)
+           </option>
+           <option value="course_attributes_WUST">
+            Wharton UG Statistics Concentration Elec (WUST)
+           </option>
+           <option value="course_attributes_WUFC">
+            Wharton Undergraduate Flex Core Course (WUFC)
+           </option>
+           <option value="course_attributes_AEAM">
+            EALC Major Seminar (AEAM)
+           </option>
+          </select>
+         </div>
+         <div class="form-group">
+          <label class="sr-only" for="crit-instructor">
+           Instructor
+          </label>
+          <input class="form-control" id="crit-instructor" placeholder="Instructor" type="text"/>
+         </div>
+        </div>
+       </div>
+      </form>
+      <a data-action="result-detail" data-group="" data-key="" data-srcdb="" href="#" id="deep-link-tag" style="display: none;">
+      </a>
+     </div>
+    </div>
+   </div>
+   <div class="empty-space">
+    <div class="empty-space__content">
+     <div class="glass">
+      <div class="glass__content">
+       <h2>
+        Welcome to Path
+       </h2>
+       <p class="xxxmsonormal">
+        Use
+        <strong>
+         Search
+        </strong>
+        and
+        <strong>
+         Carts
+        </strong>
+        to find and register for classes for the upcoming term. Use
+        <strong>
+         Explore Programs
+        </strong>
+        and
+        <strong>
+         Degree Audit &amp; Advising
+        </strong>
+        to plan for future terms and to understand your graduation requirements.
+       </p>
+       <p>
+        The
+        <a href="https://apps.srfs.upenn.edu:44306/secure/Pennant-Training/Path-FINAL-shorterv2.mp4">
+         <strong>
+          Video Introduction to Path@Penn
+         </strong>
+        </a>
+        will help you get started. If you have questions or need help, please visit
+        <a href="https://srfs.upenn.edu/path-at-penn">
+         <strong>
+          Help with Path@Penn
+         </strong>
+        </a>
+        page.
+       </p>
+      </div>
+     </div>
+     <div class="promoted promoted--removed">
+      <h3 class="promoted__header">
+       Have you Considered?
+       <a class="promoted__show-all" data-action="search-promoted" data-screen="empty-space" data-srcdb="" href="#">
+        Show All
+       </a>
+      </h3>
+      <div class="promoted__content">
+      </div>
+     </div>
+    </div>
+    <div class="empty-space__version">
+     566.78.111
+    </div>
+   </div>
+  </main>
+  <div id="notifications">
+  </div>
+  <div class="sam-login screen noscript" id="sam-login" role="dialog">
+   <div class="sam-login-header">
+    SAM Login
+   </div>
+   <div class="sam-login-body">
+    <div class="login-section message">
+     <p>
+      Area for a message of some kind
+     </p>
+    </div>
+    <div class="login-section debug" id="debug-area">
+     <p>
+      Some Text
+     </p>
+    </div>
+   </div>
+   <div class="buttons clearfix">
+    <div class="cancel">
+     <button class="btn-cancel inline-btn btn">
+      Cancel
+     </button>
+     <button class="inline-btn btn-login btn">
+      Login
+     </button>
+    </div>
+   </div>
+  </div>
+  <script src="/sam/core.js?1721933592987">
+  </script>
+  <script src="fose.js?1721933592987">
+  </script>
+  <script src="/js/lfjs.js">
+  </script>
+ </body>
+</html>

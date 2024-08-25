@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from student_app.server_files import create_app as create_files_app
 from student_app.server_academic_advisor import create_app as create_academic_advisor_app
 from student_app.server_feedback import create_app as create_feedback_app
+from student_app.server_analytics import create_app as create_analytics_app
 
 
 # Configurer le logging
@@ -46,6 +47,9 @@ async def log_request(request, call_next):
 # Chemins relatifs
 static_dir = os.path.join(os.path.dirname(__file__), "../analytics/analytics_teacher")
 static_dir_academic_advisor = os.path.join(os.path.dirname(__file__), "../analytics_academic")
+#static_dir_page_test = os.path.join(os.path.dirname(__file__), "../html_page_testt")
+
+static_dir_page_yc_popup = os.path.join(os.path.dirname(__file__), "../pop_up_page_yc")
 
 # Assurez-vous que les répertoires existent
 if not os.path.exists(static_dir):
@@ -57,6 +61,9 @@ if not os.path.exists(static_dir_academic_advisor):
 # Monter les répertoires statiques
 app.mount("/static/teacher", StaticFiles(directory=static_dir), name="static_teacher")
 app.mount("/static/academic_advisor", StaticFiles(directory=static_dir_academic_advisor), name="static_academic_advisor")
+#app.mount("/static/page_test", StaticFiles(directory=static_dir_page_test), name="static_page_test")
+
+app.mount("/static/yc_popup", StaticFiles(directory=static_dir_page_yc_popup), name="static_yc_popup")
 
 
 
@@ -76,7 +83,6 @@ try:
 
 
 
-
     print("Création de l'application academic advisor")
     logger.info("Création de l'application academic advisor")
 
@@ -87,6 +93,7 @@ try:
     else:
         print("Application academic advisor créée avec succès")
         logger.info("Application academic advisor créée avec succès")
+
 
     
     print("Création de l'application feedback")
@@ -102,6 +109,19 @@ try:
 
 
 
+    print("Création de l'application analytics")
+    logger.info("Création de l'application analytics")
+
+    analytics_app = create_analytics_app()
+    if analytics_app is None:
+        print("Application analytics n'a pas été créée")
+        logger.error("Application analytics n'a pas été créée")
+    else:
+        print("Application analytics créée avec succès")
+        logger.info("Application analytics créée avec succès")
+
+
+
     print("Montage des applications")
     logger.info("Montage des applications")
 
@@ -113,6 +133,9 @@ try:
 
     if feedback_app:
         app.mount("/feedback", feedback_app)
+
+    if analytics_app:
+        app.mount("/analytics", analytics_app)
 
     print("Applications montées avec succès")
     logger.info("Applications montées avec succès")
