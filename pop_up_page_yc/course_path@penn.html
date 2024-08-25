@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche de Cours - Penn</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8; /* Légèrement bleuté */
+        }
+
+        /* Premier header bleu avec logo et login */
+        .header-blue {
+            background-color: #011F5B;
+            color: white;
+            padding: 5px 20px; /* Hauteur réduite */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-blue img {
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .header-blue .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header-blue a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        /* Deuxième header rouge */
+        .header-red {
+            background-color: #990000; /* Rouge officiel de Penn */
+            color: white;
+            padding: 10px 20px;
+            text-align: left;
+        }
+
+        .header-red h1 {
+            font-size: 24px;
+            margin: 0;
+            font-weight: 300; /* Texte en light */
+        }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Section de recherche */
+        .search-section {
+            margin-bottom: 20px;
+        }
+
+        .search-section label {
+            font-size: 16px;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .search-section select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .search-section button {
+            width: 100%;
+            padding: 12px;
+            background-color: #011F5B;
+            color: white;
+            border: none;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-section button:hover {
+            background-color: #0A328C;
+        }
+
+        /* Section des cours sélectionnés */
+        .course-selection {
+            margin-top: 20px;
+            margin-bottom: 40px; /* Ajout de la marge entre les cours et le bouton Register */
+        }
+
+        .course-selection h2 {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .course-list {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: #e0e0e0;
+            padding: 15px;
+            border-radius: 8px;
+            gap: 10px;
+            position: relative;
+        }
+
+        .course-item {
+            background-color: #d3d3d3;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #333;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .course-item:hover {
+            background-color: #c0c0c0;
+        }
+
+        /* Croix de suppression */
+        .course-item .remove-course {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #990000;
+            color: white;
+            border-radius: 50%;
+            padding: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .course-item:hover .remove-course {
+            display: block;
+        }
+
+        /* Boutons de suggestion */
+        .suggestions {
+            margin-top: 20px;
+        }
+
+        .suggestions button {
+            width: 100%;
+            padding: 12px;
+            background-color: #011F5B;
+            color: white;
+            border: none;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .suggestions button:hover {
+            background-color: #0A328C;
+        }
+
+        /* Section du panier */
+        .cart-section {
+            margin-top: 20px;
+        }
+
+        .cart-section select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Recherche avancée */
+        .advanced-search {
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+        .advanced-search input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .advanced-search label {
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .advanced-search select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .advanced-search button {
+            background-color: #011F5B;
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header bleu -->
+    <div class="header-blue">
+        <div class="header-left">
+            <img src="upenn_logo.png" alt="Penn Logo">
+            <span class="logo-text">Penn</span>
+        </div>
+        <a href="#">matperez</a>
+    </div>
+
+    <!-- Header rouge -->
+    <div class="header-red">
+        <h1>Search Classes</h1>
+    </div>
+
+    <!-- Conteneur principal -->
+    <div class="container">
+        <!-- Section de recherche -->
+        <div class="search-section">
+            <label for="term">Term</label>
+            <select id="term">
+                <option value="fall2024">Fall 2024</option>
+                <!-- Autres options de terme si nécessaire -->
+            </select>
+        </div>
+
+        <!-- Section des cours sélectionnés -->
+        <div class="course-selection">
+            <h2>Courses Selected:</h2>
+            <div class="course-list">
+                <div class="course-item">
+                    CIS 2400
+                    <span class="remove-course">×</span>
+                </div>
+                <div class="course-item">
+                    CIS 5020
+                    <span class="remove-course">×</span>
+                </div>
+                <div class="course-item">
+                    CIS 1210
+                    <span class="remove-course">×</span>
+                </div>
+                <div class="course-item">
+                    ESE 3060
+                    <span class="remove-course">×</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton Register -->
+        <div class="search-section">
+            <button type="button">REGISTER</button>
+        </div>
+
+        <!-- Suggestions -->
+        <div class="suggestions">
+            <button type="button">EXPLORE PROGRAMS</button>
+            <button type="button">DEGREE AUDIT & ADVISING</button>
+        </div>
+
+        <!-- Section du panier -->
+        <div class="cart-section">
+            <h3>Primary Cart</h3>
+            <select id="cart">
+                <option value="primary-cart">Select a Cart...</option>
+                <!-- Autres options de panier si nécessaire -->
+            </select>
+        </div>
+
+        <!-- Recherche avancée -->
+        <div class="advanced-search">
+            <input type="checkbox" id="exclude-times">
+            <label for="exclude-times">Exclude Times</label><br>
+
+            <select id="subject">
+                <option value="">Subject</option>
+                <!-- Autres matières -->
+            </select>
+
+            <select id="school">
+                <option value="">School</option>
+                <!-- Autres écoles -->
+            </select>
+
+            <select id="undergraduate">
+                <option value="">Undergraduate</option>
+                <!-- Options -->
+            </select>
+
+            <select id="schedule-type">
+                <option value="">Schedule Type</option>
+                <!-- Types d'horaire -->
+            </select>
+
+            <select id="credit">
+                <option value="">Credit</option>
+                <!-- Crédits -->
+            </select>
+
+            <button type="button">Edit</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+
+
