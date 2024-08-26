@@ -972,6 +972,8 @@ def split_preserving_formatting(text):
 @app.post("/send_message_fake_demo")
 async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     input_message = input_query.get("message")
+    print("this is the input message")
+    print(input_message)
 
     await asyncio.sleep(2)
 
@@ -987,7 +989,8 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         "Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
         "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020 please find below details on Dr. Hammish Office Hours:""",
         "Should I go ahead and lock this in as your final course for the semester?": """Done! You’re now set for CIS 5020 - Advanced Topics in Visual AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
-        "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!"""
+        "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
+        "4": """Great! And how many of those classes have you already decided on?"""
     }
 
     # Dictionary to associate specific documents with certain questions/responses
@@ -1076,7 +1079,14 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
                 "image_id": "img3",
                 "image_url": "http://localhost:5001/static/academic_advisor/map_upenn.png",
                 "image_description": "Hall Building"
-            }
+            },
+
+            {
+                "image_id": "img4",
+                "image_url": "http://localhost:5001/static/academic_advisor/ESE_3060_GOOD.png",
+                "image_description": "Dr. Hammish"
+            },
+
         ]
     }
 
