@@ -1145,45 +1145,13 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         if answer_waiting_data:
             answer_waiting_json = json.dumps({"answer_waiting": answer_waiting_data})
             yield f"\n<ANSWER_WAITING>{answer_waiting_json}<ANSWER_WAITING_END>\n"
-            await asyncio.sleep(1)  # Wait for 6 seconds before sending the next part of the message
+            await asyncio.sleep(0.5)  # Wait for 6 seconds before sending the next part of the message
 
-            waiting_text_answer="**[LUCY is processing the search…]**"
+            waiting_text_answer="_**[LUCY is processing the search…]**_"
 
 
             # Send final response after waiting
-            final_response = """Thanks for your patience, Mathieu! I’ve found three courses that match your criteria for a technical elective in AI, I have taken 5XX level classes given you are a senior and have validated already three 4XX tech electives. Here they are:
-            \n
-
-### **Option 1: CIS 5190 - Applied Machine Learning**
-
-- **Description:** The course introduces fundamental concepts and algorithms that enable computers to learn from experience, with an emphasis on practical application to real problems. It covers supervised learning (decision trees, logistic regression, support vector machines, neural networks, and deep learning), unsupervised learning (clustering, dimensionality reduction), and reinforcement learning.
-- **Schedule:** Monday and Wednesday, 10:00 AM - 11:30 AM
-- **Format:** Lecture-based with practical assignments
-- **Instructor:** Dr. Emily Zhang
-- **Class Size:** Medium (30-40 students)
-\\n\\n
-
-I know that you are minoring in data science so this course might interest you:
-
-### **Option 2: CIS 5220 - Deep Learning for Data Science**
-
-- **Description:** This course provides a comprehensive introduction to machine learning techniques specifically tailored for visual data. The class includes a series of hands-on projects where students develop models for tasks such as image classification, object detection, and video analysis.
-- **Schedule:** Monday and Wednesday, 2:00 PM - 3:30 PM
-- **Format:** Lecture-based with practical assignments
-- **Instructor:** Dr. Michael Rivera
-- **Class Size:** Small (20-25 students)
-\\n\\n
-
-### **Option 3: CIS 5200 - Machine Learning**
-
-- **Description:** This course intends to provide a thorough modern introduction to the field of machine learning. It is designed for students who want to understand not only what machine learning algorithms do and how they can be used, but also the fundamental principles behind how and why they work.
-- **Schedule:** Monday and Wednesday, 1:45-3:15 PM
-- **Format:** Lecture-based with practical assignments
-- **Instructor:** Dr. Linda Nguyen
-- **Class Size:** Large (50-60 students)
-\\n\\n
-
-Do any of these options stand out to you, or would you like more details on any of them?"""
+            final_response = """Thanks for your patience, Mathieu! I’ve found three courses that match your criteria for a technical elective in AI, I have taken 5XX level classes given you are a senior and have validated already three 4XX tech electives. Here they are:\n\n **Option 1: CIS 5190 - Applied Machine Learning**\n- *Description:* The course introduces fundamental concepts and algorithms that enable computers to learn from experience, with an emphasis on practical application to real problems. It covers supervised learning (decision trees, logistic regression, support vector machines, neural networks, and deep learning), unsupervised learning (clustering, dimensionality reduction), and reinforcement learning.\n- *Schedule:* Monday and Wednesday, 10:00 AM - 11:30 AM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Emily Zhang\n- *Class Size:* Medium (30-40 students)\nI know that you are minoring in data science so this course might interest you:\n\n### **Option 2: CIS 5220 - Deep Learning for Data Science**\n- *Description:* This course provides a comprehensive introduction to machine learning techniques specifically tailored for visual data. The class includes a series of hands-on projects where students develop models for tasks such as image classification, object detection, and video analysis.\n- *Schedule:* Monday and Wednesday, 2:00 PM - 3:30 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Michael Rivera\n- *Class Size:* Small (20-25 students)\n\n **Option 3: CIS 5200 - Machine Learning**\n- *Description:* This course intends to provide a thorough modern introduction to the field of machine learning. It is designed for students who want to understand not only what machine learning algorithms do and how they can be used, but also the fundamental principles behind how and why they work.\n- *Schedule:* Monday and Wednesday, 1:45-3:15 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Linda Nguyen\n- *Class Size:* Large (50-60 students)\nDo any of these options stand out to you, or would you like more details on any of them?"""
 
             waiting_chunks = split_preserving_formatting(waiting_text_answer)
             for chunk in waiting_chunks:
