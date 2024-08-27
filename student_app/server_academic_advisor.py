@@ -980,22 +980,18 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     # Known responses with line breaks and bullet points
     known_responses: Dict[str, str] = {
         "Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
-        "I’m planning to take four classes in total.": """Great! And how many of those classes have you already decided on?""",
-        "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? Do you have any specific subjects or areas of interest in mind?""",
-        "I want technical elective, I want to explore AI space": """Thanks for that! I’ll focus on finding a technical elective in AI or a related area.\n\nDo you have any preferences for the schedule? For example, days of the week or times that work best for you?""",
-        "Monday and Wednesday. avoid classes on Fridays.": """Noted! I’ll make sure to find courses that meet on Monday and Wednesday and avoid Fridays.\n\nHow about the format of the class?\n\nAre you looking for something lecture-based, discussion-based, or maybe something more hands-on like project-based?""",
-        "I don’t want a project-based class.": """Perfect! I’ll not prioritize courses that are project-based.\n\nDo you have any preferences regarding class size? Some students prefer smaller, more intimate classes, while others are okay with larger lectures.""",
-        "I’m fine with any class size": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes that meet on Monday and Wednesday, with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
+        "4": """Great! And how many of those classes have you already decided on?""",
+        "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
         "Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
         "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020 please find below details on Dr. Hammish Office Hours:""",
-        "Should I go ahead and lock this in as your final course for the semester?": """Done! You’re now set for CIS 5020 - Advanced Topics in Visual AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
+        "Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
         "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
-        "4": """Great! And how many of those classes have you already decided on?"""
     }
 
     # Dictionary to associate specific documents with certain questions/responses
     document_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+        """"I’ve already decided to take cis2400, cis1210, and ese3060": [
             {
                 "answer_document": {
                     "document_id": "1",
@@ -1012,8 +1008,8 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
                     "source_type": "course_resource"
                 }
             }
-        ],
-        "Should I go ahead and lock this in as your final course for the semester?": [
+        ],"""
+        "Now validate and register my choices": [
             {
                 "answer_document": {
                     "document_id": "4",
