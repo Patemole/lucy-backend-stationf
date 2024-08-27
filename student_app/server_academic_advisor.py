@@ -991,7 +991,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     # Dictionary to associate specific documents with certain questions/responses
     document_associations: Dict[str, List[Dict]] = {
-        """"I’ve already decided to take cis2400, cis1210, and ese3060": [
+        "I’ve already decided to take cis2400, cis1210, and ese3060": [
             {
                 "answer_document": {
                     "document_id": "1",
@@ -1008,7 +1008,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
                     "source_type": "course_resource"
                 }
             }
-        ],"""
+        ],
         "Now validate and register my choices": [
             {
                 "answer_document": {
