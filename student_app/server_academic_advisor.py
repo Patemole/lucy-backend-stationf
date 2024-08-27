@@ -620,10 +620,10 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         "I don’t want a project-based class.": """Perfect! I’ll not prioritize courses that are project-based.\n\nDo you have any preferences regarding class size? Some students prefer smaller, more intimate classes, while others are okay with larger lectures.""",
         "I’m fine with any class size": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes that meet on Monday and Wednesday, with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
         "Yes": """Perfect! I’ll now find some course options for you based on these preferences.""",
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020 please find below details on Dr. Hammish Office Hours:""",
-        "Should I go ahead and lock this in as your final course for the semester?": """Done! You’re now set for CIS 5020 - Advanced Topics in Visual AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": """Great choice! CIS 5200 please find below details on Dr. Hassani Office Hours:""",
+        "Should I go ahead and lock this in as your final course for the semester?": """Done! You’re now set for CIS 5200 - Advanced Topics in Visual AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5200** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
         "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
-        "Tell me more about CIS 5020 and CIS 5031? How do they differ?": """Sure! Here’s a bit more detail to help you decide:\n- **CIS 5020 (Advanced Topics in Visual AI)** is more specialized in visual recognition and applies AI techniques directly to image and video analysis. It’s ideal if you’re looking to dive deep into visual AI with real-world applications in mind. The projects are typically more advanced and often involve working with actual datasets from industry collaborations.\n- **CIS 5031 (Machine Learning for Visual Data)** focuses on the broader application of machine learning techniques to visual data. This course covers a wider range of topics within machine learning but applies them specifically to visual data scenarios. The projects here are also hands-on but with an emphasis on building and training models across different visual tasks.\nSo, if you’re more interested in a specialized deep dive into visual AI applications, **CIS 5020** might be the better fit. But if you want a broader machine learning approach with a focus on visual data, then **CIS 5031** could be the right choice."""
+        "Tell me more about CIS 5200 and CIS 5031? How do they differ?": """Sure! Here’s a bit more detail to help you decide:\n- **CIS 5200 (Advanced Topics in Visual AI)** is more specialized in visual recognition and applies AI techniques directly to image and video analysis. It’s ideal if you’re looking to dive deep into visual AI with real-world applications in mind. The projects are typically more advanced and often involve working with actual datasets from industry collaborations.\n- **CIS 5031 (Machine Learning for Visual Data)** focuses on the broader application of machine learning techniques to visual data. This course covers a wider range of topics within machine learning but applies them specifically to visual data scenarios. The projects here are also hands-on but with an emphasis on building and training models across different visual tasks.\nSo, if you’re more interested in a specialized deep dive into visual AI applications, **CIS 5200** might be the better fit. But if you want a broader machine learning approach with a focus on visual data, then **CIS 5031** could be the right choice."""
     }
 
     await asyncio.sleep(2)  # Simulate a slight delay before starting the response
@@ -673,7 +673,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
                 }
             }
         ],
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": [
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": [
             {
                 "answer_document": {
                     "document_id": "5",
@@ -696,7 +696,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     # Image associations for specific responses
     image_associations: Dict[str, List[Dict]] = {
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": [
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": [
             {
                 "image_id": "img3",
                 "image_url": "http://localhost:5001/static/academic_advisor/map_upenn.png",
@@ -784,10 +784,10 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         "I don’t want a project-based class.": """Perfect! I’ll not prioritize courses that are project-based.\n\nDo you have any preferences regarding class size? Some students prefer smaller, more intimate classes, while others are okay with larger lectures.""",
         "I’m fine with any class size": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes that meet on Monday and Wednesday, with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
         "Yes": """Perfect! I’ll now find some course options for you based on these preferences.""",
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020 please find below details on Dr. Hammish Office Hours:""",
-        "Should I go ahead and lock this in as your final course for the semester?": """Done! You’re now set for CIS 5020 - Advanced Topics in Visual AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": """Great choice! CIS 5200 please find below details on Dr. Hassani Office Hours:""",
+        "Should I go ahead and lock this in as your final course for the semester?": """Done! You’re now set for CIS 5200 - Advanced Topics in Visual AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5200** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
         "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
-        "Tell me more about CIS 5020 and CIS 5031? How do they differ?": """Sure! Here’s a bit more detail to help you decide:\n- **CIS 5020 (Advanced Topics in Visual AI)** is more specialized in visual recognition and applies AI techniques directly to image and video analysis. It’s ideal if you’re looking to dive deep into visual AI with real-world applications in mind. The projects are typically more advanced and often involve working with actual datasets from industry collaborations.\n- **CIS 5031 (Machine Learning for Visual Data)** focuses on the broader application of machine learning techniques to visual data. This course covers a wider range of topics within machine learning but applies them specifically to visual data scenarios. The projects here are also hands-on but with an emphasis on building and training models across different visual tasks.\nSo, if you’re more interested in a specialized deep dive into visual AI applications, **CIS 5020** might be the better fit. But if you want a broader machine learning approach with a focus on visual data, then **CIS 5031** could be the right choice."""
+        "Tell me more about CIS 5200 and CIS 5031? How do they differ?": """Sure! Here’s a bit more detail to help you decide:\n- **CIS 5200 (Advanced Topics in Visual AI)** is more specialized in visual recognition and applies AI techniques directly to image and video analysis. It’s ideal if you’re looking to dive deep into visual AI with real-world applications in mind. The projects are typically more advanced and often involve working with actual datasets from industry collaborations.\n- **CIS 5031 (Machine Learning for Visual Data)** focuses on the broader application of machine learning techniques to visual data. This course covers a wider range of topics within machine learning but applies them specifically to visual data scenarios. The projects here are also hands-on but with an emphasis on building and training models across different visual tasks.\nSo, if you’re more interested in a specialized deep dive into visual AI applications, **CIS 5200** might be the better fit. But if you want a broader machine learning approach with a focus on visual data, then **CIS 5031** could be the right choice."""
     }
 
     await asyncio.sleep(2)  # Simulate a slight delay before starting the response
@@ -832,7 +832,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
                 }
             }
         ],
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": [
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": [
             {
                 "answer_document": {
                     "document_id": "5",
@@ -855,7 +855,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     # Image associations for specific responses
     image_associations: Dict[str, List[Dict]] = {
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": [
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": [
             {
                 "image_id": "img3",
                 "image_url": "http://localhost:5001/static/academic_advisor/map_upenn.png",
@@ -984,31 +984,13 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
         "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
         "Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020 please find below details on Dr. Hammish Office Hours:""",
-        "Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": """Great choice! CIS 5200 please find below details on Dr. Hassani Office Hours:""",
+        "Now validate and register my choices": """Done! You’re now set for CIS 5200 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5200** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
         "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
     }
 
     # Dictionary to associate specific documents with certain questions/responses
     document_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
-            {
-                "answer_document": {
-                    "document_id": "1",
-                    "link": "http://localhost:5001/static/yc_popup/course_path@penn.html",
-                    "document_name": "Course registration PATH@PENN",
-                    "source_type": "course_resource"
-                }
-            },
-            {
-                "answer_document": {
-                    "document_id": "2",
-                    "link": "http://localhost:5001/static/yc_popup/syllabus_cis_5190.html",
-                    "document_name": "Syllabus CIS 5190",
-                    "source_type": "course_resource"
-                }
-            }
-        ],
         "Now validate and register my choices": [
             {
                 "answer_document": {
@@ -1047,7 +1029,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
                 }
             }
         ],
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": [
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": [
             {
                 "answer_document": {
                     "document_id": "5",
@@ -1070,7 +1052,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     # Image associations for specific responses
     image_associations: Dict[str, List[Dict]] = {
-        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": [
+        "CIS 5200 is good, can you tell me when and where are M.Hassani OH": [
             {
                 "image_id": "img3",
                 "image_url": "http://localhost:5001/static/academic_advisor/map_upenn.png",
@@ -1080,7 +1062,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             {
                 "image_id": "img4",
                 "image_url": "http://localhost:5001/static/academic_advisor/ESE_3060_GOOD.png",
-                "image_description": "Dr. Hammish"
+                "image_description": "Dr. Hassani"
             },
 
         ]
@@ -1147,7 +1129,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
 
             # Send final response after waiting
-            final_response = """Thanks for your patience, Mathieu! I’ve found three courses that match your criteria for a technical elective in AI, I have taken 5XX level classes given you are a senior and have validated already three 4XX tech electives. Here they are:\n\n **Option 1: CIS 5190 - Applied Machine Learning**\n- *Description:* The course introduces fundamental concepts and algorithms that enable computers to learn from experience, with an emphasis on practical application to real problems. It covers supervised learning (decision trees, logistic regression, support vector machines, neural networks, and deep learning), unsupervised learning (clustering, dimensionality reduction), and reinforcement learning.\n- *Schedule:* Monday and Wednesday, 10:00 AM - 11:30 AM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Emily Zhang\n- *Class Size:* Medium (30-40 students)\nI know that you are minoring in data science so this course might interest you:\n\n### **Option 2: CIS 5220 - Deep Learning for Data Science**\n- *Description:* This course provides a comprehensive introduction to machine learning techniques specifically tailored for visual data. The class includes a series of hands-on projects where students develop models for tasks such as image classification, object detection, and video analysis.\n- *Schedule:* Monday and Wednesday, 2:00 PM - 3:30 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Michael Rivera\n- *Class Size:* Small (20-25 students)\n\n **Option 3: CIS 5200 - Machine Learning**\n- *Description:* This course intends to provide a thorough modern introduction to the field of machine learning. It is designed for students who want to understand not only what machine learning algorithms do and how they can be used, but also the fundamental principles behind how and why they work.\n- *Schedule:* Monday and Wednesday, 1:45-3:15 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Linda Nguyen\n- *Class Size:* Large (50-60 students)\nDo any of these options stand out to you, or would you like more details on any of them?"""
+            final_response = """Thanks for your patience, Mathieu! I’ve found three courses that match your criteria for a technical elective in AI, I have taken 5XX level classes given you are a senior and have validated already three 4XX tech electives. Here they are:\n\n **Option 1: CIS 5190 - Applied Machine Learning**\n- *Description:* The course introduces fundamental concepts and algorithms that enable computers to learn from experience, with an emphasis on practical application to real problems. It covers supervised learning (decision trees, logistic regression, support vector machines, neural networks, and deep learning), unsupervised learning (clustering, dimensionality reduction), and reinforcement learning.\n- *Schedule:* Monday and Wednesday, 10:00 AM - 11:30 AM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Emily Zhang\n- *Class Size:* Medium (30-40 students)\nI know that you are minoring in data science so this course might interest you:\n\n### **Option 2: CIS 5220 - Deep Learning for Data Science**\n- *Description:* This course provides a comprehensive introduction to machine learning techniques specifically tailored for visual data. The class includes a series of hands-on projects where students develop models for tasks such as image classification, object detection, and video analysis.\n- *Schedule:* Monday and Wednesday, 2:00 PM - 3:30 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Michael Rivera\n- *Class Size:* Small (20-25 students)\n\n **Option 3: CIS 5200 - Machine Learning**\n- *Description:* This course intends to provide a thorough modern introduction to the field of machine learning. It is designed for students who want to understand not only what machine learning algorithms do and how they can be used, but also the fundamental principles behind how and why they work.\n- *Schedule:* Monday and Wednesday, 10:00-11:30 AM PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Hamed Hassani\n- *Class Size:* Large (50-60 students)\nDo any of these options stand out to you, or would you like more details on any of them?"""
 
             waiting_chunks = split_preserving_formatting(waiting_text_answer)
             for chunk in waiting_chunks:
