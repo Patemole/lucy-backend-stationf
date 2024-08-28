@@ -1,0 +1,4542 @@
+[
+    {
+        "chat_id": {
+            "S": "c52c6f5f-8680-4b5a-b954-896884ac964e"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231696"
+        },
+        "body": {
+            "S": "Who is the teacher of CS110?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d5708218-5ac6-41bc-99c4-a0b627a7f863"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b4215042-da80-4739-9a2c-72d578fc61b4"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231705"
+        },
+        "body": {
+            "S": "How does the process of photosynthesis change during the winter season when there is less sunlight available?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "b7dd11f0-818f-4e95-ab2c-51033071f135"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "1d04ecb7-d988-40e6-b685-cc85e3f21224"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231708"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "23ed66dd-6e6a-4462-ae3a-589c7dcdc461"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "321b6cbb-c01e-4c72-a077-e898d7f39a12"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231710"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "70dc85f7-b274-437e-9ec8-ac236d155879"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "670b5f89-7c6c-42cb-97b8-aa72627b9c0b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231712"
+        },
+        "body": {
+            "S": "Need more information to reformulate this query, no information about the third course or a list in the context"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f2b26479-8f4d-4f86-acdd-f4aad4839fc2"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f189832b-f718-4788-8f71-01b708e631e8"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231716"
+        },
+        "body": {
+            "S": "Need more information to reformulate this query, no information about a necessary meeting"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "bc321ad6-57fc-496d-a565-d59584c6c9a7"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8537ea2e-510e-4245-b5d0-67d8ba73b63c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231719"
+        },
+        "body": {
+            "S": "What are the office hours of Dr. Sam this semester"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "710de937-d696-4cba-b51e-eaa1b09163ad"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "905fe136-4648-45a5-be11-35e7e0f8aa2b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231722"
+        },
+        "body": {
+            "S": "What is the process to follow to register for classes"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "22458b02-a85e-44d2-9496-aae3ab18a453"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e66d9fea-4a0c-45f6-a871-76133c45ebb2"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231726"
+        },
+        "body": {
+            "S": "What are the differences between hist3060 and hist5000?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "23ba1ceb-bf3c-478f-8729-6920a028449e"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "c24afad0-7f0f-4f12-931d-71b92b8ef770"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231728"
+        },
+        "body": {
+            "S": "Will hist5000 be offered in the upcoming fall semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "5435fd25-4729-4b65-8eb4-fe1eb04c0849"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b1378b1e-0f11-40ec-9e95-f580155027bd"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231731"
+        },
+        "body": {
+            "S": "What is the process to follow to register for the math1400 class?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "85ab8e79-284b-4781-b94d-08c735b29c8e"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b0ade1da-4d09-4726-80b8-b5ac55ec8e81"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231733"
+        },
+        "body": {
+            "S": "Where is the engineering building located?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "b51d5b6d-0a81-4374-b475-02c08ca483f3"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f982d0a4-4526-4999-8954-4559fa46e609"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231735"
+        },
+        "body": {
+            "S": "Where can I obtain a replacement student ID card if I have lost my original one?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "129c35af-e97d-420e-92e4-651062a9f801"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d5ef9650-5414-44b9-9347-7134e1f3f05c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231738"
+        },
+        "body": {
+            "S": "You should contact your academic advisor."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "570b31d7-2362-4d1a-82ff-d7e449b50a44"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "bc66a7a8-95b0-4f49-ba36-7f64a95a90f4"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231740"
+        },
+        "body": {
+            "S": "What is the course description and content of ECON0200?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "fa3598e5-ebc6-4ed5-9ec7-8273ff1f0519"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "cfafff40-2708-48d9-ade5-f3626e230122"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231742"
+        },
+        "body": {
+            "S": "What are the applications of Natural Language Processing (NLP)?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a7161d8f-f38c-4b59-b0d4-7b47e0c27116"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f1aaebbe-6df2-4c57-868c-1ada08f4d431"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231744"
+        },
+        "body": {
+            "S": "What is the definition and application of machine learning in the context of artificial intelligence?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "29e99411-8712-4c46-b6a5-ec1394b27772"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "0894ee91-1f36-48f3-aaa1-5b5ca33804bf"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231747"
+        },
+        "body": {
+            "S": "Who is the teacher of CS110?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "6ca354bb-722c-49b7-8f58-1f5994346a4d"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e0c76c52-5462-4753-92f1-f748bb87c00c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231750"
+        },
+        "body": {
+            "S": "Need more information to reformulate this query, no information about a list or a second course in the context"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8a235ae9-6d25-46b2-bca6-ce7158c4ad2a"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b09cf2db-7400-4886-9d92-cf778eb729d9"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231752"
+        },
+        "body": {
+            "S": "What is the process to follow to register for classes"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "df74662b-6d2f-46c6-8253-868bf76f47e5"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f319d730-444e-4b56-a66a-150b4027625e"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231754"
+        },
+        "body": {
+            "S": "Who should I contact for more information about the Computer and Information Science (CIS) submatriculation program at the University of Pennsylvania?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d101c858-231b-4e0c-b135-e4971460a0d5"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8612a7dc-9302-464e-b10c-de0a129ab4c3"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231756"
+        },
+        "body": {
+            "S": "What are some good CIS project electives to take at the University of Pennsylvania that can provide real-world experience?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "23321579-77ab-4989-baea-f34e0bf3b38a"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d7b2dd91-fb29-4850-97f1-fab7c4afc846"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231759"
+        },
+        "body": {
+            "S": "What are your thoughts on the CIS 5810 course in terms of its relevance to real-world experience and project-based learning?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "250cb94d-fc89-43d0-9692-578d96d7fce0"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a5419824-d01f-4317-aec4-ae1666a3b483"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231761"
+        },
+        "body": {
+            "S": "Can you help me plan my course schedule for the upcoming semester, considering my academic requirements and preferences?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "29c2abf4-78d1-4907-8e0a-1bb8d988d3d2"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "04882dc7-1bdc-4667-bd2b-9f46001a58e2"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231820"
+        },
+        "body": {
+            "S": "What is the deadline for Wharton students to declare their major?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "30d7dd89-9468-43e2-b329-e27bfc7bb487"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "3efb83d9-c587-424a-87e6-50b9fce0fe7d"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231823"
+        },
+        "body": {
+            "S": "What type of information or topics can you provide assistance with?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "e3051ec4-4c4c-4d71-9a4c-0dc37d33ab27"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "677333f6-40fa-402c-962c-c9c2839024b9"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231826"
+        },
+        "body": {
+            "S": "What are the start dates for the fall semester classes at UPenn?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "85912f55-d605-4a29-a576-ec264c4ce179"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a2746a55-20de-48ee-9749-01de29089ee9"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231828"
+        },
+        "body": {
+            "S": "What is the deadline to drop a class for the Fall Semester at the University of Pennsylvania?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "866faab4-6f74-4d31-a5f8-57d609bdd2b9"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d946f4cd-ead7-43d0-a283-1b3a0d3ba00d"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231830"
+        },
+        "body": {
+            "S": "What is the deadline to add a course for the current semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f286d875-f2b1-4583-8223-d9379e59ad8c"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "7793d2d2-f252-4762-b423-8ce8655169b2"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231833"
+        },
+        "body": {
+            "S": "What is the last day to select courses for the current semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8353033d-2828-4c79-b1b5-2af635d754cf"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f5b6e7d0-49f0-45c5-80f1-e2a7161a7e8e"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231836"
+        },
+        "body": {
+            "S": "What are the dates of the fall break this semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "587f94b0-a729-4eeb-887f-d4fb93bbec34"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "37eec641-02ca-4489-860c-26af79f5d137"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231838"
+        },
+        "body": {
+            "S": "What are the dates for the upcoming family weekend at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8f07c38a-cc49-4d07-a7d0-4995f18c4a2c"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "af2ae7f5-78e9-439a-b064-1115dfadc8a0"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231840"
+        },
+        "body": {
+            "S": "Which sports team will be playing during Family Weekend from October 25-27, 2024?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "bc1afea6-e170-413d-ae4b-8d7f7b3a9799"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "974f9355-e1a3-46b3-8193-013ca3cd74fe"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231843"
+        },
+        "body": {
+            "S": "What are the dates of the reading days for the current semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "848523e0-7490-49d6-8e43-0a5728a2cf03"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a66834b8-3bfd-4e2b-9c8d-fd6e0e83b059"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231845"
+        },
+        "body": {
+            "S": "What are the dates of the reading days for the fall semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "119cd2ce-196e-4a33-937e-ecac76e204f5"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "4eae3611-efad-407f-b41f-3db0cef61170"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231847"
+        },
+        "body": {
+            "S": "Are classes in session on October 14 during the fall term?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "42b57c73-50ea-4842-9e2e-b1a05ef1455b"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "4c1b0794-600e-4af6-8ae8-4c0dc195b358"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231849"
+        },
+        "body": {
+            "S": "When is the Thanksgiving break for this semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "0c8692d4-a97f-42a4-a415-04b6d4dd5ee4"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d323a3dd-7405-4a94-b977-744bae45f19c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231873"
+        },
+        "body": {
+            "S": "When is Advance Registration (AR) for the Spring semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8fb9b792-b0e6-404d-936b-57def846d95f"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "1db18b1b-db72-49d8-b50b-2741d51eb486"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231876"
+        },
+        "body": {
+            "S": "When is Advance Registration for the Fall semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "227bf534-4ac0-48b5-bb47-8688506658f5"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "92a5b712-7156-480c-a975-7fe9f9765d26"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231878"
+        },
+        "body": {
+            "S": "What CIS coursework is being offered during the upcoming Fall semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "617a8eb8-7304-473c-bc04-2daa398b9b05"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "49e36f97-b97c-4daf-9b50-f1746270226a"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231880"
+        },
+        "body": {
+            "S": "What are the prerequisites for the CIS courses CIS 4550 Internet and Web Systems, CIS 4600 Interactive Computer Graphics, CIS 5010 Computer Architecture, and CIS 5020 Analysis of Algorithms being offered this fall?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "bf53f9a1-57ab-4355-9355-3f5340c849ba"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "cc5c3da0-d7d9-4375-995a-cc22f54e80f1"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231883"
+        },
+        "body": {
+            "S": "What is the process to follow to register for classes"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "5762dc63-6f2b-4136-b3cc-65f7da4a1b60"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "3539f65a-40a5-4b02-b6f6-c179d2516a0f"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231886"
+        },
+        "body": {
+            "S": "What are the main differences in focus and curriculum between the Computer and Information Science (CIS) and Data Science submatriculation programs at the University of Pennsylvania?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "aee5aeac-6124-4197-8960-bfbf0873b3ef"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "42450ddf-f349-486e-b883-c3fad0e989f3"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231888"
+        },
+        "body": {
+            "S": "What are the benefits and drawbacks of taking CIS 5810 as a project elective for gaining real-world experience in computer and information science?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f42e26c1-fb58-4be6-b990-f13da12b1ba0"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "262a7033-a57c-43d6-b873-d34669bfe4b8"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231890"
+        },
+        "body": {
+            "S": "What is the deadline to add a course for the Fall Semester at UPenn?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "4c277489-e3c6-4595-b4fa-090e7a594e75"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d7117873-1491-4cb5-b5f1-1f9edf62be25"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231696"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a806e248-5ac1-4eb5-95bb-e2659e348ddf"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a5884d96-0540-4ece-a1cb-cf5ae8b55373"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231705"
+        },
+        "body": {
+            "S": "Does taking the AP language exam exempt me from the language requirement?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "44325485-8b50-4aec-acaa-95b71f606130"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "adf2e5cf-2b80-4a20-9501-81b43a9e2b71"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231708"
+        },
+        "body": {
+            "S": "What type of information or topics can you provide assistance with?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "82c9c4e3-13f2-453a-8fd9-1ebc835dc64d"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d8588a83-b444-4c28-baf5-5c63daea99eb"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231710"
+        },
+        "body": {
+            "S": "What are the eligibility criteria and application requirements for the London study abroad architecture program for third-year architecture students?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "93f205eb-e14f-4908-a6f0-3975f89acdca"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "1ac6c7c0-7fb8-476e-86eb-f35dc5d159ef"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231712"
+        },
+        "body": {
+            "S": "Is it possible to waive the writing seminar requirement through a placement test or other assessment?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "c58eea9c-8248-45da-a653-514e3c5d639b"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "ea4f7558-d7fd-4ca3-b688-28df196274a3"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231716"
+        },
+        "body": {
+            "S": "What is the process to declare a concentration in my major?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "c9da8d54-bee2-4e98-8ba6-bd02ec6db062"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "23dade6b-7a4e-4ac7-b9ca-1ff0adbe5b96"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231719"
+        },
+        "body": {
+            "S": "Is ANTH 0063: East & West considered an easy course?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "274df683-73eb-45c3-8759-cb81e9f2c18c"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "836a4d7f-e8f6-4efb-88ed-18b5db114aeb"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231722"
+        },
+        "body": {
+            "S": "Can I take additional language courses after fulfilling the language requirement with the AP exam?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "694e896e-9161-44b0-a024-6204e3af4507"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d665b523-5e07-477f-9bb4-b94a1de4676b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231726"
+        },
+        "body": {
+            "S": "What specific resources are available to help students who are struggling in their physics class?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "de3dc625-2be9-4524-8670-b99466236e20"
+        },
+        "username": {
+            "S": "Jane Smith"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "83a675cc-a509-4463-9386-731be7c5b85b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231728"
+        },
+        "body": {
+            "S": "What are the specific course requirements for my major in mechanical engineering?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "622278cc-eda6-44ef-893b-5f7e254ee4dd"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8abd5af1-ecf8-4306-9c5e-76c9807b6c63"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231731"
+        },
+        "body": {
+            "S": "What are the grading criteria and evaluation methods used in the CIS 5190 Machine Learning course?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "31fa9540-1345-4a2c-a3a7-34be3c7a7fa6"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a76d693a-f305-4120-ae80-0d5eab11eb6c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231733"
+        },
+        "body": {
+            "S": "What are the prerequisites for the Advanced Negotiation: Great Dealmakers, Diplomats, and Deals course?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "01018b11-df53-419c-adf9-e0c775876b78"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "63f94ecd-0a92-46e1-ae9f-bc9e99a38cb8"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231735"
+        },
+        "body": {
+            "S": "What is the process to request a book through the UPenn Library system?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "36c70a21-a6de-4049-aa1f-c701a2ba434a"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "3265909e-2e96-48b7-af8e-c2dc3754643c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231738"
+        },
+        "body": {
+            "S": "What are the office hours of Career Services at McNeil Building?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "7fd1b706-ad30-4cb4-8d3e-5ddc7c6259c4"
+        },
+        "username": {
+            "S": "Sampath Ken"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "77753695-7bdc-4504-9846-fb051304df84"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231740"
+        },
+        "body": {
+            "S": "Which course, CIS1200 or CIS1600, is more focused on practical coding and programming skills?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "4fd568a3-dba9-48c2-852c-9c164323c4db"
+        },
+        "username": {
+            "S": "Sampath Ken"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "08cb4fae-90f1-4e0b-822d-a383cf57cd85"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231742"
+        },
+        "body": {
+            "S": "How do i apply for need-based grants"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "9328af23-05b8-4b6f-9a03-219a9862fffc"
+        },
+        "username": {
+            "S": "Sampath Ken"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "4f308cc8-da0e-497a-88e8-a6845d869f9b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231744"
+        },
+        "body": {
+            "S": "Is it possible to submit the CS1100 final project after the deadline of December 15th at 11:59 PM and are there any associated penalties?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8d741747-2f75-4863-990c-e938da1329d6"
+        },
+        "username": {
+            "S": "Sampath Ken"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "5277be61-e1e2-4746-895e-68c480a4445e"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231747"
+        },
+        "body": {
+            "S": "What amenities are available to residents of Hill College House?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "22c2d244-bc9d-4761-9500-73947d4cb3b8"
+        },
+        "username": {
+            "S": "Sampath Ken"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "74a0b8f9-b091-416e-9295-64a0d1e7744c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231750"
+        },
+        "body": {
+            "S": "Are there any group projects in the CIS2400 coursework?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f4e3e7f3-e692-4b19-90a9-282dbab79be5"
+        },
+        "username": {
+            "S": "Kevin Mayer"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "482c5436-5fc5-4660-9b20-97c4f50da993"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231752"
+        },
+        "body": {
+            "S": "Do companies like Google, Facebook, Microsoft, and startups in the Philadelphia area offer summer internships to Penn data science students?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "469ce885-9772-457f-b31c-e1be3365ee93"
+        },
+        "username": {
+            "S": "Kevin Mayer"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "55e3b513-d161-4b76-8b59-d2b294b7d7ba"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231754"
+        },
+        "body": {
+            "S": "What is the step-by-step process to follow in order to apply for course credit for an internship at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "29a3b3a1-c1e4-47db-bf79-884a9cef35b2"
+        },
+        "username": {
+            "S": "Kevin Mayer"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "7cb931a2-01fc-40af-8210-ddc9c949f7f1"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231756"
+        },
+        "body": {
+            "S": "Can I still change my major during the late junior year and what are the implications on my graduation timeline?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "58023615-b75c-4fcc-ad1b-1ed787e728e8"
+        },
+        "username": {
+            "S": "Kevin Mayer"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "318f13df-d2d3-44ab-8cf5-cdfa5084e586"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231759"
+        },
+        "body": {
+            "S": "Where will the engineering career fair be held next year?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f9d8e7a7-bdfc-4999-9094-fbfa3bc0af1e"
+        },
+        "username": {
+            "S": "Kevin Mayer"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "57bfd303-4350-48c3-b0af-7084419382cb"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231761"
+        },
+        "body": {
+            "S": "Can I use the PennCard to pay for fares on public transportation in Philadelphia?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "3ad4733f-c8b2-49fa-ac29-4a7b645b3a87"
+        },
+        "username": {
+            "S": "Kevin Mayer"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "1c2ffc4d-c65f-4da7-a6ad-5491ff3324cc"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231820"
+        },
+        "body": {
+            "S": "How can I reserve a study room in the Biomedical Library or Van Pelt Library on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "ce9fafec-0e9e-4f5f-92a6-aae601425a97"
+        },
+        "username": {
+            "S": "Sacha Dagneau"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e8863e73-079e-4528-9f25-2e0962b1d27b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231823"
+        },
+        "body": {
+            "S": "What is the process for requesting accommodations for exams through the Student Disabilities Services office?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "3c97fd33-ce95-4714-9f15-fa73ddb0bd21"
+        },
+        "username": {
+            "S": "Sacha Dagneau"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "bb051d4b-150d-4a79-8260-9c41f865d0aa"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231826"
+        },
+        "body": {
+            "S": "What is the process to join tech-related clubs such as PennApps hackathon team, Penn Robotics, and Women in Computer Science at the University of Pennsylvania?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8dd065b7-d425-47be-8ba8-e7d6ee322588"
+        },
+        "username": {
+            "S": "Sacha Dagneau"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "44ec0a49-48cb-4e36-8f3a-093fe6c4fd79"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231828"
+        },
+        "body": {
+            "S": "What is the typical wait time for scheduling an appointment with Counseling and Psychological Services (CAPS)?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "fbf3dbac-134d-455b-b547-8ee083151737"
+        },
+        "username": {
+            "S": "Sacha Dagneau"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "21e681a2-b403-46f2-bd51-a8a49f13c906"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231830"
+        },
+        "body": {
+            "S": "What is the typical wait time for scheduling an appointment with Counseling and Psychological Services (CAPS)?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "75c0edcb-6a1f-47ae-bfe9-616c7cfd5748"
+        },
+        "username": {
+            "S": "Sacha Dagneau"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b738acc6-ea31-4a22-a3b9-b87833356f77"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231833"
+        },
+        "body": {
+            "S": "Am I eligible for a refund for the course I withdrew from last week, considering it was after the official drop deadline?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "17dbe456-d84a-4a74-b713-d2b5538ba3ca"
+        },
+        "username": {
+            "S": "Sacha Dagneau"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "86a430eb-a928-4b9c-aadc-2a632bb63598"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231836"
+        },
+        "body": {
+            "S": "What is the final project for the CIS240 course on computer architecture?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "3de0b9c6-f736-4a63-b07b-b231b0570b85"
+        },
+        "username": {
+            "S": "Thomas Jefferson"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a767d575-3822-41d1-a029-bfa80283e282"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231838"
+        },
+        "body": {
+            "S": "When are the application deadline to apply for a study abroad program?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "b56fc276-3ffd-4ed2-8477-dfad3eff09f1"
+        },
+        "username": {
+            "S": "Thomas Jefferson"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "7ff49c19-695f-4b67-ac5e-bffbbae794b7"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231840"
+        },
+        "body": {
+            "S": "Can I reserve a room for a student event through the student services portal for next week, considering the two-week advance notice requirement?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "327a055e-3fd1-4b21-a2c9-e942bf1b831b"
+        },
+        "username": {
+            "S": "Thomas Jefferson"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "727c4ab6-9df9-4b14-9964-01f806df96be"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231843"
+        },
+        "body": {
+            "S": "What is the recommended timeline for declaring the entrepreneurship minor at Penn?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "4898e60e-c356-428a-915f-842c6644a1bc"
+        },
+        "username": {
+            "S": "Thomas Jefferson"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "6fcacb3a-1fc6-4497-a9d3-c7ff67184195"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231845"
+        },
+        "body": {
+            "S": "Is the registrar's office currently open?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "12cf96a9-7368-4977-850d-3f88c4d072c3"
+        },
+        "username": {
+            "S": "Thomas Jefferson"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "95984061-b773-4c68-b4c1-9ae716a12a16"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231847"
+        },
+        "body": {
+            "S": "Can I still add a course through Path@Penn after the typical two-week deadline has passed?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "9e666dfa-f153-4418-ab99-c98f591a3871"
+        },
+        "username": {
+            "S": "Thomas Jefferson"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "c4aa00dc-77c7-4328-a500-2ada2a59ce64"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231849"
+        },
+        "body": {
+            "S": "What is the registration deadline for the upcoming PennApps competition?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "3f4cb090-d427-4bb7-8abe-41cf76ffa7e8"
+        },
+        "username": {
+            "S": "Xavier Niel"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "4dbea92d-a4fe-498e-b791-98f37a215498"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231873"
+        },
+        "body": {
+            "S": "Will the Van Pelt Library's weekend hours remain the same next semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "89ac7cbd-cd5d-4dda-a58b-7b047613d1d3"
+        },
+        "username": {
+            "S": "Xavier Niel"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "43b23bc6-9b0e-4f56-978c-f87921d82e4a"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231876"
+        },
+        "body": {
+            "S": "Are the gym facilities available for use tomorrow?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "338a27de-6de2-4090-bc39-e6bd5927fc9e"
+        },
+        "username": {
+            "S": "Xavier Niel"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b8c89ec2-e661-47bf-8818-e4c22b82d148"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231878"
+        },
+        "body": {
+            "S": "Will the error in my final grades be corrected by next week?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f09e6a1e-3402-4aee-b7c5-40c05e95f9f3"
+        },
+        "username": {
+            "S": "Xavier Niel"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "3f502c64-9777-41d2-8392-46606c97d7cd"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231880"
+        },
+        "body": {
+            "S": "Are Career Services resume review and coaching sessions available this Friday?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "1a525e95-b795-4d0d-a673-decf9f335ceb"
+        },
+        "username": {
+            "S": "Xavier Niel"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8d7ef37c-5f49-4f25-9870-c030ed915245"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231883"
+        },
+        "body": {
+            "S": "Is it too late for me to drop a class without receiving a 'W' on my transcript?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "3da33577-69a0-4ec4-af17-db38ed9a8394"
+        },
+        "username": {
+            "S": "Olivier Esselin "
+        }
+    },
+    {
+        "chat_id": {
+            "S": "961a7fe5-9207-49c4-ac55-728207df705d"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231886"
+        },
+        "body": {
+            "S": "Does CIS5300 involve any group work or collaborative assignments as part of its coursework?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "ec1c00c3-b2e4-40f0-b1e2-f2e448bb3698"
+        },
+        "username": {
+            "S": "Olivier Esselin "
+        }
+    },
+    {
+        "chat_id": {
+            "S": "dbe4b740-f0c1-4f08-a5e1-7caec519abb5"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231888"
+        },
+        "body": {
+            "S": "What are the availability of career advisors on Handshake for an appointment this week?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f5376ddc-1742-4636-a486-b4f58c8d8a91"
+        },
+        "username": {
+            "S": "Olivier Esselin "
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8f265b1b-e6e5-492e-9570-0e2cbbe970c3"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231890"
+        },
+        "body": {
+            "S": "What is the process for petitioning for honors if my GPA is slightly below the required threshold of 3.7?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "68599068-844b-4276-91fe-8042593a715a"
+        },
+        "username": {
+            "S": "Olivier Esselin "
+        }
+    },
+    {
+        "chat_id": {
+            "S": "6abf8ae9-a9ce-4d75-b870-515168486677"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231880"
+        },
+        "body": {
+            "S": "What is the current weather like in the location of the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "fc60cd16-0336-43f7-9167-7f6268117435"
+        },
+        "username": {
+            "S": "Olivier Esselin "
+        }
+    },
+    {
+        "chat_id": {
+            "S": "3d7f5bea-692f-401a-992d-ceb8a31771d5"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231883"
+        },
+        "body": {
+            "S": "What are some good restaurants near the dining hall location?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "00d697c2-b054-4ab3-972b-795dd5afecee"
+        },
+        "username": {
+            "S": "Olivier Esselin "
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f4e9e3f9-3d11-4f11-8506-f299be322f4b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231886"
+        },
+        "body": {
+            "S": "What is the process to follow to bake a cake?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "b19234e7-7cb5-4034-bb53-193e31800b4d"
+        },
+        "username": {
+            "S": "Olivier Esselin "
+        }
+    },
+    {
+        "chat_id": {
+            "S": "45163185-87d6-4a37-b4fb-7fe84604b8f2"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231888"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "187a8c6f-58a3-4dde-9c7f-06fc8922d584"
+        },
+        "username": {
+            "S": "Olivier Esselin "
+        }
+    },
+    {
+        "chat_id": {
+            "S": "32345c7e-9c3e-4150-8887-abf7ada2040b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231890"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "410a8465-b705-4932-97ff-903ee0c9ec7c"
+        },
+        "username": {
+            "S": "Jules Damon"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "03b2db0a-e5e7-43f7-a3eb-2a643a242e8c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231893"
+        },
+        "body": {
+            "S": "What are some quiet places on campus that are suitable for studying?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "dc1eacb2-06aa-410d-8d60-6df4eefddcf2"
+        },
+        "username": {
+            "S": "Jules Damon"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e61b45b9-e31b-4485-b4e6-d5bc3d6919b2"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231895"
+        },
+        "body": {
+            "S": "What is the process to follow to apply for a campus parking permit?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f6bd0c7b-0319-4ca0-85de-3d79933af341"
+        },
+        "username": {
+            "S": "Jules Damon"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "db262da2-71b6-4ef1-aa37-2082e3709819"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231897"
+        },
+        "body": {
+            "S": "What is the process to follow to join a student club or organization at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "9a7a96fb-2542-4d68-b88d-b78263b2819b"
+        },
+        "username": {
+            "S": "Jules Damon"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "49dae603-3e94-4a7a-9e49-4c7940241410"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231899"
+        },
+        "body": {
+            "S": "What is the process for requesting an official transcript from the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "7de490be-6cad-4c59-9623-c07fe2caeba2"
+        },
+        "username": {
+            "S": "Jules Damon"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "0aaf9bc2-ef4b-44ce-9307-8a397f48d88b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231902"
+        },
+        "body": {
+            "S": "What is the process to sign up for intramural sports at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "e4bb732c-69e9-45ff-87bd-d5ccc49067e5"
+        },
+        "username": {
+            "S": "Sarah Cantet"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e7d62447-f429-4419-be08-d11df3ebc39d"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231904"
+        },
+        "body": {
+            "S": "Where can I get help with my resume on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "270f103b-697d-4a22-a493-027d1ba6eca7"
+        },
+        "username": {
+            "S": "Sarah Cantet"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "73a5cbed-564f-40ce-bb51-bfd43c3a7070"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231907"
+        },
+        "body": {
+            "S": "What services does the university counseling center provide for students?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "ce2690f3-b332-4e38-ab89-65b7f808e431"
+        },
+        "username": {
+            "S": "Sarah Cantet"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d9660175-6fe1-4886-8054-2d5f9e33928d"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231909"
+        },
+        "body": {
+            "S": "Are there any workshops on time management available for students at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "7de27a82-b8c6-439f-94f3-170c681144a9"
+        },
+        "username": {
+            "S": "Sarah Cantet"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "9367b12e-24d3-49ec-a305-d1f79ce36133"
+        },
+        "timestamp": {
+            "S": "2024-08-21T17:23:00.427707"
+        },
+        "body": {
+            "S": "What is the process to follow to apply for financial aid for CIS courses?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "2948d47f-ff35-4802-8e60-21156235471d"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "711f958d-b75b-463f-a467-1397daa33114"
+        },
+        "timestamp": {
+            "S": "2024-08-21T08:55:00.427707"
+        },
+        "body": {
+            "S": "What are the dates for the career fair this year?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f36522a2-e48e-4828-b703-5b5ddb6fef31"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "accbe381-2551-463c-b253-2947fc6952ca"
+        },
+        "timestamp": {
+            "S": "2024-08-17T02:23:00.427707"
+        },
+        "body": {
+            "S": "Where can I go to meet with an academic advisor on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "9b590d97-b190-4766-8813-20eea266e8ff"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "cc20df2c-eb8e-4076-8d4e-8da763ec5db3"
+        },
+        "timestamp": {
+            "S": "2024-08-21T16:32:00.427707"
+        },
+        "body": {
+            "S": "can I get a discounted software as a student?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a77ba411-0a56-41d8-90ac-d97a7267fb42"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "ea8a56e5-7d3d-4c5b-9e01-88de0e0f1f02"
+        },
+        "timestamp": {
+            "S": "2024-08-19T00:52:00.427707"
+        },
+        "body": {
+            "S": "Where can I find information about on-campus job opportunities for students at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "3ebafdc0-5943-4acd-9821-f72ad7e9441f"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "2e98b13d-83ae-497d-bf07-e5fc545f6743"
+        },
+        "timestamp": {
+            "S": "2024-08-21T08:11:00.427707"
+        },
+        "body": {
+            "S": "Are there any tutoring services available at the university or near the library?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "2d348d58-0451-467c-afcd-9db83a0976fd"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "754a4ff8-a27a-4edb-9362-049ee3722c1e"
+        },
+        "timestamp": {
+            "S": "2024-08-17T04:59:00.427707"
+        },
+        "body": {
+            "S": "Where can I find the campus shuttle schedule for the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "ab7c8f4d-9d16-4183-824c-8dc02bb8d097"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "300cc25c-b856-431d-b49f-0a71d095d6ae"
+        },
+        "timestamp": {
+            "S": "2024-08-20T10:04:00.427707"
+        },
+        "body": {
+            "S": "What is the process to apply for on-campus housing for the upcoming academic year?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d76a5354-0721-4230-89b8-fda52de9e244"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d93f68cf-68a7-4fea-9af7-d35d563b790b"
+        },
+        "timestamp": {
+            "S": "2024-08-15T19:13:00.427707"
+        },
+        "body": {
+            "S": "What is the date of the next campus blood drive event?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "cf6186cb-898b-45e7-ad3d-920b19ae2f99"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e2f86717-cdf8-4af3-b035-733068e16c2d"
+        },
+        "timestamp": {
+            "S": "2024-08-22T06:07:00.427707"
+        },
+        "body": {
+            "S": "What resources are available on campus to help students improve their public speaking skills?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a3d463a8-22fc-465f-858e-9c4dc48d3488"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e9c70ce9-94d2-464e-a7f0-cd4f2af35b91"
+        },
+        "timestamp": {
+            "S": "2024-08-16T12:46:00.427707"
+        },
+        "body": {
+            "S": "Where can I buy textbooks for my university classes?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "658ea75e-2199-4363-a085-0858131e259a"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e7a13bcf-ad5e-40f1-a984-353d6a12a733"
+        },
+        "timestamp": {
+            "S": "2024-08-17T08:40:00.427707"
+        },
+        "body": {
+            "S": "What is the process to rent a locker on campus and what are the available locations and fees?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "17047e45-c1b4-41ae-a629-e1a9651cd07a"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f931b3d3-2786-4c5a-9f2d-5ed27e2b9e7f"
+        },
+        "timestamp": {
+            "S": "2024-08-21T21:31:00.427707"
+        },
+        "body": {
+            "S": "What is the location of the nearest computer lab on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "dada42b3-8cf2-4985-94d2-15a6476a492e"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b895e3d6-9192-469d-9ba2-fc134245f719"
+        },
+        "timestamp": {
+            "S": "2024-08-16T12:11:00.427707"
+        },
+        "body": {
+            "S": "What are the locations and hours of operation for printing services on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "0cd020dd-3a9c-4d5c-97a7-a2c6e0b2aa37"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "aa50bf5a-25a8-4d85-bf99-9867a897d247"
+        },
+        "timestamp": {
+            "S": "2024-08-16T00:55:00.427707"
+        },
+        "body": {
+            "S": "What is the process for changing my major at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f18aaaed-df42-45fa-9d57-e228461341c8"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8756b1fe-85b4-48c7-b7f8-02e6426f1889"
+        },
+        "timestamp": {
+            "S": "2024-08-21T03:06:00.427707"
+        },
+        "body": {
+            "S": "What is the process to register for student health insurance at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8a8c8a05-a86a-427e-a636-e4b5f07c6d99"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "90c5f769-e43e-41ea-bd8b-2219f19c35b4"
+        },
+        "timestamp": {
+            "S": "2024-08-15T20:38:00.427707"
+        },
+        "body": {
+            "S": "What is the location of the student union building on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "e303418d-baea-48a1-bc14-22f213c9ac05"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "ecb1e93e-68bb-475a-a780-0582494a5192"
+        },
+        "timestamp": {
+            "S": "2024-08-21T22:19:00.427707"
+        },
+        "body": {
+            "S": "What are the steps and required documents to apply for a student visa to study at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d10fed38-38ea-4db2-8da2-f779934a0017"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "30c7e6f2-2a9a-4a71-bf6c-92f1e9e43546"
+        },
+        "timestamp": {
+            "S": "2024-08-20T03:33:00.427707"
+        },
+        "body": {
+            "S": "Where can I find the student handbook that outlines the university's policies and procedures?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "48326537-e3da-4a92-8130-0a4dbcd4bf5e"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a78b7d2a-29f2-473a-99ae-c5b205449382"
+        },
+        "timestamp": {
+            "S": "2024-08-20T07:13:00.427707"
+        },
+        "body": {
+            "S": "What are the weekend hours of operation for the campus library?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d7811488-ecde-4d96-907c-dd3259827ad9"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "ed25e8c0-4c19-4bf4-98cc-e40ce06f3fe8"
+        },
+        "timestamp": {
+            "S": "2024-08-21T16:21:00.427707"
+        },
+        "body": {
+            "S": "Where can I get a replacement for my student ID card on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "673563ba-8f34-4f92-be89-0016b99d96d5"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "cf68fb23-39a5-49a2-b03d-5dd0e803bcdf"
+        },
+        "timestamp": {
+            "S": "2024-08-19T21:10:00.427707"
+        },
+        "body": {
+            "S": "Is there a bicycle rental service available on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "2e12ae38-74a8-4594-852a-edf54e61b0c3"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "1b8e0cce-e9bc-4ce0-b233-4086bc8dcf10"
+        },
+        "timestamp": {
+            "S": "2024-08-22T09:49:00.427707"
+        },
+        "body": {
+            "S": "What is the deadline for submitting the enrollment request for CIS1200 via Path@Penn?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "703e27c9-fc23-48b6-aeff-a071db60db35"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e271d5cf-4974-4637-a168-a37f1858a8ed"
+        },
+        "timestamp": {
+            "S": "2024-08-16T08:51:00.427707"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "49b26890-ea97-42fd-8d60-9fa5aa51d547"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "13791a97-ab6e-4455-9d4f-7f2a8eb1ee24"
+        },
+        "timestamp": {
+            "S": "2024-08-21T07:10:00.427707"
+        },
+        "body": {
+            "S": "What materials or information should I bring to the physics tutoring session at the Tutoring Center in the Academic Support Building?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "55846441-d1c5-48ee-b203-f22279342dda"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e7af0e0e-391a-42b6-89e7-d738ef936c0c"
+        },
+        "timestamp": {
+            "S": "2024-08-18T00:48:00.427707"
+        },
+        "body": {
+            "S": "How far is the available housing from the university campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d15cec2d-e7e1-43bd-82f3-8f56ea1ca0ab"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "6d69eb7f-dc51-4b7c-8bad-ccba76d14d78"
+        },
+        "timestamp": {
+            "S": "2024-08-17T16:21:00.427707"
+        },
+        "body": {
+            "S": "How does CIS3200 compare to CIS4550 in terms of course content and prerequisites?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "733e6262-7f43-4475-9cf5-c9398dd2ce01"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a5ab5dc9-9292-4612-a3c7-5d29bffd82e6"
+        },
+        "timestamp": {
+            "S": "2024-08-19T06:46:00.427707"
+        },
+        "body": {
+            "S": "What are the business hours of the admissions office located in College Hall?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "b5969ec1-7995-431f-ab6c-4249e897979b"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "9a917e43-1d8f-4bd0-8fc5-5a2552e649ff"
+        },
+        "timestamp": {
+            "S": "2024-08-20T16:52:00.427707"
+        },
+        "body": {
+            "S": "Are the on-campus job opportunities paid positions?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "4312e92d-6c4b-40b1-9c2f-bdc865ba36d7"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "9b3652c8-ab29-476b-88cb-df9fc7fa492e"
+        },
+        "timestamp": {
+            "S": "2024-08-17T07:23:00.427707"
+        },
+        "body": {
+            "S": "Need more information to reformulate this query, no information about the other course in the context"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a4577c67-89a8-483d-b442-f6e3ad3e47a1"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "89db7baf-fbdb-4a64-9896-c0fe77193a3f"
+        },
+        "timestamp": {
+            "S": "2024-08-18T12:44:00.427707"
+        },
+        "body": {
+            "S": "What are the recommended dates or deadlines to visit the Financial Aid Office for assistance with my application?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "5dc5ce89-0b87-45ff-8c2e-0e0a22dc8b49"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f5f9a243-ce25-4ce6-9fe5-17efbbd4b114"
+        },
+        "timestamp": {
+            "S": "2024-08-20T12:23:00.427707"
+        },
+        "body": {
+            "S": "Need more information to reformulate this query, no information about the other course in the context"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "15976a73-0a8c-46f1-921b-52b981b437cc"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "47a7c83f-0bf2-4985-9aee-394f226bd52b"
+        },
+        "timestamp": {
+            "S": "2024-08-16T18:44:00.427707"
+        },
+        "body": {
+            "S": "What documents or materials do I need to bring to the math department office in David Rittenhouse Laboratory, Room 4W2?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "779abf6a-bb83-4e56-a389-ce26c22b0c6f"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b5ffea81-2e29-4674-b2b6-183779de61f9"
+        },
+        "timestamp": {
+            "S": "2024-08-19T15:06:00.427707"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "1be51f91-a355-417f-b186-ca5231e413ae"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "dfd6aab9-0187-4baf-9662-c519ba573858"
+        },
+        "timestamp": {
+            "S": "2024-08-19T22:00:00.427707"
+        },
+        "body": {
+            "S": "Which elective between machine learning, big data analytics, and statistics is more challenging for a data science minor, considering the prerequisites of knowledge in Python and linear algebra?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "2cf917b7-0cf9-40d0-93f6-05d09ca7019d"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8cb5035d-6320-43bb-8dfd-4b33b6bceb31"
+        },
+        "timestamp": {
+            "S": "2024-08-21T11:01:00.427707"
+        },
+        "body": {
+            "S": "Is there a fee associated with dropping a course through Path@Penn?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "c382b686-19b9-4847-8fdb-a594ea1897bb"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "390bd29b-3763-4c3d-9866-3c604fd5fffe"
+        },
+        "timestamp": {
+            "S": "2024-08-20T07:06:00.427707"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "901f1e17-1ea1-4ad8-8809-f49654e9e844"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "52e471de-2554-4a11-8db6-c1855cd3a2c8"
+        },
+        "timestamp": {
+            "S": "2024-08-16T14:45:00.427707"
+        },
+        "body": {
+            "S": "What else do I need to bring to a meeting with my academic advisor?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a76964bd-68ee-45ff-8815-21b2121c8436"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8a4aea46-e59e-411d-b544-b4e6ebd761c6"
+        },
+        "timestamp": {
+            "S": "2024-08-16T13:18:00.427707"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "36ee2317-cdb3-494c-bae5-6fcfae239a87"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "6b2cdaa1-0936-47dc-9900-b5ee0da7ee38"
+        },
+        "timestamp": {
+            "S": "2024-08-18T13:35:00.427707"
+        },
+        "body": {
+            "S": "What materials or information do I need to bring to the calculus tutoring sessions at the Academic Resource Center or peer tutoring?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f6fcd5c6-0e15-442c-a392-1ba84d112d31"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "25feaa6d-bb27-4b98-aaff-1efe07f92afb"
+        },
+        "timestamp": {
+            "S": "2024-08-21T18:13:00.427707"
+        },
+        "body": {
+            "S": "Is the policy on requesting an extension the same for CIS1100 as it is for CIS1200?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "967f9e00-7bf2-45ae-90ed-89cda12c7abd"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d009e97a-5806-4e39-9d0c-0c78f1ce2e12"
+        },
+        "timestamp": {
+            "S": "2024-08-21T06:05:00.427707"
+        },
+        "body": {
+            "S": "Which course, CIS3200 or CIS3220, typically has more project-based assignments?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "77a01932-6d5e-40cb-a620-4eb51dbeddae"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "2bfc497a-abe3-4322-bf7a-d8ec0bbeff4e"
+        },
+        "timestamp": {
+            "S": "2024-08-17T14:16:00.427707"
+        },
+        "body": {
+            "S": "What is the deadline for submitting the official transcript as part of the study abroad application?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "6a49d230-f657-4c58-b8a4-4b3e85f5541b"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "16e756a8-c853-43e1-84b8-115339d210be"
+        },
+        "timestamp": {
+            "S": "2024-08-17T18:03:00.427707"
+        },
+        "body": {
+            "S": "Is the process for requesting a course waiver for a prerequisite the same for other courses?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "cb6feb89-5824-404e-8539-03bd9804ad2c"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "aab9e113-b1b3-482a-9a74-d1d62d9f6c29"
+        },
+        "timestamp": {
+            "S": "2024-08-18T07:43:00.427707"
+        },
+        "body": {
+            "S": "I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "7ad35bb8-ec02-4949-99b3-034ddb4119c3"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8f04030f-71c8-4779-86ba-c1e19394fdf8"
+        },
+        "timestamp": {
+            "S": "2024-08-22T00:49:00.427707"
+        },
+        "body": {
+            "S": "What are the requirements and course offerings for a minor in philosophy?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "c183ece6-e46e-49d2-9db9-401047d21fc1"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f879cd14-6e6b-4496-8f08-36140d4f00fa"
+        },
+        "timestamp": {
+            "S": "2024-08-18T19:55:00.427707"
+        },
+        "body": {
+            "S": "What happens to a course after the last day to drop it, which is October 7th?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "23927096-6832-449f-b2cc-357fc5ac85df"
+        },
+        "username": {
+            "S": "Sarah Lee"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "10d218f8-3518-4dc3-ba60-3d9ade193732"
+        },
+        "timestamp": {
+            "S": "2024-08-21T03:20:00.427707"
+        },
+        "body": {
+            "S": "Is the grading system the same for other schools or departments within the University of Pennsylvania?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d7a4238e-7566-45fe-be79-9c8d49e0e67b"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "9d1ea8e7-9195-4a6d-9928-be767725beed"
+        },
+        "timestamp": {
+            "S": "2024-08-21T12:52:00.427707"
+        },
+        "body": {
+            "S": "What are the deadlines for registering for classes for next semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "6488b531-c073-434e-a66c-ca183a82950c"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "ec4f804c-364d-40f6-8e3a-733c13f6f7f6"
+        },
+        "timestamp": {
+            "S": "2024-08-18T19:26:00.427707"
+        },
+        "body": {
+            "S": "What are the other requirements I need to fulfill to study abroad during the summer term?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "4df4047d-44fc-456b-8b5c-342893a31175"
+        },
+        "username": {
+            "S": "John Doe"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b6ba0688-e558-45f6-9dc5-bfd32f5d727e"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231880"
+        },
+        "body": {
+            "S": "   I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "bc195b74-4dcf-40e0-a7df-699916fd8865"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "9460362b-4acf-438e-89a2-73640ce32523"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231883"
+        },
+        "body": {
+            "S": "   What are the weekend hours of operation for the library?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "e8cbf0cc-4fff-4998-8183-bbc906a8360b"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8f2f4fc3-cf56-40db-8972-046d98604189"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231886"
+        },
+        "body": {
+            "S": "   What is the process to follow to apply for financial aid?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "60b864d0-eebd-4dd2-be39-c5d1c0206e32"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "df3b8733-0f8e-423d-927b-54bc8a1ba295"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231888"
+        },
+        "body": {
+            "S": "   What are the graduation requirements for a computer science major?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "05646abe-dc13-47bc-a77c-8353a385f20a"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b881c70b-9ca0-47aa-9915-eef6234daffa"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231890"
+        },
+        "body": {
+            "S": "   When does the spring semester start at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "29015b94-e044-4d1e-a700-935463603f30"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "734013ed-608a-4373-a3e2-d61d5bc88fa6"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231880"
+        },
+        "body": {
+            "S": "   Who is the head of the mathematics department at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "afd5e1c4-7b0e-43fb-9dc5-cbad31b335c9"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "244541a5-e5d6-464f-82a0-ec8253076279"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231883"
+        },
+        "body": {
+            "S": "   What is the process to declare a minor in economics at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "dc85eacd-00a0-4321-b4fb-047393b6b354"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d26c0ce7-3774-42ae-83e7-88d8f3e9f0a3"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231886"
+        },
+        "body": {
+            "S": "   What are the office hours for Professor Johnson this semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "708e9d0d-d73d-4c47-8812-5e165cee55a3"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d8bc7cb9-52ac-4af8-949c-b8fcb2a1f780"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231888"
+        },
+        "body": {
+            "S": "   Are there any summer internship opportunities available specifically for engineering students?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "e9b9a7d2-0229-4264-8fef-77124a50ee58"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d1933671-adf2-463b-b70b-8dacd7e17b99"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231890"
+        },
+        "body": {
+            "S": "   Where is the Career Services office located on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "74564b26-afb1-46dd-bce6-e90b3caef1d6"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f83b6816-efe6-4f07-98fc-c23de21ba233"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231893"
+        },
+        "body": {
+            "S": "   What is the deadline to drop a course without penalty this semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "cf67ed5d-1a6a-4f70-9326-ecdb72f05bd3"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "96965433-4e0b-4aa8-ae56-405672db3220"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231895"
+        },
+        "body": {
+            "S": "   I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "64ab6521-c003-4307-a9fa-fd28a43189f5"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d62a930c-3889-4692-84ea-6ededcd93423"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231897"
+        },
+        "body": {
+            "S": "   What is the process for renting a locker at the gym located next to the swimming pool?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8a03801c-6f6d-4745-8d73-e081e38aee93"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "0a777af0-ed7c-4d21-bb72-05cda6d0cbfc"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231899"
+        },
+        "body": {
+            "S": "   Does the university campus shuttle service operate on weekends?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "e3ccfaf3-13a5-4474-a9f5-904e61d680f3"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "87ae7315-2dd0-4e32-9c69-c2bd0713cc9e"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231902"
+        },
+        "body": {
+            "S": "   What are the end dates for the fall semester classes at my university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "4f39cf23-fe0b-42bc-8b82-abcb0cac50d0"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b20dfe7e-5332-42eb-909c-850607b83363"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231904"
+        },
+        "body": {
+            "S": "   Do students living in on-campus or off-campus housing need to purchase a parking permit to park their vehicles on or near the university campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "55dffd85-a9e7-4826-8dcb-4a83ed6f6043"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "7d03df34-5cca-4a03-ac05-dbaba5f816fb"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231907"
+        },
+        "body": {
+            "S": "   What is the deadline for adding a class to my current course schedule for this semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "b93c3dea-4016-42c2-afc2-56b63117c00e"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "2a1df6ef-5fb1-49ff-a86b-9d16ecc133db"
+        },
+        "timestamp": {
+            "S": "2024-08-19T15:06:00.427707"
+        },
+        "body": {
+            "S": "   What is the location of the student health center on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8f50619c-e137-45b5-ab50-16b559e6275e"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "6acd5649-eba3-48e0-a048-b90a9da13bcf"
+        },
+        "timestamp": {
+            "S": "2024-08-19T22:00:00.427707"
+        },
+        "body": {
+            "S": "   What are the hours of operation for the campus bookstore?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "899d854b-cfc1-4294-8517-7732abe656b7"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "2788c379-d0b2-43ff-8926-c7894e68f316"
+        },
+        "timestamp": {
+            "S": "2024-08-21T11:01:00.427707"
+        },
+        "body": {
+            "S": "   What are the steps and requirements to get involved in the student government at my university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "0fb0cc71-0d40-46b7-8356-47fa6e1a1599"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "c58e00fa-7234-449e-bbd0-59df25431bfe"
+        },
+        "timestamp": {
+            "S": "2024-08-20T07:06:00.427707"
+        },
+        "body": {
+            "S": "   What are the dates for finals week next semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "c36df897-43e5-416c-8ef0-38cceeed18af"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "587535af-3f60-4a2c-a0dd-0e0d01de3939"
+        },
+        "timestamp": {
+            "S": "2024-08-16T14:45:00.427707"
+        },
+        "body": {
+            "S": "   Should I choose a thesis-based or non-thesis graduate program based on my career goals and interests?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "57f2ff79-d049-4391-a7aa-a46133f9e422"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "84d611cf-6552-4725-9103-940fbd4950d6"
+        },
+        "timestamp": {
+            "S": "2024-08-16T13:18:00.427707"
+        },
+        "body": {
+            "S": "   How much does the campus health insurance typically cost for students?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "4994822d-d8ce-4527-ad6b-092505dab142"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "fc290121-4dc9-46f3-ac7b-83231a28fdd4"
+        },
+        "timestamp": {
+            "S": "2024-08-18T13:35:00.427707"
+        },
+        "body": {
+            "S": "   Do I meet the eligibility requirements for study abroad programs based on my current academic standing and coursework?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "cfe6963c-377f-414c-88aa-23dfc02a2ceb"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "375ac714-ba94-4907-acd8-a93acdedf25c"
+        },
+        "timestamp": {
+            "S": "2024-08-21T18:13:00.427707"
+        },
+        "body": {
+            "S": "   How does the university's grading scale apply to lab courses, and are there any specific grading policies or criteria used to evaluate student performance in lab settings?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "050b09eb-3f1f-405c-9093-a4f6ed7f8be5"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "dc3d4606-4094-401f-98b7-0e751ce2df41"
+        },
+        "timestamp": {
+            "S": "2024-08-21T06:05:00.427707"
+        },
+        "body": {
+            "S": "   What is the process for applying to summer internships?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "58117d0a-1fd0-4651-a3bd-da3f6d8e4006"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8420f2cd-047b-4ba5-bd9a-550299d1911e"
+        },
+        "timestamp": {
+            "S": "2024-08-17T14:16:00.427707"
+        },
+        "body": {
+            "S": "   Should I include my GPA in my personal statement for graduate school?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "5f350554-c641-48cc-8bc0-a4226151a191"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "5e3da21f-4441-4058-9d37-fb5b6c1d6713"
+        },
+        "timestamp": {
+            "S": "2024-08-17T18:03:00.427707"
+        },
+        "body": {
+            "S": "   What is the process to follow to apply for an honor society?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "5daf7885-0a59-4834-ab2f-bda48aab8cca"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "b2c1eaa9-75bb-4b47-ac14-e931bb7a7079"
+        },
+        "timestamp": {
+            "S": "2024-08-18T07:43:00.427707"
+        },
+        "body": {
+            "S": "   What is the process for requesting and receiving accommodations for exams, such as extended time or a separate testing room, for students with disabilities?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "2fd72843-e105-47da-bdaa-ac2da8175fe8"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "3625d6ef-9af8-49ce-9d68-21250834baf6"
+        },
+        "timestamp": {
+            "S": "2024-08-22T00:49:00.427707"
+        },
+        "body": {
+            "S": "   How does working part-time affect my eligibility for financial aid options as a graduate student?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f75b4323-c482-40b1-97aa-a40965acdfe1"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f3d7db44-6fcb-4751-9395-c666d6b431f5"
+        },
+        "timestamp": {
+            "S": "2024-08-18T19:55:00.427707"
+        },
+        "body": {
+            "S": "   What funding opportunities are available to support undergraduate research projects?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "28f21d7e-cccd-4074-8cd4-56469727e60b"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "64bbf305-ced0-4b27-9cb5-bcc259de918f"
+        },
+        "timestamp": {
+            "S": "2024-08-21T03:20:00.427707"
+        },
+        "body": {
+            "S": "   Do you think the study abroad program I am considering is better than the other options available to me?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "dabda896-b888-45da-af0f-945527c74048"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "5f0bba9a-3572-4dae-b6f7-3a5d9b3bab0f"
+        },
+        "timestamp": {
+            "S": "2024-08-21T12:52:00.427707"
+        },
+        "body": {
+            "S": "   What other types of student clubs and organizations are available at the university beyond the ones mentioned?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "6a8934a1-1b11-4030-9fe5-576e3059d55f"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "606806e5-61d6-48ba-86f6-b2bbc10ac08b"
+        },
+        "timestamp": {
+            "S": "2024-08-18T19:26:00.427707"
+        },
+        "body": {
+            "S": "   Are there other summer research opportunities available besides the one you mentioned?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "007a61bc-813a-4b4d-a5dd-6bed349184b7"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "0e31c464-8dae-4535-b68b-9101abe17ed3"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231880"
+        },
+        "body": {
+            "S": "   What are some elective course options available for next semester that I can take to fulfill my degree requirements?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "95c603f4-b63b-4d96-8bb7-8054aae93cbe"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a943705d-910b-4ce0-829d-56f704fcd8fc"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231883"
+        },
+        "body": {
+            "S": "   I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f2bfdbec-98c9-47db-8f30-6b3636a5b185"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "324db7c3-e42d-4a66-9131-513443115c0c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231886"
+        },
+        "body": {
+            "S": "   What are the options or next steps if I don't receive a bid to join a fraternity or sorority during the recruitment process?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "e9785599-5d6b-4a5c-8663-cdf0c9c7f345"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a814edc1-6e9d-4baf-b711-415291366a7d"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231888"
+        },
+        "body": {
+            "S": "   Is it worth being on academic probation and taking the necessary steps to improve academic performance to avoid suspension or dismissal from the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "75adedd2-a0ae-4505-a1d5-6aec2ae278f0"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "25da6dd7-3d0d-4a91-948c-9e840a5f86f8"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231890"
+        },
+        "body": {
+            "S": "   I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "1c24c717-1f28-40f3-9da0-59f5a5b3c298"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "4879bc00-1e09-434f-9055-932a538872d3"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231880"
+        },
+        "body": {
+            "S": "   I need more information from the context to reformulate the question."
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a280f03f-3963-4382-a464-aa06e37255ca"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d5656862-8d6d-4a31-9c6f-de6f7007693d"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231904"
+        },
+        "body": {
+            "S": "   Should I visit the campus libraries to utilize their resources and services?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "908413dd-6ed1-40cc-b520-cc3fbd9c284e"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d3b03817-690c-4292-a33e-093a5a32c022"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231907"
+        },
+        "body": {
+            "S": "   What are the deadlines for submitting scholarship applications?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a6535c72-a94d-415c-98b9-380bc431c4c4"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "628401af-eabd-43a8-b44e-c6f86fc24ce6"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231909"
+        },
+        "body": {
+            "S": "   What is the deadline for sophomore housing applications?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "6b988a6c-6cde-4fd4-ab3a-8cee254a7dd4"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "c500c386-6dab-4aa7-9d66-e2110301da45"
+        },
+        "timestamp": {
+            "S": "2024-08-21T17:23:00.427707"
+        },
+        "body": {
+            "S": "   What additional documents, besides a government-issued photo ID, are required to obtain a student ID at the campus ID office?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "3f3fc37d-bd8c-4bd0-a412-0072d769d199"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d0454a34-3e5d-4a23-8ab7-a4e16186d409"
+        },
+        "timestamp": {
+            "S": "2024-08-21T08:55:00.427707"
+        },
+        "body": {
+            "S": "   Do I need to meet with my current academic advisor before submitting the major change form?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "b3b2bc28-9de4-48e3-9a09-295c705201bd"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "eae90489-0eae-413d-bf93-360864e6f64e"
+        },
+        "timestamp": {
+            "S": "2024-08-17T02:23:00.427707"
+        },
+        "body": {
+            "S": "   What is the deadline for adding courses for this semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "319188a2-ee8c-41cd-8feb-211a27f5a4b7"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "0bba5b7e-9b84-464d-8164-d69f82c83536"
+        },
+        "timestamp": {
+            "S": "2024-08-21T16:32:00.427707"
+        },
+        "body": {
+            "S": "   What is the deadline for submitting the graduation application for the current academic term?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "21dddc1d-4f95-4e81-b221-9d601759c918"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "2e35ddfd-545d-4e22-afba-4602d9a0d0cc"
+        },
+        "timestamp": {
+            "S": "2024-08-19T00:52:00.427707"
+        },
+        "body": {
+            "S": "   What is the maximum number of credits from another university that can be transferred to this university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "bb307e0e-b847-4dad-93eb-d7abf66f4c78"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "a5891f76-3f19-47d6-bfc2-e4b835abe07d"
+        },
+        "timestamp": {
+            "S": "2024-08-21T08:11:00.427707"
+        },
+        "body": {
+            "S": "   When does the registration for summer classes open?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "1ab80122-7edf-4019-9e26-4082178c037b"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "2a47806d-64df-487e-94ef-2a29ed374879"
+        },
+        "timestamp": {
+            "S": "2024-08-17T04:59:00.427707"
+        },
+        "body": {
+            "S": "   What is the refund policy for withdrawing from the university in the middle of the semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "8a6cda08-7f5c-4b0d-9223-e58f270d2f4d"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "021da67e-aa79-44c5-b7b8-e6a7b004c984"
+        },
+        "timestamp": {
+            "S": "2024-08-20T10:04:00.427707"
+        },
+        "body": {
+            "S": "   Are there deadlines for applying to work-study?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "fcd56486-10ae-4088-9c4a-9b012b020e57"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "72af2883-80c6-4aeb-b176-01ed2d442a6b"
+        },
+        "timestamp": {
+            "S": "2024-08-15T19:13:00.427707"
+        },
+        "body": {
+            "S": "What is the cost of a full academic year parking permit on campus?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "666c6269-7e72-4830-b934-d05469d4c1fc"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8af79742-a573-48ef-8029-9be57bc5a463"
+        },
+        "timestamp": {
+            "S": "2024-08-22T06:07:00.427707"
+        },
+        "body": {
+            "S": "Do I need to pay tuition for the study abroad program, and if so, how does it compare to my regular university tuition?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "0970ab4b-1ad1-448e-8c71-bcb62626f6ae"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "42bfb5e6-4a81-435a-bd65-e372e59e1376"
+        },
+        "timestamp": {
+            "S": "2024-08-16T12:46:00.427707"
+        },
+        "body": {
+            "S": "When are the midterm exam schedules typically posted for the current semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "81498e13-4c77-40ef-a696-d8146509c31c"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "49e97558-3945-4119-8284-b69ab0373633"
+        },
+        "timestamp": {
+            "S": "2024-08-17T08:40:00.427707"
+        },
+        "body": {
+            "S": "Are there any additional forms required to be submitted along with the vaccination records through the student health portal?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "c8d51176-6ae2-4e61-b64d-ec735ebc197d"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "ac6f84a5-0a2e-488f-bee5-251adcf4eccf"
+        },
+        "timestamp": {
+            "S": "2024-08-21T21:31:00.427707"
+        },
+        "body": {
+            "S": "What about the availability and application process for teaching assistantships at the university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a75a4a8c-9338-4f15-8920-f72678e73936"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "68fe48df-0027-466e-80c1-6b6d5a10c060"
+        },
+        "timestamp": {
+            "S": "2024-08-16T12:11:00.427707"
+        },
+        "body": {
+            "S": "Can I change my 14-meal plan to a different meal plan option after the semester starts?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "a832add2-721f-46cb-b753-6e1b517d160d"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "41fb1e87-d3eb-4fa1-9d0c-f7a26895fb88"
+        },
+        "timestamp": {
+            "S": "2024-08-16T00:55:00.427707"
+        },
+        "body": {
+            "S": "How do I access or purchase the required textbooks for my courses online?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "053af821-71bf-4419-b6a8-4680b5c8ff25"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "6ea8721a-2120-4f90-9ff5-d55cc65c346c"
+        },
+        "timestamp": {
+            "S": "2024-08-21T03:06:00.427707"
+        },
+        "body": {
+            "S": "Do the academic support services at the tutoring center, writing center, and academic advising office offer workshops?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "85e038be-053d-402a-a9ce-a0251406359f"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "f16850eb-b686-4d74-a865-f0837502d074"
+        },
+        "timestamp": {
+            "S": "2024-08-15T20:38:00.427707"
+        },
+        "body": {
+            "S": "What types of scholarships are available to help fund my education?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f8a7ee91-fa61-4db9-b6b9-059d6352efda"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "2a3e6106-7026-4bee-b3a3-47ce6c4dbd51"
+        },
+        "timestamp": {
+            "S": "2024-08-21T22:19:00.427707"
+        },
+        "body": {
+            "S": "Is there an option to expedite the processing of my official transcript request through the student portal?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "74582bcb-e6e1-44a8-891f-c2f9f3e545bf"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "2a5e891b-7206-4440-9d07-c6a2a32e96da"
+        },
+        "timestamp": {
+            "S": "2024-08-20T03:33:00.427707"
+        },
+        "body": {
+            "S": "How does the process of reserving a study room in the library change or what are the specific rules for reserving a study room during finals week?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "10261423-92f4-4578-823f-730ead2e3233"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "34c39b29-575b-40a1-ae57-6e58f53c71bd"
+        },
+        "timestamp": {
+            "S": "2024-08-20T07:13:00.427707"
+        },
+        "body": {
+            "S": "Are there any application deadlines for the campus jobs that I am interested in applying for?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "423df280-ebc0-415f-a0a0-763de0c18781"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "41b737a7-790c-4ad9-ac52-d3210c2a619b"
+        },
+        "timestamp": {
+            "S": "2024-08-21T16:21:00.427707"
+        },
+        "body": {
+            "S": "What is the process to update my immunization records through the student health portal or with the health services office?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "565e7fb0-b467-472f-ba33-316789d9870c"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "ce625bc6-cbe9-4104-aba7-9aed35427de3"
+        },
+        "timestamp": {
+            "S": "2024-08-19T21:10:00.427707"
+        },
+        "body": {
+            "S": "How many courses are required to complete a minor in economics at this university?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d165af1c-50f7-4a1d-9c8d-759a4e400a6f"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "e72ea11e-06ee-41ef-b433-57f43ab3c217"
+        },
+        "timestamp": {
+            "S": "2024-08-22T09:49:00.427707"
+        },
+        "body": {
+            "S": "Can students change their dining plan selection in the middle of the semester?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "59efc1db-160e-489b-b497-102715f097c3"
+        },
+        "username": {
+            "S": "Lucy"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "7d9ce2c0-6f5b-449f-b613-277986f08e2d"
+        },
+        "timestamp": {
+            "S": "2024-08-16T08:51:00.427707"
+        },
+        "body": {
+            "S": "What are the registration deadlines for winter term classes?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "d5918122-e495-492f-a010-92839277df45"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "5e3e1ac4-4644-4303-a1d0-966cff28b12c"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231904"
+        },
+        "body": {
+            "S": "What is the process to adjust my financial aid award if my financial situation has changed?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "f82a2e4d-8e57-43b4-8a1c-d4367c25c50c"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "c824492c-d604-4cf5-a463-cd93aa8be23b"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231907"
+        },
+        "body": {
+            "S": "What are the chances of a junior getting assigned to a suite-style dorm with a kitchen through the on-campus housing application process?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "9dca55de-cb48-4c8e-8c26-bb2b5012e77e"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d34ba840-1941-4965-9db7-f6113065a073"
+        },
+        "timestamp": {
+            "S": "2024-08-22T11:10:52.231909"
+        },
+        "body": {
+            "S": "Are there any upcoming deadlines for graduate fellowship applications that I should be aware of?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "17a5eeaa-e34f-4da7-820e-fb0965321e88"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "8c71d1ac-01b3-4c4b-a926-9051891b2fa4"
+        },
+        "timestamp": {
+            "S": "2024-08-21T17:23:00.427707"
+        },
+        "body": {
+            "S": "What funding opportunities are available for undergraduate students to support their research projects in computer science?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "07ba05c8-0e70-4a8f-a0ca-6540378bd7eb"
+        },
+        "username": {
+            "S": "Kalada Nwuke"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "ac7bbdf4-42cb-4557-9fe1-e543cd587ecd"
+        },
+        "timestamp": {
+            "S": "2024-08-21T08:55:00.427707"
+        },
+        "body": {
+            "S": "What are the next steps if my waiver request for the health insurance fee is denied and what are the possible reasons for denial?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "049106c6-80b2-47f0-9304-44a4a2766862"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "d1ecd56d-9deb-4984-a8ac-2287ce2f7037"
+        },
+        "timestamp": {
+            "S": "2024-08-17T02:23:00.427707"
+        },
+        "body": {
+            "S": "Can I use my high school French studies or take a placement test to fulfill or test out of the language requirement?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "c4600ad7-4c15-48cb-b58a-a42a8152e0c8"
+        },
+        "username": {
+            "S": "mathieu perez"
+        }
+    },
+    {
+        "chat_id": {
+            "S": "11dbda4e-5ea1-41e6-9e6e-205764bb590a"
+        },
+        "timestamp": {
+            "S": "2024-08-21T16:32:00.427707"
+        },
+        "body": {
+            "S": "What is the process for joining the robotics club if it has already reached its membership capacity?"
+        },
+        "course_id": {
+            "S": "6f9b98d4-7f92-4f7b-abe5-71c2c634edb2"
+        },
+        "message_id": {
+            "S": "4e1a6b0a-a8d4-4325-b802-1a42d34f26c1"
+        },
+        "username": {
+            "S": "Sarah Cantet"
+        }
+    }
+]

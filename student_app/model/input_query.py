@@ -18,4 +18,5 @@ class InputQueryAI(BaseModel):
     type: str
     uid: str
     input_message: str
+    university: str
         

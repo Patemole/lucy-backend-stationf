@@ -1,5 +1,6 @@
 
-#CODE QUI FONCTIONNE BIEN EN RÉCUPÉRANT LES INFORMATIONS DU COURSE_ID ACADEMIC ADVISOR ICI ET CRÉER LE GRAPHE
+#code qui génère un cluster mais qui permet de chercher des informations et de zoomer également sur les clusters que l'on a trouvé
+
 import random
 import logging
 from abc import ABC, abstractmethod
@@ -168,7 +169,7 @@ class GPT3TurboSummarizationModel(BaseSummarizationModel):
             return e
 
 class GPT3SummarizationModel(BaseSummarizationModel):
-    def __init__(self, model="text-davinci-003"):
+    def __init__(self, model="text-davinci-003"): 
         self.model = model
 
     @retry(wait=wait_random_exponential(min=1, max=20), stop=stop_after_attempt(6))
@@ -403,10 +404,6 @@ def get_node_labels(tree, embedding_model="OpenAI"):
     return [node.embeddings[embedding_model] for node in tree[0]], np.array(list(idx_to_node.values()))
 
 
-
-
-
-
 def create_cluster_plot(course_id: str):
     logging.info(f"Getting Course {course_id} messages")
     messages = get_course_chat_messages(course_id=course_id, start_date=datetime.now() - timedelta(days=200), end_date=datetime.now())
@@ -435,15 +432,73 @@ def create_cluster_plot(course_id: str):
     reduced_embeddings = global_cluster_embeddings(embeddings=embeddings, dim=2)
 
     logging.info(f"Creating interactive plot for course: {course_id}")
-    plot_html = str(datamapplot.create_interactive_plot(
-        reduced_embeddings,
-        labels[:, 0],  # Changed to access the first column, adjust as needed
-        labels[:, 1],  # Changed to access the second column, adjust as needed
-        hover_text=labels[:, 0],
-        font_family="UI Sans Serif",
-        enable_search=True,
-    ))
-    #output_file = "/Users/gregoryhissiger/Socratic-demo-1/generated_html/cluster_plot.html"
+    
+    # Here we add the search and zoom functionality to the plot creation.
+    plot_html = f"""
+    <html>
+    <head>
+        <title>Cluster Plot for Course</title>
+        <style>
+            body {{
+                font-family: 'UI Sans Serif';
+            }}
+        </style>
+    </head>
+    <body>
+        <input type="text" id="searchBox" placeholder="Search...">
+        <div id="plotContainer"></div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.58.4/plotly.min.js"></script>
+        <script>
+            const pointData = {reduced_embeddings.tolist()};
+            const hoverText = {labels[:, 0].tolist()};
+            const labelText = {labels[:, 1].tolist()};
+            
+            function updatePlot(filteredData, filteredHoverText) {{
+                const trace = {{
+                    x: filteredData.map(d => d[0]),
+                    y: filteredData.map(d => d[1]),
+                    mode: 'markers',
+                    text: filteredHoverText,
+                    marker: {{ size: 12 }}
+                }};
+                const layout = {{
+                    title: 'Cluster Visualization',
+                    showlegend: false,
+                    hovermode: 'closest',
+                    autosize: true
+                }};
+                Plotly.newPlot('plotContainer', [trace], layout);
+            }}
+            
+            function filterAndZoom(query) {{
+                const lowerCaseQuery = query.toLowerCase();
+                const filteredData = [];
+                const filteredHoverText = [];
+                pointData.forEach((point, i) => {{
+                    if (hoverText[i].toLowerCase().includes(lowerCaseQuery)) {{
+                        filteredData.push(point);
+                        filteredHoverText.push(hoverText[i]);
+                    }}
+                }});
+                
+                if (filteredData.length > 0) {{
+                    updatePlot(filteredData, filteredHoverText);
+                }} else {{
+                    updatePlot(pointData, hoverText);
+                }}
+            }}
+
+            document.getElementById('searchBox').addEventListener('input', function() {{
+                const query = this.value;
+                filterAndZoom(query);
+            }});
+
+            updatePlot(pointData, hoverText);
+        </script>
+    </body>
+    </html>
+    """
+    
     output_file = "/Users/gregoryhissiger/Socratic-demo-1/generated_html/cluster_academic_advisor.html"
 
     with open(output_file, "w") as file:
@@ -454,20 +509,15 @@ def create_cluster_plot(course_id: str):
 
 
 
-
-#table = DynamoDBClient().client.Table("PROD_chat_socratic")
 table = DynamoDBClient().client.Table("MVP_chat_academic_advisor")
 
 
 if __name__ == "__main__":
 
-    #IL FAUDRAIT PERN
-    #result = create_cluster_plot("course_id_test")
     result = create_cluster_plot("6f9b98d4-7f92-4f7b-abe5-71c2c634edb2") #qui corrresponds au numéro du course_id de l'academic advisor
     if 'error' in result:
         print(result['error'])
     else:
-        #output_file = "cluster_plot.html"
         output_file = "cluster_academic_advisor.html"
         with open(output_file, "w") as file:
             file.write(result['plot_html'])

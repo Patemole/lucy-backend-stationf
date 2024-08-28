@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Interactive Data Map</title>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+    <script src="https://unpkg.com/fflate@0.8.0"></script>
+    
+    <style>
+        body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background: #ffffff;
+        }
+
+        #deck-container {
+          width: 100vw;
+          height: 100vh;
+        }
+
+        #deck-container canvas {
+          z-index: 1;
+          background: #ffffff;
+        }
+
+        .deck-tooltip {
+            font-size: 0.8em;
+            font-family: UI Sans Serif;
+            font-weight: 300;
+            color: #000000 !important;
+            background-color: #ffffffaa !important;
+            border-radius: 12px;
+            box-shadow: 2px 3px 10px #aaaaaa44;
+            max-width: 25%;
+        }
+        
+        #loading {
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            position: absolute;
+            display: block; 
+            z-index: 99;
+        }
+
+        #loading-image {
+            position: absolute;
+            top: 45%;
+            left: 47.5%;
+            z-index: 100;
+        }
+        
+        #title-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 16px;
+            padding: 12px;
+            border-radius: 16px;
+            line-height: 0.95;
+            z-index: 2;
+            font-family: UI Sans Serif;
+            color: #000000;
+            background: #ffffffaa;
+            box-shadow: 2px 3px 10px #aaaaaa44;
+        }
+        
+        #search-container {
+            position: absolute;
+            left: -16px;
+            margin: 16px;
+            padding: 12px;
+            border-radius: 16px;
+            z-index: 2;
+            font-family: UI Sans Serif;
+            color: #000000;
+            background: #ffffffaa;
+            width: fit-content;
+            box-shadow: 2px 3px 10px #aaaaaa44;
+        }
+        
+        input {
+            margin: 2px;
+            padding: 4px;
+            border-radius: 8px;
+            color: #000000;
+            background: #ffffffdd;
+            border: 1px solid #ddddddff;
+            transition: 0.5s;
+            outline: none;
+        }
+        
+        input:focus {
+          border: 2px solid #555;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="loading">
+        <img id="loading-image" src="https://i.gifer.com/ZKZg.gif" alt="Loading..." width="5%"/>
+    </div>
+    
+    <div id="search-container" style="left:0 !important">
+        <input autocomplete="off" type="search" id="search" placeholder="🔍">
+    </div>
+    
+    <div id="deck-container"></div>
+    
+  </body>
+  <script type="module">
+    import { ArrowLoader } from 'https://cdn.jsdelivr.net/npm/@loaders.gl/arrow@4.1.0-alpha.10/+esm';
+    import { JSONLoader } from 'https://cdn.jsdelivr.net/npm/@loaders.gl/json@4.0.5/+esm';
+    
+    const pointDataBase64 = "QVJST1cxAAD/////0AUAABAAAAAAAAoADgAGAAUACAAKAAAAAAEEABAAAAAA...";
+    const pointDataBuffer = fflate.strToU8(atob(pointDataBase64), true);
+    const pointData = await loaders.parse(pointDataBuffer, ArrowLoader);
+    
+    const hoverDataBase64 = "H4sIAIZNx2YC/+1ca4wk11UuJ+u1Q0zigB0cIFAMiXcdZjY9sy/bCYzHs157YL2e7NpZTIDN7...";
+    const hoverDataBuffer = fflate.strToU8(atob(hoverDataBase64), true);
+    const unzippedHoverData = fflate.gunzipSync(hoverDataBuffer);
+    const hoverData = await loaders.parse(unzippedHoverData, ArrowLoader);
+    
+    const labelDataBase64 = "H4sIAIZNx2YC/7V92XIbSbLlr6TpoavbjOKNfamXGV6pFrXVoitVT9nYcB6SQJLMFoDERQJS84...";
+    const labelDataBuffer = fflate.strToU8(atob(labelDataBase64), true);
+    const unzippedLabelData = fflate.gunzipSync(labelDataBuffer);    
+    const labelData = await loaders.parse(unzippedLabelData, JSONLoader);
+    
+    const DATA = { src: pointData.data, length: pointData.data.x.length };
+    
+    const container = document.getElementById('deck-container');
+    
+    const pointLayer = new deck.ScatterplotLayer({
+        id: 'dataPointLayer',
+        data: DATA,
+        getPosition: (object, { index, data }) => [data.src.x[index], data.src.y[index]],
+        getRadius: 0.1,
+        getFillColor: (object, { index, data }) => [
+            data.src.r[index], 
+            data.src.g[index], 
+            data.src.b[index],
+            180
+        ],
+        getLineColor: (object, { index, data }) => [
+            data.src.r[index], 
+            data.src.g[index], 
+            data.src.b[index],
+            32
+        ],
+        getLineColor: [250, 250, 250, 128],
+        getLineWidth: 0.001,
+        highlightColor: [170, 0, 0, 187], 
+        lineWidthMaxPixels: 8,
+        lineWidthMinPixels: 0.1,
+        radiusMaxPixels: 24, 
+        radiusMinPixels: 0.01,
+        radiusUnits: "common", 
+        lineWidthUnits: "common", 
+        autoHighlight: true,
+        pickable: true, 
+        stroked: true
+    });
+    
+    const labelLayer = new deck.TextLayer({
+        id: "textLabelLayer",
+        data: labelData,
+        pickable: false,
+        getPosition: d => [d.x, d.y],
+        getText: d => d.label,
+        getColor: d => [d.r, d.g, d.b],
+        getSize: d => d.size,
+        sizeScale: 1,
+        sizeMinPixels: 18,
+        sizeMaxPixels: 36,
+        outlineWidth: 8,
+        outlineColor: [238, 238, 238, 221],
+        getBackgroundColor: [255, 255, 255, 64],
+        getBackgroundPadding: [15, 15, 15, 15],
+        background: true,
+        characterSet: "auto",
+        fontFamily: "UI Sans Serif",
+        fontWeight: 900,
+        lineHeight: 0.95,
+        elevation: 100,
+        collisionEnabled: true,
+        getCollisionPriority: d => d.size,
+        collisionTestProps: {
+          sizeScale: 3,
+          sizeMaxPixels: 36 * 2,
+          sizeMinPixels: 18 * 2
+        },
+        extensions: [new deck.CollisionFilterExtension()],
+    });
+
+    const deckgl = new deck.DeckGL({
+      container: container,
+      initialViewState: {
+        latitude: 3.952705,
+        longitude: 8.918967,
+        zoom: 4.09639153703402
+      },
+      controller: true,
+      layers: [pointLayer, labelLayer],
+      getTooltip: ({ index }) => hoverData.data.hover_text[index]
+    });
+    
+    document.getElementById("loading").style.display = "none";
+    
+    function selectPoints(searchTerm) {
+        const matchingPoints = [];
+        const updatedData = { ...DATA, src: { ...DATA.src } };
+
+        for (let i = 0; i < DATA.length; i++) {
+            if (hoverData.data.hover_text[i].toLowerCase().includes(searchTerm.toLowerCase())) {
+                updatedData.src.selected[i] = 1;
+                matchingPoints.push([DATA.src.x[i], DATA.src.y[i]]);
+            } else {
+                updatedData.src.selected[i] = 0;
+            }
+        }
+
+        const selectedPointLayer = pointLayer.clone({
+            id: 'selectedPointLayer',
+            data: updatedData,
+            getFilterValue: (object, { index, data }) => data.src.selected[index],
+            filterRange: [1, 2],
+            extensions: [new deck.DataFilterExtension({ filterSize: 1 })]
+        });
+        
+        deckgl.setProps({ layers: [selectedPointLayer, labelLayer] });
+
+        // Zoom to matching points
+        if (matchingPoints.length > 0) {
+            const [minX, minY] = matchingPoints.reduce((acc, point) => [
+                Math.min(acc[0], point[0]),
+                Math.min(acc[1], point[1])
+            ], [Infinity, Infinity]);
+            const [maxX, maxY] = matchingPoints.reduce((acc, point) => [
+                Math.max(acc[0], point[0]),
+                Math.max(acc[1], point[1])
+            ], [-Infinity, -Infinity]);
+
+            const midX = (minX + maxX) / 2;
+            const midY = (minY + maxY) / 2;
+
+            const zoom = Math.max(2, 12 - Math.log2(Math.abs(maxX - minX) + Math.abs(maxY - minY)));
+
+            deckgl.setProps({
+                initialViewState: {
+                    longitude: midX,
+                    latitude: midY,
+                    zoom: zoom
+                }
+            });
+        }
+    }
+    
+    const search = document.getElementById("search");
+    search.addEventListener("input", (event) => {
+        const searchTerm = event.target.value;
+        selectPoints(searchTerm);
+    });
+    
+  </script>
+</html>
