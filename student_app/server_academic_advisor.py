@@ -158,9 +158,9 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     # LANCEMENT DU LLM
     try: 
         # Choose LLM API in the class RunLlm:
-        lucy_exa = RunLlm("exa") # perplexity or exa
+        lucy_llm = RunLlm("exa") # perplexity or exa
 
-        return await lucy_exa.run_llm(input_message=input_message,
+        return await lucy_llm.run_llm(input_message=input_message,
                                                     student_profile=student_profile, 
                                                     university=university, 
                                                     chat_id=chat_id, 
@@ -697,28 +697,28 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
 
 # Function to split text into chunks of 1-3 words, preserving formatting
-def split_preserving_formatting(text):
-    chunks = []
-    lines = text.splitlines()
+# def split_preserving_formatting(text):
+#     chunks = []
+#     lines = text.splitlines()
 
-    for line in lines:
-        if line.startswith("-"):
-            bullet_content = line[1:].strip()
-            words = bullet_content.split()
-            i = 0
-            while i < len(words):
-                chunk_size = min(3, len(words) - i)
-                chunks.append("- " + ' '.join(words[i:i + chunk_size]) if i == 0 else ' '.join(words[i:i + chunk_size]))
-                i += chunk_size
-        else:
-            words = line.split()
-            i = 0
-            while i < len(words):
-                chunk_size = min(3, len(words) - i)
-                chunks.append(' '.join(words[i:i + chunk_size]))
-                i += chunk_size
-        chunks.append("\n")
-    return chunks
+#     for line in lines:
+#         if line.startswith("-"):
+#             bullet_content = line[1:].strip()
+#             words = bullet_content.split()
+#             i = 0
+#             while i < len(words):
+#                 chunk_size = min(3, len(words) - i)
+#                 chunks.append("- " + ' '.join(words[i:i + chunk_size]) if i == 0 else ' '.join(words[i:i + chunk_size]))
+#                 i += chunk_size
+#         else:
+#             words = line.split()
+#             i = 0
+#             while i < len(words):
+#                 chunk_size = min(3, len(words) - i)
+#                 chunks.append(' '.join(words[i:i + chunk_size]))
+#                 i += chunk_size
+#         chunks.append("\n")
+#     return chunks
 
 
 '''
@@ -894,7 +894,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse
 import json
 
-app = FastAPI()
+# app = FastAPI()
 
 # Function to split text into chunks of 1-3 words, preserving formatting
 def split_preserving_formatting(text):

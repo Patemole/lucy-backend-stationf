@@ -29,7 +29,7 @@ async def exa_api_url_and_summary(query: str, domain: str, keyword:str = None):
         result = exa_client.search_and_contents(
             query,
             type="auto",
-            num_results=10,
+            num_results=4,
             # text={
             #     "include_html_tags": True
             # },
@@ -38,7 +38,7 @@ async def exa_api_url_and_summary(query: str, domain: str, keyword:str = None):
             summary={
                 "query": summary_prompt
             },
-            include_text=[keyword],
+            # include_text=[keyword],
             # start_published_date="2023-12-31T23:00:01.000Z"
         )
 
@@ -48,13 +48,34 @@ async def exa_api_url_and_summary(query: str, domain: str, keyword:str = None):
         # }
         # for search in result.results]
 
-        summary= [search.summary for search in result.results]
+        date_and_summary = ''.join([f"Published in {search.published_date}: {search.summary}\n" for search in result.results])
+        print(f"DATED SUMMARY : {date_and_summary}")
 
-        urls = [search.url for search in result.results]
+        # published_date= [search.published_date for search in result.results]
+
+        # summary= [search.summary for search in result.results]
+
+        urls = [{
+             "answer_document": {
+                 "document_id": str(index + 1),
+                 "link": search.url,
+                 "document_name": search.title,
+                 "source_type": "course_resource"
+             }
+        }for index, search in enumerate(result.results)]
+
+        # {
+        #     "answer_document": {
+        #         "document_id": "1",
+        #         "link": "http://localhost:5001/static/yc_popup/course_path@penn.html",
+        #         "document_name": "Course registration PATH@PENN",
+        #         "source_type": "course_resource"
+        #     }
+        # },
 
         print(f"URLS: {urls}")
 
-        print(f"SUMMARY: {summary}")
-        return summary, urls
+        # print(f"SUMMARY: {summary}")
+        return date_and_summary, urls
 
      

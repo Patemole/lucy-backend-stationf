@@ -48,7 +48,7 @@ async def academic_advisor_router_treatment(input_message: str, llm_api: str = L
             question_type = "normal"
             model = "llama-3.1-sonar-small-128k-online"
          elif llm_api == "exa":
-            prompt_answering = prompts.system_exa_V4
+            prompt_answering = prompts.system_exa_V10
             question_type = "normal"
             model = "llama-3.1-8b-instant"
         

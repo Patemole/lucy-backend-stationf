@@ -121,26 +121,28 @@ class RunLlm:
             prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message, llm_api=self.llm)
 
             domain = f"upenn.edu"
+            print(f"Domain: {domain}")
 
             try:
-                messages = await get_messages_from_history(chat_id=chat_id, n=6)
+                messages = await get_messages_from_history(chat_id=chat_id, n=0)
             except Exception as e:
                 logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
             predefined_messages = []
 
             if question_type == "normal":
-                try:
-                    from student_app.LLM.groq_api import get_keywords
-                    keyword = get_keywords(input_message)
-                    print("KEYWORD EXTRACTED:", keyword)
-                except Exception as e:
-                    logging.error(f"Error while getting the keyword with groq: {str(e)}")
+                # try:
+                #     from student_app.LLM.groq_api import get_keywords
+                #     keyword = get_keywords(input_message)
+                #     print("KEYWORD EXTRACTED:", keyword)
+                # except Exception as e:
+                #     logging.error(f"Error while getting the keyword with groq: {str(e)}")
 
                 try:
                     from third_party_api_clients.exa.exa_api import exa_api_url_and_summary
-                    exa_summary, _ = await exa_api_url_and_summary(query=input_message, domain=domain,  keyword=keyword)
-                    # exa_search_results, _ = await exa_api_url_and_summary(query=input_message, domain=domain)
+                    # exa_summary, _ = await exa_api_url_and_summary(query=input_message, domain=domain,  keyword=keyword)
+                    exa_summary, urls = await exa_api_url_and_summary(query=input_message, domain=domain)
+                    print("EXA URLS :\n", urls)
                 except Exception as e:
                     logging.error(f"Error while searching the web with EXA API: {str(e)}")
 
