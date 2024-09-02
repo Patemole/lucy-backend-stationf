@@ -40,7 +40,8 @@ class RunLlm:
             domain = f"site:{university}.edu"
 
             try:
-                messages = await get_messages_from_history(chat_id=chat_id, n=6)
+                messages = await get_messages_from_history(chat_id=chat_id, n=4)
+                print(f'Messages from history: {messages}')
             except Exception as e:
                 logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
@@ -120,11 +121,12 @@ class RunLlm:
 
             prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message, llm_api=self.llm)
 
-            domain = f"upenn.edu"
+            domain = f"site:{university}.edu"
             print(f"Domain: {domain}")
 
             try:
-                messages = await get_messages_from_history(chat_id=chat_id, n=0)
+                messages = await get_messages_from_history(chat_id=chat_id, n=2)
+                print(f'Messages from history: {messages}')
             except Exception as e:
                 logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
 
