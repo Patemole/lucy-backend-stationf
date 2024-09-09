@@ -1,5 +1,5 @@
 from typing import Any, Dict, List
-from third_party_api_clients.dynamo_db.dynamo_db_client import DynamoDBClient
+#from third_party_api_clients.dynamo_db.dynamo_db_client import DynamoDBClient
 from datetime import datetime, timedelta
 from botocore.exceptions import ClientError
 from datetime import datetime
@@ -12,6 +12,9 @@ import os
 from dotenv import load_dotenv
 import json
 import logging
+import asyncio
+from boto3.dynamodb.conditions import Key
+import sys
 
 
 load_dotenv()
@@ -123,7 +126,7 @@ async def store_analytics_async(
 
 
 
-
+'''
 async def fetch_request_data_from_dynamo(time_filter: str) -> Dict[str, Any]:
     try:
         now = datetime.utcnow()
@@ -141,8 +144,8 @@ async def fetch_request_data_from_dynamo(time_filter: str) -> Dict[str, Any]:
             raise ValueError("Invalid time filter provided")
 
         # Build the filter expression for DynamoDB query (only filtering by time for now)
-        filter_expression = "#createdAt BETWEEN :start AND :end"
-        expression_attribute_names = {"#createdAt": "createdAt"}
+        filter_expression = "#timestamp BETWEEN :start AND :end"
+        expression_attribute_names = {"#timestamp": "timestamp"}
         expression_attribute_values = {
             ":start": start_date.isoformat(),
             ":end": now.isoformat()
@@ -157,7 +160,7 @@ async def fetch_request_data_from_dynamo(time_filter: str) -> Dict[str, Any]:
 
         items = response.get('Items', [])
         count = len(items)
-        dates = [item['createdAt'] for item in items]
+        dates = [item['timestamp'] for item in items]
 
         return {"count": count, "dates": dates}
 
@@ -168,3 +171,229 @@ async def fetch_request_data_from_dynamo(time_filter: str) -> Dict[str, Any]:
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
         raise e
+'''
+
+
+
+'''
+#NOUVELLE FOCNTION AVEC UNIVERSITY AS SEARCH 
+async def fetch_request_data_from_dynamo(time_filter: str, university: str) -> Dict[str, Any]:
+    try:
+        now = datetime.utcnow()
+
+        # Calculate the start date based on the time filter
+        if time_filter == 'Today':
+            start_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        elif time_filter == 'Last Week':
+            start_date = now - timedelta(days=7)
+        elif time_filter == 'Last Month':
+            start_date = now - timedelta(days=30)
+        elif time_filter == 'Last Year':
+            start_date = now - timedelta(days=365)
+        else:
+            raise ValueError("Invalid time filter provided")
+
+        # Initialize variables for pagination
+        items = []
+        last_evaluated_key = None
+
+        # Paginate through the results
+        while True:
+            if university.lower() == "all":
+                # If university is "all", query the entire table for timestamp
+                if last_evaluated_key:
+                    response = table.scan(
+                        FilterExpression='#ts BETWEEN :start_date AND :end_date',
+                        ExpressionAttributeNames={
+                            '#ts': 'timestamp'
+                        },
+                        ExpressionAttributeValues={
+                            ':start_date': start_date.isoformat(),
+                            ':end_date': now.isoformat()
+                        },
+                        ProjectionExpression='#ts',
+                        ExclusiveStartKey=last_evaluated_key
+                    )
+                else:
+                    response = table.scan(
+                        FilterExpression='#ts BETWEEN :start_date AND :end_date',
+                        ExpressionAttributeNames={
+                            '#ts': 'timestamp'
+                        },
+                        ExpressionAttributeValues={
+                            ':start_date': start_date.isoformat(),
+                            ':end_date': now.isoformat()
+                        },
+                        ProjectionExpression='#ts'
+                    )
+            else:
+                # Query the GSI with university-timestamp-index for a specific university
+                if last_evaluated_key:
+                    response = table.query(
+                        IndexName='university-timestamp-index',
+                        KeyConditionExpression='university = :university AND #ts BETWEEN :start_date AND :end_date',
+                        ExpressionAttributeNames={
+                            '#ts': 'timestamp'
+                        },
+                        ExpressionAttributeValues={
+                            ':university': university,
+                            ':start_date': start_date.isoformat(),
+                            ':end_date': now.isoformat()
+                        },
+                        ProjectionExpression='#ts',
+                        ExclusiveStartKey=last_evaluated_key
+                    )
+                else:
+                    response = table.query(
+                        IndexName='university-timestamp-index',
+                        KeyConditionExpression='university = :university AND #ts BETWEEN :start_date AND :end_date',
+                        ExpressionAttributeNames={
+                            '#ts': 'timestamp'
+                        },
+                        ExpressionAttributeValues={
+                            ':university': university,
+                            ':start_date': start_date.isoformat(),
+                            ':end_date': now.isoformat()
+                        },
+                        ProjectionExpression='#ts'
+                    )
+
+            # Collect items and handle pagination
+            items.extend(response.get('Items', []))
+            last_evaluated_key = response.get('LastEvaluatedKey', None)
+
+            if not last_evaluated_key:
+                break
+
+        # Count the number of timestamps and create a list of timestamps
+        count = len(items)
+        dates = [item['timestamp'] for item in items]
+
+        return {"count": count, "dates": dates}
+
+    except ClientError as e:
+        logging.error(f"Error querying DynamoDB: {str(e)}")
+        raise e
+
+    except Exception as e:
+        logging.error(f"Unexpected error: {str(e)}")
+        raise e
+'''
+
+
+
+def fetch_request_data_from_dynamo(university, filter_time):
+    
+    end_date = datetime.now()
+
+    if filter_time == "Today":
+        start_date = end_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    elif filter_time == "Last Week":
+        start_date = end_date - timedelta(days=7)
+    elif filter_time == "Last Month":
+        start_date = end_date - timedelta(days=30)
+    elif filter_time == "Last Year":
+        start_date = end_date - timedelta(days=365)
+    else:
+        raise ValueError("Invalid filter_time value provided.")
+
+    # Format dates to ISO string for DynamoDB comparison
+    start_date_str = start_date.isoformat()
+    end_date_str = end_date.isoformat()
+
+    # Initialize list to collect all timestamps
+    timestamps = []
+
+    # Set initial parameters
+    total_items_retrieved = 0
+    total_data_size = 0  # For tracking total size in bytes
+    exclusive_start_key = None  # For pagination
+
+    # Keep querying until no more pages are available
+    while True:
+        if university == "all":
+            filter_expression = Key('timestamp').between(start_date_str, end_date_str)
+            params = {
+                'IndexName': 'university-timestamp-index',
+                'FilterExpression': filter_expression,
+                'ProjectionExpression': '#ts',
+                'ExpressionAttributeNames': {'#ts': 'timestamp'}
+            }
+            if exclusive_start_key:
+                params['ExclusiveStartKey'] = exclusive_start_key
+
+            response = table.scan(**params)
+        else:
+            filter_expression = Key('university').eq(university) & Key('timestamp').between(start_date_str, end_date_str)
+            params = {
+                'IndexName': 'university-timestamp-index',
+                'KeyConditionExpression': filter_expression,
+                'ProjectionExpression': '#ts',
+                'ExpressionAttributeNames': {'#ts': 'timestamp'}
+            }
+            if exclusive_start_key:
+                params['ExclusiveStartKey'] = exclusive_start_key
+
+            response = table.query(**params)
+
+        # Collect timestamps from this page
+        page_items = response['Items']
+        timestamps += [item['timestamp'] for item in page_items]
+
+        # Update total items and data size
+        page_size_in_bytes = sys.getsizeof(page_items)
+        total_items_retrieved += len(page_items)
+        total_data_size += page_size_in_bytes
+
+        # Print the data for debugging purposes
+        print(f"Page size: {page_size_in_bytes / 1024:.2f} KB, Total data size: {total_data_size / (1024 * 1024):.2f} MB")
+        print(f"Total items retrieved so far: {total_items_retrieved}")
+
+        # Check if there are more pages to fetch
+        exclusive_start_key = response.get('LastEvaluatedKey')
+
+        # If no more pages, break the loop
+        if exclusive_start_key is None:
+            break
+
+    # Count the number of timestamps
+    timestamp_count = len(timestamps)
+    
+    # Return the count and the list of timestamps
+    return timestamp_count, timestamps
+
+# Example usage
+#university = 'all'  # Or specific university name
+#filter_time = 'Last Week'  # Options: 'Today', 'Last Week', 'Last Month', 'Last Year'
+
+#count, timestamps = fetch_request_data_from_dynamo(university, filter_time)
+#print(count)
+#print(timestamps)
+
+
+
+'''
+
+async def main():
+    
+    # Choisir un filtre de temps (Today, Last Week, Last Month, Last Year)
+    time_filter = 'Last Month'  # Exemple : utiliser 'Today', 'Last Week', 'Last Month'
+    university = 'all'
+
+    try:
+        # Appel de la fonction pour récupérer les données
+        result = await fetch_request_data_from_dynamo(time_filter, university)
+
+        # Afficher le résultat
+        print("Nombre de timestamps récupérés:", result["count"])
+        print("Liste des timestamps:")
+        print(result["dates"])
+
+    except Exception as e:
+        logging.error(f"Erreur lors de l'exécution : {str(e)}")
+        raise e
+
+# Exécuter la fonction principale en mode asynchrone
+if __name__ == "__main__":
+    asyncio.run(main())
+    '''

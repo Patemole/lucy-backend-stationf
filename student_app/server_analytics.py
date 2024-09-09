@@ -5,7 +5,7 @@ from pydantic import BaseModel, ValidationError
 from botocore.exceptions import ClientError
 from typing import List
 import uvicorn
-#from your_aws_module import fetch_request_data_from_dynamo  # Import the function that interacts with AWS DynamoDB
+from student_app.database.dynamo_db.analytics import fetch_request_data_from_dynamo  # Import the function that interacts with AWS DynamoDB
 #from student_app.database.dynamo_db.analytics import fetch_request_data
 
 
@@ -46,13 +46,23 @@ class RequestDataResponseModel(BaseModel):
     count: int
     dates: List[str]  # List of dates in string format for the response
 
-'''
+
 # Endpoint to handle the filtered request data
 @app.post("/requests_filtered", response_model=RequestDataResponseModel)
 async def get_filtered_request_data(request_data: RequestDataModel):
     try:
         # Call the AWS DynamoDB handler function
-        response_data = await fetch_request_data(request_data.timeFilter)#, request_data.universityFilter)
+        university = "all"
+
+        print(university)
+        print(request_data.timeFilter)
+
+        count, timestamps = fetch_request_data_from_dynamo(university, request_data.timeFilter)#, request_data.universityFilter)
+
+        response_data = {
+            "count": count,
+            "dates": timestamps  # Assuming 'timestamps' are in ISO format
+        }
         
         return response_data
 
@@ -67,7 +77,7 @@ async def get_filtered_request_data(request_data: RequestDataModel):
     except Exception as e:
         logging.error(f"Unexpected error: {str(e)}")
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
-'''
+
 
 
 
