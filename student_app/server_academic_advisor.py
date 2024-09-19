@@ -385,9 +385,10 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     # Known responses with line breaks and bullet points
     known_responses: Dict[str, str] = {
         "Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let’s get started.""",
         "4": """Great! And how many of those classes have you already decided on?""",
         "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
-        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
         "Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
         "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020 please find below details on Dr. Hammish Office Hours:""",
         "Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
@@ -523,6 +524,97 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         ]
     }
 
+
+
+    # Dictionary for answer_TAK associated with specific input messages
+    answer_COURSE_associations: Dict[str, List[Dict]] = {
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": [
+            {
+            "document_id": "4",
+            "title": "CIS 5960 - Applied Machine Learning",
+            "code": "CIS",
+            "Semester": "Fall",
+            "Credit": "1 CU",
+            "Prerequisites": "MATH 3210, CIS 3210",
+            "Work": "2.5",
+            "CourseQuality": "3.5",
+            "Difficulty": "2",
+            "Description": "Introduction to fundamental concepts and algorithms to cover supervised, unsupervised and reinforcement learning.",
+            "Prospectus_link": "http://localhost:5001/static/yc_popup/course_path@penn.html",
+            "Syllabus_link": "http://localhost:5001/static/yc_popup/syllabus_cis_5190.html",
+            "CoursesSlot": [
+                {
+                "CourseID": "235",
+                "TeacherName": "Dr. John Louise",
+                "TeacherQuality": "4",
+                "Days": ["Mon", "Wed"],
+                "StartTime": "10:00",
+                "EndTime": "11:30"
+                },
+                {
+                "CourseID": "808",
+                "TeacherName": "Dr. Jane Smith",
+                "TeacherQuality": "3.5",
+                "Days": ["Tue", "Thu"],
+                "StartTime": "14:00",
+                "EndTime": "15:30"
+                },
+                {
+                "CourseID": "715",
+                "TeacherName": "Dr. Emily Johnson",
+                "TeacherQuality": "4.2",
+                "Days": ["Fri"],
+                "StartTime": "15:00",
+                "EndTime": "17:00"
+                }
+            ]
+            },
+
+
+            {
+                "document_id": "5",
+                "title": "CIS 5220 - Deep Learning for Data Science",
+                "code": "CIS",
+                "Semester": "Fall",
+                "Credit": "1 CU",
+                "Prerequisites": "MATH 3210, CIS 5310",
+                "Work": "3",
+                "CourseQuality": "2",
+                "Difficulty": "4",
+                "Description": "Introduction to fundamental concepts of deep learning to cover supervised, unsupervised, and reinforcement learning.",
+                "Prospectus_link": "http://localhost:5001/static/yc_popup/course_path@penn.html",
+                "Syllabus_link": "http://localhost:5001/static/yc_popup/syllabus_cis_5190.html",
+                "CoursesSlot": [
+                    {
+                    "CourseID": "340",
+                    "TeacherName": "Dr. Michael Brown",
+                    "TeacherQuality": "4.5",
+                    "Days": ["Mon", "Wed"],
+                    "StartTime": "11:00",
+                    "EndTime": "12:30"
+                    },
+                    {
+                    "CourseID": "210",
+                    "TeacherName": "Dr. Sarah Lee",
+                    "TeacherQuality": "4.0",
+                    "Days": ["Tue", "Thu"],
+                    "StartTime": "15:00",
+                    "EndTime": "16:30"
+                    },
+                    {
+                    "CourseID": "650",
+                    "TeacherName": "Dr. Alan Turing",
+                    "TeacherQuality": "4.7",
+                    "Days": ["Mon"],
+                    "StartTime": "15:00",
+                    "EndTime": "17:00"
+                    }
+                ]
+                }
+
+        ]
+    }
+
     # Check if the question is known
     response_message = known_responses.get(input_message, "Sorry, I don't understand the question.")
 
@@ -531,6 +623,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     related_qs = related_questions.get(input_message, [])
     images = image_associations.get(input_message, [])
     answer_TAK_data = answer_TAK_associations.get(input_message, [])
+    answer_COURSE_data = answer_COURSE_associations.get(input_message, [])
     answer_waiting_data = answer_waiting_associations.get(input_message, [])
 
     # Return the simulated response as streaming
@@ -590,6 +683,12 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         if answer_TAK_data:
             answer_TAK_json = json.dumps({"answer_TAK_data": answer_TAK_data})
             yield f"\n<ANSWER_TAK>{answer_TAK_json}<ANSWER_TAK_END>\n"
+            await asyncio.sleep(0.2)
+
+        # Send answer_COURSE as JSON if available
+        if answer_COURSE_data:
+            answer_COURSE_json = json.dumps({"answer_COURSE_data": answer_COURSE_data})
+            yield f"\n<ANSWER_COURSE>{answer_COURSE_json}<ANSWER_COURSE_END>\n"
             await asyncio.sleep(0.2)
 
     return StreamingResponse(message_stream(), media_type="text/plain")
