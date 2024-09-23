@@ -31,7 +31,7 @@ async def academic_advisor_router_treatment(input_message: str):
     if router_answer.name == "chitchat":
          prompt_answering = prompts.system_chitchat
          question_type = "chitchat"
-         model = "llama-3-sonar-small-32k-chat"
+         model = "llama-3.1-sonar-large-128k-chat"
      
 
      #if not politics or chitchat then it is general AA questions 
