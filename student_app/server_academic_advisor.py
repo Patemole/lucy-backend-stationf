@@ -6,7 +6,7 @@ import datetime
 from openai import OpenAI
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from dotenv import load_dotenv
 from functools import wraps
 import phospho
@@ -15,6 +15,9 @@ import asyncio
 from fastapi import FastAPI, Request, Response
 import json
 
+import pandas as pd
+
+import asyncio
 import time
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
 from student_app.database.dynamo_db.analytics import store_analytics_async
@@ -37,6 +40,19 @@ from student_app.prompts.academic_advisor_perplexity_search_prompts import syste
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
+
+from api_assistant.assistant.assistant_manager import initialize_assistant
+from api_assistant.threads.thread_manager import (
+    create_thread,
+    add_user_message,
+    create_and_poll_run,
+    retrieve_run,
+    retrieve_messages
+)
+from api_assistant.assistant.handlers import handle_requires_action
+from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
+from api_assistant.utils.logger import setup_logger
+
 # Today's date
 date = datetime.date.today()
 
@@ -376,6 +392,105 @@ def split_preserving_formatting(text):
 
 @app.post("/send_message_fake_demo")
 async def chat(request: Request, input_query: Dict) -> StreamingResponse:
+    # Method for assistant API call 
+    """
+    Endpoint to handle user messages, interact with the AI assistant, and return appropriate responses.
+    
+    - If the assistant invokes a function (e.g., `get_filters`), apply the filter and return the filtered JSON.
+    - If no function is invoked, return the assistant's textual response.
+    
+    Args:
+        request (Request): The incoming HTTP request.
+        input_query (Dict): The JSON payload containing the user's message.
+    
+    Returns:
+        StreamingResponse: The assistant's response, either as JSON or plain text.
+    """
+    input_message = input_query.get("message")
+    if not input_message:
+        raise HTTPException(status_code=400, detail="Message is required.")
+
+    async def process_assistant(message: str):
+        """
+        Inner function to process the assistant interaction.
+
+        Args:
+            message (str): The user's input message.
+
+        Returns:
+            Dict: The response to return to the frontend, either containing filtered JSON or assistant's reply.
+        """
+        # Initialize the assistant
+        assistant = initialize_assistant()
+
+        # Create a new thread for the conversation
+        thread = create_thread()
+
+        # Add the user's message to the thread
+        add_user_message(thread.id, message)
+
+        # Create and poll a run for the assistant to process the message
+        run = create_and_poll_run(thread.id, assistant.id)
+
+        # Polling loop to monitor the run's status
+        while run.status not in ['completed', 'failed']:
+            if run.status == 'requires_action':
+                # Load course data
+                df_expanded = pd.read_csv('from student_app.api_assistant/tools/filter_tool/combined_courses_final.csv')
+
+                # Handle required actions (e.g., function calls) by the assistant
+                run = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
+            else:
+                # Wait for 5 seconds before checking the status again
+                await asyncio.sleep(0.2)
+                run = retrieve_run(run.id, thread.id)
+
+        # After the run is completed or failed
+        if run.status == 'completed':
+            messages = retrieve_messages(thread.id)
+
+            # Find the assistant's message
+            assistant_message = next((msg for msg in messages if msg.role == 'assistant'), None)
+
+            if not assistant_message:
+                return {"error": "No response from assistant."}
+
+            # Check if the assistant invoked a function
+            if hasattr(assistant_message, 'function_call') and assistant_message.function_call:
+                function_call = assistant_message.function_call
+                function_name = function_call.get('name')
+                arguments = function_call.get('arguments')
+
+                if function_name == "get_filters":
+                    try:
+                        # Parse the JSON arguments to get filter criteria
+                        filters = json.loads(arguments)
+
+                        # Apply the filters to the data
+                        filtered_json = apply_filters(filters)  
+
+                        # Parse the JSON string to Python object
+                        filtered_data = json.loads(filtered_json)
+
+                        return {"filtered_courses": filtered_data}
+                    except json.JSONDecodeError:
+                        return {"error": "Invalid filter arguments."}
+                    except Exception:
+                        return {"error": "Error applying filters."}
+                else:
+                    return {"error": f"Unknown function: {function_name}"}
+            else:
+                # Assistant did not invoke any function; return the textual response
+                assistant_reply = assistant_message.content
+                return {"assistant_reply": assistant_reply}
+        else:
+            return {"error": f"Run ended with status: {run.status}."}
+
+    # Call the inner function and get the response
+    # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
+    response = await process_assistant(input_message)
+
+    # Return the response as JSON
     input_message = input_query.get("message")
     print("this is the input message")
     print(input_message)
@@ -526,7 +641,6 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
 
 
-    # Dictionary for answer_TAK associated with specific input messages
     answer_COURSE_associations: Dict[str, List[Dict]] = {
         "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": [
             {
