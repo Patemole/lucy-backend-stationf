@@ -2,7 +2,11 @@
 
 import time
 import openai
-from backend.config import Config
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def create_thread():
     """
