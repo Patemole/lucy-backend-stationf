@@ -51,7 +51,7 @@ from api_assistant.threads.thread_manager import (
 )
 from api_assistant.assistant.handlers import handle_requires_action
 from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
-from api_assistant.utils.logger import setup_logger
+from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
 
 # Today's date
 date = datetime.date.today()
@@ -410,9 +410,10 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     if not input_message:
         raise HTTPException(status_code=400, detail="Message is required.")
 
-    async def process_assistant(message: str):
+    
+    def process_assistant(message: str):
         """
-        Inner function to process the assistant interaction.
+        Function to process the assistant interaction.
 
         Args:
             message (str): The user's input message.
@@ -429,58 +430,39 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         # Add the user's message to the thread
         add_user_message(thread.id, message)
 
+        # Load the DataFrame once at the beginning
+        df_expanded = pd.read_csv('../api_assistant/tools/filter_tool/combined_courses_final.csv')
+
         # Create and poll a run for the assistant to process the message
         run = create_and_poll_run(thread.id, assistant.id)
+
+        filtered_data = None  # Initialize filtered_data
 
         # Polling loop to monitor the run's status
         while run.status not in ['completed', 'failed']:
             if run.status == 'requires_action':
-                # Load course data
-                df_expanded = pd.read_csv('from student_app.api_assistant/tools/filter_tool/combined_courses_final.csv')
-
                 # Handle required actions (e.g., function calls) by the assistant
-                run = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
+                run, filtered_data = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
             else:
-                # Wait for 5 seconds before checking the status again
-                await asyncio.sleep(0.2)
+                # Wait before checking the status again
+                time.sleep(0.2)
                 run = retrieve_run(run.id, thread.id)
 
         # After the run is completed or failed
         if run.status == 'completed':
-            messages = retrieve_messages(thread.id)
-
-            # Find the assistant's message
-            assistant_message = next((msg for msg in messages if msg.role == 'assistant'), None)
-
-            if not assistant_message:
-                return {"error": "No response from assistant."}
-
-            # Check if the assistant invoked a function
-            if hasattr(assistant_message, 'function_call') and assistant_message.function_call:
-                function_call = assistant_message.function_call
-                function_name = function_call.get('name')
-                arguments = function_call.get('arguments')
-
-                if function_name == "get_filters":
-                    try:
-                        # Parse the JSON arguments to get filter criteria
-                        filters = json.loads(arguments)
-
-                        # Apply the filters to the data
-                        filtered_json = apply_filters(filters)  
-
-                        # Parse the JSON string to Python object
-                        filtered_data = json.loads(filtered_json)
-
-                        return {"filtered_courses": filtered_data}
-                    except json.JSONDecodeError:
-                        return {"error": "Invalid filter arguments."}
-                    except Exception:
-                        return {"error": "Error applying filters."}
-                else:
-                    return {"error": f"Unknown function: {function_name}"}
+            # If filtered_data is not None, return it to the frontend
+            if filtered_data is not None:
+                return {"filtered_courses": filtered_data}
             else:
-                # Assistant did not invoke any function; return the textual response
+                messages = retrieve_messages(thread.id)
+
+                # Find the assistant's message
+                assistant_message = next((msg for msg in messages if msg.role == 'assistant'), None)
+
+                if not assistant_message:
+                    return {"error": "No response from assistant."}
+
+                # Return the assistant's reply as a string
                 assistant_reply = assistant_message.content
                 return {"assistant_reply": assistant_reply}
         else:
