@@ -317,6 +317,7 @@ async def delete_chat_history_route(chat_id: str):
         raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
 
 
+
 # NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
 @app.post("/save_ai_message")
 async def save_ai_message(ai_message: InputQueryAI):
@@ -452,6 +453,7 @@ def split_preserving_formatting(text):
                 i += chunk_size
         chunks.append("\n")
     return chunks
+
 
 
 @app.post("/send_message_fake_demo")
