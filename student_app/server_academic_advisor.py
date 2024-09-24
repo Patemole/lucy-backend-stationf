@@ -164,6 +164,70 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
     student_profile = input_query.student_profile
 
+
+    def process_assistant(message: str):
+        """
+        Function to process the assistant interaction.
+
+        Args:
+            message (str): The user's input message.
+
+        Returns:
+            Dict: The response to return to the frontend, either containing filtered JSON or assistant's reply.
+        """
+        # Initialize the assistant
+        assistant = initialize_assistant()
+
+        # Create a new thread for the conversation
+        thread = create_thread()
+
+        # Add the user's message to the thread
+        add_user_message(thread.id, message)
+
+        # Load the DataFrame once at the beginning
+        df_expanded = pd.read_csv('../api_assistant/tools/filter_tool/combined_courses_final.csv')
+
+        # Create and poll a run for the assistant to process the message
+        run = create_and_poll_run(thread.id, assistant.id)
+
+        filtered_data = None  # Initialize filtered_data
+
+        # Polling loop to monitor the run's status
+        while run.status not in ['completed', 'failed']:
+            if run.status == 'requires_action':
+                # Handle required actions (e.g., function calls) by the assistant
+                run, filtered_data = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
+            else:
+                # Wait before checking the status again
+                time.sleep(0.2)
+                run = retrieve_run(run.id, thread.id)
+
+        # After the run is completed or failed
+        if run.status == 'completed':
+            # If filtered_data is not None, return it to the frontend
+            if filtered_data is not None:
+                return {"filtered_courses": filtered_data}
+            else:
+                messages = retrieve_messages(thread.id)
+
+                # Find the assistant's message
+                assistant_message = next((msg for msg in messages if msg.role == 'assistant'), None)
+
+                if not assistant_message:
+                    return {"error": "No response from assistant."}
+
+                # Return the assistant's reply as a string
+                assistant_reply = assistant_message.content
+                return {"assistant_reply": assistant_reply}
+        else:
+            return {"error": f"Run ended with status: {run.status}."}
+
+    # Call the inner function and get the response
+    # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
+    response = await process_assistant(input_message)
+
+    
+    """"
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
     prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
@@ -233,7 +297,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         # return StreamingResponse(event_stream(), media_type="text/event-stream")
     except Exception as e:
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
-
+"""
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
 @app.get("/get_chat_history/{chat_id}")
@@ -411,67 +475,6 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         raise HTTPException(status_code=400, detail="Message is required.")
 
     
-    def process_assistant(message: str):
-        """
-        Function to process the assistant interaction.
-
-        Args:
-            message (str): The user's input message.
-
-        Returns:
-            Dict: The response to return to the frontend, either containing filtered JSON or assistant's reply.
-        """
-        # Initialize the assistant
-        assistant = initialize_assistant()
-
-        # Create a new thread for the conversation
-        thread = create_thread()
-
-        # Add the user's message to the thread
-        add_user_message(thread.id, message)
-
-        # Load the DataFrame once at the beginning
-        df_expanded = pd.read_csv('../api_assistant/tools/filter_tool/combined_courses_final.csv')
-
-        # Create and poll a run for the assistant to process the message
-        run = create_and_poll_run(thread.id, assistant.id)
-
-        filtered_data = None  # Initialize filtered_data
-
-        # Polling loop to monitor the run's status
-        while run.status not in ['completed', 'failed']:
-            if run.status == 'requires_action':
-                # Handle required actions (e.g., function calls) by the assistant
-                run, filtered_data = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
-            else:
-                # Wait before checking the status again
-                time.sleep(0.2)
-                run = retrieve_run(run.id, thread.id)
-
-        # After the run is completed or failed
-        if run.status == 'completed':
-            # If filtered_data is not None, return it to the frontend
-            if filtered_data is not None:
-                return {"filtered_courses": filtered_data}
-            else:
-                messages = retrieve_messages(thread.id)
-
-                # Find the assistant's message
-                assistant_message = next((msg for msg in messages if msg.role == 'assistant'), None)
-
-                if not assistant_message:
-                    return {"error": "No response from assistant."}
-
-                # Return the assistant's reply as a string
-                assistant_reply = assistant_message.content
-                return {"assistant_reply": assistant_reply}
-        else:
-            return {"error": f"Run ended with status: {run.status}."}
-
-    # Call the inner function and get the response
-    # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
-    response = await process_assistant(input_message)
-
     # Return the response as JSON
     input_message = input_query.get("message")
     print("this is the input message")
