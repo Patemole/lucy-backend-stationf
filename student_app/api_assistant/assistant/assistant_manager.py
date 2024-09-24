@@ -14,9 +14,12 @@ def initialize_assistant():
     assistant = openai.beta.assistants.create(
         name="Course Selection Assistant",
         instructions=(
-            "You are an assistant that helps students choose their classes by filtering a course database based on their queries. "
-            "Use the provided filters to search the database and return only the courses that match the criteria. "
-            "Do not generate or fabricate any course information. If no courses match the query, inform the user accordingly."
+            """
+                You are an academic advisor at the University of Pennsylvania (UPenn). Your role is to assist students with any administrative or academic queries related to UPenn. 
+                You have access to the course database and can help students select courses by filtering the database based on their queries. For any queries that require current or up-to-date information—such as semester dates,
+                upcoming events, recent policy changes, or deadlines—you should use the get_current_info function to retrieve the latest information. 
+                Always ensure that your responses are accurate and based on the information available to you; never fabricate or invent information.
+            """
         ),
         model="gpt-4o",
         tools=[
@@ -454,6 +457,311 @@ def initialize_assistant():
 
                         },
                         # No 'required' field to allow optional parameters
+                    }
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "get_current_info",
+                    "description": "Retrieves up-to-date information based on the student's query. Use this function when the user asks for current or upcoming events, dates, deadlines, policies, or any information that might have changed recently and requires the most recent data.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": "The specific information the student is requesting that requires up-to-date data."
+                            }
+                        },
+                        "required": ["query"]
+                    }
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "get_prerequisites",
+                    "description": "Retrieves the prerequisites for a specified course code.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string",
+                                "description": """The course code to retrieve prerequisites for (e.g., 'CIS 1210'). Ensure the course code is in the correct format: uppercase letters followed by a space and four digits.
+                                                    To correctly format the id letters refer to the following guide
+                                                        Academic Foundations (ACFD)
+                                                        Accounting (ACCT)
+                                                        Africana Studies (AFRC)
+                                                        American Sign Language (ASLD)
+                                                        Amharic (AMHR)
+                                                        Anatomy (ANAT)
+                                                        Ancient History (ANCH)
+                                                        Ancient Middle East Languages (AMEL)
+                                                        Anthropology (ANTH)
+                                                        Applied Math & Computational Science (AMCS)
+                                                        Applied Positive Psychology (APOP)
+                                                        Arabic (ARAB)
+                                                        Architecture (ARCH)
+                                                        Art & Archaeology of Mediterranean World (AAMW)
+                                                        Art History (ARTH)
+                                                        Asian American Studies (ASAM)
+                                                        Asian Languages (ALAN)
+                                                        Astronomy (ASTR)
+                                                        B
+                                                        Bachelor of Applied Arts & Sciences (BAAS)
+                                                        Behavioral & Decision Sciences (BDS)
+                                                        Bengali (BENG)
+                                                        Benjamin Franklin Seminars (BENF)
+                                                        Biochemistry & Molecular Biophysics (BMB)
+                                                        Biochemistry (BCHE)
+                                                        Bioengineering (BE)
+                                                        Bioethics (BIOE)
+                                                        Biology (BIOL)
+                                                        Biomedical Graduate Studies (BIOM)
+                                                        Biomedical Informatics (BMIN)
+                                                        Biostatistics (BSTA)
+                                                        Biotechnology (BIOT)
+                                                        Bosnian-Croatian-Serbo (BCS)
+                                                        Business Economics & Public Policy (BEPP)
+                                                        C
+                                                        Cell and Molecular Biology (CAMB)
+                                                        Chemical & Biomolecular Engineering (CBE)
+                                                        Chemistry (CHEM)
+                                                        Chichewa (CHIC)
+                                                        Chinese (CHIN)
+                                                        Cinema (CINM)
+                                                        Cinema and Media Studies (CIMS)
+                                                        City and Regional Planning (CPLN)
+                                                        Classical Studies (CLST)
+                                                        Classics (CLSC)
+                                                        Climate Change (CLCH)
+                                                        Cognitive Science (COGS)
+                                                        College (COLL)
+                                                        Communications (COMM)
+                                                        Comparative Literature (COML)
+                                                        Computer and Information Science (CIS)
+                                                        Computer and Information Technology (CIT)
+                                                        Creative Writing (CRWR)
+                                                        Criminology (CRIM)
+                                                        Czech (CZCH)
+                                                        D
+                                                        Data Analytics (DATA)
+                                                        Data Science (DATS)
+                                                        Demography (DEMG)
+                                                        Dental - Dental Medicine (DENT)
+                                                        Dental - Graduate Advanced Dental Studies (GADS)
+                                                        Dental - Graduate Core Curriculum (DADE)
+                                                        Dental - Graduate Doctor of Science in Dentistry (GDSD)
+                                                        Dental - Graduate Endodontics (GEND)
+                                                        Dental - Graduate Oral and Population Health (GOPH)
+                                                        Dental - Graduate Oral Biology (GBIO)
+                                                        Dental - Graduate Oral Health Sciences (GOHS)
+                                                        Dental - Graduate Oral Medicine (GOMD)
+                                                        Dental - Graduate Orthodontics (GORT)
+                                                        Dental - Graduate Pediatrics (GPED)
+                                                        Dental - Graduate Periodontics (GPRD)
+                                                        Dental - Graduate Prosthodontics (GPRS)
+                                                        Design (DSGN)
+                                                        Digital Culture (DIGC)
+                                                        Dutch (DTCH)
+                                                        E
+                                                        Earth and Environmental Science (EESC)
+                                                        East Asian Languages & Civilization (EALC)
+                                                        Economics (ECON)
+                                                        Education (EDUC)
+                                                        Education - Education Entrepreneurship (EDEN)
+                                                        Education - Higher Education Management (EDHE)
+                                                        Education - Independent School Teaching Residency (EDPR)
+                                                        Education - Medical Education (EDME)
+                                                        Education - Mid-Career Educational & Organizational Leadership (EDMC)
+                                                        Education - Penn Chief Learning Officer (EDCL)
+                                                        Education - School & Mental Health Counseling (EDSC)
+                                                        Education - School Leadership (EDSL)
+                                                        Education - Urban Teaching Residency Certificate (EDTC)
+                                                        Education - Urban Teaching Residency Master's (EDTF)
+                                                        Electrical & Systems Engineering (ESE)
+                                                        Energy Management and Policy (ENMG)
+                                                        Engineering & Applied Science (EAS)
+                                                        Engineering (ENGR)
+                                                        Engineering Mathematics (ENM)
+                                                        English (ENGL)
+                                                        English Literature (ENLT)
+                                                        Environmental Studies (ENVS)
+                                                        Epidemiology (EPID)
+                                                        Ethics (ETHC)
+                                                        F
+                                                        Filipino (FILP)
+                                                        Finance (FNCE)
+                                                        Fine Arts (FNAR)
+                                                        First-Year Seminar (FRSM)
+                                                        Francophone, Italian, and Germanic Studies (FIGS)
+                                                        French (FREN)
+                                                        G
+                                                        Gender, Sexuality & Women's Studies (GSWS)
+                                                        Genetic Counseling (GENC)
+                                                        Genomics & Comp. Biology (GCB)
+                                                        Germanic Languages (GRMN)
+                                                        Global MPA (GMPA)
+                                                        Global Studies (GLBS)
+                                                        Government Administration (GAFL)
+                                                        Graduate Arts & Sciences (GAS)
+                                                        Greek (GREK)
+                                                        Gujarati (GUJR)
+                                                        H
+                                                        Health & Societies (HSOC)
+                                                        Health Care Innovation (HCIN)
+                                                        Health Care Management (HCMG)
+                                                        Health Policy Research (HPR)
+                                                        Healthcare Quality and Safety (HQS)
+                                                        Hebrew (HEBR)
+                                                        Hindi (HIND)
+                                                        Historic Preservation (HSPV)
+                                                        History & Sociology of Science (HSSC)
+                                                        History (HIST)
+                                                        Hungarian (HUNG)
+                                                        I
+                                                        Igbo (IGBO)
+                                                        Immunology (IMUN)
+                                                        Implementation Science (IMP)
+                                                        Indonesian (INDO)
+                                                        Integrated Product Design (IPD)
+                                                        Integrated Studies (INTG)
+                                                        Intercultural Communication (ICOM)
+                                                        International Relations (INTR)
+                                                        International Studies (INSP)
+                                                        Irish Gaelic (IRIS)
+                                                        Italian (ITAL)
+                                                        J
+                                                        Japanese (JPAN)
+                                                        Jewish Studies Program (JWST)
+                                                        K
+                                                        Kannada (KAND)
+                                                        Korean (KORN)
+                                                        L
+                                                        Landscape Architecture & Regional Planning (LARP)
+                                                        Languages (LANG)
+                                                        Latin (LATN)
+                                                        Latin American & Latinx Studies (LALS)
+                                                        Law (LAW)
+                                                        Law - Master in Law (LAWM)
+                                                        Leadership and Communication (LEAD)
+                                                        Legal Studies & Business Ethics (LGST)
+                                                        Linguistics (LING)
+                                                        Logic, Information and Computation (LGIC)
+                                                        M
+                                                        Malagasy (MALG)
+                                                        Malayalam (MLYM)
+                                                        Management (MGMT)
+                                                        Marathi (MRTI)
+                                                        Marketing (MKTG)
+                                                        Master of Applied Positive Psychology (MAPP)
+                                                        Master of Liberal Arts (MLA)
+                                                        Master of Science in Social Policy (MSSP)
+                                                        Master of Science in Translational Research (MTR)
+                                                        Master of Urban Spatial Analytics (MUSA)
+                                                        Materials Science and Engineering (MSE)
+                                                        Mathematical Sciences (MTHS)
+                                                        Mathematics (MATH)
+                                                        Mechanical Engineering and Applied Mechanics (MEAM)
+                                                        Medical Physics (MPHY)
+                                                        Middle Eastern Languages & Cultures (MELC)
+                                                        Military Science (MSCI)
+                                                        Modern Middle East Studies (MODM)
+                                                        Music (MUSC)
+                                                        N
+                                                        Nanotechnology (NANO)
+                                                        Naval Science (NSCI)
+                                                        Network and Social Systems Engineering (NETS)
+                                                        Neuroscience (NEUR) - Liberal and Professional Studies
+                                                        Neuroscience (NGG) - Perelman School of Medicine
+                                                        Neuroscience (NRSC) - School of Arts and Sciences
+                                                        Nonprofit Leadership (NPLD)
+                                                        Nursing (NURS)
+                                                        Nutrition Science (NUTR)
+                                                        O
+                                                        Operations, Information and Decisions (OIDD)
+                                                        Organizational Anthropology (ORGC)
+                                                        Organizational Dynamics (DYNM)
+                                                        P
+                                                        Pashto (PASH)
+                                                        Persian (PERS)
+                                                        Pharmacology (PHRM)
+                                                        Philosophy (PHIL)
+                                                        Philosophy, Politics, Economics (PPE)
+                                                        Physical and Life Sciences (PHYL)
+                                                        Physics (PHYS)
+                                                        Polish (PLSH)
+                                                        Political Science (PSCI)
+                                                        Politics & Policy (PPOL)
+                                                        Portuguese (PRTG)
+                                                        Professional Writing (PROW)
+                                                        Psychology (PSYC)
+                                                        Psychology, Behavior & Decision Sciences (PBDS)
+                                                        Public Health Studies (PUBH)
+                                                        Punjabi (PUNJ)
+                                                        Q
+                                                        Quechua (QUEC)
+                                                        R
+                                                        Real Estate (REAL)
+                                                        Regulatory (REG)
+                                                        Religion and Culture (RELC)
+                                                        Religious Studies (RELS)
+                                                        Robotics (ROBO)
+                                                        Romance Languages (ROML)
+                                                        Russian (RUSS)
+                                                        Russian and East European Studies (REES)
+                                                        S
+                                                        Sanskrit (SKRT)
+                                                        School of Social Policy and Practice (SSPP)
+                                                        Science, Technology & Society (STSC)
+                                                        Scientific Computing (SCMP)
+                                                        Scientific Processes (SPRO)
+                                                        Social Difference, Diversity, Equity and Inclusion (SDEI)
+                                                        Social Welfare (SOCW)
+                                                        Social Work (SWRK)
+                                                        Sociology (SOCI)
+                                                        South Asia Studies (SAST)
+                                                        Spanish (SPAN)
+                                                        Spanish and Portuguese (SPPO)
+                                                        Statistics and Data Science (STAT)
+                                                        Sudanese Arabic (SARB)
+                                                        Swahili (SWAH)
+                                                        Swedish (SWED)
+                                                        T
+                                                        Tamil (TAML)
+                                                        Telugu (TELU)
+                                                        Thai (THAI)
+                                                        Theatre Arts (THAR)
+                                                        Tibetan (TIBT)
+                                                        Tigrinya (TIGR)
+                                                        Turkish (TURK)
+                                                        Twi (TWI)
+                                                        U
+                                                        Ukrainian (UKRN)
+                                                        Urban Studies (URBS)
+                                                        Urdu (URDU)
+                                                        V
+                                                        Veterinary Clinical Studies - Medicine Courses (VMED)
+                                                        Veterinary Clinical Studies - New Bolton Center (VCSN)
+                                                        Veterinary Clinical Studies and Advanced Medicine - Philadelphia (VCSP)
+                                                        Veterinary Independent Study & Research (VISR)
+                                                        Veterinary Pathobiology (VPTH)
+                                                        Vietnamese (VIET)
+                                                        Viper (VIPR)
+                                                        Visual Studies (VLST)
+                                                        W
+                                                        Wharton Communication Program (WHCP)
+                                                        Wharton Undergraduate (WH)
+                                                        Wolof (WOLF)
+                                                        Y
+                                                        Yiddish (YDSH)
+                                                        Yoruba (YORB)
+                                                        Z
+                                                        Zulu (ZULU)
+                                """
+                            }
+                        },
+                        "required": ["code"]
                     }
                 }
             }
