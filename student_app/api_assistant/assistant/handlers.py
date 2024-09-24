@@ -2,7 +2,8 @@
 
 import json
 import openai
-from assistant.tools.filter_tool.filter_manager import apply_filters
+#from assistant.tools.filter_tool.filter_manager import apply_filters
+from .tools.filter_tool.filter_manager import apply_filters
 
 def handle_requires_action(run, thread_id, assistant_id, df):
     tool_outputs = []
