@@ -165,6 +165,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     student_profile = input_query.student_profile
 
 
+    # In your main processing function
+
     def process_assistant(message: str):
         """
         Function to process the assistant interaction.
@@ -173,7 +175,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             message (str): The user's input message.
 
         Returns:
-            Dict: The response to return to the frontend, either containing filtered JSON or assistant's reply.
+            Dict: The response to return to the frontend.
         """
         # Initialize the assistant
         assistant = initialize_assistant()
@@ -185,7 +187,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         add_user_message(thread.id, message)
 
         # Load the DataFrame once at the beginning
-        df_expanded = pd.read_csv('../api_assistant/tools/filter_tool/combined_courses_final.csv')
+        df_expanded = pd.read_csv('path_to_your_csv_file.csv')
 
         # Create and poll a run for the assistant to process the message
         run = create_and_poll_run(thread.id, assistant.id)
@@ -204,10 +206,11 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
         # After the run is completed or failed
         if run.status == 'completed':
-            # If filtered_data is not None, return it to the frontend
             if filtered_data is not None:
+                # Return the filtered courses directly
                 return {"filtered_courses": filtered_data}
             else:
+                # Retrieve the assistant's message
                 messages = retrieve_messages(thread.id)
 
                 # Find the assistant's message
@@ -222,11 +225,13 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         else:
             return {"error": f"Run ended with status: {run.status}."}
 
+
+
+
     # Call the inner function and get the response
     # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
     response = await process_assistant(input_message)
 
-    
     """"
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
