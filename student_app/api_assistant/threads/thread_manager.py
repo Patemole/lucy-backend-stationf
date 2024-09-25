@@ -9,6 +9,7 @@ import os
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
+
 def create_thread():
     """
     Creates a new thread.
@@ -19,6 +20,7 @@ def create_thread():
     thread = openai.beta.threads.create()
     print(f"Thread created with ID: {thread.id}\n")
     return thread
+
 
 def add_user_message(thread_id, user_query):
     """
@@ -39,6 +41,7 @@ def add_user_message(thread_id, user_query):
     print(f"User message added to thread {thread_id}: {user_query}\n")
     return message
 
+
 def create_and_poll_run(thread_id, assistant_id):
     """
     Creates a run for the assistant and polls its status until completion.
@@ -58,6 +61,7 @@ def create_and_poll_run(thread_id, assistant_id):
     print(f"Initial Run status: {run.status}\n")
     return run
 
+
 def retrieve_run(run_id, thread_id):
     """
     Retrieves the current status of a run.
@@ -73,6 +77,7 @@ def retrieve_run(run_id, thread_id):
         thread_id=thread_id,
         run_id=run_id
     )
+
 
 def retrieve_messages(thread_id):
     """

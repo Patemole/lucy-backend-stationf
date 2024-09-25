@@ -41,6 +41,9 @@ from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
+
+
+#NEW IMPORTATION FOR OPENAI AGENT
 from api_assistant.assistant.assistant_manager import initialize_assistant
 from api_assistant.threads.thread_manager import (
     create_thread,
@@ -52,6 +55,8 @@ from api_assistant.threads.thread_manager import (
 from api_assistant.assistant.handlers import handle_requires_action
 from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
 from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
+
+
 
 # Today's date
 date = datetime.date.today()
@@ -176,19 +181,36 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             Dict: The response to return to the frontend, either containing filtered JSON or assistant's reply.
         """
         # Initialize the assistant
+        print("Waiting for assistant initialisation")
         assistant = initialize_assistant()
+        print("The assistant is initialized")
 
         # Create a new thread for the conversation
         thread = create_thread()
+        print("New thread created")
 
         # Add the user's message to the thread
         add_user_message(thread.id, message)
+        print("New Message added to the thread")
 
         # Load the DataFrame once at the beginning
-        df_expanded = pd.read_csv('../api_assistant/tools/filter_tool/combined_courses_final.csv')
+        #df_expanded = pd.read_csv('../api_assistant/tools/filter_tool/combined_courses_final.csv')
+        #print("DataFrame loaded")
+
+        try:
+            df_expanded = pd.read_csv('api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
+            print("DataFrame loaded successfully")
+        except FileNotFoundError:
+            print("CSV file not found at the specified path")
+        except pd.errors.ParserError:
+            print("Error parsing CSV file")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
 
         # Create and poll a run for the assistant to process the message
         run = create_and_poll_run(thread.id, assistant.id)
+        print("Creation and polling the run done")
 
         filtered_data = None  # Initialize filtered_data
 
@@ -207,6 +229,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             # If filtered_data is not None, return it to the frontend
             if filtered_data is not None:
                 return {"filtered_courses": filtered_data}
+            
             else:
                 messages = retrieve_messages(thread.id)
 
@@ -222,9 +245,43 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         else:
             return {"error": f"Run ended with status: {run.status}."}
 
+
     # Call the inner function and get the response
     # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
-    response = await process_assistant(input_message)
+    #This is filtered_courses: JSON or assistant_reply: string
+    response_data = await process_assistant(input_message)
+    print(response)
+
+
+    # Define the message_stream generator
+    async def message_stream():
+        if "assistant_reply" in response_data:
+            # Stream the assistant's reply
+            assistant_reply = response_data["assistant_reply"]
+            chunks = split_preserving_formatting(assistant_reply)
+            for chunk in chunks:
+                yield chunk + " "
+                await asyncio.sleep(0.08)
+
+        elif "filtered_courses" in response_data:
+            # Stream the filtered courses JSON
+            filtered_courses = response_data["filtered_courses"]
+            answer_COURSE_json = json.dumps({"filtered_courses": filtered_courses})
+            yield f"\n<ANSWER_COURSE>{answer_COURSE_json}<ANSWER_COURSE_END>\n"
+            await asyncio.sleep(0.2)
+
+        elif "error" in response_data:
+            # Stream the error message
+            error_message = response_data["error"]
+            yield error_message
+            await asyncio.sleep(0.2)
+
+        else:
+            # Default case if no recognizable key is found
+            yield "No response from assistant."
+            await asyncio.sleep(0.2)
+
+    return StreamingResponse(message_stream(), media_type="text/plain")
 
     
     """"
@@ -298,6 +355,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     except Exception as e:
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
 """
+
+
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
 @app.get("/get_chat_history/{chat_id}")
