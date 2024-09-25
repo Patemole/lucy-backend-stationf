@@ -6,12 +6,9 @@ from .tools.filter_tool.filter_manager import apply_filters
 from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info
 from .tools.prerequisites_tool.prerequisites_manager import get_prerequisites
 
-
 def handle_requires_action(run, thread_id, assistant_id, df):
     tool_outputs = []
     filtered_data = None  # Initialize filtered_data
-    current_info = None   # Initialize current_info
-    prerequisites_info = None  # Initialize prerequisites_info
 
     for tool in run.required_action.submit_tool_outputs.tool_calls:
         if tool.function.name == "get_filters":
@@ -47,25 +44,16 @@ def handle_requires_action(run, thread_id, assistant_id, df):
 
             if tool.function.name == "get_current_info":
                 query = arguments.get('query', '')
-
                 # Call the Perplexity API to get up-to-date information
-                current_info = get_up_to_date_info(query)
-
-                # The output is the information retrieved
-                output = current_info
-
+                output = get_up_to_date_info(query)
             elif tool.function.name == "get_prerequisites":
                 course_code = arguments.get('course_code', '').strip().upper()
-
-                # Search the DataFrame for the course code
                 prerequisites = get_prerequisites(course_code, df)
-
                 if prerequisites is not None:
                     output = f"The prerequisites for {course_code} are: {prerequisites}"
                 else:
                     output = f"No prerequisites found for {course_code}."
             else:
-                # Handle other functions if any
                 output = "Function not implemented."
 
             # Append the tool output
@@ -76,7 +64,8 @@ def handle_requires_action(run, thread_id, assistant_id, df):
 
     if tool_outputs:
         try:
-            run = openai.beta.threads.runs.submit_tool_outputs_and_poll(
+            # Use submit_tool_outputs instead of submit_tool_outputs_and_poll
+            run = openai.beta.threads.runs.submit_tool_outputs(
                 thread_id=thread_id,
                 run_id=run.id,
                 tool_outputs=tool_outputs
@@ -84,5 +73,5 @@ def handle_requires_action(run, thread_id, assistant_id, df):
         except Exception as e:
             pass
 
-    # Return the updated run, filtered data, and current info
-    return run, filtered_data
+    # Return the updated run and filtered data
+    return run, filtered_data, None, None

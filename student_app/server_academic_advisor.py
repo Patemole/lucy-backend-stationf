@@ -52,9 +52,11 @@ from api_assistant.threads.thread_manager import (
 from api_assistant.assistant.handlers import handle_requires_action
 from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
 from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
-
 # Today's date
 date = datetime.date.today()
+import sseclient  # Ensure this is installed: pip install sseclient-py
+import requests
+
 
 # Logging configuration
 logging.basicConfig(
@@ -167,15 +169,16 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # In your main processing function
 
+    
     def process_assistant(message: str):
         """
-        Function to process the assistant interaction.
+        Function to process the assistant interaction with SSE streaming support.
 
         Args:
             message (str): The user's input message.
 
-        Returns:
-            Dict: The response to return to the frontend.
+        Yields:
+            str: Chunks of the assistant's reply, delimited by "|".
         """
         # Initialize the assistant
         assistant = initialize_assistant()
@@ -189,41 +192,68 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         # Load the DataFrame once at the beginning
         df_expanded = pd.read_csv('path_to_your_csv_file.csv')
 
-        # Create and poll a run for the assistant to process the message
+        # Create a run for the assistant using your existing function
         run = create_and_poll_run(thread.id, assistant.id)
 
-        filtered_data = None  # Initialize filtered_data
-
-        # Polling loop to monitor the run's status
-        while run.status not in ['completed', 'failed']:
-            if run.status == 'requires_action':
-                # Handle required actions (e.g., function calls) by the assistant
-                run, filtered_data = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
-            else:
-                # Wait before checking the status again
-                time.sleep(0.2)
-                run = retrieve_run(run.id, thread.id)
-
-        # After the run is completed or failed
-        if run.status == 'completed':
+        # Check if the run requires action (e.g., function call)
+        if run.status == 'requires_action':
+            # Handle required actions (function calls)
+            run, filtered_data, _, _ = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
+            # If the function called is get_filters, return the filtered data as JSON
             if filtered_data is not None:
-                # Return the filtered courses directly
-                return {"filtered_courses": filtered_data}
-            else:
-                # Retrieve the assistant's message
-                messages = retrieve_messages(thread.id)
+                # Return the filtered courses directly as JSON
+                yield json.dumps({"filtered_courses": filtered_data})
+                return  # End the function as we've returned the data
+        elif run.status == 'completed':
+            # Proceed to stream the assistant's response using SSE
+            # Construct the SSE endpoint URL for the thread
+            sse_url = f"https://api.openai.com/v1/beta/threads/{thread.id}/events"
 
-                # Find the assistant's message
-                assistant_message = next((msg for msg in messages if msg.role == 'assistant'), None)
+            # Prepare the headers with your API key
+            headers = {
+                'Authorization': f'Bearer {OPENAI_API_KEY}',
+                'Accept': 'text/event-stream'
+            }
 
-                if not assistant_message:
-                    return {"error": "No response from assistant."}
+            # Create a requests session
+            session = requests.Session()
 
-                # Return the assistant's reply as a string
-                assistant_reply = assistant_message.content
-                return {"assistant_reply": assistant_reply}
+            # Send a GET request to the SSE endpoint
+            response = session.get(sse_url, headers=headers, stream=True)
+
+            # Create an SSE client to process the event stream
+            client = sseclient.SSEClient(response)
+
+            try:
+                for event in client.events():
+                    if event.event == 'thread.message.delta':
+                        # Event data is a message delta
+                        data = json.loads(event.data)
+                        delta = data.get('delta', {})
+                        content_segments = delta.get('content', [])
+                        for segment in content_segments:
+                            if segment.get('type') == 'text':
+                                text_value = segment['text']['value']
+                                if text_value:
+                                    # Yield the text value with delimiter
+                                    yield text_value + "|"
+                    elif event.event == 'thread.message.completed':
+                        # Assistant's message is completed
+                        break
+                    elif event.event == 'error':
+                        # Handle errors
+                        error_data = json.loads(event.data)
+                        yield f"An error occurred: {error_data.get('message', 'Unknown error')}"
+                        break
+                    # Handle other events as needed
+            except Exception as e:
+                yield f"An exception occurred: {str(e)}"
+            finally:
+                # Close the session
+                session.close()
         else:
-            return {"error": f"Run ended with status: {run.status}."}
+            # Handle other run statuses (e.g., failed)
+            yield f"Run ended with status: {run.status}."
 
 
 
@@ -231,6 +261,14 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     # Call the inner function and get the response
     # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
     response = await process_assistant(input_message)
+
+
+    try:
+        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
+        # return StreamingResponse(event_stream(), media_type="text/event-stream")
+    except Exception as e:
+        logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
+
 
     """"
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
