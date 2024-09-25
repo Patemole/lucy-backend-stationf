@@ -3,7 +3,7 @@
 import pandas as pd
 #from api_assistant.config import Config
 
-def load_course_data(csv_path='your_course_data.csv'):
+def load_course_data(csv_path='../combined_courses_final.csv'):
     """
     Loads course data from a CSV file into a pandas DataFrame.
 

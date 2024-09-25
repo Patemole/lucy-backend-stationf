@@ -190,7 +190,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         add_user_message(thread.id, message)
 
         # Load the DataFrame once at the beginning
-        df_expanded = pd.read_csv('path_to_your_csv_file.csv')
+        df_expanded = pd.read_csv('../api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
 
         # Create a run for the assistant using your existing function
         run = create_and_poll_run(thread.id, assistant.id)
