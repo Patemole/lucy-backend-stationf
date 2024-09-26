@@ -49,13 +49,17 @@ from api_assistant.threads.thread_manager import (
     retrieve_run,
     retrieve_messages
 )
-from api_assistant.assistant.handlers import handle_requires_action
+from api_assistant.assistant.handlers import CustomAssistantEventHandler
 from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
 from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
 # Today's date
 date = datetime.date.today()
 import sseclient  # Ensure this is installed: pip install sseclient-py
 import requests
+
+
+import threading
+import queue
 
 
 # Logging configuration
@@ -169,9 +173,98 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     # In your main processing function
 
-    
+    # process_assistant.py
+    print(1)  # This should now execute
+
+    # Define the generator function
+    def response_generator():
+        print("Initializing assistant...")
+        # Initialize the assistant
+        assistant = initialize_assistant()
+        print(f"Assistant initialized with ID: {assistant.id}")
+
+        print("Creating new thread...")
+        # Create a new thread for the conversation
+        thread = create_thread()
+        print(f"Thread created with ID: {thread.id}")
+
+        print(f"Adding user message to thread {thread.id}: {input_query.message}")
+        # Add the user's message to the thread
+        add_user_message(thread.id, input_query.message)
+
+        print("Loading course data...")
+        # Load the DataFrame once at the beginning
+        df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
+        print("Course data loaded.")
+
+        print("Creating response queue...")
+        # Create a queue to collect the assistant's response
+        response_queue = queue.Queue()
+
+        print("Creating CustomAssistantEventHandler instance...")
+        # Create an instance of the CustomAssistantEventHandler
+        event_handler = CustomAssistantEventHandler(
+            thread_id=thread.id,
+            df=df_expanded,
+            response_queue=response_queue
+        )
+        print("CustomAssistantEventHandler instance created.")
+
+        print("Starting streaming run...")
+        # Use the stream helper to create the run and stream the response
+        with client.beta.threads.runs.stream(
+            thread_id=thread.id,
+            assistant_id=assistant.id,
+            event_handler=event_handler,
+        ) as stream:
+            # Set the run_id in the event handler
+            event_handler.run = stream.run
+            # Define the function to run the stream
+            def run_stream():
+                print("Running stream until done...")
+                stream.until_done()
+                print("Stream has completed.")
+
+            # Start the stream in a separate thread
+            stream_thread = threading.Thread(target=run_stream)
+            stream_thread.start()
+            print("Stream thread started.")
+
+            # While the stream is running, get data from the queue and yield
+            while True:
+                data = response_queue.get()
+                if data is None:
+                    # Run is completed
+                    print("Run completed.")
+                    break
+                else:
+                    print(f"Yielding data chunk: {data}")
+                    yield data
+
+            # Wait for the stream thread to finish
+            stream_thread.join()
+            print("Stream thread has finished.")
+
+        # After the stream is done, check if we have filtered data
+        if event_handler.filtered_data is not None:
+            print("Filtered data available. Sending to client.")
+            yield json.dumps({"filtered_courses": event_handler.filtered_data})
+        else:
+            print("No filtered data to send.")
+
+    try:
+        print("Received request to /send_message_socratic_langgraph")
+        # Return the StreamingResponse using the generator function
+        return StreamingResponse(response_generator(), media_type="text/plain")
+    except Exception as e:
+        print(f"Error in /send_message_socratic_langgraph: {e}")
+        response.status_code = 500
+        return {"error": "Internal Server Error"}
+
+
+    """
     def process_assistant(message: str):
-        """
+        
         Function to process the assistant interaction with SSE streaming support.
 
         Args:
@@ -179,7 +272,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
         Yields:
             str: Chunks of the assistant's reply, delimited by "|".
-        """
+        
         # Initialize the assistant
         assistant = initialize_assistant()
 
@@ -256,13 +349,13 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             yield f"Run ended with status: {run.status}."
 
 
-
+    """
 
     # Call the inner function and get the response
     # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
-    response = await process_assistant(input_message)
+    
 
-
+    """"
     try:
         return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
         # return StreamingResponse(event_stream(), media_type="text/event-stream")
@@ -270,7 +363,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
 
 
-    """"
+    
     print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
     prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
@@ -383,8 +476,8 @@ async def save_ai_message(ai_message: InputQueryAI):
 
 
     #Pour générer l'embedding de la réponse de Lucy
-    input_embeddings = await get_embedding(input_message)
-    output_embeddings = await get_embedding(output_message)
+    #input_embeddings = await get_embedding(input_message)
+    #output_embeddings = await get_embedding(output_message)
 
     word_count_task = await count_words(input_message)
 
@@ -403,7 +496,7 @@ async def save_ai_message(ai_message: InputQueryAI):
         ask_for_advisor = 'no'
 
         #Rajouter ici la fonction pour sauvegarder les informations dans la table analytics 
-        await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id, input_message=input_message, output_message=output_message, university=university)
+       #await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id, input_message=input_message, output_message=output_message, university=university)
 
     except Exception as e:
         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
