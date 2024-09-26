@@ -54,7 +54,7 @@ from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filte
 from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
 # Today's date
 date = datetime.date.today()
-import sseclient  # Ensure this is installed: pip install sseclient-py
+#import sseclient  # Ensure this is installed: pip install sseclient-py
 import requests
 
 
