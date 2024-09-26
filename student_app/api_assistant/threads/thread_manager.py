@@ -10,7 +10,7 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
-def create_thread():
+def create_new_thread():
     """
     Creates a new thread.
 
@@ -22,6 +22,31 @@ def create_thread():
     return thread
 
 
+#Allow to add dynamoDB messages to the thread
+def add_multiple_messages(thread_id, messages):
+    """
+    Ajoute plusieurs messages à un thread existant.
+    
+    Parameters:
+    - thread_id (str): L'ID du thread.
+    - messages (list): Liste des anciens messages à ajouter.
+
+    Returns:
+        str: Réponse de l'assistant après l'ajout des messages.
+    """
+    for message in messages:
+        openai.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=message
+        )
+    
+    # Exécuter l'assistant après avoir ajouté tous les anciens messages
+    response = openai.beta.threads.run(thread_id=thread_id)
+    return response
+
+
+#To add the student message to the thread
 def add_user_message(thread_id, user_query):
     """
     Adds a user message to the specified thread.

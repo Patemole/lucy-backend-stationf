@@ -46,8 +46,9 @@ from student_app.routes.academic_advisor_routes_treatment import academic_adviso
 #NEW IMPORTATION FOR OPENAI AGENT
 from api_assistant.assistant.assistant_manager import initialize_assistant
 from api_assistant.threads.thread_manager import (
-    create_thread,
+    create_new_thread,
     add_user_message,
+    add_multiple_messages,
     create_and_poll_run,
     retrieve_run,
     retrieve_messages
@@ -56,6 +57,10 @@ from api_assistant.assistant.handlers import handle_requires_action
 from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
 from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
 
+
+
+#NEW IMPORTATION FOR THE CACHE
+from api_assistant.redis_cache import get_redis_client, get_thread_id_from_cache, save_thread_id_to_cache
 
 
 # Today's date
@@ -113,6 +118,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+assistant = initialize_assistant()
+print("The assistant has been initialized")
+
 #############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
 
 async def count_words(input_message: str) -> int:
@@ -155,7 +163,63 @@ async def count_student_questions(chat_history):
     print("\n")
     return question_count
 
-#############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
+#Fonction for openai agent
+def process_assistant(thread_id: str, assistant_id: str):
+        #assistant = initialize_assistant()
+        print("The assistant is initialized")
+
+        try:
+            df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
+            print("DataFrame loaded successfully")
+        except FileNotFoundError:
+            print("CSV file not found at the specified path")
+        except pd.errors.ParserError:
+            print("Error parsing CSV file")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        # Create and poll a run for the assistant to process the message
+        run = create_and_poll_run(thread_id, assistant_id)
+        print("Creation and polling the run done")
+
+        filtered_data = None  # Initialize filtered_data
+
+        # Polling loop to monitor the run's status
+        while run.status not in ['completed', 'failed']:
+            if run.status == 'requires_action':
+                print("run.status")
+                print(run.status)
+                # Handle required actions (e.g., function calls) by the assistant
+                print("Beginning of generating the answer")
+                run, filtered_data = handle_requires_action(run, thread_id, assistant_id, df=df_expanded)
+            else:
+                # Wait before checking the status again
+                time.sleep(0.2)
+                run = retrieve_run(run.id, thread_id)
+
+        # After the run is completed or failed
+        print("run.status")
+        print(run.status)
+        if run.status == 'completed':
+            # If filtered_data is not None, return it to the frontend
+            if filtered_data is not None:
+                return {"filtered_courses": filtered_data}
+            
+            else:
+                messages = retrieve_messages(thread_id)
+
+                # Find the assistant's message
+                assistant_message = next((msg for msg in messages if msg.role == 'assistant'), None)
+
+                if not assistant_message:
+                    return {"error": "No response from assistant."}
+
+                # Return the assistant's reply as a string
+                assistant_reply = assistant_message.content
+                return {"assistant_reply": assistant_reply}
+        else:
+            return {"error": f"Run ended with status: {run.status}."}
+        
 
 #chat_router = APIRouter(prefix='/chat', tags=['chat'])
 
@@ -169,88 +233,44 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
     student_profile = input_query.student_profile
 
+    #À faire plutôt au démarrage du serveur (on le garde ici pour l'instant pour ne pas l'oublier dans la logique)
+    # Connexion Redis
+    redis_client = get_redis_client()
 
-    def process_assistant(message: str):
-        """
-        Function to process the assistant interaction.
 
-        Args:
-            message (str): The user's input message.
+    # Vérifier si le thread_id est déjà dans Redis pour ce chat_id
+    thread_id = get_thread_id_from_cache(redis_client, chat_id)
 
-        Returns:
-            Dict: The response to return to the frontend, either containing filtered JSON or assistant's reply.
-        """
-        # Initialize the assistant
-        print("Waiting for assistant initialisation")
-        assistant = initialize_assistant()
-        print("The assistant is initialized")
 
-        # Create a new thread for the conversation
-        thread = create_thread()
-        print("New thread created")
+    if not thread_id:
+        # Si le thread_id n'existe pas dans Redis, créer un nouveau thread
+        thread = create_new_thread() #On crée un nouveau thread ID
+        save_thread_id_to_cache(redis_client, chat_id, thread.id) #Puis on sauvegarde ce nouveau thread_id dans le cash avec le chat_id correpsondant
 
-        # Add the user's message to the thread
-        add_user_message(thread.id, message)
-        print("New Message added to the thread")
-
-        # Load the DataFrame once at the beginning
-        #df_expanded = pd.read_csv('../api_assistant/tools/filter_tool/combined_courses_final.csv')
-        #print("DataFrame loaded")
-
+        #Add here the dynamoDB fonction to retreive the n messages with the chat_id
         try:
-            df_expanded = pd.read_csv('api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
-            print("DataFrame loaded successfully")
-        except FileNotFoundError:
-            print("CSV file not found at the specified path")
-        except pd.errors.ParserError:
-            print("Error parsing CSV file")
+            messages = await get_messages_from_history(chat_id=chat_id, n=6)
         except Exception as e:
-            print(f"An unexpected error occurred: {e}")
+            logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
+
+        #Add to the new thread the dynamoDB messages
+        add_multiple_messages(thread.id, messages)
 
 
-        # Create and poll a run for the assistant to process the message
-        run = create_and_poll_run(thread.id, assistant.id)
-        print("Creation and polling the run done")
+    #To add the student message to the thread
+    add_user_message(thread.id, input_message)
 
-        filtered_data = None  # Initialize filtered_data
-
-        # Polling loop to monitor the run's status
-        while run.status not in ['completed', 'failed']:
-            if run.status == 'requires_action':
-                # Handle required actions (e.g., function calls) by the assistant
-                run, filtered_data = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
-            else:
-                # Wait before checking the status again
-                time.sleep(0.2)
-                run = retrieve_run(run.id, thread.id)
-
-        # After the run is completed or failed
-        if run.status == 'completed':
-            # If filtered_data is not None, return it to the frontend
-            if filtered_data is not None:
-                return {"filtered_courses": filtered_data}
-            
-            else:
-                messages = retrieve_messages(thread.id)
-
-                # Find the assistant's message
-                assistant_message = next((msg for msg in messages if msg.role == 'assistant'), None)
-
-                if not assistant_message:
-                    return {"error": "No response from assistant."}
-
-                # Return the assistant's reply as a string
-                assistant_reply = assistant_message.content
-                return {"assistant_reply": assistant_reply}
-        else:
-            return {"error": f"Run ended with status: {run.status}."}
+    #Add asynschronisly the student message to dynamoDB
+    try:
+        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+    except Exception as e:
+        logging.error(f"Error while storing the input message: {str(e)}")
 
 
-    # Call the inner function and get the response
-    # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
-    #This is filtered_courses: JSON or assistant_reply: string
-    response_data = await process_assistant(input_message)
-    print(response)
+
+    #Process the answer
+    response_data = await process_assistant(thread.id, assistant.id)
+    print(response_data)
 
 
     # Define the message_stream generator
@@ -395,22 +415,24 @@ async def save_ai_message(ai_message: InputQueryAI):
     print(output_message)
 
 
-    phospho.log(input=input_message, output=output_message)
+    #phospho.log(input=input_message, output=output_message)
 
 
     #Pour générer l'embedding de la réponse de Lucy
-    input_embeddings = await get_embedding(input_message)
-    output_embeddings = await get_embedding(output_message)
+    #input_embeddings = await get_embedding(input_message)
+    #output_embeddings = await get_embedding(output_message)
 
-    word_count_task = await count_words(input_message)
+    #word_count_task = await count_words(input_message)
 
-    chat_history = await get_chat_history(chat_id)
-    number_of_question_per_chat_id = await count_student_questions(chat_history)
-    number_of_question_per_chat_id = number_of_question_per_chat_id + 1
+    #chat_history = await get_chat_history(chat_id)
+    #number_of_question_per_chat_id = await count_student_questions(chat_history)
+    #number_of_question_per_chat_id = number_of_question_per_chat_id + 1
 
     
 
     try:
+        #Add here maybe a fonction to transforme the JSON to string 
+        
         message_id = await store_message_async(chat_id, username=username, course_id=course_id, message_body=output_message)
         print(f"Stored message with ID: {message_id}")
 
@@ -419,7 +441,7 @@ async def save_ai_message(ai_message: InputQueryAI):
         ask_for_advisor = 'no'
 
         #Rajouter ici la fonction pour sauvegarder les informations dans la table analytics 
-        await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id, input_message=input_message, output_message=output_message, university=university)
+        #await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id, input_message=input_message, output_message=output_message, university=university)
 
     except Exception as e:
         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
