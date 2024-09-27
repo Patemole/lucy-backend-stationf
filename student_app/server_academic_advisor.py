@@ -238,7 +238,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                     print("Run completed.")
                     break
                 else:
-                    print(f"Yielding data chunk: {data}")
+                    #print(f"Yielding data chunk: {data}")
                     yield data
 
             # Wait for the stream thread to finish

@@ -21,7 +21,7 @@ class CustomAssistantEventHandler(AssistantEventHandler):
         # Extract the text value from delta_text
         text_value = delta_text.value
         if text_value:
-            print(f"Assistant says: {text_value}")  # Debug statement
+            #print(f"Assistant says: {text_value}")  # Debug statement
             self.response_queue.put(text_value + "|")
 
     def on_tool_call_created(self, tool_call):
