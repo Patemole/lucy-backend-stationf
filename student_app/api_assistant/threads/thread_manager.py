@@ -9,7 +9,7 @@ import os
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-def create_thread():
+def create_new_thread():
     """
     Creates a new thread.
 
@@ -19,6 +19,8 @@ def create_thread():
     thread = openai.beta.threads.create()
     print(f"Thread created with ID: {thread.id}\n")
     return thread
+
+
 
 def add_user_message(thread_id, user_query):
     """
@@ -37,7 +39,34 @@ def add_user_message(thread_id, user_query):
         content=user_query
     )
     print(f"User message added to thread {thread_id}: {user_query}\n")
-    return message
+    
+
+
+
+#Allow to add dynamoDB messages to the thread
+def add_multiple_messages(thread_id, messages):
+
+    for message in messages:
+        # Assurer que chaque message a un rôle et un contenu
+        role = message.get("role", "user")  # Défaut à "user" si le rôle n'est pas fourni
+        content = message.get("content", "")
+        
+        # Print the message and the role being added
+        print(f"Adding message to thread {thread_id}:")
+        print(f"Role: {role}, Content: {content}")
+        
+        # Ajouter le message au thread
+        openai.beta.threads.messages.create(
+            thread_id=thread_id,
+            role=role,
+            content=content
+        )
+
+    print(f"Messages added to the thread: {thread_id}\n")
+
+    
+   
+
 
 def create_and_poll_run(thread_id, assistant_id):
     """
@@ -57,6 +86,8 @@ def create_and_poll_run(thread_id, assistant_id):
     print(f"Run created with ID: {run.id}")
     print(f"Initial Run status: {run.status}\n")
     return run
+
+
 
 def retrieve_run(run_id, thread_id):
     """

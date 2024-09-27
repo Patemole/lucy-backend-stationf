@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 print("Démarrage de l'application")
 logger.info("Démarrage de l'application")
 
+
 app = FastAPI()
 
 # Configurer CORS avant de monter les sous-applications
@@ -40,7 +41,6 @@ async def log_request(request, call_next):
     print(f"Response: {response.status_code}")
     logger.info(f"Response: {response.status_code}")
     return response
-
 
 
 

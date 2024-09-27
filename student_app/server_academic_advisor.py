@@ -43,8 +43,9 @@ from student_app.routes.academic_advisor_routes_treatment import academic_adviso
 
 from api_assistant.assistant.assistant_manager import initialize_assistant
 from api_assistant.threads.thread_manager import (
-    create_thread,
+    create_new_thread,
     add_user_message,
+    add_multiple_messages,
     create_and_poll_run,
     retrieve_run,
     retrieve_messages
@@ -52,6 +53,11 @@ from api_assistant.threads.thread_manager import (
 from api_assistant.assistant.handlers import CustomAssistantEventHandler
 from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
 from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
+
+#NEW IMPORTATION FOR THE CACHE
+from api_assistant.redis_cache.redis_cache_init import get_redis_client, get_thread_id_from_cache, save_thread_id_to_cache
+import redis
+
 # Today's date
 date = datetime.date.today()
 #import sseclient  # Ensure this is installed: pip install sseclient-py
@@ -99,11 +105,36 @@ PHOSPHO_PROJECT_ID = os.getenv('PHOSPHO_PROJECT_ID')
 phospho.init(api_key='b08542208fd42d8640c0f88d006f31c9cc11453ec5f489e160cfcefa1028cac5bcd4d4ab43bcba45a6052081a22c56b8', project_id='38fc0ee240ee43a7bac2a36419258dcd')
 
 
+# Redis client (global)
+redis_client = None
+
+# Lifespan event for FastAPI
+async def lifespan(app: FastAPI):
+    print("Beginning Redis initialization...")
+    global redis_client
+    try:
+        redis_client = redis.Redis(
+            host=os.getenv('REDIS_HOST_PROD', '127.0.0.1'),
+            port=int(os.getenv('REDIS_PORT_PROD', 6379)),
+            decode_responses=True,
+            socket_connect_timeout=5  # Add timeout to avoid hanging
+        )
+        redis_client.ping()  # Check if Redis is reachable
+        print("Connected to Redis successfully!")
+    except redis.ConnectionError as e:
+        print(f"Redis connection failed: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred during Redis initialization: {e}")
+
+    yield
+    print("Application shutdown.")
+
 
 # FastAPI app configuration
 app = FastAPI(
     title="Chat Service",
-    version="0.0.1"
+    version="0.0.1",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -113,6 +144,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+
+# Initialize the assistant
+print("Initializing assistant...")
+assistant = initialize_assistant()
+print(f"Assistant initialized with ID: {assistant.id}")
 
 #############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
 
@@ -156,6 +194,85 @@ async def count_student_questions(chat_history):
     print("\n")
     return question_count
 
+
+# Define the generator function
+def response_generator(input_message: str, thread_id: str):
+    #print("Initializing assistant...")
+    # Initialize the assistant
+    #assistant = initialize_assistant()
+    #print(f"Assistant initialized with ID: {assistant.id}")
+
+    #print("Creating new thread...")
+    # Create a new thread for the conversation
+    #thread = create_new_thread()
+    #print(f"Thread created with ID: {thread.id}")
+
+    #print(f"Adding user message to thread {thread.id}: {input_message}")
+    # Add the user's message to the thread
+    #add_user_message(thread.id, input_message)
+    
+
+    print("Loading course data...")
+    # Load the DataFrame once at the beginning
+    df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
+    print("Course data loaded.")
+
+    print("Creating response queue...")
+    # Create a queue to collect the assistant's response
+    response_queue = queue.Queue()
+
+    print("Creating CustomAssistantEventHandler instance...")
+    # Create an instance of the CustomAssistantEventHandler
+    event_handler = CustomAssistantEventHandler(
+        thread_id=thread_id,
+        df=df_expanded,
+        response_queue=response_queue
+    )
+    print("CustomAssistantEventHandler instance created.")
+
+    print("Starting streaming run...")
+    # Use the stream helper to create the run and stream the response
+    with client.beta.threads.runs.stream(
+        thread_id=thread_id,
+        assistant_id=assistant.id,
+        event_handler=event_handler,
+    ) as stream:
+        # Set the run_id in the event handler
+        event_handler.run = stream.run
+        # Define the function to run the stream
+        def run_stream():
+            print("Running stream until done...")
+            stream.until_done()
+            print("Stream has completed.")
+
+        # Start the stream in a separate thread
+        stream_thread = threading.Thread(target=run_stream)
+        stream_thread.start()
+        print("Stream thread started.")
+
+        # While the stream is running, get data from the queue and yield
+        while True:
+            data = response_queue.get()
+            if data is None:
+                # Run is completed
+                print("Run completed.")
+                break
+            else:
+                print(f"Yielding data chunk: {data}")
+                yield data
+
+        # Wait for the stream thread to finish
+        stream_thread.join()
+        print("Stream thread has finished.")
+
+    # After the stream is done, check if we have filtered data
+    if event_handler.filtered_data is not None:
+        print("Filtered data available. Sending to client.")
+        yield json.dumps({"filtered_courses": event_handler.filtered_data})
+    else:
+        print("No filtered data to send.")
+#End of function
+
 #############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
 
 #chat_router = APIRouter(prefix='/chat', tags=['chat'])
@@ -170,92 +287,52 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
     student_profile = input_query.student_profile
 
-
-    # In your main processing function
-
     # process_assistant.py
     print(1)  # This should now execute
 
-    # Define the generator function
-    def response_generator():
-        print("Initializing assistant...")
-        # Initialize the assistant
-        assistant = initialize_assistant()
-        print(f"Assistant initialized with ID: {assistant.id}")
+    #À faire plutôt au démarrage du serveur (on le garde ici pour l'instant pour ne pas l'oublier dans la logique)
+    # Connexion Redis
+    #redis_client = get_redis_client()
 
-        print("Creating new thread...")
-        # Create a new thread for the conversation
-        thread = create_thread()
-        print(f"Thread created with ID: {thread.id}")
 
-        print(f"Adding user message to thread {thread.id}: {input_query.message}")
-        # Add the user's message to the thread
-        add_user_message(thread.id, input_query.message)
+    # Vérifier si le thread_id est déjà dans Redis pour ce chat_id
+    thread_id = get_thread_id_from_cache(redis_client, chat_id)
 
-        print("Loading course data...")
-        # Load the DataFrame once at the beginning
-        df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
-        print("Course data loaded.")
 
-        print("Creating response queue...")
-        # Create a queue to collect the assistant's response
-        response_queue = queue.Queue()
+    if not thread_id:
+        # Si le thread_id n'existe pas dans Redis, créer un nouveau thread
+        thread = create_new_thread() #On crée un nouveau thread ID
+        save_thread_id_to_cache(redis_client, chat_id, thread.id) #Puis on sauvegarde ce nouveau thread_id dans le cash avec le chat_id correpsondant
 
-        print("Creating CustomAssistantEventHandler instance...")
-        # Create an instance of the CustomAssistantEventHandler
-        event_handler = CustomAssistantEventHandler(
-            thread_id=thread.id,
-            df=df_expanded,
-            response_queue=response_queue
-        )
-        print("CustomAssistantEventHandler instance created.")
+        #Add here the dynamoDB fonction to retreive the n messages with the chat_id
+        try:
+            messages = await get_messages_from_history(chat_id=chat_id, n=6)
+            print("This is the messages from DynamoDB")
+            print("\n")
+            print(messages)
+        except Exception as e:
+            logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
+        
+        #Maybe here add a layer to save correcly the messages to the thread
 
-        print("Starting streaming run...")
-        # Use the stream helper to create the run and stream the response
-        with client.beta.threads.runs.stream(
-            thread_id=thread.id,
-            assistant_id=assistant.id,
-            event_handler=event_handler,
-        ) as stream:
-            # Set the run_id in the event handler
-            event_handler.run = stream.run
-            # Define the function to run the stream
-            def run_stream():
-                print("Running stream until done...")
-                stream.until_done()
-                print("Stream has completed.")
+        #Add to the new thread the dynamoDB messages
+        add_multiple_messages(thread.id, messages)
 
-            # Start the stream in a separate thread
-            stream_thread = threading.Thread(target=run_stream)
-            stream_thread.start()
-            print("Stream thread started.")
+    
+    #To add the student message to the thread
+    add_user_message(thread.id, input_message)
 
-            # While the stream is running, get data from the queue and yield
-            while True:
-                data = response_queue.get()
-                if data is None:
-                    # Run is completed
-                    print("Run completed.")
-                    break
-                else:
-                    print(f"Yielding data chunk: {data}")
-                    yield data
 
-            # Wait for the stream thread to finish
-            stream_thread.join()
-            print("Stream thread has finished.")
+    #Add asynschronisly the student message to dynamoDB
+    try:
+        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+    except Exception as e:
+        logging.error(f"Error while storing the input message: {str(e)}")
 
-        # After the stream is done, check if we have filtered data
-        if event_handler.filtered_data is not None:
-            print("Filtered data available. Sending to client.")
-            yield json.dumps({"filtered_courses": event_handler.filtered_data})
-        else:
-            print("No filtered data to send.")
 
     try:
-        print("Received request to /send_message_socratic_langgraph")
         # Return the StreamingResponse using the generator function
-        return StreamingResponse(response_generator(), media_type="text/plain")
+        return StreamingResponse(response_generator(input_message, thread.id), media_type="text/plain")
     except Exception as e:
         print(f"Error in /send_message_socratic_langgraph: {e}")
         response.status_code = 500
