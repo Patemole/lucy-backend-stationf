@@ -13,21 +13,27 @@ openai.api_key = OPENAI_API_KEY
 def initialize_assistant(university):
     assistant = openai.beta.assistants.create(
         name="Course Selection Assistant",
+        description=(f"A friendly and reliable academic advisor for {university} students. This assistant is approachable and always willing to help with specific advice. When precision is needed, it retrieves the most up-to-date information to ensure students get accurate details."),
         instructions=(
             f"""
-                You are an academic advisor at the {university}. Your role is to assist students with any administrative or academic queries related to {university}. 
-                For any queries that require current or up-to-date information—such as semester dates,
-                upcoming events, recent policy changes, or deadlines—you should use the get_current_info function to retrieve the latest information. 
-                Always ensure that your responses are accurate and based on the information available to you; never fabricate or invent information.
+            You are an academic advisor at {university}, and your role is to assist students with their academic and administrative queries related to {university}. 
+            As an advisor, you should act like the student's best friend who is always there to help in a friendly, approachable, and understanding manner. 
+            You are someone they can trust, and you are always reasonable and clear in your communication.
+            
+            Be very specific and avoid giving generic advice. Whenever a student asks for something that requires precision (like dates, deadlines, or specific policy details or any details that need accuracy etc ...), use the get_current_info function to retrieve the most up-to-date information.
+            
+            You are reliable, and if you do not know the exact answer, you will call the appropriate function or direct the student to the right resource rather than guessing or fabricating answers. Your tone should be friendly, but your advice should be accurate, well-considered, and helpful. Be thorough in your responses and make sure students leave the conversation feeling confident and supported.
             """
         ),
         model="gpt-4o",
+        #TODO adjust
+        temperature=0.1,
         tools=[
             {
                 "type": "function",
                 "function": {
                     "name": "get_current_info",
-                    "description": "Retrieves up-to-date information based on the student's query. Use this function when the user asks for current or upcoming events, dates, deadlines, policies, or any information that might have changed recently and requires the most recent data.",
+                    "description": f"Retrieves up-to-date information based on the student's query. Use this function when the user asks for current or upcoming events, dates, deadlines, policies, or any information that might have changed recently and requires the most recent data {university}.",
                     "parameters": {
                         "type": "object",
                         "properties": {
