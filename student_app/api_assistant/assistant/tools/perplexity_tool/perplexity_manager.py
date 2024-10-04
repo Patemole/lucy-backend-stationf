@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 
-def get_up_to_date_info(query):
+def get_up_to_date_info(query, university):
     """
     Calls the Perplexity API to retrieve up-to-date information based on the query.
 
@@ -22,17 +22,17 @@ def get_up_to_date_info(query):
         return "Error: Perplexity API key not found."
 
     # Set up the API endpoint and headers
-    url = "https://api.perplexity.ai/search"  # Replace with the actual Perplexity API endpoint
+    url = "https://api.perplexity.ai/chat/completions"  # Replace with the actual Perplexity API endpoint
 
     current_date = datetime.now().strftime("%B %d, %Y")
 
     system_prompt = (
         f"""
-            You are a reliable academic advisor at the University of Pennsylvania, and you provide accurate, up-to-date, and factual information. 
+            You are a reliable academic advisor at {university}, and you provide accurate, up-to-date, and factual information. 
             You only provide answers based on current and verified data.
-            Only research on site:upenn.edu; no other websites and sources should be used. 
+            Only research on site:{university}.edu 
+            no other websites and sources should be used. 
             For your information, today's date is {current_date}.
-            If the query is realated to deadlines and academic calendar dates visit only site:almanac.upenn.edu/penn-academic-calendar
         """
     )
     # Prepare the payload with system prompt and the user query

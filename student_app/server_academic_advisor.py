@@ -47,7 +47,8 @@ from api_assistant.threads.thread_manager import (
     add_user_message,
     create_and_poll_run,
     retrieve_run,
-    retrieve_messages
+    retrieve_messages,
+    add_message_to_thread
 )
 from api_assistant.assistant.handlers import CustomAssistantEventHandler
 from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
@@ -177,20 +178,49 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     print(1)  # This should now execute
 
     # Define the generator function
-    def response_generator():
+    async def response_generator():
+        
         print("Initializing assistant...")
         # Initialize the assistant
-        assistant = initialize_assistant()
+        assistant = initialize_assistant(university)
         print(f"Assistant initialized with ID: {assistant.id}")
 
-        print("Creating new thread...")
-        # Create a new thread for the conversation
-        thread = create_thread()
-        print(f"Thread created with ID: {thread.id}")
+        print(f"Retrieving chat history for chat_id: {chat_id}")
+        # Retrieve the past conversation history based on the chat_id
+        history_items = await get_chat_history(chat_id=chat_id)
+        
+        print(f"Creating or retrieving existing thread for chat_id: {chat_id}")
+        # Create a new thread if necessary, or reuse an existing thread if it exists
+        thread = create_thread(chat_id=chat_id)  # Now passing chat_id to create_thread
+        print(f"Thread created/retrieved with ID: {thread.id}")
+
+        # Convert chat history into messages that can be added to the thread
+        past_messages = []
+        for item in history_items:
+            role = item["username"]
+            if role == "Lucy":
+                role = "assistant"
+            else:
+                role = "user"
+            message_data = {
+                "role": role,  # 'user' or 'assistant'
+                "content": item["body"]
+            }
+            past_messages.append(message_data)
+
+        if past_messages:
+            print(f"Adding {len(past_messages)} past messages to thread {thread.id}")
+            for past_message in past_messages:
+                role = past_message["role"]  # Could be 'user' or 'assistant'
+                content = past_message["content"]
+                add_message_to_thread(thread.id, role, content)
+
 
         print(f"Adding user message to thread {thread.id}: {input_query.message}")
-        # Add the user's message to the thread
+        # Add the current user message to the thread
         add_user_message(thread.id, input_query.message)
+
+        print(F"THREAD ====== \n\n\n {thread}")
 
         print("Loading course data...")
         # Load the DataFrame once at the beginning
@@ -206,7 +236,9 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         event_handler = CustomAssistantEventHandler(
             thread_id=thread.id,
             df=df_expanded,
-            response_queue=response_queue
+            response_queue=response_queue,
+            client=client,
+            university=university
         )
         print("CustomAssistantEventHandler instance created.")
 
@@ -245,6 +277,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             stream_thread.join()
             print("Stream thread has finished.")
 
+            #if event_handler.run.status == 'requires_action':
+            #    print("Run requires additional action. Handling...")
         # After the stream is done, check if we have filtered data
         if event_handler.filtered_data is not None:
             print("Filtered data available. Sending to client.")
