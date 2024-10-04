@@ -76,7 +76,7 @@ async def get_chat_history(chat_id: str):
         
         # Ne retourner que le username et le body
         filtered_items = [{'username': item['username'], 'body': item['body']} for item in items]
-        
+
         return filtered_items
     except ClientError as e:
         error_code = e.response['Error']['Code']

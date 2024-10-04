@@ -10,13 +10,13 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 openai.api_key = OPENAI_API_KEY
 
-def initialize_assistant():
+def initialize_assistant(university):
     assistant = openai.beta.assistants.create(
         name="Course Selection Assistant",
         instructions=(
-            """
-                You are an academic advisor at the University of Pennsylvania (UPenn). Your role is to assist students with any administrative or academic queries related to UPenn. 
-                You have access to the course database and can help students select courses by filtering the database based on their queries. For any queries that require current or up-to-date information—such as semester dates,
+            f"""
+                You are an academic advisor at the {university}. Your role is to assist students with any administrative or academic queries related to {university}. 
+                For any queries that require current or up-to-date information—such as semester dates,
                 upcoming events, recent policy changes, or deadlines—you should use the get_current_info function to retrieve the latest information. 
                 Always ensure that your responses are accurate and based on the information available to you; never fabricate or invent information.
             """
@@ -24,6 +24,29 @@ def initialize_assistant():
         model="gpt-4o",
         tools=[
             {
+                "type": "function",
+                "function": {
+                    "name": "get_current_info",
+                    "description": "Retrieves up-to-date information based on the student's query. Use this function when the user asks for current or upcoming events, dates, deadlines, policies, or any information that might have changed recently and requires the most recent data.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": f"The specific information the student is requesting that requires up-to-date data about {university}."
+                            }
+                        },
+                        "required": ["query"]
+                    }
+                }
+            }
+        ]
+    )
+    return assistant
+
+
+    """
+                {
                 "type": "function",
                 "function": {
                     "name": "get_filters",
@@ -41,7 +64,7 @@ def initialize_assistant():
                                 "items": {
                                     "type": "string",
                                     #"pattern": "^[A-Z]{2,4} \\d{4}$",
-                                    "description": """Course code is defining the department and identification number of a class. It consist of 2-4 uppercase letters followed by a space and four digits (e.g., CIS 1210). the user can state either a specific course and the assistnat will make sure it fits the right format (eg.ECON 0100)or the user will input the subject and thus the assistant will only return the letters to identify the departement (eg.CIS)
+                                    "description": Course code is defining the department and identification number of a class. It consist of 2-4 uppercase letters followed by a space and four digits (e.g., CIS 1210). the user can state either a specific course and the assistnat will make sure it fits the right format (eg.ECON 0100)or the user will input the subject and thus the assistant will only return the letters to identify the departement (eg.CIS)
                                                         To correctly format the id letters refer to the following guide
                                                         Academic Foundations (ACFD)
                                                         Accounting (ACCT)
@@ -313,7 +336,7 @@ def initialize_assistant():
                                                         Z
                                                         Zulu (ZULU)
 
-                                    """
+                                
                                 },
                                 "description": "Course code (e.g., AAMW 5231, CIS 1210). The assistant should ensure the format is correct, correcting it if necessary."
                             },
@@ -487,7 +510,7 @@ def initialize_assistant():
                         "properties": {
                             "code": {
                                 "type": "string",
-                                "description": """The course code to retrieve prerequisites for (e.g., 'CIS 1210'). Ensure the course code is in the correct format: uppercase letters followed by a space and four digits.
+                                "description": the course code to retrieve prerequisites for (e.g., 'CIS 1210'). Ensure the course code is in the correct format: uppercase letters followed by a space and four digits.
                                                     To correctly format the id letters refer to the following guide
                                                         Academic Foundations (ACFD)
                                                         Accounting (ACCT)
@@ -758,14 +781,12 @@ def initialize_assistant():
                                                         Yoruba (YORB)
                                                         Z
                                                         Zulu (ZULU)
-                                """
+                                
                             }
                         },
                         "required": ["code"]
                     }
                 }
             }
-        ]
-    )
-    return assistant
+    """
 
