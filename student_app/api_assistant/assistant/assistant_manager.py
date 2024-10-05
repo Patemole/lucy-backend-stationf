@@ -45,6 +45,53 @@ def initialize_assistant(university):
                         "required": ["query"]
                     }
                 }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "ask_clarifying_question",
+                    "description": "Identifies if the student's question is too broad and provides a clarifying question.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": "The broad or vague query that needs clarification."
+                            }
+                        },
+                        "required": ["query"]
+                    },
+                    "output_format": {
+                        "type": "json_schema",
+                        "json_schema": {
+                            "strict": True,
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "document_id": {"type": "string", "const": "0"},
+                                        "question": {"type": "string", "description": "CLARIFYING QUESTION TO ASK THE USER"},
+                                        "answer_options": {
+                                            "type": "array",
+                                            "items": {"type": "string", "description": "answer options to propose to the user to clarify its query"},
+                                            "minItems": 1,
+                                            "maxItems": 5
+                                        },
+                                        "other_specification": {
+                                            "type": "object",
+                                            "properties": {
+                                                "label": {"type": "string", "const": "If other, please specify"},
+                                                "placeholder": {"type": "string", "const": "e.g., None"}
+                                            }
+                                        }
+                                    },
+                                    "required": ["document_id", "question", "answer_options", "other_specification"]
+                                }
+                            }
+                        }
+                    }
+                }
             }
         ]
     )

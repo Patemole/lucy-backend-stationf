@@ -270,8 +270,12 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                     print("Run completed.")
                     break
                 else:
-                    #print(f"Yielding data chunk: {data}")
-                    yield data
+                    if "answer_TAK_data" in data:
+                        # If the clarifying question function was triggered, format the output as required
+                        yield f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n"
+                    else:
+                        # Handle normal stream of text
+                        yield data
 
             # Wait for the stream thread to finish
             stream_thread.join()
