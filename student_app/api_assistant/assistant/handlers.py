@@ -77,6 +77,14 @@ class CustomAssistantEventHandler(AssistantEventHandler):
                     "output": output
                 })
             
+            elif function_name == "ask_clarifying_question":
+                print(f"Processing clarifying question for query '{arguments.get('query', '')}'")
+                #TODO make sure we get the JSON from the function call
+                tool_output = get_clarifying_question_output(query)  # Replace this with the actual output retrieval logic
+                self.response_queue.put(json.dumps({"answer_TAK_data": tool_output}))  # Directly return the output
+                return
+
+            
             else:
                 # Function not implemented
                 output = "Function not implemented."
