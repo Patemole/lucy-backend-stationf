@@ -16,18 +16,28 @@ def initialize_assistant(university):
         description=(f"A friendly and reliable academic advisor for {university} students. This assistant is approachable and always willing to help with specific advice. When precision is needed, it retrieves the most up-to-date information to ensure students get accurate details."),
         instructions=(
             f"""
-            You are an academic advisor at {university}, and your role is to assist students with their academic and administrative queries related to {university}. 
-            As an advisor, you should act like the student's best friend who is always there to help in a friendly, approachable, and understanding manner. 
-            You are someone they can trust, and you are always reasonable and clear in your communication.
+            system:
+            You are an advisor for a student at {university}, and your role is to assist students with their academic and administrative queries related to {university}. 
+                                    
+            For all questions related to {university} that requires up to date information or any information that needs to be accurate call the function get_current_info. But before calling the function ALWAYS tell the student that what you are doing.
+
+            For general questions about the university, provide the information directly without using the get_current_info function. After answering, tailor a follow-up question to the specific query, offering to look up the most recent or detailed information. For example, if the user asks about course credits, respond with: 'Would you like me to check the eligibility for 7 credits next semester?
             
-            Be very specific and avoid giving generic advice. Whenever a student asks for something that requires precision (like dates, deadlines, or specific policy details or any details that need accuracy etc ...), use the get_current_info function to retrieve the most up-to-date information.
+            If the question is too broad or is missing context to answer properly then call ask_clarifying_question to get clarification from the user.
             
-            You are reliable, and if you do not know the exact answer, you will call the appropriate function or direct the student to the right resource rather than guessing or fabricating answers. Your tone should be friendly, but your advice should be accurate, well-considered, and helpful. Be thorough in your responses and make sure students leave the conversation feeling confident and supported.
+            You should act as the student's best friend, talk to him as you knew him for 20 years and use emojis. 
+
+            Important adjustment:
+            NEVER mentiom Penn InTouch, this software is no longer used at Penn now it's PATH@PENN
+
+            Format your response as follows: 
+            Use markdown to format paragraphs, lists, tables, and quotes whenever possible.
+            [Provide a concise, informative answer to the student's query. Use bullet points, bold titles and numbered list for clarity when appropriate.]
             """
         ),
         model="gpt-4o",
         #TODO adjust
-        temperature=0.1,
+        temperature=0.0,
         tools=[
             {
                 "type": "function",
@@ -50,49 +60,24 @@ def initialize_assistant(university):
                 "type": "function",
                 "function": {
                     "name": "ask_clarifying_question",
-                    "description": "Identifies if the student's question is too broad and provides a clarifying question.",
+                    "description": "Identifies if the student's question is too broad and provides a clarifying question to ask him back to make it clearer.",
                     "parameters": {
                         "type": "object",
                         "properties": {
-                            "query": {
+                            "question": {
                                 "type": "string",
-                                "description": "The broad or vague query that needs clarification."
-                            }
-                        },
-                        "required": ["query"]
-                    },
-                    "output_format": {
-                        "type": "json_schema",
-                        "json_schema": {
-                            "strict": True,
-                            "schema": {
+                                "description": "CLARIFYING QUESTION TO ASK THE USER"
+                            },
+                            "answer_options": {
                                 "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "document_id": {"type": "string", "const": "0"},
-                                        "question": {"type": "string", "description": "CLARIFYING QUESTION TO ASK THE USER"},
-                                        "answer_options": {
-                                            "type": "array",
-                                            "items": {"type": "string", "description": "answer options to propose to the user to clarify its query"},
-                                            "minItems": 1,
-                                            "maxItems": 5
-                                        },
-                                        "other_specification": {
-                                            "type": "object",
-                                            "properties": {
-                                                "label": {"type": "string", "const": "If other, please specify"},
-                                                "placeholder": {"type": "string", "const": "e.g., None"}
-                                            }
-                                        }
-                                    },
-                                    "required": ["document_id", "question", "answer_options", "other_specification"]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                                "items": {"type": "string"},
+                                "description": "1 to 5 answer options to propose to the user to clarify its query"
+                            },
+                        },
+                        "required": ["question", "answer_options"]
+                    }   
+                },
+            },
         ]
     )
     return assistant
