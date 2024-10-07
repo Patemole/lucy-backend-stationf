@@ -34,6 +34,14 @@ PINECONE_BATCH_SIZE = 64
 class IndexRequest(BaseModel):
     pinecone_index_name: str
 
+# Define the request model
+class DocumentDownloadRequest(BaseModel):
+    fullName: str
+    email: str
+    companyName: str
+    reason: str
+    documentName: str
+
 # Add necessary directories to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -94,6 +102,45 @@ dynamodb = boto3.resource(
 
 ##################################API ROUTES############################################
 # 1
+@app.post("/RessourceTrustDownload")
+async def generate_presigned_url(request: DocumentDownloadRequest):
+    """
+    This endpoint generates a pre-signed S3 URL that allows the client to download the specified document.
+    The request includes user details and the document name.
+    """
+    logging.info(f"Received download request for document: {request.documentName}")
+
+    # The S3 key for the file, assuming all files are stored in a specific folder
+    s3_key = f"{request.documentName}"
+
+    try:
+        # Generate the presigned URL for downloading the document
+        presigned_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={
+                'Bucket': AWS_S3_BUCKET_NAME,
+                'Key': s3_key,
+            },
+            ExpiresIn=3600  # The URL will expire after 1 hour
+        )
+
+        logging.info(f"Presigned URL generated for {request.documentName}: {presigned_url}")
+
+        # Return the presigned URL as part of the response
+        return {"presignedUrl": presigned_url}
+
+    except ClientError as e:
+        logging.error(f"Error generating presigned URL for {request.documentName}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Could not generate presigned URL for the document.")
+
+    except Exception as e:
+        logging.error(f"Unexpected error: {str(e)}")
+        raise HTTPException(status_code=500, detail="An unexpected error occurred.")
+
+
+
+
+
 @app.post("/create-pinecone-index")
 async def create_pinecone_index(request: IndexRequest):
     logging.info("Received request to create Pinecone index: %s", request.pinecone_index_name)
