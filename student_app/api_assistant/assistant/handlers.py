@@ -6,6 +6,8 @@ from openai import AssistantEventHandler
 from .tools.filter_tool.filter_manager import apply_filters
 from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info
 from .tools.prerequisites_tool.prerequisites_manager import get_prerequisites
+from .tools.clarification_tool.clarification_manager import get_clarifying_question_output
+
 
 class CustomAssistantEventHandler(AssistantEventHandler):
     def __init__(self, thread_id, df, response_queue, client, university):
@@ -70,6 +72,17 @@ class CustomAssistantEventHandler(AssistantEventHandler):
             if function_name == "get_current_info":
                 # Process get_current_info
                 query = arguments.get('query', '')
+
+                text_search = [
+                    {
+                        "Sentence1": "_**[LUCY is processing the search…]**_",
+                        "Sentence2": "Navigating through 6 different sources...",
+                        "Sentence3": "One last effort..."
+                    }
+                ]
+
+                self.response_queue.put(json.dumps({"answer_waiting": text_search}))
+
                 output = get_up_to_date_info(query, self.university)
                 print(f"Current info for query '{query}': {output}")  # Debug statement
                 tool_outputs.append({
@@ -78,12 +91,14 @@ class CustomAssistantEventHandler(AssistantEventHandler):
                 })
             
             elif function_name == "ask_clarifying_question":
-                print(f"Processing clarifying question for query '{arguments.get('query', '')}'")
-                #TODO make sure we get the JSON from the function call
-                tool_output = get_clarifying_question_output(query)  # Replace this with the actual output retrieval logic
+                print(f"Processing clarifying question with arguments: {arguments}")
+                # Generate the tool output using the helper function
+                tool_output = get_clarifying_question_output(arguments)
+                print(tool_output)
+                # Put the output into the response queue
                 self.response_queue.put(json.dumps({"answer_TAK_data": tool_output}))  # Directly return the output
+                # Do not call submit_tool_outputs; end the handler here
                 return
-
             
             else:
                 # Function not implemented
@@ -131,6 +146,9 @@ class CustomAssistantEventHandler(AssistantEventHandler):
             university=self.university
         )
 
+        separation_added = False
+
+
         # Use stream=True to get streaming events
         with self.client.beta.threads.runs.submit_tool_outputs(
             thread_id=self.thread_id,
@@ -145,11 +163,12 @@ class CustomAssistantEventHandler(AssistantEventHandler):
                     for block in event.data.delta.content:
                         if block.type == "text" and hasattr(block.text, "value"):
                             delta_text = block.text.value
-                            
-                            # Before sending the first piece of tool output, add new lines to separate it.
-                            if self.tool_calls:  # Ensure this isn't the first time (i.e., it's a tool follow-up).
-                                self.response_queue.put("\n\n\n")  # Add line breaks before tool output.
 
+                            if not separation_added:
+                                self.response_queue.put("\n\n\n\n")  # Add two line breaks
+                                separation_added = True
+
+                            
                             print(delta_text, end="", flush=True)
                             # Push delta text to the response queue
                             self.response_queue.put(delta_text + "|")
