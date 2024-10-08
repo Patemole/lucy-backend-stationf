@@ -37,6 +37,27 @@ from student_app.prompts.academic_advisor_perplexity_search_prompts import syste
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
+
+from api_assistant.assistant.assistant_manager import initialize_assistant
+from api_assistant.threads.thread_manager import (
+    create_thread,
+    add_user_message,
+    create_and_poll_run,
+    retrieve_run,
+    retrieve_messages,
+    add_message_to_thread
+)
+from api_assistant.assistant.handlers import CustomAssistantEventHandler
+
+# Today's date
+date = datetime.date.today()
+#import sseclient  # Ensure this is installed: pip install sseclient-py
+
+
+
+import threading
+import queue
+
 # Today's date
 date = datetime.date.today()
 
@@ -148,75 +169,144 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
     student_profile = input_query.student_profile
 
-    print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
 
-    prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
-    
-    print(f"Student profil from firestore : {student_profile}")
-    #student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
+    # In your main processing function
 
-    domain = f"site:{university}.edu"
+    # process_assistant.py
+    print(1)  # This should now execute
+    print(f"student_profile: {student_profile}")
 
-    # Get all items from chat history
-    # try:
-    #     history_items = await get_chat_history(chat_id=chat_id)
-    # except Exception as e:
-    #     logging.error(f"Error while retrieving chat history items : {str(e)}")
+    # Define the generator function
+    async def response_generator():
+        
+        print("Initializing assistant...")
+        # Initialize the assistant
+        assistant = initialize_assistant(university)
+        print(f"Assistant initialized with ID: {assistant.id}")
 
-    # Retrieve the "n" messages from the items of the chat history
+        print(f"Retrieving chat history for chat_id: {chat_id}")
+        # Retrieve the past conversation history based on the chat_id
+        history_items = await get_chat_history(chat_id=chat_id)
+        
+        print(f"Creating or retrieving existing thread for chat_id: {chat_id}")
+        # Create a new thread if necessary, or reuse an existing thread if it exists
+        thread = create_thread(chat_id=chat_id)  # Now passing chat_id to create_thread
+        print(f"Thread created/retrieved with ID: {thread.id}")
+
+        # Convert chat history into messages that can be added to the thread
+        past_messages = []
+        for item in history_items:
+            role = item["username"]
+            if role == "Lucy":
+                role = "assistant"
+            else:
+                role = "user"
+            message_data = {
+                "role": role,  # 'user' or 'assistant'
+                "content": item["body"]
+            }
+            past_messages.append(message_data)
+
+        if past_messages:
+            print(f"Adding {len(past_messages)} past messages to thread {thread.id}")
+            for past_message in past_messages:
+                role = past_message["role"]  # Could be 'user' or 'assistant'
+                content = past_message["content"]
+                add_message_to_thread(thread.id, role, content)
+
+
+        print(f"Adding user message to thread {thread.id}: {input_query.message}")
+        # Add the current user message to the thread
+        add_user_message(thread.id, input_query.message)
+
+        print(F"THREAD ====== \n\n\n {thread}")
+
+        print("Loading course data...")
+        # Load the DataFrame once at the beginning
+        df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
+        print("Course data loaded.")
+
+        print("Creating response queue...")
+        # Create a queue to collect the assistant's response
+        response_queue = queue.Queue()
+
+        print("Creating CustomAssistantEventHandler instance...")
+        # Create an instance of the CustomAssistantEventHandler
+        event_handler = CustomAssistantEventHandler(
+            thread_id=thread.id,
+            df=df_expanded,
+            response_queue=response_queue,
+            client=client,
+            university=university
+        )
+        print("CustomAssistantEventHandler instance created.")
+
+        print("Starting streaming run...")
+        # Use the stream helper to create the run and stream the response
+        with client.beta.threads.runs.stream(
+            thread_id=thread.id,
+            assistant_id=assistant.id,
+            event_handler=event_handler,
+        ) as stream:
+            # Set the run_id in the event handler
+            event_handler.run = stream.run
+            # Define the function to run the stream
+            def run_stream():
+                print("Running stream until done...")
+                stream.until_done()
+                print("Stream has completed.")
+
+            # Start the stream in a separate thread
+            stream_thread = threading.Thread(target=run_stream)
+            stream_thread.start()
+            print("Stream thread started.")
+
+            # While the stream is running, get data from the queue and yield
+            while True:
+                data = response_queue.get()
+                if data is None:
+                    # Run is completed
+                    print("Run completed.")
+                    break
+                else:
+                    if "answer_TAK_data" in data:
+                        print("WE DID IT")
+                        print(f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n")
+                        # If the clarifying question function was triggered, format the output as required
+                        #yield "Bonjour" 
+                        yield f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n"
+
+                    elif "answer_waiting" in data:
+                        print(f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n")
+                        # If the clarifying question function was triggered, format the output as required
+                        yield f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n"
+                    
+                    else:
+                        # Handle normal stream of text
+                        yield data
+
+
+            # Wait for the stream thread to finish
+            stream_thread.join()
+            print("Stream thread has finished.")
+
+            #if event_handler.run.status == 'requires_action':
+            #    print("Run requires additional action. Handling...")
+        # After the stream is done, check if we have filtered data
+        if event_handler.filtered_data is not None:
+            print("Filtered data available. Sending to client.")
+            yield json.dumps({"filtered_courses": event_handler.filtered_data})
+        else:
+            print("No filtered data to send.")
+
     try:
-        messages = await get_messages_from_history(chat_id=chat_id, n=6)
+        print("Received request to /send_message_socratic_langgraph")
+        # Return the StreamingResponse using the generator function
+        return StreamingResponse(response_generator(), media_type="text/plain")
     except Exception as e:
-        logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
-
-    predefined_messages = []
-
-    if question_type == "normal":
-        try:
-            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain=domain, student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating system prompt: {str(e)}")
-
-        try:
-            predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university=university, student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating the predefined messages: {str(e)}")
-
-        try:
-            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain=domain)
-        except Exception as e:
-            logging.error(f"Error while reformating user prompt: {str(e)}")
-
-    elif question_type == "chitchat":
-        try:
-            system_prompt = await reformat_prompt(prompt=system_chitchat, university=university, student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating system prompt: {str(e)}")
-        user_prompt = input_message
-
-    try:
-        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
-    except:
-        logging.error(f"Error while setting prompt with history: {str(e)}")
-
-    # Async storage of the input
-    try:
-        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
-    except Exception as e:
-        logging.error(f"Error while storing the input message: {str(e)}")
-
-    # Stream the response
-    # def event_stream():
-    #     for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
-    #         # print(content, end='', flush=True)
-    #         yield content + "|"
-
-    # Stream response from Perplexity LLM with history 
-    try:
-        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
-        # return StreamingResponse(event_stream(), media_type="text/event-stream")
-    except Exception as e:
-        logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
+        print(f"Error in /send_message_socratic_langgraph: {e}")
+        response.status_code = 500
+        return {"error": "Internal Server Error"}
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
