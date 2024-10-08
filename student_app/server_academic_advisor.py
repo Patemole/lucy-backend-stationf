@@ -277,6 +277,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                         yield f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n"
 
                     elif "answer_waiting" in data:
+                        
                         print(f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n")
                         # If the clarifying question function was triggered, format the output as required
                         yield f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n"

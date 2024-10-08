@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class StudentProfile(BaseModel):
     academic_advisor: str
-    faculty: str
+    faculty: list[str]
     major: list[str]
     minor: list[str]
     name: str
