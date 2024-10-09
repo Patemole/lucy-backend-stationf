@@ -97,9 +97,12 @@ class CustomAssistantEventHandler(AssistantEventHandler):
                 print(tool_output)
                 # Put the output into the response queue
                 self.response_queue.put(json.dumps({"answer_TAK_data": tool_output}))  # Directly return the output
-                # Do not call submit_tool_outputs; end the handler here
-                return
-            
+                # Append the tool output to keep the run active
+                tool_outputs.append({
+                    "tool_call_id": tool_call.id,
+                    "output": json.dumps(tool_output)  # Ensure it's a string
+                })
+                
             else:
                 # Function not implemented
                 output = "Function not implemented."

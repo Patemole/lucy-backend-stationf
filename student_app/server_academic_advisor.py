@@ -41,8 +41,8 @@ from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
-from api_assistant.assistant.assistant_manager import initialize_assistant
-from api_assistant.threads.thread_manager import (
+from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
+from student_app.api_assistant.threads.thread_manager import (
     create_thread,
     add_user_message,
     create_and_poll_run,
@@ -50,9 +50,9 @@ from api_assistant.threads.thread_manager import (
     retrieve_messages,
     add_message_to_thread
 )
-from api_assistant.assistant.handlers import CustomAssistantEventHandler
-from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
-from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
+from student_app.api_assistant.assistant.handlers import CustomAssistantEventHandler
+from student_app.api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
+from student_app.api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
 # Today's date
 date = datetime.date.today()
 #import sseclient  # Ensure this is installed: pip install sseclient-py
@@ -172,10 +172,10 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     student_profile = input_query.student_profile
 
 
-    # In your main processing function
-
-    # process_assistant.py
-    print(1)  # This should now execute
+    try:
+        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+    except Exception as e:
+        logging.error(f"Error while storing the input message: {str(e)}")
 
     # Define the generator function
     async def response_generator():
@@ -274,6 +274,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                         print("WE DID IT")
                         print(f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n")
                         # If the clarifying question function was triggered, format the output as required
+                        #yield "Bonjour" 
                         yield f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n"
 
                     elif "answer_waiting" in data:

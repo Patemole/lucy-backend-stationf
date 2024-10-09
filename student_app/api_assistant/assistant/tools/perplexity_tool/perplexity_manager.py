@@ -26,13 +26,15 @@ def get_up_to_date_info(query, university):
 
     current_date = datetime.now().strftime("%B %d, %Y")
 
+    print(f"Query to perplexity is: {query} \n")
+
     system_prompt = (
         f"""
             You are a reliable academic advisor at {university}, and you provide accurate, up-to-date, and factual information. 
             You only provide answers based on current and verified data.
             Only research on site:{university}.edu 
             no other websites and sources should be used. 
-            For your information, today's date is {current_date}.
+            We are currently in the Fall 2024 semester and today date is {current_date} use this to make sure to have relevant information and not past information.
         """
     )
     # Prepare the payload with system prompt and the user query
