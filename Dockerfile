@@ -11,6 +11,9 @@ RUN pip install --no-cache-dir -r requirements.txt && rm requirements.txt
 # Copier le reste des fichiers de l'application
 COPY . .
 
+# Assurer que les fichiers sont bien accessibles
+RUN ls /app/student_app/api_assistant
+
 # Exposer le port sur lequel l'application fonctionne
 EXPOSE 5001
 

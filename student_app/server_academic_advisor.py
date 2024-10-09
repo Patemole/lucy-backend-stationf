@@ -36,8 +36,8 @@ from student_app.prompts.academic_advisor_perplexity_search_prompts import (
 from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt, predefined_messages_prompt_V2
 from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
-from api_assistant.assistant.assistant_manager import initialize_assistant
-from api_assistant.threads.thread_manager import (
+from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
+from student_app.api_assistant.threads.thread_manager import (
     create_thread,
     add_user_message,
     create_and_poll_run,
@@ -45,9 +45,9 @@ from api_assistant.threads.thread_manager import (
     retrieve_messages,
     add_message_to_thread
 )
-from api_assistant.assistant.handlers import CustomAssistantEventHandler
-from api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
-from api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
+from student_app.api_assistant.assistant.handlers import CustomAssistantEventHandler
+from student_app.api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
+from student_app.api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
 
 import requests
 
@@ -174,6 +174,11 @@ def create_academic_advisor_app():
         student_profile = input_query.student_profile
 
         print("Traitement du message de l'étudiant")
+
+        try:
+            await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+        except Exception as e:
+            logging.error(f"Error while storing the input message: {str(e)}")
 
         async def response_generator():
             print("Initialisation de l'assistant...")
