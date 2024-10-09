@@ -24,8 +24,8 @@ dynamodb = boto3.resource(
 )
 
 # Référence à la table 
-table = dynamodb.Table("prod_dev_feedback") 
-#table = dynamodb.Table("prod_preprod_feedback")
+#table = dynamodb.Table("prod_dev_feedback") 
+table = dynamodb.Table("prod_preprod_feedback")
 #table = dynamodb.Table("prod_prod_feedback")
 
 # Définir le décorateur

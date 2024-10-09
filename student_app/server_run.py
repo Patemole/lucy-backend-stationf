@@ -1,3 +1,101 @@
+# server_run.py
+
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+print("Starting the correct file")
+import logging
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from student_app.server_academic_advisor import create_academic_advisor_app
+
+# Configurer le logging
+logging.basicConfig(level=logging.DEBUG)  # Niveau DEBUG pour plus de détails
+logger = logging.getLogger(__name__)
+
+print("Démarrage de l'application")
+logger.info("Démarrage de l'application")
+
+# Création de l'application FastAPI principale
+app = FastAPI()
+
+# Configurer CORS pour l'application principale si nécessaire
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Vous pouvez spécifier les origines autorisées ici
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Middleware pour journaliser les requêtes
+@app.middleware("http")
+async def log_request(request, call_next):
+    print(f"Request: {request.method} {request.url}")
+    logger.info(f"Request: {request.method} {request.url}")
+    response = await call_next(request)
+    print(f"Response: {response.status_code}")
+    logger.info(f"Response: {response.status_code}")
+    return response
+
+# Chemins relatifs pour les fichiers statiques
+static_dir_academic_advisor = os.path.join(os.path.dirname(__file__), "../analytics_academic")
+static_dir_page_yc_popup = os.path.join(os.path.dirname(__file__), "../pop_up_page_yc")
+
+# Assurez-vous que les répertoires existent
+if not os.path.exists(static_dir_academic_advisor):
+    os.makedirs(static_dir_academic_advisor)
+
+if not os.path.exists(static_dir_page_yc_popup):
+    os.makedirs(static_dir_page_yc_popup)
+
+# Monter les répertoires statiques
+app.mount("/static/academic_advisor", StaticFiles(directory=static_dir_academic_advisor), name="static_academic_advisor")
+app.mount("/static/yc_popup", StaticFiles(directory=static_dir_page_yc_popup), name="static_yc_popup")
+
+try:
+    print("Création de l'application academic advisor")
+    logger.info("Création de l'application academic advisor")
+
+    # Création de l'application academic advisor
+    chat_app = create_academic_advisor_app()
+    if chat_app is None:
+        print("Application academic advisor n'a pas été créée")
+        logger.error("Application academic advisor n'a pas été créée")
+    else:
+        print("Application academic advisor créée avec succès")
+        logger.info("Application academic advisor créée avec succès")
+
+    print("Montage de l'application academic advisor")
+    logger.info("Montage de l'application academic advisor")
+
+    # Monter l'application academic advisor
+    app.mount("/chat", chat_app)
+
+    print("Application academic advisor montée avec succès")
+    logger.info("Application academic advisor montée avec succès")
+    
+
+except Exception as e:
+    print(f"Erreur lors de la création ou du montage de l'application: {e}")
+    logger.exception("Erreur lors de la création ou du montage de l'application: %s", e)
+    raise e
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 5001))
+    print(f"Démarrage du serveur sur le port {port}")
+    logger.info(f"Démarrage du serveur sur le port {port}")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="debug")  # Niveau de log DEBUG pour plus de détails
+
+
+
+
+
+
+'''
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -152,3 +250,4 @@ if __name__ == "__main__":
     print(f"Démarrage du serveur sur le port {port}")
     logger.info(f"Démarrage du serveur sur le port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="debug")  # Passer log_level à debug pour plus de détails
+'''

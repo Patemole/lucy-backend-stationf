@@ -63,40 +63,6 @@ class AcademicAdvisorEmailModel(BaseModel):
     uid: str
 
 
-
-
-'''
-# Endpoints
-@app.post("/wrong_answer")
-async def submit_feedback_wrong_answer(feedback: FeedbackWrongAnswerModel):
-    try:
-        # Here, integrate the logic to process the feedback on a wrong answer
-        logging.info(f"Feedback on wrong answer received from user {feedback.userId} on chat {feedback.chatId}")
-        logging.info(f"AI Message: {feedback.aiMessageContent}")
-        logging.info(f"Human Message: {feedback.humanMessageContent}")
-        logging.info(f"Feedback: {feedback.feedback}")
-        return {"message": "Feedback on wrong answer received successfully"}
-    
-    except ValidationError as e:
-        logging.error(f"Validation error: {e.json()}")
-        raise HTTPException(status_code=422, detail=e.errors())
-    
-
-
-@app.post("/feedback_answer")
-async def submit_feedback_answer(feedback: GeneralFeedbackModel):
-    try:
-        # Here, integrate the logic to process the general feedback
-        logging.info(f"General feedback received from user {feedback.userId} on course {feedback.courseId}")
-        logging.info(f"Feedback: {feedback.feedback}")
-        return {"message": "General feedback received successfully"}
-    except ValidationError as e:
-        logging.error(f"Validation error: {e.json()}")
-        raise HTTPException(status_code=422, detail=e.errors())
-'''
-
-
-
 @app.post("/wrong_answer")
 async def submit_feedback_wrong_answer(feedback: FeedbackWrongAnswerModel):
     try:
@@ -125,9 +91,6 @@ async def submit_feedback_wrong_answer(feedback: FeedbackWrongAnswerModel):
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-
-
-
 @app.post("/feedback_answer")
 async def submit_feedback_answer(feedback: GeneralFeedbackModel):
     try:
@@ -148,8 +111,6 @@ async def submit_feedback_answer(feedback: GeneralFeedbackModel):
         error_message = e.response['Error']['Message']
         logging.error(f"Error inserting message into feedback database: {error_code} - {error_message}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-
 
 
 
