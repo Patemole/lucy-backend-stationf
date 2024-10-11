@@ -40,8 +40,8 @@ def get_up_to_date_info(query, university, username, major, minor, year, school)
             - His name is {username}
             - He is in the {school}
             - He is in his {year} senior
-            - His majors are {majors} (can be undeclared if none)
-            - His minors are {majors} (can be undeclared if none)
+            - His majors are {major} (can be undeclared if none)
+            - His minors are {minor} (can be undeclared if none)
             
             When answering the student's question you should take into acount the above information about him to only retrieve and state what is relevant for him 
         """
