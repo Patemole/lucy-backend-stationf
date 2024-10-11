@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 
-def get_up_to_date_info(query, university):
+def get_up_to_date_info(query, university, username, major, minor, year, school):
     """
     Calls the Perplexity API to retrieve up-to-date information based on the query.
 
@@ -35,6 +35,15 @@ def get_up_to_date_info(query, university):
             Only research on site:{university}.edu 
             no other websites and sources should be used. 
             We are currently in the Fall 2024 semester and today date is {current_date} use this to make sure to have relevant information and not past information.
+
+            information about the student:
+            - His name is {username}
+            - He is in the {school}
+            - He is in his {year} senior
+            - His majors are {majors} (can be undeclared if none)
+            - His minors are {majors} (can be undeclared if none)
+            
+            When answering the student's question you should take into acount the above information about him to only retrieve and state what is relevant for him 
         """
     )
     # Prepare the payload with system prompt and the user query

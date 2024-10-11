@@ -4,6 +4,7 @@ from typing import Optional
 
 class StudentProfile(BaseModel):
     academic_advisor: Optional[str]
+    #schools
     faculty: list[str]
     major: Optional[list[str]]
     minor: Optional[list[str]]
