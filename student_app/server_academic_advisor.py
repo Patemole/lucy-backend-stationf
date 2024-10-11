@@ -41,7 +41,6 @@ from student_app.prompts.academic_advisor_user_prompts import user_with_profil
 
 from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
-from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
 from student_app.api_assistant.threads.thread_manager import (
     create_thread,
     add_user_message,
@@ -51,8 +50,8 @@ from student_app.api_assistant.threads.thread_manager import (
     add_message_to_thread
 )
 from student_app.api_assistant.assistant.handlers import CustomAssistantEventHandler
-from student_app.api_assistant.assistant.tools.filter_tool.filter_manager import apply_filters
-from student_app.api_assistant.assistant.tools.filter_tool.data_loader import load_course_data
+from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
+
 # Today's date
 date = datetime.date.today()
 #import sseclient  # Ensure this is installed: pip install sseclient-py
@@ -170,7 +169,10 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     input_message = input_query.message
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
     student_profile = input_query.student_profile
-
+    major = input_query.major
+    minor = input_query.minor
+    year = input_query.year
+    school = input_query.faculty
 
     try:
         await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
@@ -182,7 +184,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         
         print("Initializing assistant...")
         # Initialize the assistant
-        assistant = initialize_assistant(university)
+        assistant = initialize_assistant(university, username, major, minor, year, school)
         print(f"Assistant initialized with ID: {assistant.id}")
 
         print(f"Retrieving chat history for chat_id: {chat_id}")
@@ -238,7 +240,12 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             df=df_expanded,
             response_queue=response_queue,
             client=client,
-            university=university
+            university=university,
+            username=username,
+            major=major,
+            minor=minor,
+            year=year,
+            school=school
         )
         print("CustomAssistantEventHandler instance created.")
 

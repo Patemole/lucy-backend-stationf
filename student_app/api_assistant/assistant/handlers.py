@@ -10,7 +10,7 @@ from .tools.clarification_tool.clarification_manager import get_clarifying_quest
 
 
 class CustomAssistantEventHandler(AssistantEventHandler):
-    def __init__(self, thread_id, df, response_queue, client, university):
+    def __init__(self, thread_id, df, response_queue, client, university, username, major, minor, year, school):
         super().__init__()
         self.thread_id = thread_id
         self.df = df
@@ -20,6 +20,11 @@ class CustomAssistantEventHandler(AssistantEventHandler):
         self.run = None  # Will be set after the stream starts
         self.client = client
         self.university=university
+        self.username=username
+        self.major=major
+        self.minor=minor
+        self.year=year
+        self.school=school
 
     def on_event(self, event):
         if event.event == 'thread.run.requires_action':
@@ -83,7 +88,7 @@ class CustomAssistantEventHandler(AssistantEventHandler):
 
                 self.response_queue.put(json.dumps({"answer_waiting": text_search}))
 
-                output = get_up_to_date_info(query, self.university)
+                output = get_up_to_date_info(query, self.university, self.username, self.major, self.minor, self.year, self.school)
                 print(f"Current info for query '{query}': {output}")  # Debug statement
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
@@ -146,7 +151,12 @@ class CustomAssistantEventHandler(AssistantEventHandler):
             df=self.df,
             response_queue=self.response_queue,
             client=self.client,  # Pass in the client object
-            university=self.university
+            university=self.university,
+            username=self.username,
+            major=self.major,
+            minor=self.minor,
+            year=self.year,
+            school=self.school
         )
 
         separation_added = False
