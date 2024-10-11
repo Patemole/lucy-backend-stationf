@@ -22,8 +22,8 @@ def get_drexel_config(university, current_date, username, major, minor, year, sc
             - His name is {username}
             - He is in the {school}
             - He is in his {year} senior
-            - His majors are {majors} (can be undeclared if none)
-            - His minors are {majors} (can be undeclared if none)
+            - His majors are {major} (can be undeclared if none)
+            - His minors are {minor} (can be undeclared if none)
             When answering the student's question you should take into acount the above information about him to only state what is relevant for him and if you receive informations as context you need to filter the informations to only get information relevant to the student
 
             Security firewalls:
