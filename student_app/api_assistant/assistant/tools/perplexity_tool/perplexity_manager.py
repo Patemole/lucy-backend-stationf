@@ -86,3 +86,28 @@ def get_up_to_date_info(query, university, username, major, minor, year, school)
     except requests.exceptions.RequestException as e:
         # Handle any exceptions related to the request
         return f"Error retrieving information: {str(e)}"
+
+
+def get_sources_json(sources):
+    """
+    Generates a list of sources in the specified format.
+
+    Parameters:
+    - sources (list): A list of dictionaries where each contains 'link' and 'document_name'.
+
+    Returns:
+    - list: A list of dictionaries in the required output format.
+    """
+    tool_output = []
+
+    for source in sources:
+        tool_output.append({
+            "answer_document": {
+                "document_id": "4",  # Fixed value
+                "link": source.get('url', ''),  # Dynamically fetched from input
+                "document_name": source.get('name', ''),  # Dynamically fetched from input
+                "source_type": "course_resource"  # Fixed value
+            }
+        })
+    
+    return tool_output

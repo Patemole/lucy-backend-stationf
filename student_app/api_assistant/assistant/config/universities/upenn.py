@@ -48,16 +48,34 @@ def get_upenn_config(university, current_date, username, major, minor, year, sch
                 "type": "function",
                 "function": {
                     "name": "get_current_info",
-                    "description": f"Retrieves up-to-date information based on the student's query. Use this function when the user asks for current or upcoming events, dates, deadlines, policies, or any information that might have changed recently and requires the most recent data from {university}.",
+                    "description": "Retrieves up-to-date information based on the student's query. Use this function when the user asks for current or upcoming events, dates, deadlines, policies, or any information that might have changed recently and requires the most recent data from {university}. Also for trust purposes return 1 to 3 source links where to find the information, including the source name and URL.",
                     "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "query": {
-                                "type": "string",
-                                "description": f"The specific information the student is requesting that requires up-to-date data about {university}. If it is relevant to the query include the student information to only get the information that is relevant to him"
-                            }
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The specific information the student is requesting that requires up-to-date data about {university}. If it is relevant to the query, include the student information to only get the information that is relevant to them."
                         },
-                        "required": ["query"]
+                        "sources": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                "url": {
+                                    "type": "string",
+                                    "description": "The hyperlink URL to the source where the information is available to answer the student query."
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "The name or title of the source website."
+                                }
+                                },
+                                "required": ["url", "name"]
+                            },
+                            "description": "1 to 3 sources hyperlinks where we can get the information to answer the user's question. Only get sources from site:{university}.edu"
+                        }
+                    },
+                    "required": ["query", "sources"]
                     }
                 }
             },
