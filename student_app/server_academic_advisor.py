@@ -289,6 +289,11 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                         # If the clarifying question function was triggered, format the output as required
                         yield f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n"
                     
+                    elif "image_data" in data:
+                        print(f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n")
+                        yield f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n"
+
+                    
                     elif "sources" in data:
                         # Extract the sources list from the data
                         sources_list = json.loads(data)["sources"]
