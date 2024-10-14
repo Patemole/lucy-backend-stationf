@@ -295,8 +295,17 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
                     
                     elif "sources" in data:
-                        # Extract the sources list from the data
-                        sources_list = json.loads(data)["sources"]
+                        # Check if data is not empty or null before processing
+                        if data:
+                            try:
+                                # Try to decode the JSON data
+                                sources_list = json.loads(data).get("sources", [])
+                            except json.JSONDecodeError:
+                                print("Error decoding JSON. Invalid data received.")
+                                sources_list = []
+                        else:
+                            print("No data received.")
+                            sources_list = []
 
                         # Yield each source in the required JSON document format
                         for source in sources_list:
