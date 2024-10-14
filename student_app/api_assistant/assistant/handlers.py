@@ -4,10 +4,10 @@ import json
 import openai
 from openai import AssistantEventHandler
 from .tools.filter_tool.filter_manager import apply_filters
-from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info
+from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info, get_sources_json
 from .tools.prerequisites_tool.prerequisites_manager import get_prerequisites
 from .tools.clarification_tool.clarification_manager import get_clarifying_question_output
-
+from .tools.perplexity_tool.image_search import google_image_search
 
 class CustomAssistantEventHandler(AssistantEventHandler):
     def __init__(self, thread_id, df, response_queue, client, university, username, major, minor, year, school):
@@ -77,18 +77,33 @@ class CustomAssistantEventHandler(AssistantEventHandler):
             if function_name == "get_current_info":
                 # Process get_current_info
                 query = arguments.get('query', '')
+                sources = arguments.get('sources', '')
+                image_bool = arguments.get('image_bool', False)
 
-                text_search = [
-                    {
-                        "Sentence1": "_**[LUCY is processing the search…]**_",
-                        "Sentence2": "Navigating through 6 different sources...",
-                        "Sentence3": "One last effort..."
-                    }
-                ]
+                #TODO replace text by name of document
+                text_search = []
+
+                i = 0
+                for source in sources:
+                    i += 1
+                    source_name = source.get('name', '')
+                    # Dynamically create the sentence and append as a dictionary
+                    text_search.append({f"Sentence{i}": f"_**[LUCY is searching in {source_name}]**_"})
 
                 self.response_queue.put(json.dumps({"answer_waiting": text_search}))
 
-                output = get_up_to_date_info(query, self.university, self.username, self.major, self.minor, self.year, self.school)
+                sources_list = get_sources_json(sources)
+
+                self.response_queue.put(json.dumps({"sources": sources_list}))
+
+                image_bool = False
+                print(f"IMAGE_BOOL: {image_bool}")
+                if image_bool:
+                    image_url = google_image_search(query)
+                    self.response_queue.put(json.dumps({"image_data": image_url}))
+
+                
+                output = get_up_to_date_info(query, image_bool, self.university, self.username, self.major, self.minor, self.year, self.school)
                 print(f"Current info for query '{query}': {output}")  # Debug statement
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
