@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 
-def get_up_to_date_info(query, university, username, major, minor, year, school):
+def get_up_to_date_info(query, image_bool, university, username, major, minor, year, school):
     """
     Calls the Perplexity API to retrieve up-to-date information based on the query.
 
@@ -55,7 +55,9 @@ def get_up_to_date_info(query, university, username, major, minor, year, school)
         ],
         "max_tokens": 500,
         "stream": False,
-        "return_citations": True
+        "return_citations": True,
+        "return_images": image_bool,
+        "return_related_questions": True
     }
     headers = {
         "accept": "application/json",
@@ -86,3 +88,28 @@ def get_up_to_date_info(query, university, username, major, minor, year, school)
     except requests.exceptions.RequestException as e:
         # Handle any exceptions related to the request
         return f"Error retrieving information: {str(e)}"
+
+
+def get_sources_json(sources):
+    """
+    Generates a list of sources in the specified format.
+
+    Parameters:
+    - sources (list): A list of dictionaries where each contains 'link' and 'document_name'.
+
+    Returns:
+    - list: A list of dictionaries in the required output format.
+    """
+    tool_output = []
+
+    for source in sources:
+        tool_output.append({
+            "answer_document": {
+                "document_id": "4",  # Fixed value
+                "link": source.get('url', ''),  # Dynamically fetched from input
+                "document_name": source.get('name', ''),  # Dynamically fetched from input
+                "source_type": "course_resource"  # Fixed value
+            }
+        })
+    
+    return tool_output
