@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 
-def get_up_to_date_info(query, university, username, major, minor, year, school):
+def get_up_to_date_info(query, image_bool, university, username, major, minor, year, school):
     """
     Calls the Perplexity API to retrieve up-to-date information based on the query.
 
@@ -55,7 +55,9 @@ def get_up_to_date_info(query, university, username, major, minor, year, school)
         ],
         "max_tokens": 500,
         "stream": False,
-        "return_citations": True
+        "return_citations": True,
+        "return_images": image_bool,
+        "return_related_questions": True
     }
     headers = {
         "accept": "application/json",
