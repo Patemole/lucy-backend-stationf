@@ -1,4 +1,4 @@
-from semantic_router import Route
+"""from semantic_router import Route
 from semantic_router.encoders import OpenAIEncoder
 from semantic_router.layer import RouteLayer
 from dotenv import load_dotenv
@@ -269,3 +269,5 @@ routes = [chitchat]
 
 
 rl = RouteLayer(encoder=encoder, routes=routes)
+
+"""
