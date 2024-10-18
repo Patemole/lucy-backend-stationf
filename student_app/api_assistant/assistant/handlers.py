@@ -5,9 +5,9 @@ import openai
 from openai import AssistantEventHandler
 from .tools.filter_tool.filter_manager import apply_filters
 from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info, get_sources_json
-from .tools.prerequisites_tool.prerequisites_manager import get_prerequisites
 from .tools.clarification_tool.clarification_manager import get_clarifying_question_output
 from .tools.perplexity_tool.image_search import google_image_search
+import threading
 
 class CustomAssistantEventHandler(AssistantEventHandler):
     def __init__(self, thread_id, df, response_queue, client, university, username, major, minor, year, school):
@@ -29,8 +29,8 @@ class CustomAssistantEventHandler(AssistantEventHandler):
     def on_event(self, event):
         if event.event == 'thread.run.requires_action':
             print("Handling required action event...")
-            run_id = event.data.id
-            self.handle_requires_action(event.data, run_id)
+            self.run_id = event.data.id
+            self.handle_requires_action(event.data, self.run_id)
         elif event.event == 'thread.message.delta':
             delta_text = event.data.delta.content[0].text.value
             print(delta_text, end="", flush=True)
@@ -160,22 +160,7 @@ class CustomAssistantEventHandler(AssistantEventHandler):
     def submit_tool_outputs(self, tool_outputs, run_id):
         print("Submitting tool outputs...")
 
-        # Create a new instance of the event handler
-        new_event_handler = CustomAssistantEventHandler(
-            thread_id=self.thread_id,
-            df=self.df,
-            response_queue=self.response_queue,
-            client=self.client,  # Pass in the client object
-            university=self.university,
-            username=self.username,
-            major=self.major,
-            minor=self.minor,
-            year=self.year,
-            school=self.school
-        )
-
         separation_added = False
-
 
         # Use stream=True to get streaming events
         with self.client.beta.threads.runs.submit_tool_outputs(
@@ -193,26 +178,30 @@ class CustomAssistantEventHandler(AssistantEventHandler):
                             delta_text = block.text.value
 
                             if not separation_added:
-                                self.response_queue.put("\n\n\n\n")  # Add two line breaks
+                                self.response_queue.put("\n\n\n\n")  # Add line breaks
                                 separation_added = True
 
-                            
                             print(delta_text, end="", flush=True)
                             # Push delta text to the response queue
                             self.response_queue.put(delta_text + "|")
                         else:
                             print("No text content found in delta block:", block)
+                elif event.event == 'thread.run.requires_action':
+                    print("Handling required action event during submit_tool_outputs...")
+                    # Process the required action
+                    self.handle_requires_action(event.data, run_id)
                 elif event.event == "thread.run.step.completed":
                     print("Step completed")
                 elif event.event == "thread.run.completed":
                     print("Run completed")
                 elif event.event == "thread.message.completed":
                     print("Message completed")
-                    # Optionally, signal to the frontend that the message is done
+                    # Signal to the frontend that the message is done
                     self.response_queue.put(None)  # Indicating no more content
                 else:
-                    # Handle other types of events (e.g., step created, in progress)
+                    # Handle other types of events
                     print("Unhandled event:", event)
+
 
 
 
