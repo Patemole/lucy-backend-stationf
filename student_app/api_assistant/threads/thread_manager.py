@@ -4,11 +4,44 @@ import time
 import openai
 from dotenv import load_dotenv
 import os
+from functools import wraps
+
 
 # Load environment variables from .env file
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
+import time
+from functools import wraps
+import asyncio
+
+def timing_decorator(func):
+    @wraps(func)
+    def sync_wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)  # Call the synchronous function
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time} seconds")
+        return result
+    
+    @wraps(func)
+    async def async_wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = await func(*args, **kwargs)  # Call the async function
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time} seconds")
+        return result
+    
+    # Check if the function is async, and return the appropriate wrapper
+    if asyncio.iscoroutinefunction(func):
+        return async_wrapper
+    else:
+        return sync_wrapper
+
+
+
+
+@timing_decorator
 def create_thread(chat_id):
     """
     Creates a new thread with a custom thread ID based on the provided chat_id.
@@ -25,7 +58,7 @@ def create_thread(chat_id):
     print(f"Thread created with ID: {thread.id} (linked to app chat ID: {chat_id})\n")
     return thread
 
-
+@timing_decorator
 def add_user_message(thread_id, user_query):
     """
     Adds a user message to the specified thread.
@@ -45,6 +78,7 @@ def add_user_message(thread_id, user_query):
     print(f"User message added to thread {thread_id}: {user_query}\n")
     return message
 
+@timing_decorator
 def add_message_to_thread(thread_id, role, content):
     """
     Adds a message (user/assistant) to the specified thread.
@@ -65,6 +99,7 @@ def add_message_to_thread(thread_id, role, content):
     print(f"{role.capitalize()} message added to thread {thread_id}: {content}\n")
     return message
 
+@timing_decorator
 def create_and_poll_run(thread_id, assistant_id):
     """
     Creates a run for the assistant and polls its status until completion.
@@ -84,6 +119,7 @@ def create_and_poll_run(thread_id, assistant_id):
     print(f"Initial Run status: {run.status}\n")
     return run
 
+@timing_decorator
 def retrieve_run(run_id, thread_id):
     """
     Retrieves the current status of a run.
@@ -100,6 +136,7 @@ def retrieve_run(run_id, thread_id):
         run_id=run_id
     )
 
+@timing_decorator
 def retrieve_messages(thread_id):
     """
     Retrieves all messages in a thread.

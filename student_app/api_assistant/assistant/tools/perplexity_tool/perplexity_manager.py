@@ -2,8 +2,38 @@
 import requests
 import os
 from datetime import datetime
+from functools import wraps
 
 
+import time
+from functools import wraps
+import asyncio
+
+def timing_decorator(func):
+    @wraps(func)
+    def sync_wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)  # Call the synchronous function
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time} seconds")
+        return result
+    
+    @wraps(func)
+    async def async_wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = await func(*args, **kwargs)  # Call the async function
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time} seconds")
+        return result
+    
+    # Check if the function is async, and return the appropriate wrapper
+    if asyncio.iscoroutinefunction(func):
+        return async_wrapper
+    else:
+        return sync_wrapper
+
+
+@timing_decorator
 def get_up_to_date_info(query, image_bool, university, username, major, minor, year, school):
     """
     Calls the Perplexity API to retrieve up-to-date information based on the query.
