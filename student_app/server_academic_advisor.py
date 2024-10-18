@@ -1,22 +1,48 @@
-
-import sys
 import os
 import asyncio
 import logging
-from fastapi import APIRouter, FastAPI, HTTPException, Request, Response, UploadFile, File, Form
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from dotenv import load_dotenv
-from functools import wraps
-import time
-from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
-from student_app.model.input_query import InputQuery, InputQueryAI
-from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
-from student_app.academic_advisor import academic_advisor_answer_generation
-from student_app.LLM.academic_advisor_search_engine_answering_LLM_chain import LLM_chain_search_engine_and_answering
+import datetime
 
-from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
+from openai import OpenAI
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse, JSONResponse
+from dotenv import load_dotenv
+from typing import Dict, List
+import json
+
+import pandas as pd
+
+import asyncio
+import time
+from student_app.database.dynamo_db.analytics import store_analytics_async
+
+from student_app.model.input_query import InputQuery, InputQueryAI
+from student_app.model.student_profile import StudentProfile
+from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
+
+from student_app.database.dynamo_db.analytics import store_analytics_async
+from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
+
+from student_app.profiling.profile_generation import LLM_profile_generation
+
+from student_app.api_assistant.threads.thread_manager import (
+    create_thread,
+    add_user_message,
+    create_and_poll_run,
+    retrieve_run,
+    retrieve_messages,
+    add_message_to_thread
+)
+from student_app.api_assistant.assistant.handlers import CustomAssistantEventHandler
+from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
+
+# Today's date
+date = datetime.date.today()
+
+import threading
+import queue
+
 
 # Logging configuration
 logging.basicConfig(
@@ -29,6 +55,7 @@ logging.basicConfig(
     ]
 )
 
+
 # Environment variables
 load_dotenv()
 
@@ -37,11 +64,10 @@ AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = os.getenv('AWS_REGION')
 
-# Pinecone
-PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
-
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+client = OpenAI()
 
 # FastAPI app configuration
 app = FastAPI(
@@ -57,7 +83,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#chat_router = APIRouter(prefix='/chat', tags=['chat'])
+#############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
+
+async def count_words(input_message: str) -> int:
+    # Compte le nombre de mots dans la chaîne de caractères input_message
+    word_count = len(input_message.split())
+    print("\n")
+    print("This is the number of word in the input:")
+    print(word_count)
+    print("\n")
+    return word_count
+
+async def count_student_questions(chat_history):
+    question_count = 0
+    if not chat_history:
+
+        print("\n")
+        print("This is the number of question per chat_id (first message here):")
+        print(question_count)
+        print("\n")
+        
+        return question_count
+    
+    for message in chat_history:
+        if message['username'].lower() != 'lucy':
+            question_count += 1
+    
+    print("\n")
+    print("This is the number of question per chat_id:")
+    print(question_count)
+    print("\n")
+    return question_count
+
+############################################# END POINT FOR CHAT ##################################
+
 
 # TRAITEMENT D'UN MESSAGE ÉLÈVE - Rajouter ici la fonction pour déterminer la route à choisir 
 @app.post("/send_message_socratic_langgraph")
@@ -67,40 +126,175 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     username = input_query.username
     input_message = input_query.message
     university = input_query.university #A rajouter pour avoir le bon search engine par la suite
+    student_profile = input_query.student_profile
+    major = input_query.major
+    minor = input_query.minor
+    year = input_query.year
+    school = input_query.faculty
 
-    print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
+    try:
+        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+    except Exception as e:
+        logging.error(f"Error while storing the input message: {str(e)}")
 
-    
-    # Récupérez l'historique de chat
-    chat_history = await get_chat_history(chat_id)
-    print(chat_history)
-    
-    # Stockez le message de manière asynchrone
-    asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
+    # Define the generator function
+    async def response_generator():
+        
+        print("Initializing assistant...")
+        # Initialize the assistant
+        assistant = initialize_assistant(university, username, major, minor, year, school)
+        print(f"Assistant initialized with ID: {assistant.id}")
 
-    # Selection of the route from the router + first LLM generation for query reformulation for the Search Engine (with follow-up questions)
-    search_engine_query, prompt_answering, student_profile, method, keywords = await academic_advisor_router_treatment(input_message, chat_history)
+        print(f"Retrieving chat history for chat_id: {chat_id}")
+        # Retrieve the past conversation history based on the chat_id
+        history_items = await get_chat_history(chat_id=chat_id)
+        
+        print(f"Creating or retrieving existing thread for chat_id: {chat_id}")
+        # Create a new thread if necessary, or reuse an existing thread if it exists
+        thread = create_thread(chat_id=chat_id)  # Now passing chat_id to create_thread
+        print(f"Thread created/retrieved with ID: {thread.id}")
 
-    print(f"search_engine_query: {search_engine_query}, prompt_answering: {prompt_answering}, method: {method}, keywords: {keywords}")
+        # Convert chat history into messages that can be added to the thread
+        past_messages = []
+        for item in history_items:
+            role = item["username"]
+            if role == "Lucy":
+                role = "assistant"
+            else:
+                role = "user"
+            message_data = {
+                "role": role,  # 'user' or 'assistant'
+                "content": item["body"]
+            }
+            past_messages.append(message_data)
 
-    #Second LLM generation with the search engine + Answer generation and sources 
-    return StreamingResponse(LLM_chain_search_engine_and_answering(input_message, search_engine_query, prompt_answering, student_profile, chat_history, university, method, course_id, keywords), media_type="text/event-stream")
+        if past_messages:
+            print(f"Adding {len(past_messages)} past messages to thread {thread.id}")
+            for past_message in past_messages:
+                role = past_message["role"]  # Could be 'user' or 'assistant'
+                content = past_message["content"]
+                add_message_to_thread(thread.id, role, content)
 
 
-    # Créez une réponse en streaming en passant l'historique de chat
-    #return StreamingResponse(academic_advisor_answer_generation(input_message, chat_history), media_type="text/event-stream")
+        print(f"Adding user message to thread {thread.id}: {input_query.message}")
+        # Add the current user message to the thread
+        add_user_message(thread.id, input_query.message)
 
-    #Rajouter ici en paramètre le prompt + la bonne instance de search engine
-    #streaming_answer = LLM_chain_generation(input_message, chat_history)
+        print(F"THREAD ====== \n\n\n {thread}")
 
-    #return StreamingResponse(streaming_answer, media_type="text/event-stream")
-    #Ancienne manière de récupérer le message
-    #return StreamingResponse(LLM_chain_generation(input_message, chat_history), media_type="text/event-stream")
+        print("Loading course data...")
+        # Load the DataFrame once at the beginning
+        df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
+        print("Course data loaded.")
 
-    # Il faudra appeler une autre fonction en fonction de si c'est l'academic advisor ou d'autres cours.
-    # Logic suivante : if course_id == "academic_advisor" : return StreamingResponse(academic_advisor_answer_generation(input_query.message, chat_history), media_type="text/event-stream")
-    # else : return StreamingResponse(socratic_answer_generation(input_query.message, chat_history, course_id), media_type="text/event-stream")
-    # avec le course_id qui correspond au cours que l'élève a demandé.
+        print("Creating response queue...")
+        # Create a queue to collect the assistant's response
+        response_queue = queue.Queue()
+
+        print("Creating CustomAssistantEventHandler instance...")
+        # Create an instance of the CustomAssistantEventHandler
+        event_handler = CustomAssistantEventHandler(
+            thread_id=thread.id,
+            df=df_expanded,
+            response_queue=response_queue,
+            client=client,
+            university=university,
+            username=username,
+            major=major,
+            minor=minor,
+            year=year,
+            school=school
+        )
+        print("CustomAssistantEventHandler instance created.")
+
+        print("Starting streaming run...")
+        # Use the stream helper to create the run and stream the response
+        with client.beta.threads.runs.stream(
+            thread_id=thread.id,
+            assistant_id=assistant.id,
+            event_handler=event_handler,
+        ) as stream:
+            # Set the run_id in the event handler
+            event_handler.run = stream.run
+            # Define the function to run the stream
+            def run_stream():
+                print("Running stream until done...")
+                stream.until_done()
+                print("Stream has completed.")
+
+            # Start the stream in a separate thread
+            stream_thread = threading.Thread(target=run_stream)
+            stream_thread.start()
+            print("Stream thread started.")
+
+            # While the stream is running, get data from the queue and yield
+            while True:
+                data = response_queue.get()
+                if data is None:
+                    # Run is completed
+                    print("Run completed.")
+                    break
+                else:
+                    if "answer_TAK_data" in data:
+                        print("WE DID IT")
+                        print(f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n")
+                        # If the clarifying question function was triggered, format the output as required
+                        #yield "Bonjour" 
+                        yield f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n"
+
+                    elif "answer_waiting" in data:
+                        print(f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n")
+                        # If the clarifying question function was triggered, format the output as required
+                        yield f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n"
+                    
+                    elif "image_data" in data:
+                        print(f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n")
+                        yield f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n"
+
+                    
+                    elif "sources" in data:
+                        # Check if data is not empty or null before processing
+                        if data:
+                            try:
+                                # Try to decode the JSON data
+                                sources_list = json.loads(data).get("sources", [])
+                            except json.JSONDecodeError:
+                                print("Error decoding JSON. Invalid data received.")
+                                sources_list = []
+                        else:
+                            print("No data received.")
+                            sources_list = []
+
+                        # Yield each source in the required JSON document format
+                        for source in sources_list:
+                            print(f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n")
+                            yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
+                    else:
+                        # Handle normal stream of text
+                        yield data
+
+
+            # Wait for the stream thread to finish
+            stream_thread.join()
+            print("Stream thread has finished.")
+
+            #if event_handler.run.status == 'requires_action':
+            #    print("Run requires additional action. Handling...")
+        # After the stream is done, check if we have filtered data
+        if event_handler.filtered_data is not None:
+            print("Filtered data available. Sending to client.")
+            yield json.dumps({"filtered_courses": event_handler.filtered_data})
+        else:
+            print("No filtered data to send.")
+
+    try:
+        print("Received request to /send_message_socratic_langgraph")
+        # Return the StreamingResponse using the generator function
+        return StreamingResponse(response_generator(), media_type="text/plain")
+    except Exception as e:
+        print(f"Error in /send_message_socratic_langgraph: {e}")
+        response.status_code = 500
+        return {"error": "Internal Server Error"}
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
@@ -119,7 +313,8 @@ async def delete_chat_history_route(chat_id: str):
     except Exception as e:
         logging.error(f"Erreur lors de la suppression de l'historique du chat : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
-    
+
+
 
 # NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
 @app.post("/save_ai_message")
@@ -127,16 +322,445 @@ async def save_ai_message(ai_message: InputQueryAI):
     chat_id = ai_message.chatSessionId
     course_id = ai_message.courseId
     username = ai_message.username
-    input_message = ai_message.message
+    input_message = ai_message.input_message
+    output_message = ai_message.message
     type = ai_message.type #Pas utilisé pour l'instant, on va faire la selection quand on récupérera le username if !== "Lucy" alors on mets "human" else "ai"
+    uid = ai_message.uid
+    university = ai_message.university
+
+    print("input_message de l'utilisateur:")
+    print(input_message)
+    print("output_message de l'IA:")
+    print(output_message)
+
+    word_count_task = await count_words(input_message)
+
+    chat_history = await get_chat_history(chat_id)
+    number_of_question_per_chat_id = await count_student_questions(chat_history)
+    number_of_question_per_chat_id = number_of_question_per_chat_id + 1
+
+    
 
     try:
-        asyncio.ensure_future(store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message))
+        message_id = await store_message_async(chat_id, username=username, course_id=course_id, message_body=output_message)
+        print(f"Stored message with ID: {message_id}")
 
-        return {"message": "AI message saved successfully"}
+        #data à récupérer et faire la logic 
+        feedback = 'no'
+        ask_for_advisor = 'no'
+
+        #Rajouter ici la fonction pour sauvegarder les informations dans la table analytics 
+       #await store_analytics_async(chat_id=chat_id, course_id=course_id, uid=uid, input_embedding=input_embeddings, output_embedding=output_embeddings, feedback=feedback, ask_for_advisor=ask_for_advisor, interaction_position=number_of_question_per_chat_id, word_count=word_count_task, ai_message_id=message_id, input_message=input_message, output_message=output_message, university=university)
+
     except Exception as e:
         logging.error(f"Erreur lors de la sauvegarde du message AI : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la sauvegarde du message AI")
+    
+
+
+
+
+#Endpoint for generate a student profile based on onboarding informations
+@app.post("/student_profile")
+async def create_student_profile(profile: StudentProfile):
+    academic_advisor = profile.academic_advisor
+    faculty = profile.faculty
+    major = profile.major
+    minor = profile.minor
+    name = profile.name
+    university = profile.university
+    year = year = profile.year
+
+    student_profile_prompt_answering = system_profile
+
+    
+    try:
+        student_profile = LLM_profile_generation(name, academic_advisor, year, university, faculty, major, minor)
+        return {"student_profile": student_profile}
+    
+
+    except Exception as e:
+        logging.error(f"Error creating student profile: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error creating student profile")
+
+
+
+#NOUVEAU CODE AVEC LE DEEP SEARCH ET ON LAISSE LE TAK AUSSI QUI S'ENVOIE CORRECTEMENT MAIS QUI EST MAL GÉRÉ PAR LE FRONT
+import asyncio
+from typing import Dict, List
+from fastapi import FastAPI, Request
+from fastapi.responses import StreamingResponse
+import json
+
+#app = FastAPI()
+
+# Function to split text into chunks of 1-3 words, preserving formatting
+def split_preserving_formatting(text):
+    chunks = []
+    lines = text.splitlines()
+
+    for line in lines:
+        if line.startswith("-"):
+            bullet_content = line[1:].strip()
+            words = bullet_content.split()
+            i = 0
+            while i < len(words):
+                chunk_size = min(3, len(words) - i)
+                chunks.append("- " + ' '.join(words[i:i + chunk_size]) if i == 0 else ' '.join(words[i:i + chunk_size]))
+                i += chunk_size
+        else:
+            words = line.split()
+            i = 0
+            while i < len(words):
+                chunk_size = min(3, len(words) - i)
+                chunks.append(' '.join(words[i:i + chunk_size]))
+                i += chunk_size
+        chunks.append("\n")
+    return chunks
+
+
+
+@app.post("/send_message_fake_demo")
+async def chat(request: Request, input_query: Dict) -> StreamingResponse:
+    # Method for assistant API call 
+    """
+    Endpoint to handle user messages, interact with the AI assistant, and return appropriate responses.
+    
+    - If the assistant invokes a function (e.g., `get_filters`), apply the filter and return the filtered JSON.
+    - If no function is invoked, return the assistant's textual response.
+    
+    Args:
+        request (Request): The incoming HTTP request.
+        input_query (Dict): The JSON payload containing the user's message.
+    
+    Returns:
+        StreamingResponse: The assistant's response, either as JSON or plain text.
+    """
+    input_message = input_query.get("message")
+    if not input_message:
+        raise HTTPException(status_code=400, detail="Message is required.")
+
+    
+    # Return the response as JSON
+    input_message = input_query.get("message")
+    print("this is the input message")
+    print(input_message)
+
+    await asyncio.sleep(2)
+
+    # Known responses with line breaks and bullet points
+    known_responses: Dict[str, str] = {
+        "Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let’s get started.""",
+        "4": """Great! And how many of those classes have you already decided on?""",
+        "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
+        "Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
+        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020 please find below details on Dr. Hammish Office Hours:""",
+        "Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
+        "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
+    }
+
+    # Dictionary to associate specific documents with certain questions/responses
+    document_associations: Dict[str, List[Dict]] = {
+        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+            {
+                "answer_document": {
+                    "document_id": "1",
+                    "link": "http://localhost:5001/static/yc_popup/course_path@penn.html",
+                    "document_name": "Course registration PATH@PENN",
+                    "source_type": "course_resource"
+                }
+            },
+            {
+                "answer_document": {
+                    "document_id": "2",
+                    "link": "http://localhost:5001/static/yc_popup/syllabus_cis_5190.html",
+                    "document_name": "Syllabus CIS 5190",
+                    "source_type": "course_resource"
+                }
+            }
+        ],
+        "Now validate and register my choices": [
+            {
+                "answer_document": {
+                    "document_id": "4",
+                    "link": "http://localhost:5001/static/yc_popup/course_path@penn.html",
+                    "document_name": "Course registration Path@penn",
+                    "source_type": "course_resource"
+                }
+            }
+        ],
+        "Yes": [
+            {
+                "answer_document": {
+                    "document_id": "5",
+                    "link": "http://localhost:5001/static/yc_popup/syllabus_cis_5190.html",
+                    "document_name": "Syllabus CIS 5190",
+                    "source_type": "course_resource"
+                }
+            },
+
+            {
+                "answer_document": {
+                    "document_id": "7",
+                    "link": "http://localhost:5001/static/yc_popup/syllabus_cis_5190.html",
+                    "document_name": "Syllabus CIS 5220",
+                    "source_type": "course_resource"
+                }
+            },
+
+            {
+                "answer_document": {
+                    "document_id": "8",
+                    "link": "http://localhost:5001/static/yc_popup/syllabus_cis_5200.html",
+                    "document_name": "Syllabus CIS 5200",
+                    "source_type": "course_resource"
+                }
+            }
+        ],
+        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": [
+            {
+                "answer_document": {
+                    "document_id": "5",
+                    "link": "http://localhost:5001/static/academic_advisor/Levine_Hall.pdf",
+                    "document_name": "PennAccess: Levine Hall",
+                    "source_type": "course_resource"
+                }
+            }
+        ]
+    }
+
+    # Related questions for each response
+    related_questions: Dict[str, List[str]] = {
+        "That’s all I need for now. Thanks, Lucy!": [
+            "What are the most popular AI courses?",
+            "Can I combine AI with another elective?",
+            "Is there a beginner AI course available?"
+        ]
+    }
+
+    # Image associations for specific responses
+    image_associations: Dict[str, List[Dict]] = {
+        "CIS 5020 is good, can you tell me when and where are M.Hammish OH": [
+            {
+                "image_id": "img3",
+                "image_url": "http://localhost:5001/static/academic_advisor/map_upenn.png",
+                "image_description": "Hall Building"
+            },
+
+            {
+                "image_id": "img4",
+                "image_url": "http://localhost:5001/static/academic_advisor/ESE_3060_GOOD.png",
+                "image_description": "Dr. Hammish"
+            },
+
+        ]
+    }
+
+    # New JSON for "answer_waiting"
+    answer_waiting_associations: Dict[str, List[Dict]] = {
+        "Yes": [
+            {
+                    "Sentence1": "Deep Searching begin...",
+                    "Sentence2": "Navigating through 6 different sources...",
+                    "Sentence3": "One last effort..."
+            }
+        ]
+    }
+
+    # Dictionary for answer_TAK associated with specific input messages
+    answer_TAK_associations: Dict[str, List[Dict]] = {
+        "Hey Lucy let’s plan my classes": [
+            {
+                "document_id": "4",
+                "question": "How many classes are you planning to take next semester?",
+                "answer_options": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                ],
+                "other_specification": {
+                    "label": "If other, please specify",
+                    "placeholder": "e.g., None"
+                }
+            }
+        ]
+    }
+
+
+
+    answer_COURSE_associations: Dict[str, List[Dict]] = {
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": [
+            {
+            "document_id": "4",
+            "title": "CIS 5960 - Applied Machine Learning",
+            "code": "CIS",
+            "Semester": "Fall",
+            "Credit": "1 CU",
+            "Prerequisites": "MATH 3210, CIS 3210",
+            "Work": "2.5",
+            "CourseQuality": "3.5",
+            "Difficulty": "2",
+            "Description": "Introduction to fundamental concepts and algorithms to cover supervised, unsupervised and reinforcement learning.",
+            "Prospectus_link": "http://localhost:5001/static/yc_popup/course_path@penn.html",
+            "Syllabus_link": "http://localhost:5001/static/yc_popup/syllabus_cis_5190.html",
+            "CoursesSlot": [
+                {
+                "CourseID": "235",
+                "TeacherName": "Dr. John Louise",
+                "TeacherQuality": "4",
+                "Days": ["Mon", "Wed"],
+                "StartTime": "10:00",
+                "EndTime": "11:30"
+                },
+                {
+                "CourseID": "808",
+                "TeacherName": "Dr. Jane Smith",
+                "TeacherQuality": "3.5",
+                "Days": ["Tue", "Thu"],
+                "StartTime": "14:00",
+                "EndTime": "15:30"
+                },
+                {
+                "CourseID": "715",
+                "TeacherName": "Dr. Emily Johnson",
+                "TeacherQuality": "4.2",
+                "Days": ["Fri"],
+                "StartTime": "15:00",
+                "EndTime": "17:00"
+                }
+            ]
+            },
+
+
+            {
+                "document_id": "5",
+                "title": "CIS 5220 - Deep Learning for Data Science",
+                "code": "CIS",
+                "Semester": "Fall",
+                "Credit": "1 CU",
+                "Prerequisites": "MATH 3210, CIS 5310",
+                "Work": "3",
+                "CourseQuality": "2",
+                "Difficulty": "4",
+                "Description": "Introduction to fundamental concepts of deep learning to cover supervised, unsupervised, and reinforcement learning.",
+                "Prospectus_link": "http://localhost:5001/static/yc_popup/course_path@penn.html",
+                "Syllabus_link": "http://localhost:5001/static/yc_popup/syllabus_cis_5190.html",
+                "CoursesSlot": [
+                    {
+                    "CourseID": "340",
+                    "TeacherName": "Dr. Michael Brown",
+                    "TeacherQuality": "4.5",
+                    "Days": ["Mon", "Wed"],
+                    "StartTime": "11:00",
+                    "EndTime": "12:30"
+                    },
+                    {
+                    "CourseID": "210",
+                    "TeacherName": "Dr. Sarah Lee",
+                    "TeacherQuality": "4.0",
+                    "Days": ["Tue", "Thu"],
+                    "StartTime": "15:00",
+                    "EndTime": "16:30"
+                    },
+                    {
+                    "CourseID": "650",
+                    "TeacherName": "Dr. Alan Turing",
+                    "TeacherQuality": "4.7",
+                    "Days": ["Mon"],
+                    "StartTime": "15:00",
+                    "EndTime": "17:00"
+                    }
+                ]
+                }
+
+        ]
+    }
+
+    # Check if the question is known
+    response_message = known_responses.get(input_message, "Sorry, I don't understand the question.")
+
+    # Get the documents, related questions, images, answer_TAK and answer_waiting associated with the input message
+    documents = document_associations.get(input_message, [])
+    related_qs = related_questions.get(input_message, [])
+    images = image_associations.get(input_message, [])
+    answer_TAK_data = answer_TAK_associations.get(input_message, [])
+    answer_COURSE_data = answer_COURSE_associations.get(input_message, [])
+    answer_waiting_data = answer_waiting_associations.get(input_message, [])
+
+    # Return the simulated response as streaming
+    async def message_stream():
+        # Send the text in streaming
+        chunks = split_preserving_formatting(response_message)
+
+        for chunk in chunks:
+            yield chunk + " "  # Send chunks of text as raw text
+            await asyncio.sleep(0.08)
+
+        # Send answer_waiting JSON if available
+        if answer_waiting_data:
+            answer_waiting_json = json.dumps({"answer_waiting": answer_waiting_data})
+            yield f"\n<ANSWER_WAITING>{answer_waiting_json}<ANSWER_WAITING_END>\n"
+            await asyncio.sleep(0.5)  # Wait for 6 seconds before sending the next part of the message
+
+            waiting_text_answer="_**[LUCY is processing the search…]**_"
+
+
+            # Send final response after waiting
+            final_response = """Thanks for your patience, Mathieu! I’ve found three courses that match your criteria for a technical elective in AI, I have taken 5XX level classes given you are a senior and have validated already three 4XX tech electives. Here they are:\n\n **Option 1: CIS 5190 - Applied Machine Learning**\n- *Description:* The course introduces fundamental concepts and algorithms that enable computers to learn from experience, with an emphasis on practical application to real problems. It covers supervised learning (decision trees, logistic regression, support vector machines, neural networks, and deep learning), unsupervised learning (clustering, dimensionality reduction), and reinforcement learning.\n- *Schedule:* Monday and Wednesday, 10:00 AM - 11:30 AM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Emily Zhang\n- *Class Size:* Medium (30-40 students)\nI know that you are minoring in data science so this course might interest you:\n\n### **Option 2: CIS 5220 - Deep Learning for Data Science**\n- *Description:* This course provides a comprehensive introduction to machine learning techniques specifically tailored for visual data. The class includes a series of hands-on projects where students develop models for tasks such as image classification, object detection, and video analysis.\n- *Schedule:* Monday and Wednesday, 2:00 PM - 3:30 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Michael Rivera\n- *Class Size:* Small (20-25 students)\n\n **Option 3: CIS 5200 - Machine Learning**\n- *Description:* This course intends to provide a thorough modern introduction to the field of machine learning. It is designed for students who want to understand not only what machine learning algorithms do and how they can be used, but also the fundamental principles behind how and why they work.\n- *Schedule:* Monday and Wednesday, 1:45-3:15 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Linda Nguyen\n- *Class Size:* Large (50-60 students)\nDo any of these options stand out to you, or would you like more details on any of them?"""
+
+            waiting_chunks = split_preserving_formatting(waiting_text_answer)
+            for chunk in waiting_chunks:
+                yield chunk + " "
+                await asyncio.sleep(0.08)
+
+            await asyncio.sleep(3)
+
+            final_chunks = split_preserving_formatting(final_response)
+            for chunk in final_chunks:
+                yield chunk + " "
+                await asyncio.sleep(0.08)
+
+        await asyncio.sleep(0.2)
+
+        # Send images as JSON if available
+        if images:
+            image_data_json = json.dumps({"image_data": images})
+            yield f"\n<IMAGE_DATA>{image_data_json}<IMAGE_DATA_END>\n"
+            await asyncio.sleep(0.2)
+
+        # Send documents one by one if available
+        if documents:
+            for document in documents:
+                yield f"\n<JSON_DOCUMENT_START>{json.dumps(document)}<JSON_DOCUMENT_END>\n"
+                await asyncio.sleep(0.2)
+
+        # Send related questions as JSON if available
+        if related_qs:
+            related_qs_json = json.dumps({"related_questions": related_qs})
+            yield f"\n<RELATED_QUESTIONS>{related_qs_json}<RELATED_QUESTIONS_END>\n"
+            await asyncio.sleep(0.2)
+
+        # Send answer_TAK as JSON if available
+        if answer_TAK_data:
+            answer_TAK_json = json.dumps({"answer_TAK_data": answer_TAK_data})
+            yield f"\n<ANSWER_TAK>{answer_TAK_json}<ANSWER_TAK_END>\n"
+            await asyncio.sleep(0.2)
+
+        # Send answer_COURSE as JSON if available
+        if answer_COURSE_data:
+            answer_COURSE_json = json.dumps({"answer_COURSE_data": answer_COURSE_data})
+            yield f"\n<ANSWER_COURSE>{answer_COURSE_json}<ANSWER_COURSE_END>\n"
+            await asyncio.sleep(0.2)
+
+    return StreamingResponse(message_stream(), media_type="text/plain")
+
+
+
+
 
 
 def create_app():

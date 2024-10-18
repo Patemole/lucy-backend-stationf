@@ -1,5 +1,3 @@
-#Création de la table avec global_secondery index pour récupérer l'historique de chat 
-'''
 import boto3
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
@@ -9,48 +7,49 @@ load_dotenv()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_REGION = os.getenv('AWS_REGION')
+AWS_REGION_PREPROD = os.getenv('AWS_REGION_PREPROD')
 
 
-def create_chat_table():
-    # Création d'un client DynamoDB
+
+def create_feedback_table():
+    # Create a DynamoDB client
     dynamodb = boto3.resource(
         'dynamodb',
-        region_name=AWS_REGION,  # Assurez-vous que la région est correcte
+        region_name=AWS_REGION_PREPROD,
         aws_access_key_id=AWS_ACCESS_KEY_ID,
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY
     )
 
     try:
-        # Création de la table PROD_chat
+        # Create the prod_dev_feedback table
         table = dynamodb.create_table(
-            TableName='MVP_chat_academic_advisor',
+            TableName='prod_preprod_feedback',
             KeySchema=[
                 {
-                    'AttributeName': 'chat_id',  # Nom de l'attribut pour la clé de partition
-                    'KeyType': 'HASH'  # Type de la clé de partition, HASH signifie clé principale
+                    'AttributeName': 'uid',
+                    'KeyType': 'HASH'
                 },
                 {
-                    'AttributeName': 'message_id',  # Nom de l'attribut pour la clé de tri
-                    'KeyType': 'RANGE'  # Type de la clé de tri
+                    'AttributeName': 'timestamp',
+                    'KeyType': 'RANGE'
                 }
             ],
             AttributeDefinitions=[
                 {
+                    'AttributeName': 'uid',
+                    'AttributeType': 'S'
+                },
+                {
                     'AttributeName': 'chat_id',
-                    'AttributeType': 'S'  # Type 'S' pour String
-                },
-                {
-                    'AttributeName': 'message_id',
-                    'AttributeType': 'S'  # Type 'S' pour String
-                },
-                {
-                    'AttributeName': 'course_id',
-                    'AttributeType': 'S'  # Type 'S' pour String
+                    'AttributeType': 'S'
                 },
                 {
                     'AttributeName': 'timestamp',
-                    'AttributeType': 'S'  # Type 'S' pour String
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'page',
+                    'AttributeType': 'S'
                 }
             ],
             ProvisionedThroughput={
@@ -59,10 +58,30 @@ def create_chat_table():
             },
             GlobalSecondaryIndexes=[
                 {
-                    'IndexName': 'course_id-index',
+                    'IndexName': 'chat_id-index',
                     'KeySchema': [
                         {
-                            'AttributeName': 'course_id',
+                            'AttributeName': 'chat_id',
+                            'KeyType': 'HASH'
+                        },
+                        {
+                            'AttributeName': 'timestamp',
+                            'KeyType': 'RANGE'
+                        }
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'ALL'
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 10,
+                        'WriteCapacityUnits': 10
+                    }
+                },
+                {
+                    'IndexName': 'page-index',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'page',
                             'KeyType': 'HASH'
                         },
                         {
@@ -81,7 +100,7 @@ def create_chat_table():
             ]
         )
 
-        # Attendre que la table soit complètement créée
+        # Wait until the table exists
         table.wait_until_exists()
         print("Table created successfully.")
     except ClientError as e:
@@ -89,59 +108,54 @@ def create_chat_table():
         error_message = e.response['Error']['Message']
         print(f"Error creating table: {error_code} - {error_message}")
 
-# Appel de la fonction pour créer la table
-create_chat_table()
+# Call the function to create the table
+create_feedback_table()
+
+
+
+
+
+
 '''
-
-
-
-
-import boto3
-from botocore.exceptions import ClientError
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-
-AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_REGION = os.getenv('AWS_REGION')
-
-def create_chat_table():
-    # Création d'un client DynamoDB
+def create_feedback_table():
+    # Create a DynamoDB client
     dynamodb = boto3.resource(
         'dynamodb',
-        region_name=AWS_REGION,  # Assurez-vous que la région est correcte
+        region_name=AWS_REGION_PREPROD,
         aws_access_key_id=AWS_ACCESS_KEY_ID,
         aws_secret_access_key=AWS_SECRET_ACCESS_KEY
     )
 
     try:
-        # Création de la table MVP_chat_academic_advisor
+        # Create the prod_dev_feedback table
         table = dynamodb.create_table(
-            TableName='DEV_Memory_academic_advisor',
+            TableName='prod_preprod_feedback',
             KeySchema=[
                 {
-                    'AttributeName': 'chat_id',  # Nom de l'attribut pour la clé de partition
-                    'KeyType': 'HASH'  # Type de la clé de partition, HASH signifie clé principale
+                    'AttributeName': 'uid',
+                    'KeyType': 'HASH'
                 },
                 {
-                    'AttributeName': 'timestamp',  # Nom de l'attribut pour la clé de tri
-                    'KeyType': 'RANGE'  # Type de la clé de tri
+                    'AttributeName': 'feedback',
+                    'KeyType': 'RANGE'
                 }
             ],
             AttributeDefinitions=[
                 {
+                    'AttributeName': 'uid',
+                    'AttributeType': 'S'
+                },
+                {
                     'AttributeName': 'chat_id',
-                    'AttributeType': 'S'  # Type 'S' pour String
+                    'AttributeType': 'S'
                 },
                 {
-                    'AttributeName': 'timestamp',
-                    'AttributeType': 'S'  # Type 'S' pour String
+                    'AttributeName': 'feedback',
+                    'AttributeType': 'S'
                 },
                 {
-                    'AttributeName': 'course_id',
-                    'AttributeType': 'S'  # Type 'S' pour String
+                    'AttributeName': 'page',
+                    'AttributeType': 'S'
                 }
             ],
             ProvisionedThroughput={
@@ -150,14 +164,34 @@ def create_chat_table():
             },
             GlobalSecondaryIndexes=[
                 {
-                    'IndexName': 'course_id-index',
+                    'IndexName': 'chat_id-index',
                     'KeySchema': [
                         {
-                            'AttributeName': 'course_id',
+                            'AttributeName': 'chat_id',
                             'KeyType': 'HASH'
                         },
                         {
-                            'AttributeName': 'timestamp',
+                            'AttributeName': 'feedback',
+                            'KeyType': 'RANGE'
+                        }
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'ALL'
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 10,
+                        'WriteCapacityUnits': 10
+                    }
+                },
+                {
+                    'IndexName': 'page-index',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'page',
+                            'KeyType': 'HASH'
+                        },
+                        {
+                            'AttributeName': 'feedback',
                             'KeyType': 'RANGE'
                         }
                     ],
@@ -172,7 +206,7 @@ def create_chat_table():
             ]
         )
 
-        # Attendre que la table soit complètement créée
+        # Wait until the table exists
         table.wait_until_exists()
         print("Table created successfully.")
     except ClientError as e:
@@ -180,5 +214,6 @@ def create_chat_table():
         error_message = e.response['Error']['Message']
         print(f"Error creating table: {error_code} - {error_message}")
 
-# Appel de la fonction pour créer la table
-create_chat_table()
+# Call the function to create the table
+create_feedback_table()
+'''

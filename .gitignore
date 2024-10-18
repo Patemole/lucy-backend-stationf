@@ -1,7 +1,15 @@
 .env
-myenv/
+.lucy_env/
+myen/*
+myenv/*
+myenvcheck/*
+.ebextensions/*
+
+*.pyc
+*.log
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
