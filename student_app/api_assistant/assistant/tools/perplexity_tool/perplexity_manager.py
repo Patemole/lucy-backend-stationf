@@ -56,7 +56,7 @@ def get_up_to_date_info(query, image_bool, university, username, major, minor, y
         "max_tokens": 500,
         "stream": False,
         "return_citations": True,
-        "return_images": image_bool,
+        #"return_images": image_bool,
         "return_related_questions": True
     }
     headers = {

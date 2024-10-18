@@ -8,18 +8,13 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from dotenv import load_dotenv
-from functools import wraps
-import phospho
-from typing import Dict, Union, List, AsyncIterable
-import asyncio
-from fastapi import FastAPI, Request, Response
+from typing import Dict, List
 import json
 
 import pandas as pd
 
 import asyncio
 import time
-from student_app.database.dynamo_db.chat import get_chat_history, store_message_async
 from student_app.database.dynamo_db.analytics import store_analytics_async
 
 from student_app.model.input_query import InputQuery, InputQueryAI
@@ -27,19 +22,9 @@ from student_app.model.student_profile import StudentProfile
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 
 from student_app.database.dynamo_db.analytics import store_analytics_async
-from student_app.LLM.academic_advisor_perplexity_API_request import LLM_pplx_stream_with_history
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
-from student_app.prompts.create_prompt_with_history_perplexity import reformat_prompt, reformat_messages ,set_prompt_with_history
 
 from student_app.profiling.profile_generation import LLM_profile_generation
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system_normal_search, system_normal_search_V2, system_fusion, system_chitchat
-from student_app.prompts.academic_advisor_predefined_messages import predefined_messages_prompt, predefined_messages_prompt_V2
-#from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
-
-from student_app.prompts.academic_advisor_perplexity_search_prompts import system_profile
-from student_app.prompts.academic_advisor_user_prompts import user_with_profil
-
-#from student_app.routes.academic_advisor_routes_treatment import academic_advisor_router_treatment
 
 from student_app.api_assistant.threads.thread_manager import (
     create_thread,
@@ -54,9 +39,6 @@ from student_app.api_assistant.assistant.assistant_manager import initialize_ass
 
 # Today's date
 date = datetime.date.today()
-#import sseclient  # Ensure this is installed: pip install sseclient-py
-import requests
-
 
 import threading
 import queue
@@ -82,23 +64,10 @@ AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = os.getenv('AWS_REGION')
 
-# Pinecone
-PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
-
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 client = OpenAI()
-
-# Perplexity
-# PPLX_API_KEY = os.getenv('PPLX_API_KEY')
-
-#Phospho
-PHOSPHO_KEY = os.getenv('PHOSPHO_KEY')
-PHOSPHO_PROJECT_ID = os.getenv('PHOSPHO_PROJECT_ID')
-phospho.init(api_key='b08542208fd42d8640c0f88d006f31c9cc11453ec5f489e160cfcefa1028cac5bcd4d4ab43bcba45a6052081a22c56b8', project_id='38fc0ee240ee43a7bac2a36419258dcd')
-
-
 
 # FastAPI app configuration
 app = FastAPI(
@@ -125,16 +94,6 @@ async def count_words(input_message: str) -> int:
     print("\n")
     return word_count
 
-async def get_embedding(input_message: str, model="text-embedding-3-small"):
-   input_message = input_message.replace("\n", " ")
-   embeddings = client.embeddings.create(input = [input_message], model=model).data[0].embedding
-   print("\n")
-   print("This is the embeddings for the question:")
-   print(embeddings)
-   print("\n")
-   return embeddings
-
-
 async def count_student_questions(chat_history):
     question_count = 0
     if not chat_history:
@@ -156,9 +115,8 @@ async def count_student_questions(chat_history):
     print("\n")
     return question_count
 
-#############################################DEUX FONCTIONS POUR LES ANALYTICS##################################
+############################################# END POINT FOR CHAT ##################################
 
-#chat_router = APIRouter(prefix='/chat', tags=['chat'])
 
 # TRAITEMENT D'UN MESSAGE ÉLÈVE - Rajouter ici la fonction pour déterminer la route à choisir 
 @app.post("/send_message_socratic_langgraph")
@@ -339,179 +297,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         return {"error": "Internal Server Error"}
 
 
-    """
-    def process_assistant(message: str):
-        
-        Function to process the assistant interaction with SSE streaming support.
-
-        Args:
-            message (str): The user's input message.
-
-        Yields:
-            str: Chunks of the assistant's reply, delimited by "|".
-        
-        # Initialize the assistant
-        assistant = initialize_assistant()
-
-        # Create a new thread for the conversation
-        thread = create_thread()
-
-        # Add the user's message to the thread
-        add_user_message(thread.id, message)
-
-        # Load the DataFrame once at the beginning
-        df_expanded = pd.read_csv('../api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
-
-        # Create a run for the assistant using your existing function
-        run = create_and_poll_run(thread.id, assistant.id)
-
-        # Check if the run requires action (e.g., function call)
-        if run.status == 'requires_action':
-            # Handle required actions (function calls)
-            run, filtered_data, _, _ = handle_requires_action(run, thread.id, assistant.id, df=df_expanded)
-            # If the function called is get_filters, return the filtered data as JSON
-            if filtered_data is not None:
-                # Return the filtered courses directly as JSON
-                yield json.dumps({"filtered_courses": filtered_data})
-                return  # End the function as we've returned the data
-        elif run.status == 'completed':
-            # Proceed to stream the assistant's response using SSE
-            # Construct the SSE endpoint URL for the thread
-            sse_url = f"https://api.openai.com/v1/beta/threads/{thread.id}/events"
-
-            # Prepare the headers with your API key
-            headers = {
-                'Authorization': f'Bearer {OPENAI_API_KEY}',
-                'Accept': 'text/event-stream'
-            }
-
-            # Create a requests session
-            session = requests.Session()
-
-            # Send a GET request to the SSE endpoint
-            response = session.get(sse_url, headers=headers, stream=True)
-
-            # Create an SSE client to process the event stream
-            client = sseclient.SSEClient(response)
-
-            try:
-                for event in client.events():
-                    if event.event == 'thread.message.delta':
-                        # Event data is a message delta
-                        data = json.loads(event.data)
-                        delta = data.get('delta', {})
-                        content_segments = delta.get('content', [])
-                        for segment in content_segments:
-                            if segment.get('type') == 'text':
-                                text_value = segment['text']['value']
-                                if text_value:
-                                    # Yield the text value with delimiter
-                                    yield text_value + "|"
-                    elif event.event == 'thread.message.completed':
-                        # Assistant's message is completed
-                        break
-                    elif event.event == 'error':
-                        # Handle errors
-                        error_data = json.loads(event.data)
-                        yield f"An error occurred: {error_data.get('message', 'Unknown error')}"
-                        break
-                    # Handle other events as needed
-            except Exception as e:
-                yield f"An exception occurred: {str(e)}"
-            finally:
-                # Close the session
-                session.close()
-        else:
-            # Handle other run statuses (e.g., failed)
-            yield f"Run ended with status: {run.status}."
-
-
-    """
-
-    # Call the inner function and get the response
-    # response is either a String of the assistant response is return "assistant_reply: " or it is a dict of JSON output for each courses found -> type is List[Dict]
-    
-
-    """"
-    try:
-        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
-        # return StreamingResponse(event_stream(), media_type="text/event-stream")
-    except Exception as e:
-        logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
-
-
-    
-    print(f"chat_id: {chat_id}, course_id: {course_id}, username: {username}, input_message: {input_message}")
-
-    prompt_answering, question_type, model = await academic_advisor_router_treatment(input_message=input_message)
-    
-    print(f"Student profil from firestore : {student_profile}")
-    #student_profile = "Mathieu an undergraduate junior in the engineering school at UPENN majoring in computer science and have a minor in maths and data science, interned at mckinsey as data scientist and like entrepreneurship"
-
-    domain = f"site:{university}.edu"
-
-    # Get all items from chat history
-    # try:
-    #     history_items = await get_chat_history(chat_id=chat_id)
-    # except Exception as e:
-    #     logging.error(f"Error while retrieving chat history items : {str(e)}")
-
-    # Retrieve the "n" messages from the items of the chat history
-    try:
-        messages = await get_messages_from_history(chat_id=chat_id, n=6)
-    except Exception as e:
-        logging.error(f"Error while retrieving 'n' messages from chat history items: {str(e)}")
-
-    predefined_messages = []
-
-    if question_type == "normal":
-        try:
-            system_prompt = await reformat_prompt(prompt=system_fusion, university=university, date=date, domain=domain, student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating system prompt: {str(e)}")
-
-        try:
-            predefined_messages = await reformat_messages(messages=predefined_messages_prompt_V2, university=university, student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating the predefined messages: {str(e)}")
-
-        try:
-            user_prompt = await reformat_prompt(prompt=user_with_profil, input=input_message, domain=domain)
-        except Exception as e:
-            logging.error(f"Error while reformating user prompt: {str(e)}")
-
-    elif question_type == "chitchat":
-        try:
-            system_prompt = await reformat_prompt(prompt=system_chitchat, university=university, student_profile=student_profile)
-        except Exception as e:
-            logging.error(f"Error while reformating system prompt: {str(e)}")
-        user_prompt = input_message
-
-    try:
-        prompt = await set_prompt_with_history(system_prompt=system_prompt, user_prompt=user_prompt, chat_history=messages, predefined_messages=predefined_messages)
-    except:
-        logging.error(f"Error while setting prompt with history: {str(e)}")
-
-    # Async storage of the input
-    try:
-        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
-    except Exception as e:
-        logging.error(f"Error while storing the input message: {str(e)}")
-
-    # Stream the response
-    # def event_stream():
-    #     for content in LLM_pplx_stream_with_history(PPLX_API_KEY=PPLX_API_KEY, messages=prompt):
-    #         # print(content, end='', flush=True)
-    #         yield content + "|"
-
-    # Stream response from Perplexity LLM with history 
-    try:
-        return StreamingResponse(LLM_pplx_stream_with_history(messages=prompt, model=model), media_type="text/event-stream")
-        # return StreamingResponse(event_stream(), media_type="text/event-stream")
-    except Exception as e:
-        logging.error(f"Error while streaming response from Perplexity LLM with history: {str(e)}")
-"""
-
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
 @app.get("/get_chat_history/{chat_id}")
 async def get_chat_history_route(chat_id: str):
@@ -547,14 +332,6 @@ async def save_ai_message(ai_message: InputQueryAI):
     print(input_message)
     print("output_message de l'IA:")
     print(output_message)
-
-
-    phospho.log(input=input_message, output=output_message)
-
-
-    #Pour générer l'embedding de la réponse de Lucy
-    #input_embeddings = await get_embedding(input_message)
-    #output_embeddings = await get_embedding(output_message)
 
     word_count_task = await count_words(input_message)
 
@@ -605,32 +382,6 @@ async def create_student_profile(profile: StudentProfile):
     except Exception as e:
         logging.error(f"Error creating student profile: {str(e)}")
         raise HTTPException(status_code=500, detail="Error creating student profile")
-
-
-
-# Function to split text into chunks of 1-3 words, preserving formatting
-def split_preserving_formatting(text):
-    chunks = []
-    lines = text.splitlines()
-
-    for line in lines:
-        if line.startswith("-"):
-            bullet_content = line[1:].strip()
-            words = bullet_content.split()
-            i = 0
-            while i < len(words):
-                chunk_size = min(3, len(words) - i)
-                chunks.append("- " + ' '.join(words[i:i + chunk_size]) if i == 0 else ' '.join(words[i:i + chunk_size]))
-                i += chunk_size
-        else:
-            words = line.split()
-            i = 0
-            while i < len(words):
-                chunk_size = min(3, len(words) - i)
-                chunks.append(' '.join(words[i:i + chunk_size]))
-                i += chunk_size
-        chunks.append("\n")
-    return chunks
 
 
 
