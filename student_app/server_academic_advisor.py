@@ -69,7 +69,7 @@ AWS_REGION = os.getenv('AWS_REGION')
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-client = OpenAI()
+#client = OpenAI()
 
 # FastAPI app configuration
 app = FastAPI(
@@ -214,14 +214,17 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
         print(F"THREAD ====== \n\n\n {thread}")
 
-        print("Loading course data...")
+        #print("Loading course data...")
         # Load the DataFrame once at the beginning
-        df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
-        print("Course data loaded.")
+        #df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
+        df_expanded=[]
+        #print("Course data loaded.")
 
         print("Creating response queue...")
         # Create a queue to collect the assistant's response
         response_queue = queue.Queue()
+
+        client = OpenAI()
 
         print("Creating CustomAssistantEventHandler instance...")
         # Create an instance of the CustomAssistantEventHandler
