@@ -90,7 +90,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             [Provide a concise, informative answer to the student's query. Use bullet points, bold titles and numbered list for clarity when appropriate.]
             """),
         "model": "gpt-4o",
-        "temperature": 0.0,
+        "temperature": 0.1,
         "tools": [
             {
                 "type": "function",
@@ -193,13 +193,13 @@ def get_university_config(university, current_date, username, major, minor, year
 
 
 @timing_decorator
-def initialize_assistant(university, username, major, minor, year, school):
+def initialize_assistant(client, university, username, major, minor, year, school):
     """
     Initializes the assistant based on the university's configuration.
     """
     config = get_university_config(university, current_date, username, major, minor, year, school)
 
-    assistant = openai.beta.assistants.create(
+    assistant = client.beta.assistants.create(
         name=config["name"],
         description=config["description"],
         instructions=config["instructions"],
