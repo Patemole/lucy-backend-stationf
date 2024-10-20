@@ -8,39 +8,6 @@ from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info, get_s
 from .tools.clarification_tool.clarification_manager import get_clarifying_question_output
 from .tools.perplexity_tool.image_search import google_image_search
 import threading
-from functools import wraps
-
-
-import time
-from functools import wraps
-import asyncio
-
-def timing_decorator(func):
-    @wraps(func)
-    def sync_wrapper(*args, **kwargs):
-        start_time = time.time()
-        result = func(*args, **kwargs)  # Call the synchronous function
-        end_time = time.time()
-        print(f"{func.__name__} took {end_time - start_time} seconds")
-        return result
-    
-    @wraps(func)
-    async def async_wrapper(*args, **kwargs):
-        start_time = time.time()
-        result = await func(*args, **kwargs)  # Call the async function
-        end_time = time.time()
-        print(f"{func.__name__} took {end_time - start_time} seconds")
-        return result
-    
-    # Check if the function is async, and return the appropriate wrapper
-    if asyncio.iscoroutinefunction(func):
-        return async_wrapper
-    else:
-        return sync_wrapper
-
-
-
-
 
 class CustomAssistantEventHandler(AssistantEventHandler):
     def __init__(self, thread_id, df, response_queue, client, university, username, major, minor, year, school):
@@ -59,9 +26,7 @@ class CustomAssistantEventHandler(AssistantEventHandler):
         self.year=year
         self.school=school
 
-    @timing_decorator
     def on_event(self, event):
-        print(f"ON_EVENT: {event.event}")
         if event.event == 'thread.run.requires_action':
             print("Handling required action event...")
             self.run_id = event.data.id
@@ -76,7 +41,7 @@ class CustomAssistantEventHandler(AssistantEventHandler):
             # Signal that the run is completed by pushing `None` to the queue
             self.response_queue.put(None)
 
-    @timing_decorator
+
     def handle_requires_action(self, data, run_id):
         print("Run requires action: Processing tool calls...")  # Debug statement
         # Process all collected tool calls
@@ -192,7 +157,6 @@ class CustomAssistantEventHandler(AssistantEventHandler):
         #self.run = run  # Update the run instance if necessary
         #self.run.stream_response()
 
-    @timing_decorator
     def submit_tool_outputs(self, tool_outputs, run_id):
         print("Submitting tool outputs...")
 

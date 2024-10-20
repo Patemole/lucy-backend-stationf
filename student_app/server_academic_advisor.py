@@ -171,10 +171,14 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     # Define the generator function
     @timing_decorator
     async def response_generator():
+
+        print("OpenAI instance creation...")
+        client = OpenAI()
+        print("Client created")
         
         print("Initializing assistant...")
         # Initialize the assistant
-        assistant = initialize_assistant(university, username, major, minor, year, school)
+        assistant = initialize_assistant(client, university, username, major, minor, year, school)
         print(f"Assistant initialized with ID: {assistant.id}")
 
         print(f"Retrieving chat history for chat_id: {chat_id}")
@@ -183,7 +187,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         
         print(f"Creating or retrieving existing thread for chat_id: {chat_id}")
         # Create a new thread if necessary, or reuse an existing thread if it exists
-        thread = create_thread(chat_id=chat_id)  # Now passing chat_id to create_thread
+        thread = create_thread(client, chat_id=chat_id, username=username, university=university, )  # Now passing chat_id to create_thread
         print(f"Thread created/retrieved with ID: {thread.id}")
 
         # Convert chat history into messages that can be added to the thread
@@ -205,12 +209,12 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             for past_message in past_messages:
                 role = past_message["role"]  # Could be 'user' or 'assistant'
                 content = past_message["content"]
-                add_message_to_thread(thread.id, role, content)
+                add_message_to_thread(client, thread.id, role, content)
 
 
         print(f"Adding user message to thread {thread.id}: {input_query.message}")
         # Add the current user message to the thread
-        add_user_message(thread.id, input_query.message)
+        add_user_message(client, thread.id, input_query.message)
 
         print(F"THREAD ====== \n\n\n {thread}")
 
@@ -223,8 +227,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         print("Creating response queue...")
         # Create a queue to collect the assistant's response
         response_queue = queue.Queue()
-
-        client = OpenAI()
 
         print("Creating CustomAssistantEventHandler instance...")
         # Create an instance of the CustomAssistantEventHandler

@@ -40,26 +40,31 @@ def timing_decorator(func):
 
 
 
-
 @timing_decorator
-def create_thread(chat_id):
+def create_thread(client, chat_id, username, university):
     """
-    Creates a new thread with a custom thread ID based on the provided chat_id.
+    Creates a new thread with a custom thread ID based on the provided chat_id, username, and university.
 
     Args:
         chat_id (str): The ID representing the conversation in your app.
+        username (str): The username of the user.
+        university (str): The university of the user.
 
     Returns:
         openai.Thread: The created thread instance.
     """
-    thread = openai.beta.threads.create(
-        metadata={"custom_thread_id": chat_id}
+    thread = client.beta.threads.create(
+        metadata={
+            #"custom_thread_id": chat_id,
+            "username": username,
+            "university": university
+        }
     )
     print(f"Thread created with ID: {thread.id} (linked to app chat ID: {chat_id})\n")
     return thread
 
 @timing_decorator
-def add_user_message(thread_id, user_query):
+def add_user_message(client, thread_id, user_query):
     """
     Adds a user message to the specified thread.
 
@@ -70,7 +75,7 @@ def add_user_message(thread_id, user_query):
     Returns:
         openai.Message: The created message instance.
     """
-    message = openai.beta.threads.messages.create(
+    message = client.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
         content=user_query
@@ -79,7 +84,7 @@ def add_user_message(thread_id, user_query):
     return message
 
 @timing_decorator
-def add_message_to_thread(thread_id, role, content):
+def add_message_to_thread(client, thread_id, role, content):
     """
     Adds a message (user/assistant) to the specified thread.
 
@@ -91,7 +96,7 @@ def add_message_to_thread(thread_id, role, content):
     Returns:
         openai.Message: The created message instance.
     """
-    message = openai.beta.threads.messages.create(
+    message = client.beta.threads.messages.create(
         thread_id=thread_id,
         role=role,
         content=content
@@ -100,7 +105,7 @@ def add_message_to_thread(thread_id, role, content):
     return message
 
 @timing_decorator
-def create_and_poll_run(thread_id, assistant_id):
+def create_and_poll_run(client, thread_id, assistant_id):
     """
     Creates a run for the assistant and polls its status until completion.
 
@@ -111,7 +116,7 @@ def create_and_poll_run(thread_id, assistant_id):
     Returns:
         openai.Run: The completed run instance.
     """
-    run = openai.beta.threads.runs.create_and_poll(
+    run = client.beta.threads.runs.create_and_poll(
         thread_id=thread_id,
         assistant_id=assistant_id
     )
@@ -120,7 +125,7 @@ def create_and_poll_run(thread_id, assistant_id):
     return run
 
 @timing_decorator
-def retrieve_run(run_id, thread_id):
+def retrieve_run(client, run_id, thread_id):
     """
     Retrieves the current status of a run.
 
@@ -131,13 +136,13 @@ def retrieve_run(run_id, thread_id):
     Returns:
         openai.Run: The retrieved run instance.
     """
-    return openai.beta.threads.runs.retrieve(
+    return client.beta.threads.runs.retrieve(
         thread_id=thread_id,
         run_id=run_id
     )
 
 @timing_decorator
-def retrieve_messages(thread_id):
+def retrieve_messages(client, thread_id):
     """
     Retrieves all messages in a thread.
 
@@ -147,5 +152,5 @@ def retrieve_messages(thread_id):
     Returns:
         list: A list of message instances.
     """
-    messages = openai.beta.threads.messages.list(thread_id=thread_id)
+    messages = client.beta.threads.messages.list(thread_id=thread_id)
     return messages
