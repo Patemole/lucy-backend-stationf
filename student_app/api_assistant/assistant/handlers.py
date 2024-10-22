@@ -1,4 +1,3 @@
-# handler.py
 import json
 import openai
 from openai import AssistantEventHandler
@@ -33,132 +32,137 @@ def timing_decorator(func):
         return sync_wrapper
 
 
-class CustomAssistantEventHandler(AssistantEventHandler):
-    def __init__(self, thread_id, df, client, university, username, major, minor, year, school):
-        super().__init__()
-        self.thread_id = thread_id
-        self.df = df
-        self.filtered_data = None
-        self.tool_calls = []
-        self.run = None
-        self.client = client
-        self.university = university
-        self.username = username
-        self.major = major
-        self.minor = minor
-        self.year = year
-        self.school = school
-        self.response_data = []  # Collect data to yield later
 
-    @timing_decorator
-    def on_event(self, event):
-        print(f"ON_EVENT: {event.event}")
-        if event.event == 'thread.run.requires_action':
-            print("Handling required action event...")
-            self.run_id = event.data.id
-            self.handle_requires_action(event.data, self.run_id)
-        elif event.event == 'thread.message.delta':
-            delta_text = event.data.delta.content[0].text.value
-            print(delta_text, end="", flush=True)
-            self.response_data.append(delta_text + "|")  # Collect delta text to yield later
-        elif event.event == 'thread.run.completed':
-            print("\nRun completed.")
-            self.response_data.append(None)  # Signal that run is completed
+    
+@timing_decorator
+def on_event(client, event, query, image_bool, university, username, major, minor, year, school):
+    print(f"ON_EVENT: {event.event}")
+    if event.event == 'thread.run.requires_action':
+        print("Handling required action event...")
+        run_id = event.data.id
+        thread_id = event.data.thread_id
+        yield from handle_requires_action(client, event.data, run_id, thread_id,  query, image_bool, university, username, major, minor, year, school)
 
-    @timing_decorator
-    def handle_requires_action(self, data, run_id):
-        print("Run requires action: Processing tool calls...")
-        tool_outputs = []
-        for tool_call in data.required_action.submit_tool_outputs.tool_calls:
-            function_name = tool_call.function.name
-            print(f"Processing tool: {function_name}") 
-            try:
-                arguments = json.loads(tool_call.function.arguments)
-            except json.JSONDecodeError:
-                print(f"Failed to parse arguments for {function_name}")
-                arguments = {}
+    elif event.event == 'thread.message.delta':
+        delta_text = event.data.delta.content[0].text.value
+        print(delta_text, end="", flush=True)
+        # Yield delta text directly
+        yield delta_text + "|"
+    elif event.event == 'thread.run.completed':
+        print("\nRun completed.")
+        yield None  # Indicate completion
 
-            if function_name == "get_current_info":
-                query = arguments.get('query', '')
-                sources = arguments.get('sources', '')
-                image_bool = arguments.get('image_bool', False)
+@timing_decorator
+def handle_requires_action(client, data, run_id, thread_id,  query, image_bool, university, username, major, minor, year, school):
+    print("Run requires action: Processing tool calls...")  
+    tool_outputs = []
+    for tool_call in data.required_action.submit_tool_outputs.tool_calls:
+        function_name = tool_call.function.name
+        print(f"Processing tool: {function_name}") 
 
-                text_search = []
-                for i, source in enumerate(sources, 1):
-                    source_name = source.get('name', '')
-                    text_search.append({f"Sentence{i}": f"_**[LUCY is searching in {source_name}]**_"})
+        try:
+            arguments = json.loads(tool_call.function.arguments)
+        except json.JSONDecodeError:
+            print(f"Failed to parse arguments for {function_name}")
+            arguments = {}
 
-                self.response_data.append(json.dumps({"answer_waiting": text_search}))
+        if function_name == "get_current_info":
+            query = arguments.get('query', '')
+            sources = arguments.get('sources', '')
+            image_bool = arguments.get('image_bool', False)
+            image_bool = False
 
-                sources_list = get_sources_json(sources)
-                self.response_data.append(json.dumps({"sources": sources_list}))
+            text_search = []
+            for i, source in enumerate(sources, 1):
+                source_name = source.get('name', '')
+                text_search.append({f"Sentence{i}": f"_**[LUCY is searching in {source_name}]**_"})
 
-                if image_bool:
-                    image_url = google_image_search(query)
-                    self.response_data.append(json.dumps({"image_data": image_url}))
+            yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': text_search})}<ANSWER_WAITING_END>\n" 
 
-                output = get_up_to_date_info(query, image_bool, self.university, self.username, self.major, self.minor, self.year, self.school)
-                print(f"Current info for query '{query}': {output}")
-                tool_outputs.append({
-                    "tool_call_id": tool_call.id,
-                    "output": output
-                })
             
-            elif function_name == "ask_clarifying_question":
-                print(f"Processing clarifying question with arguments: {arguments}")
-                tool_output = get_clarifying_question_output(arguments)
-                print(tool_output)
-                self.response_data.append(json.dumps({"answer_TAK_data": tool_output}))
-                tool_outputs.append({
-                    "tool_call_id": tool_call.id,
-                    "output": json.dumps(tool_output)
-                })
-                
-            else:
-                output = "Function not implemented."
-                print(f"Function not implemented: {function_name}")
-                tool_outputs.append({
-                    "tool_call_id": tool_call.id,
-                    "output": output
-                })
+            try:
+                sources_list = get_sources_json(sources)
+            except json.JSONDecodeError:
+                print("Error decoding JSON. Invalid data received.")
+                sources_list = []
 
-        self.submit_tool_outputs(tool_outputs, run_id)
-        print("Submitted all tool outputs.")
+            for source in sources_list:
+                print(f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n")
+                yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
+        
 
-    @timing_decorator
-    def submit_tool_outputs(self, tool_outputs, run_id):
-        print("Submitting tool outputs...")
-        with self.client.beta.threads.runs.submit_tool_outputs(
-            thread_id=self.thread_id,
-            run_id=run_id,
-            tool_outputs=tool_outputs,
-            stream=True
-        ) as stream:
-            for event in stream:
-                if event.event == "thread.message.delta":
-                    for block in event.data.delta.content:
-                        if block.type == "text" and hasattr(block.text, "value"):
-                            delta_text = block.text.value
-                            print(delta_text, end="", flush=True)
-                            self.response_data.append(delta_text + "|")
-                elif event.event == 'thread.run.requires_action':
-                    print("Handling required action event during submit_tool_outputs...")
-                    self.handle_requires_action(event.data, run_id)
-                elif event.event == "thread.run.completed":
-                    print("Run completed")
-                elif event.event == "thread.message.completed":
-                    print("Message completed")
-                    self.response_data.append(None)  # Signal that message is done
+            if image_bool:
+                image_url = google_image_search(query)
+                yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
 
-    def response_stream(self):
-        """A generator function to yield responses."""
-        for data in self.response_data:
-            if data is not None:
-                yield data
-            else:
-                break
+            output = get_up_to_date_info(query, image_bool, university, username, major, minor, year, school)
+            print(f"Current info for query '{query}': {output}") 
+
+            tool_outputs.append({
+                "tool_call_id": tool_call.id,
+                "output": output
+            })
+        
+        elif function_name == "ask_clarifying_question":
+            print(f"Processing clarifying question with arguments: {arguments}")
+            tool_output = get_clarifying_question_output(arguments)
+            print(tool_output)
+            yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': tool_output})}<ANSWER_TAK_END>\n" 
+            tool_outputs.append({
+                "tool_call_id": tool_call.id,
+                "output": json.dumps(tool_output)
+            })
+            
+        else:
+            output = "Function not implemented."
+            print(f"Function not implemented: {function_name}")  
+            tool_outputs.append({
+                "tool_call_id": tool_call.id,
+                "output": output
+            })
+
+    print("Submitted all tool outputs.") 
+    yield from submit_tool_outputs(client, tool_outputs, run_id, thread_id,  query, image_bool, university, username, major, minor, year, school)
 
 
+@timing_decorator
+def submit_tool_outputs(client, tool_outputs, run_id, thread_id,  query, image_bool, university, username, major, minor, year, school):
+    print("Submitting tool outputs...")
+
+    separation_added = False
+
+    stream = client.beta.threads.runs.submit_tool_outputs(
+        thread_id=thread_id,
+        run_id=run_id,
+        tool_outputs=tool_outputs,
+        stream=True
+    )
+    for event in stream:
+        if event.event == "thread.message.delta":
+            for block in event.data.delta.content:
+                if block.type == "text" and hasattr(block.text, "value"):
+                    delta_text = block.text.value
+
+                    if not separation_added:
+                        yield "\n\n\n\n"  
+                        separation_added = True
+
+                    print(delta_text, end="", flush=True)
+                    yield delta_text + "|"
+                else:
+                    print("No text content found in delta block:", block)
+        elif event.event == 'thread.run.requires_action':
+            print("Handling required action event during submit_tool_outputs...")
+            handle_requires_action(client, event.data, run_id,  query, image_bool, university, username, major, minor, year, school)
+        elif event.event == "thread.run.step.completed":
+            print("Step completed")
+        elif event.event == "thread.run.completed":
+            print("Run completed")
+        elif event.event == "thread.message.completed":
+            print("Message completed")
+            yield None  
+        else:
+            print("Unhandled event:", event)
 
 
     """
