@@ -224,16 +224,11 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         df_expanded=[]
         #print("Course data loaded.")
 
-        print("Creating response queue...")
-        # Create a queue to collect the assistant's response
-        response_queue = queue.Queue()
-
         print("Creating CustomAssistantEventHandler instance...")
         # Create an instance of the CustomAssistantEventHandler
         event_handler = CustomAssistantEventHandler(
             thread_id=thread.id,
             df=df_expanded,
-            response_queue=response_queue,
             client=client,
             university=university,
             username=username,
@@ -253,70 +248,39 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         ) as stream:
             # Set the run_id in the event handler
             event_handler.run = stream.run
-            # Define the function to run the stream
-            def run_stream():
-                print("Running stream until done...")
-                stream.until_done()
-                print("Stream has completed.")
+            print("Running stream until done...")
+            stream.until_done()
+            print("Stream has completed.")
 
-            # Start the stream in a separate thread
-            stream_thread = threading.Thread(target=run_stream)
-            stream_thread.start()
-            print("Stream thread started.")
+            for data in event_handler.response_stream():
+                if "answer_TAK_data" in data:
+                    print("WE DID IT")
+                    print(f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n")
+                    yield f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n"
 
-            # While the stream is running, get data from the queue and yield
-            while True:
-                data = response_queue.get()
-                if data is None:
-                    # Run is completed
-                    print("Run completed.")
-                    break
+                elif "answer_waiting" in data:
+                    print(f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n")
+                    yield f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n"
+                
+                elif "image_data" in data:
+                    print(f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n")
+                    yield f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n"
+
+                elif "sources" in data:
+                    try:
+                        sources_list = json.loads(data).get("sources", [])
+                    except json.JSONDecodeError:
+                        print("Error decoding JSON. Invalid data received.")
+                        sources_list = []
+
+                    for source in sources_list:
+                        print(f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n")
+                        yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
                 else:
-                    if "answer_TAK_data" in data:
-                        print("WE DID IT")
-                        print(f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n")
-                        # If the clarifying question function was triggered, format the output as required
-                        #yield "Bonjour" 
-                        yield f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n"
-
-                    elif "answer_waiting" in data:
-                        print(f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n")
-                        # If the clarifying question function was triggered, format the output as required
-                        yield f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n"
-                    
-                    elif "image_data" in data:
-                        print(f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n")
-                        yield f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n"
-
-                    
-                    elif "sources" in data:
-                        # Check if data is not empty or null before processing
-                        if data:
-                            try:
-                                # Try to decode the JSON data
-                                sources_list = json.loads(data).get("sources", [])
-                            except json.JSONDecodeError:
-                                print("Error decoding JSON. Invalid data received.")
-                                sources_list = []
-                        else:
-                            print("No data received.")
-                            sources_list = []
-
-                        # Yield each source in the required JSON document format
-                        for source in sources_list:
-                            print(f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n")
-                            yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
-                    else:
-                        # Handle normal stream of text
-                        yield data
+                    yield data
 
 
-            # Wait for the stream thread to finish
-            stream_thread.join()
-            print("Stream thread has finished.")
 
-            #if event_handler.run.status == 'requires_action':
-            #    print("Run requires additional action. Handling...")
         # After the stream is done, check if we have filtered data
         if event_handler.filtered_data is not None:
             print("Filtered data available. Sending to client.")
