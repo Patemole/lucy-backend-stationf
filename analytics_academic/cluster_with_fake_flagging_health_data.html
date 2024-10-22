@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Interactive Data Map</title>
+    
+       
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script>
+    
+    <script src="https://unpkg.com/fflate@0.8.0"></script>
+    
+    <style>
+        body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          background: #ffffff;
+        }
+
+        #deck-container {
+          width: 100vw;
+          height: 100vh;
+        }
+
+        #deck-container canvas {
+          z-index: 1;
+          background: #ffffff;
+        }
+
+        .deck-tooltip {
+            
+            font-size: 0.8em;
+            font-family: UI Sans Serif;
+            font-weight: 300;
+            color: #000000 !important;
+            background-color: #ffffffaa !important;
+            border-radius: 12px;
+            box-shadow: 2px 3px 10px #aaaaaa44;
+            max-width: 25%;
+        }
+        
+        #loading {
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            position: absolute;
+            display: block; 
+            z-index: 99
+        }
+
+        #loading-image {
+            position: absolute;
+            top: 45%;
+            left: 47.5%;
+            z-index: 100
+        }
+        
+        #title-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 16px;
+            padding: 12px;
+            border-radius: 16px;
+            line-height: 0.95;
+            z-index: 2;
+            font-family: UI Sans Serif;
+            color: #000000;
+            background: #ffffffaa;
+            box-shadow: 2px 3px 10px #aaaaaa44;
+        }
+        
+        
+        #search-container{
+            position: absolute;
+            left: -16px;
+            margin: 16px;
+            padding: 12px;
+            border-radius: 16px;
+            z-index: 2;
+            font-family: UI Sans Serif;
+            color: #000000;
+            background: #ffffffaa;
+            width: fit-content;
+            box-shadow: 2px 3px 10px #aaaaaa44;
+        }
+        input {
+            margin: 2px;
+            padding: 4px;
+            border-radius: 8px;
+            color: #000000;
+            background: #ffffffdd;
+            border: 1px solid #ddddddff;
+            transition: 0.5s;
+            outline: none;
+        }
+        input:focus {
+          border: 2px solid #555;
+        }
+        
+        
+    </style>
+  </head>
+  <body>
+    <div id="loading">
+        <img id="loading-image" src="https://i.gifer.com/ZKZg.gif" alt="Loading..." width="5%"/>
+    </div>
+    
+    <div id="search-container" style="left:0 !important">
+        <input autocomplete="off" type="search" id="search" placeholder="🔍">
+    </div>
+    
+    
+    <div id="deck-container">
+    </div>
+    
+  </body>
+  <script type="module">
+    import { ArrowLoader } from 'https://cdn.jsdelivr.net/npm/@loaders.gl/arrow@4.1.0-alpha.10/+esm'
+    import { JSONLoader } from 'https://cdn.jsdelivr.net/npm/@loaders.gl/json@4.0.5/+esm'
+    
+
+    
+    const pointDataBase64 = "QVJST1cxAAD/////yAUAABAAAAAAAAoADgAGAAUACAAKAAAAAAEEABAAAAAAAAoADAAAAAQACAAKAAAARAQAAAQAAAABAAAADAAAAAgADAAEAAgACAAAABwEAAAEAAAADwQAAHsiaW5kZXhfY29sdW1ucyI6IFt7ImtpbmQiOiAicmFuZ2UiLCAibmFtZSI6IG51bGwsICJzdGFydCI6IDAsICJzdG9wIjogMzAsICJzdGVwIjogMX1dLCAiY29sdW1uX2luZGV4ZXMiOiBbeyJuYW1lIjogbnVsbCwgImZpZWxkX25hbWUiOiBudWxsLCAicGFuZGFzX3R5cGUiOiAidW5pY29kZSIsICJudW1weV90eXBlIjogIm9iamVjdCIsICJtZXRhZGF0YSI6IHsiZW5jb2RpbmciOiAiVVRGLTgifX1dLCAiY29sdW1ucyI6IFt7Im5hbWUiOiAieCIsICJmaWVsZF9uYW1lIjogIngiLCAicGFuZGFzX3R5cGUiOiAiZmxvYXQzMiIsICJudW1weV90eXBlIjogImZsb2F0MzIiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogInkiLCAiZmllbGRfbmFtZSI6ICJ5IiwgInBhbmRhc190eXBlIjogImZsb2F0MzIiLCAibnVtcHlfdHlwZSI6ICJmbG9hdDMyIiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJyIiwgImZpZWxkX25hbWUiOiAiciIsICJwYW5kYXNfdHlwZSI6ICJ1aW50OCIsICJudW1weV90eXBlIjogInVpbnQ4IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJnIiwgImZpZWxkX25hbWUiOiAiZyIsICJwYW5kYXNfdHlwZSI6ICJ1aW50OCIsICJudW1weV90eXBlIjogInVpbnQ4IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJiIiwgImZpZWxkX25hbWUiOiAiYiIsICJwYW5kYXNfdHlwZSI6ICJ1aW50OCIsICJudW1weV90eXBlIjogInVpbnQ4IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJhIiwgImZpZWxkX25hbWUiOiAiYSIsICJwYW5kYXNfdHlwZSI6ICJ1aW50OCIsICJudW1weV90eXBlIjogInVpbnQ4IiwgIm1ldGFkYXRhIjogbnVsbH0sIHsibmFtZSI6ICJzZWxlY3RlZCIsICJmaWVsZF9uYW1lIjogInNlbGVjdGVkIiwgInBhbmRhc190eXBlIjogInVpbnQ4IiwgIm51bXB5X3R5cGUiOiAidWludDgiLCAibWV0YWRhdGEiOiBudWxsfV0sICJjcmVhdG9yIjogeyJsaWJyYXJ5IjogInB5YXJyb3ciLCAidmVyc2lvbiI6ICIxNy4wLjAifSwgInBhbmRhc192ZXJzaW9uIjogIjIuMi4yIn0ABgAAAHBhbmRhcwAABwAAACgBAADsAAAAvAAAAJAAAABkAAAAOAAAAAQAAAAE////AAABAhAAAAAcAAAABAAAAAAAAAAIAAAAc2VsZWN0ZWQAAAAAYv///wgAAAA0////AAABAhAAAAAUAAAABAAAAAAAAAABAAAAYQAAAIr///8IAAAAXP///wAAAQIQAAAAFAAAAAQAAAAAAAAAAQAAAGIAAACy////CAAAAIT///8AAAECEAAAABQAAAAEAAAAAAAAAAEAAABnAAAA2v///wgAAACs////AAABAhAAAAAYAAAABAAAAAAAAAABAAAAcgAGAAgABAAGAAAACAAAANj///8AAAEDEAAAABQAAAAEAAAAAAAAAAEAAAB5AAAAyv///wAAAQAQABQACAAGAAcADAAAABAAEAAAAAAAAQMQAAAAGAAAAAQAAAAAAAAAAQAAAHgABgAIAAYABgAAAAAAAQD/////qAEAABQAAAAAAAAADAAWAAYABQAIAAwADAAAAAADBAAYAAAAkAEAAAAAAAAAAAoAGAAMAAQACAAKAAAA/AAAABAAAAAeAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAB4AAAAAAAAAAAAAAAAAAAAeAAAAAAAAAB4AAAAAAAAAPAAAAAAAAAAAAAAAAAAAADwAAAAAAAAAB4AAAAAAAAAEAEAAAAAAAAAAAAAAAAAABABAAAAAAAAHgAAAAAAAAAwAQAAAAAAAAAAAAAAAAAAMAEAAAAAAAAeAAAAAAAAAFABAAAAAAAAAAAAAAAAAABQAQAAAAAAAB4AAAAAAAAAcAEAAAAAAAAAAAAAAAAAAHABAAAAAAAAHgAAAAAAAAAAAAAABwAAAB4AAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAHgAAAAAAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAHgAAAAAAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAAAAAAA/A4lB/TCNQY9FCEFyU5NBbKUeQQLFIkEbxwxBoLyWQS9MhkFTJRxBZyWWQTmmnUHiq4pBZrgWQfi+BUHNtJhBmkIfQYbzmUH+fwJBzFybQdP6lEGSEIhBjwgoQVH2lUEEvg9BTw6cQVKUnEG18hdBCYWXQWOUJEGj9IHA5NiUwFNZYMB5jO/A/XyCwC/wkMD0hzvAW0fkwCd+bcDEA1nAEN6pwJLatMARmIjAsF4owB8DesClEbrAuFUswLAg8sCc61rAxQjdwHBoAMGXCHzAh+txwKKE7sAS4UbAEOXCwCzd0cANkR3AxQT7wN5Hh8AALpH62u0A3rqZfgAASJqjVm59eNNd2t97jVwAx+0AAKO6EceGl2e73a7JjKSbAMi6IABnUcLQlF+uZY5FsgAAm5fStsay4nzg654gkd5diM4AtQBuw/BT6U4AwzXUAAC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQAAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQAA/////wAAAAAQAAAADAAUAAYACAAMABAADAAAAAAABAA4AAAAJAAAAAQAAAABAAAA2AUAAAAAAACwAQAAAAAAAJABAAAAAAAAAAAAAAAACgAMAAAABAAIAAoAAABEBAAABAAAAAEAAAAMAAAACAAMAAQACAAIAAAAHAQAAAQAAAAPBAAAeyJpbmRleF9jb2x1bW5zIjogW3sia2luZCI6ICJyYW5nZSIsICJuYW1lIjogbnVsbCwgInN0YXJ0IjogMCwgInN0b3AiOiAzMCwgInN0ZXAiOiAxfV0sICJjb2x1bW5faW5kZXhlcyI6IFt7Im5hbWUiOiBudWxsLCAiZmllbGRfbmFtZSI6IG51bGwsICJwYW5kYXNfdHlwZSI6ICJ1bmljb2RlIiwgIm51bXB5X3R5cGUiOiAib2JqZWN0IiwgIm1ldGFkYXRhIjogeyJlbmNvZGluZyI6ICJVVEYtOCJ9fV0sICJjb2x1bW5zIjogW3sibmFtZSI6ICJ4IiwgImZpZWxkX25hbWUiOiAieCIsICJwYW5kYXNfdHlwZSI6ICJmbG9hdDMyIiwgIm51bXB5X3R5cGUiOiAiZmxvYXQzMiIsICJtZXRhZGF0YSI6IG51bGx9LCB7Im5hbWUiOiAieSIsICJmaWVsZF9uYW1lIjogInkiLCAicGFuZGFzX3R5cGUiOiAiZmxvYXQzMiIsICJudW1weV90eXBlIjogImZsb2F0MzIiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogInIiLCAiZmllbGRfbmFtZSI6ICJyIiwgInBhbmRhc190eXBlIjogInVpbnQ4IiwgIm51bXB5X3R5cGUiOiAidWludDgiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogImciLCAiZmllbGRfbmFtZSI6ICJnIiwgInBhbmRhc190eXBlIjogInVpbnQ4IiwgIm51bXB5X3R5cGUiOiAidWludDgiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogImIiLCAiZmllbGRfbmFtZSI6ICJiIiwgInBhbmRhc190eXBlIjogInVpbnQ4IiwgIm51bXB5X3R5cGUiOiAidWludDgiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogImEiLCAiZmllbGRfbmFtZSI6ICJhIiwgInBhbmRhc190eXBlIjogInVpbnQ4IiwgIm51bXB5X3R5cGUiOiAidWludDgiLCAibWV0YWRhdGEiOiBudWxsfSwgeyJuYW1lIjogInNlbGVjdGVkIiwgImZpZWxkX25hbWUiOiAic2VsZWN0ZWQiLCAicGFuZGFzX3R5cGUiOiAidWludDgiLCAibnVtcHlfdHlwZSI6ICJ1aW50OCIsICJtZXRhZGF0YSI6IG51bGx9XSwgImNyZWF0b3IiOiB7ImxpYnJhcnkiOiAicHlhcnJvdyIsICJ2ZXJzaW9uIjogIjE3LjAuMCJ9LCAicGFuZGFzX3ZlcnNpb24iOiAiMi4yLjIifQAGAAAAcGFuZGFzAAAHAAAAKAEAAOwAAAC8AAAAkAAAAGQAAAA4AAAABAAAAAT///8AAAECEAAAABwAAAAEAAAAAAAAAAgAAABzZWxlY3RlZAAAAABi////CAAAADT///8AAAECEAAAABQAAAAEAAAAAAAAAAEAAABhAAAAiv///wgAAABc////AAABAhAAAAAUAAAABAAAAAAAAAABAAAAYgAAALL///8IAAAAhP///wAAAQIQAAAAFAAAAAQAAAAAAAAAAQAAAGcAAADa////CAAAAKz///8AAAECEAAAABgAAAAEAAAAAAAAAAEAAAByAAYACAAEAAYAAAAIAAAA2P///wAAAQMQAAAAFAAAAAQAAAAAAAAAAQAAAHkAAADK////AAABABAAFAAIAAYABwAMAAAAEAAQAAAAAAABAxAAAAAYAAAABAAAAAAAAAABAAAAeAAGAAgABgAGAAAAAAABAPAFAABBUlJPVzE=";
+    const pointDataBuffer = fflate.strToU8(atob(pointDataBase64), true);
+    const pointData = await loaders.parse(pointDataBuffer, ArrowLoader);
+    const hoverDataBase64 = "H4sIAJeJFmcC/+1Xz4scRRSuTfaXEmQPQXKSYhDiQUOiSIIHhyARFwJCUHIQWWq6Xk9Xpruqrare3SFZCHoWctSbJ49evXjLxYMn/wT9F7yKfq+qZ3pmsnvSY3p53dVV1e99773vvam9++DBpw9vCfEPruqSEAeCr1fFa2JX7Ih9jHBtbS/nr+C+3c//tcVjLEN4fh93XtvH+Ld+7Rc8H4+M1XR6VLi6a2wYfSC/eDyaYQ6jkVd2SqO35ciqhjBhu7rGW4jKR7zeTGPXYvheHhOPb519iZes8Chpp17vuprSUK2P1udaZbUKR3He8uSos6ZwOkPomna+XHCTR1REnm8oKq2iwuzjEVlsN3bKWz7/7ON37ozOVsCsoxhV7pj8UaTTpGcNzcbaf0LFnmUQnlR0PgGtzcQrP+eP2rny3p3wV7AZjLM8e+v2jZs3bo7OBusri+/ewN/ojLO+C8kbcq6vCubJVeR5V+ylzB/0/Nja4acUOfeZMUIMjvL8dlpjvn3X6xKJP6/3jLuSNIrL2+IaHm/ti6Wmaz2/WOd9kbn6hhiuy+Li60n/fNo/f9wb1rY29CyuexAH+QnyN+R9bHwEeQ7ZQ63ch3wNeQ7ZgfEPIU8gP0P24eQ9yDeQXyGv7AhxCPkW8jvkAEG9D3kG+RNyHXhob8D1sFJRKk8yViQ9Bdf5goJUx8rUalKTLJ2XDdmoalmRqmMlQ9e2zkfprCxU03Zh/Ik7wdDKQzlxbiaVDBQ4v/LEYL+ShetsoNr58d1sCXdl55Ia8lPwfC7LzupNqyF2GoaDNDDkTTBh/LByvSHgmcnopCnl4R9Pv29kSVSjWiRz4KSiuiGdzYeicq6GPS1b0M5ZeGJC6GgVt2rbep6slsYqWxhsUkanGY6MBangVUPoC36cglbhG7IhIWAt1xHHEvu1jJ2J7H2sTFj9iN3O5mBEwy3sblTaqiauiwlqrXyoTBvWQ5A8GaBpU5am6OpoKGQ0oXJdraFa55ikeCBADjqQ1oBoIFqFs9HYjrK+Zi6LWmEtjA/DIi2y9W7qVcPbF5leh7HOhqJSdU3orT2QBZc0KY2EUHYkxZfT80KIUxIA+hDs+wpJgQZZkzom6UqEJYAeUAbIwLNuGS0I2Qzjj1JINZXk2SU6VU0YeEGnyLqBFrauNsEvaLWRmtITXcB6FZjfOSC96QUXg2vIWaa2s/PGdQGUyokFrMFpBBgUbzbiBShgiVEpQlOKMePtLa2USu2UPYeBlnKKo5pxFieIzgx+uIaNsxbTp+L8IC4qC5XTYkvO9KTTQJKAICiNsmrKL2vecAoTmpRDfU5FMgk1tQMLVYwEfQvuDT1hvfZcy6WRQRuL4NhUK1g9pzMMpVy4toev7KmhuMhB5gU7ogqlqTEF94NUgqBYn8rQcthy3+izOVRTbRDa7NvUZc+k9q6VUL/ixYIpU++6zTpGMXbTaQrLi7U0lAK6DUdoM9CyVcVMTRMmzqqJXW4fFViJQkQV6gvaAWID4FFOVM3urnbFE+dn3I4b5+nFUkiEWOa0UseZlwOuJTO5iZgoW4fezz0c0fGkOxjjRoMflkBMXn1+NfctOaHP5le5pEqfKFHKEj8RPQl7Ap2vr480ZWqnqHL3U0VMGcG4NJwTkz6Bjxstls2lfmRyeVzYYzMrlgFettih7FbIuexxWpuezIPJBXG4lUQ1Z3bnNI3zOUb0Z5ErOM3sphPMQT7D4LRyB/c3xXBOPr2Uf99/6M8Yw/nm5fn65fn6/ztfPwPP7qb/7f4F07Q5XOINAAA=";
+    const hoverDataBuffer = fflate.strToU8(atob(hoverDataBase64), true);
+    const unzippedHoverData = fflate.gunzipSync(hoverDataBuffer);
+    const hoverData = await loaders.parse(unzippedHoverData, ArrowLoader);
+    const labelDataBase64 = "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";
+    const labelDataBuffer = fflate.strToU8(atob(labelDataBase64), true);
+    const unzippedLabelData = fflate.gunzipSync(labelDataBuffer);    
+    const labelData = await loaders.parse(unzippedLabelData, JSONLoader);
+    
+    
+    const DATA = {src: pointData.data, length: pointData.data.x.length}
+
+    const container = document.getElementById('deck-container');
+    const pointLayer = new deck.ScatterplotLayer({
+        id: 'dataPointLayer',
+        data: DATA,
+        getPosition: (object, {index, data}) => {
+            return [data.src.x[index], data.src.y[index]];
+        },
+        
+        getRadius: 0.1,
+        
+        getFillColor: (object, {index, data}) => {
+            return [
+                data.src.r[index], 
+                data.src.g[index], 
+                data.src.b[index],
+                180
+            ]
+        },
+        getLineColor: (object, {index, data}) => {
+            return [
+                data.src.r[index], 
+                data.src.g[index], 
+                data.src.b[index],
+                32
+            ]
+        },       
+        getLineColor: [250, 250, 250, 128],
+        getLineWidth: 0.001,
+        highlightColor: [170, 0, 0, 187], 
+        lineWidthMaxPixels: 8,
+        lineWidthMinPixels: 0.1,
+        radiusMaxPixels: 24, 
+        radiusMinPixels: 0.01,
+        radiusUnits: "common", 
+        lineWidthUnits: "common", 
+        autoHighlight: true,
+        pickable: true, 
+        stroked: true
+    });
+    const labelLayer = new deck.TextLayer({
+        id: "textLabelLayer",
+        data: labelData,
+        pickable: false,
+        getPosition: d => [d.x, d.y],
+        getText: d => d.label,
+        getColor: d => [d.r, d.g, d.b],
+        getSize: d => d.size,
+        sizeScale: 1,
+        sizeMinPixels: 18,
+        sizeMaxPixels: 36,
+        outlineWidth: 8,
+        outlineColor: [238, 238, 238, 221],
+        getBackgroundColor: [255, 255, 255, 64],
+        getBackgroundPadding: [15, 15, 15, 15],
+        background: true,
+        characterSet: "auto",
+        fontFamily: "UI Sans Serif",
+        fontWeight: 900,
+        lineHeight: 0.95,
+        fontSettings: {"sdf": true},
+        getTextAnchor: "middle",
+        getAlignmentBaseline: "center",
+        lineHeight: 0.95,
+        elevation: 100,
+        // CollideExtension options
+        collisionEnabled: true,
+        getCollisionPriority: d => d.size,
+        collisionTestProps: {
+          sizeScale: 3,
+          sizeMaxPixels: 36 * 2,
+          sizeMinPixels: 18 * 2
+        },
+        extensions: [new deck.CollisionFilterExtension()],
+    });
+    
+
+    const deckgl = new deck.DeckGL({
+      container: container,
+      initialViewState: {
+        latitude: -4.904382,
+        longitude: 14.569931,
+        zoom: 4.962042667710289
+      },
+      controller: true,
+      
+      layers: [pointLayer, labelLayer],
+      
+      
+      getTooltip: ({index}) => hoverData.data.hover_text[index]
+    });
+    
+    document.getElementById("loading").style.display = "none";
+        
+    
+        function selectPoints(item, conditional) {
+        var layerId;
+        if (item) {
+            for (var i = 0; i < DATA.length; i++) {
+                if (conditional(i)) {
+                    DATA.src.selected[i] = 1;
+                } else {
+                    DATA.src.selected[i] = 0;
+                }
+            }
+            layerId = 'selectedPointLayer' + item;
+        } else {
+            for (var i = 0; i < DATA.length; i++) {
+                DATA.src.selected[i] = 1;
+            }
+            layerId = 'dataPointLayer';
+        }
+        const selectedPointLayer = pointLayer.clone(
+            {
+                id: layerId,
+                data: DATA,
+                getFilterValue: (object, {index, data}) => data.src.selected[index],
+                filterRange: [1, 2],
+                extensions: [new deck.DataFilterExtension({filterSize: 1})]
+            }
+        );
+        deckgl.setProps(
+            {layers: 
+                [selectedPointLayer].concat(deckgl.props.layers.slice(1,))
+            }
+        );
+    }
+    
+    const search = document.getElementById("search");
+    search.addEventListener("input", (event) => {
+            const search_term = event.target.value.toLowerCase();
+            selectPoints(search_term, (i) => hoverData.data.hover_text[i].toLowerCase().includes(search_term));
+        }
+    );
+    
+    
+    </script>
+</html>
