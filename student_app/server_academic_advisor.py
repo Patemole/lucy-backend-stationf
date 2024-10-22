@@ -34,7 +34,7 @@ from student_app.api_assistant.threads.thread_manager import (
     retrieve_messages,
     add_message_to_thread
 )
-from student_app.api_assistant.assistant.handlers import CustomAssistantEventHandler
+from student_app.api_assistant.assistant.handlers import on_event
 from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
 
 # Today's date
@@ -224,70 +224,23 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         df_expanded=[]
         #print("Course data loaded.")
 
-        print("Creating CustomAssistantEventHandler instance...")
-        # Create an instance of the CustomAssistantEventHandler
-        event_handler = CustomAssistantEventHandler(
-            thread_id=thread.id,
-            df=df_expanded,
-            client=client,
-            university=university,
-            username=username,
-            major=major,
-            minor=minor,
-            year=year,
-            school=school
-        )
-        print("CustomAssistantEventHandler instance created.")
-
         print("Starting streaming run...")
         # Use the stream helper to create the run and stream the response
-        with client.beta.threads.runs.stream(
+        stream = client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=assistant.id,
-            event_handler=event_handler,
-        ) as stream:
-            # Set the run_id in the event handler
-            event_handler.run = stream.run
-            print("Running stream until done...")
-            stream.until_done()
-            print("Stream has completed.")
-
-            for data in event_handler.response_stream():
-                if "answer_TAK_data" in data:
-                    print("WE DID IT")
-                    print(f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n")
-                    yield f"\n<ANSWER_TAK>{data}<ANSWER_TAK_END>\n"
-
-                elif "answer_waiting" in data:
-                    print(f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n")
-                    yield f"\n<ANSWER_WAITING>{data}<ANSWER_WAITING_END>\n"
-                
-                elif "image_data" in data:
-                    print(f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n")
-                    yield f"\n<IMAGE_DATA>{data}<IMAGE_DATA_END>\n"
-
-                elif "sources" in data:
-                    try:
-                        sources_list = json.loads(data).get("sources", [])
-                    except json.JSONDecodeError:
-                        print("Error decoding JSON. Invalid data received.")
-                        sources_list = []
-
-                    for source in sources_list:
-                        print(f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n")
-                        yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
+            stream=True
+        )
+        for event in stream:
+            for data in on_event(client, event, query=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
+                if data is None:
+                    print("Stream has completed.")
+                    break
                 else:
                     yield data
 
-
-
+                
         # After the stream is done, check if we have filtered data
-        if event_handler.filtered_data is not None:
-            print("Filtered data available. Sending to client.")
-            yield json.dumps({"filtered_courses": event_handler.filtered_data})
-        else:
-            print("No filtered data to send.")
-
     try:
         print("Received request to /send_message_socratic_langgraph")
         # Return the StreamingResponse using the generator function
