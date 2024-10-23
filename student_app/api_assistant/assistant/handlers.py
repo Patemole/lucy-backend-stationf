@@ -46,10 +46,15 @@ async def on_event(client, event, query, image_bool, university, username, major
             yield data
 
     elif event.event == 'thread.message.delta':
-        delta_text = event.data.delta.content[0].text.value
-        print(delta_text, end="", flush=True)
-        # Yield delta text directly
-        yield delta_text + "|"
+        for block in event.data.delta.content:
+            if block.type == "text" and hasattr(block.text, "value"):
+                delta_text = block.text.value
+
+                print(delta_text, end="", flush=True)
+                yield delta_text + "|"
+            else:
+                print(f"No text content found or unsupported block type: {block.type}")
+
 
     elif event.event == 'thread.run.completed':
         print("\nRun completed.")
@@ -82,7 +87,7 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
             yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': text_search})}<ANSWER_WAITING_END>\n" 
 
             try:
-                sources_list = await get_sources_json(sources)  # Ensure async call here
+                sources_list = get_sources_json(sources)  # Ensure async call here
             except json.JSONDecodeError:
                 print("Error decoding JSON. Invalid data received.")
                 sources_list = []
@@ -107,7 +112,7 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
 
         elif function_name == "ask_clarifying_question":
             print(f"Processing clarifying question with arguments: {arguments}")
-            tool_output = await get_clarifying_question_output(arguments)  # Await the clarifying question output
+            tool_output = get_clarifying_question_output(arguments)  # Await the clarifying question output
             print(tool_output)
             yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': tool_output})}<ANSWER_TAK_END>\n" 
             tool_outputs.append({

@@ -98,7 +98,7 @@ async def get_up_to_date_info(query, image_bool, university, username, major, mi
 
 
 
-async def get_sources_json(sources):
+def get_sources_json(sources):
     """
     Generates a list of sources in the specified format.
 
