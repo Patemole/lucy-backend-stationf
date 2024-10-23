@@ -91,7 +91,8 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
                 print(f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n")
                 yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
         
-
+            #TODO change this when we have images
+            image_bool = False
             if image_bool:
                 image_url = await google_image_search(query)  # Await for async search
                 yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
