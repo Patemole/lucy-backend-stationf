@@ -5,6 +5,19 @@ import asyncio
 from functools import wraps
 import time
 
+import logging
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("file_server.log")
+    ]
+)
+
 def timing_decorator(func):
     @wraps(func)
     def sync_wrapper(*args, **kwargs):
@@ -31,16 +44,13 @@ def timing_decorator(func):
 async def get_up_to_date_info(query, image_bool, university, username, major, minor, year, school):
     """
     Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query.
-
-    Parameters:
-    - query (str): The user's query requiring current information.
-
-    Returns:
-    - str: The information retrieved from the Perplexity API.
     """
+    logging.info(f"Retrieving up-to-date info for query: {query} from university: {university}")
+    
     PPLX_API_KEY = os.getenv('PPLX_API_KEY')
 
     if not PPLX_API_KEY:
+        logging.error("Perplexity API key not found.")
         return "Error: Perplexity API key not found."
 
     url = "https://api.perplexity.ai/chat/completions"  # Replace with the actual Perplexity API endpoint
@@ -80,23 +90,22 @@ async def get_up_to_date_info(query, image_bool, university, username, major, mi
     }
 
     try:
-        # Use aiohttp for asynchronous HTTP requests
+        logging.info(f"Sending request to Perplexity API for query: {query}")
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=payload, headers=headers) as response:
                 if response.status == 200:
                     data = await response.json()
                     content = data['choices'][0]['message']['content']
-                    print("DATA FROM PPLX API:", content)
+                    logging.info("Data successfully retrieved from Perplexity API.")
                     return content
                 else:
-                    print(f"Error: {response.status}")
+                    logging.error(f"Error: {response.status}")
                     error_message = await response.text()
-                    print(error_message)
-                    return f"Error: {response.status}"
+                    logging.error(f"API Error response: {error_message}")
+                    return f"Error: {response.status} - {error_message}"
     except Exception as e:
+        logging.error(f"Error retrieving information from Perplexity API: {str(e)}")
         return f"Error retrieving information: {str(e)}"
-
-
 
 def get_sources_json(sources):
     """
@@ -108,6 +117,7 @@ def get_sources_json(sources):
     Returns:
     - list: A list of dictionaries in the required output format.
     """
+    logging.info("Generating sources JSON.")
     tool_output = []
 
     for source in sources:
@@ -120,4 +130,5 @@ def get_sources_json(sources):
             }
         })
     
+    logging.info(f"Generated {len(tool_output)} sources.")
     return tool_output

@@ -153,101 +153,103 @@ async def count_student_questions(chat_history):
 @app.post("/send_message_socratic_langgraph")
 async def chat(request: Request, response: Response, input_query: InputQuery) -> StreamingResponse:
     chat_id = input_query.chat_id
-    course_id = input_query.course_id  # Get course_id from input_query
+    course_id = input_query.course_id
     username = input_query.username
     input_message = input_query.message
-    university = input_query.university #A rajouter pour avoir le bon search engine par la suite
+    university = input_query.university
     student_profile = input_query.student_profile
     major = input_query.major
     minor = input_query.minor
     year = input_query.year
     school = input_query.faculty
 
+    logging.info(f"Processing message from {username} at {university}")
+
     try:
         await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+        logging.info("Input message stored successfully")
     except Exception as e:
         logging.error(f"Error while storing the input message: {str(e)}")
+        response.status_code = 500
+        return {"error": "Failed to store input message"}
 
     # Define the generator function
     @timing_decorator
     async def response_generator():
+        try:
+            logging.info("Creating OpenAI client instance...")
+            client = AsyncOpenAI()
+            logging.info("Client created successfully")
 
-        print("OpenAI instance creation...")
-        client = AsyncOpenAI()
-        print("Client created")
-        
-        print("Initializing assistant...")
-        # Initialize the assistant
-        assistant = await initialize_assistant(client, university, username, major, minor, year, school)
-        print(f"Assistant initialized with ID: {assistant.id}")
+            logging.info("Initializing assistant...")
+            assistant = await initialize_assistant(client, university, username, major, minor, year, school)
+            logging.info(f"Assistant initialized with ID: {assistant.id}")
 
-        print(f"Retrieving chat history for chat_id: {chat_id}")
-        # Retrieve the past conversation history based on the chat_id
-        history_items = await get_chat_history(chat_id=chat_id)
-        
-        print(f"Creating or retrieving existing thread for chat_id: {chat_id}")
-        # Create a new thread if necessary, or reuse an existing thread if it exists
-        thread = await create_thread(client, chat_id=chat_id, username=username, university=university, )  # Now passing chat_id to create_thread
-        print(f"Thread created/retrieved with ID: {thread.id}")
+            logging.info(f"Retrieving chat history for chat_id: {chat_id}")
+            history_items = await get_chat_history(chat_id=chat_id)
+            logging.info(f"Retrieved {len(history_items)} history items")
 
-        # Convert chat history into messages that can be added to the thread
-        past_messages = []
-        for item in history_items:
-            role = item["username"]
-            if role == "Lucy":
-                role = "assistant"
-            else:
-                role = "user"
-            message_data = {
-                "role": role,  # 'user' or 'assistant'
-                "content": item["body"]
-            }
-            past_messages.append(message_data)
+            logging.info(f"Creating or retrieving existing thread for chat_id: {chat_id}")
+            thread = await create_thread(client, chat_id=chat_id, username=username, university=university)
+            logging.info(f"Thread created/retrieved with ID: {thread.id}")
 
-        if past_messages:
-            print(f"Adding {len(past_messages)} past messages to thread {thread.id}")
-            for past_message in past_messages:
-                role = past_message["role"]  # Could be 'user' or 'assistant'
-                content = past_message["content"]
-                await add_message_to_thread(client, thread.id, role, content)
+            past_messages = []
+            for item in history_items:
+                role = "assistant" if item["username"] == "Lucy" else "user"
+                past_messages.append({
+                    "role": role,
+                    "content": item["body"]
+                })
 
+            if past_messages:
+                logging.info(f"Adding {len(past_messages)} past messages to thread {thread.id}")
+                for past_message in past_messages:
+                    await add_message_to_thread(client, thread.id, past_message["role"], past_message["content"])
 
-        print(f"Adding user message to thread {thread.id}: {input_query.message}")
-        # Add the current user message to the thread
-        await add_user_message(client, thread.id, input_query.message)
+            logging.info(f"Adding user message to thread {thread.id}: {input_query.message}")
+            await add_user_message(client, thread.id, input_query.message)
 
-        print(F"THREAD ====== \n\n\n {thread}")
+            try:
+                logging.info("Starting streaming run...")
 
-        #print("Loading course data...")
-        # Load the DataFrame once at the beginning
-        #df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
+                # Start the streaming run
+                stream = await client.beta.threads.runs.create(
+                    thread_id=thread.id,
+                    assistant_id=assistant.id,
+                    stream=True
+                )
 
-        print("Starting streaming run...")
-        # Use the stream helper to create the run and stream the response
-        stream = await client.beta.threads.runs.create(
-            thread_id=thread.id,
-            assistant_id=assistant.id,
-            stream=True
-        )
-        
-        async for event in stream:
-            async for data in on_event(client, event, query=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
-                if data is None:
-                    print("Stream has completed.")
-                    break
-                else:
-                    yield data
+                logging.info(f"Streaming run started for thread ID: {thread.id} with assistant ID: {assistant.id}")
 
-                
-        # After the stream is done, check if we have filtered data
+                # Process the stream asynchronously
+                async for event in stream:
+                    async for data in on_event(client, event, query=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
+                        if data is None:
+                            logging.info("Stream has completed.")
+                            break
+                        else:
+                            yield data
+
+            except KeyError as e:
+                logging.error(f"KeyError during streaming run: {str(e)}", exc_info=True)
+                raise e
+
+            except Exception as e:
+                logging.error(f"Error during streaming run: {str(e)}", exc_info=True)
+                raise e
+
+        except Exception as e:
+            logging.error(f"Error during response generation: {str(e)}")
+            yield {"error": "Error in generating response"}
+
     try:
-        print("Received request to /send_message_socratic_langgraph")
-        # Return the StreamingResponse using the generator function
+        logging.info("Received request to /send_message_socratic_langgraph")
         return StreamingResponse(response_generator(), media_type="text/plain")
     except Exception as e:
-        print(f"Error in /send_message_socratic_langgraph: {e}")
+        logging.error(f"Error in /send_message_socratic_langgraph: {str(e)}")
         response.status_code = 500
         return {"error": "Internal Server Error"}
+
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
