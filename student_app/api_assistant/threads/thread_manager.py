@@ -15,6 +15,19 @@ import time
 from functools import wraps
 import asyncio
 
+import logging
+
+# Logging configuration (to be added if it's not already in the main app)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),  # Console output
+        logging.FileHandler("file_server.log")  # Save logs to a file
+    ]
+)
+
 def timing_decorator(func):
     @wraps(func)
     def sync_wrapper(*args, **kwargs):
@@ -44,113 +57,101 @@ def timing_decorator(func):
 async def create_thread(client, chat_id, username, university):
     """
     Creates a new thread with a custom thread ID based on the provided chat_id, username, and university.
-
-    Args:
-        chat_id (str): The ID representing the conversation in your app.
-        username (str): The username of the user.
-        university (str): The university of the user.
-
-    Returns:
-        openai.Thread: The created thread instance.
     """
-    thread = await client.beta.threads.create(
-        metadata={
-            #"custom_thread_id": chat_id,
-            "username": username,
-            "university": university
-        }
-    )
-    print(f"Thread created with ID: {thread.id} (linked to app chat ID: {chat_id})\n")
-    return thread
+    try:
+        logging.info(f"Attempting to create a new thread for chat_id: {chat_id}, username: {username}, university: {university}")
+        thread = await client.beta.threads.create(
+            metadata={
+                "username": username,
+                "university": university
+            }
+        )
+        logging.info(f"Thread created with ID: {thread.id} for chat ID: {chat_id}")
+        return thread
+    except Exception as e:
+        logging.error(f"Error creating thread for chat_id {chat_id}: {str(e)}")
+        raise
 
 @timing_decorator
 async def add_user_message(client, thread_id, user_query):
     """
     Adds a user message to the specified thread.
-
-    Parameters:
-    - thread_id (str): The ID of the thread.
-    - user_query (str): The user's query.
-
-    Returns:
-        openai.Message: The created message instance.
     """
-    message = await client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=user_query
-    )
-    print(f"User message added to thread {thread_id}: {user_query}\n")
-    return message
+    try:
+        logging.info(f"Adding user message to thread {thread_id}")
+        message = await client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=user_query
+        )
+        logging.info(f"User message added to thread {thread_id}: {user_query}")
+        return message
+    except Exception as e:
+        logging.error(f"Error adding user message to thread {thread_id}: {str(e)}")
+        raise
 
 @timing_decorator
 async def add_message_to_thread(client, thread_id, role, content):
     """
     Adds a message (user/assistant) to the specified thread.
-
-    Parameters:
-    - thread_id (str): The ID of the thread.
-    - role (str): The role of the message ('user' or 'assistant').
-    - content (str): The message content.
-
-    Returns:
-        openai.Message: The created message instance.
     """
-    message = await client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role=role,
-        content=content
-    )
-    print(f"{role.capitalize()} message added to thread {thread_id}: {content}\n")
-    return message
+    try:
+        logging.info(f"Adding {role} message to thread {thread_id}")
+        message = await client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role=role,
+            content=content
+        )
+        logging.info(f"{role.capitalize()} message added to thread {thread_id}: {content}")
+        return message
+    except Exception as e:
+        logging.error(f"Error adding {role} message to thread {thread_id}: {str(e)}")
+        raise
 
 @timing_decorator
 async def create_and_poll_run(client, thread_id, assistant_id):
     """
     Creates a run for the assistant and polls its status until completion.
-
-    Parameters:
-    - thread_id (str): The ID of the thread.
-    - assistant_id (str): The ID of the assistant.
-
-    Returns:
-        openai.Run: The completed run instance.
     """
-    run = await client.beta.threads.runs.create_and_poll(
-        thread_id=thread_id,
-        assistant_id=assistant_id
-    )
-    print(f"Run created with ID: {run.id}")
-    print(f"Initial Run status: {run.status}\n")
-    return run
+    try:
+        logging.info(f"Creating and polling run for thread {thread_id}, assistant {assistant_id}")
+        run = await client.beta.threads.runs.create_and_poll(
+            thread_id=thread_id,
+            assistant_id=assistant_id
+        )
+        logging.info(f"Run created with ID: {run.id}, Initial status: {run.status}")
+        return run
+    except Exception as e:
+        logging.error(f"Error creating and polling run for thread {thread_id}: {str(e)}")
+        raise
 
 @timing_decorator
 async def retrieve_run(client, run_id, thread_id):
     """
     Retrieves the current status of a run.
-
-    Parameters:
-    - run_id (str): The ID of the run.
-    - thread_id (str): The ID of the thread.
-
-    Returns:
-        openai.Run: The retrieved run instance.
     """
-    return await client.beta.threads.runs.retrieve(
-        thread_id=thread_id,
-        run_id=run_id
-    )
+    try:
+        logging.info(f"Retrieving run with ID {run_id} for thread {thread_id}")
+        run = await client.beta.threads.runs.retrieve(
+            thread_id=thread_id,
+            run_id=run_id
+        )
+        logging.info(f"Retrieved run with status: {run.status}")
+        return run
+    except Exception as e:
+        logging.error(f"Error retrieving run {run_id} for thread {thread_id}: {str(e)}")
+        raise
 
 @timing_decorator
 async def retrieve_messages(client, thread_id):
     """
     Retrieves all messages in a thread.
-
-    Parameters:
-    - thread_id (str): The ID of the thread.
-
-    Returns:
-        list: A list of message instances.
     """
-    messages = await client.beta.threads.messages.list(thread_id=thread_id)
-    return messages
+    try:
+        logging.info(f"Retrieving messages for thread {thread_id}")
+        messages = await client.beta.threads.messages.list(thread_id=thread_id)
+        logging.info(f"Retrieved {len(messages)} messages for thread {thread_id}")
+        return messages
+    except Exception as e:
+        logging.error(f"Error retrieving messages for thread {thread_id}: {str(e)}")
+        raise

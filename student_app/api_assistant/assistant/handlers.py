@@ -8,6 +8,18 @@ from .tools.perplexity_tool.image_search import google_image_search
 from functools import wraps
 import time
 import asyncio
+import logging
+
+# Logging configuration (to be added if it's not already in the main app)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),  # Console output
+        logging.FileHandler("file_server.log")  # Save logs to a file
+    ]
+)
 
 def timing_decorator(func):
     @wraps(func)
@@ -33,144 +45,155 @@ def timing_decorator(func):
 
 
 
-    
 @timing_decorator
 async def on_event(client, event, query, image_bool, university, username, major, minor, year, school):
-    print(f"ON_EVENT: {event.event}")
-    if event.event == 'thread.run.requires_action':
-        print("Handling required action event...")
-        run_id = event.data.id
-        thread_id = event.data.thread_id
-        # Use async generator
-        async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
-            yield data
+    try:
+        logging.info(f"ON_EVENT triggered: {event.event}")
+        if event.event == 'thread.run.requires_action':
+            logging.info("Handling required action event...")
+            run_id = event.data.id
+            thread_id = event.data.thread_id
+            async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+                yield data
 
-    elif event.event == 'thread.message.delta':
-        for block in event.data.delta.content:
-            if block.type == "text" and hasattr(block.text, "value"):
-                delta_text = block.text.value
-
-                print(delta_text, end="", flush=True)
-                yield delta_text + "|"
-            else:
-                print(f"No text content found or unsupported block type: {block.type}")
-
-
-    elif event.event == 'thread.run.completed':
-        print("\nRun completed.")
-        yield None  # Indicate completion
-
-@timing_decorator
-async def handle_requires_action(client, data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
-    print("Run requires action: Processing tool calls...")  
-    tool_outputs = []
-    for tool_call in data.required_action.submit_tool_outputs.tool_calls:
-        function_name = tool_call.function.name
-        print(f"Processing tool: {function_name}") 
-
-        try:
-            arguments = json.loads(tool_call.function.arguments)
-        except json.JSONDecodeError:
-            print(f"Failed to parse arguments for {function_name}")
-            arguments = {}
-
-        if function_name == "get_current_info":
-            query = arguments.get('query', '')
-            sources = arguments.get('sources', [])
-            image_bool = arguments.get('image_bool', False)
-
-            text_search = []
-            for i, source in enumerate(sources, 1):
-                source_name = source.get('name', '')
-                text_search.append({f"Sentence{i}": f"_**[LUCY is searching in {source_name}]**_"})
-
-            yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': text_search})}<ANSWER_WAITING_END>\n" 
-
-            try:
-                sources_list = get_sources_json(sources)  # Ensure async call here
-            except json.JSONDecodeError:
-                print("Error decoding JSON. Invalid data received.")
-                sources_list = []
-
-            for source in sources_list:
-                print(f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n")
-                yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
-        
-            #TODO change this when we have images
-            image_bool = False
-            if image_bool:
-                image_url = await google_image_search(query)  # Await for async search
-                yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
-
-            output = await get_up_to_date_info(query, image_bool, university, username, major, minor, year, school)
-            print(f"Current info for query '{query}': {output}") 
-
-            tool_outputs.append({
-                "tool_call_id": tool_call.id,
-                "output": output
-            })
-
-        elif function_name == "ask_clarifying_question":
-            print(f"Processing clarifying question with arguments: {arguments}")
-            tool_output = get_clarifying_question_output(arguments)  # Await the clarifying question output
-            print(tool_output)
-            yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': tool_output})}<ANSWER_TAK_END>\n" 
-            tool_outputs.append({
-                "tool_call_id": tool_call.id,
-                "output": json.dumps(tool_output)
-            })
-            
-        else:
-            output = "Function not implemented."
-            print(f"Function not implemented: {function_name}")  
-            tool_outputs.append({
-                "tool_call_id": tool_call.id,
-                "output": output
-            })
-
-    print("Submitted all tool outputs.") 
-    async for data in submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
-        yield data
-
-@timing_decorator
-async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
-    print("Submitting tool outputs...")
-
-    separation_added = False
-
-    stream = await client.beta.threads.runs.submit_tool_outputs(
-        thread_id=thread_id,
-        run_id=run_id,
-        tool_outputs=tool_outputs,
-        stream=True
-    )
-    async for event in stream:  # Use async for here to iterate over the stream
-        if event.event == "thread.message.delta":
+        elif event.event == 'thread.message.delta':
             for block in event.data.delta.content:
                 if block.type == "text" and hasattr(block.text, "value"):
                     delta_text = block.text.value
-
-                    if not separation_added:
-                        yield "\n\n\n\n"  
-                        separation_added = True
-
-                    print(delta_text, end="", flush=True)
+                    logging.info(f"Delta text received: {delta_text}")
                     yield delta_text + "|"
                 else:
-                    print("No text content found in delta block:", block)
-        elif event.event == 'thread.run.requires_action':
-            print("Handling required action event during submit_tool_outputs...")
-            async for data in handle_requires_action(client, event.data, run_id, query, image_bool, university, username, major, minor, year, school):
-                yield data
-        elif event.event == "thread.run.step.completed":
-            print("Step completed")
-        elif event.event == "thread.run.completed":
-            print("Run completed")
-        elif event.event == "thread.message.completed":
-            print("Message completed")
-            yield None  
-        else:
-            print("Unhandled event:", event)
+                    logging.warning(f"No text content found or unsupported block type: {block.type}")
+
+        elif event.event == 'thread.run.completed':
+            logging.info("Run completed.")
+            yield None  # Indicate completion
+    except Exception as e:
+        logging.error(f"Error in on_event handler: {str(e)}", exc_info=True)
+        raise
+
+@timing_decorator
+async def handle_requires_action(client, data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+    try:
+        logging.info("Run requires action: Processing tool calls...")
+        tool_outputs = []
+        for tool_call in data.required_action.submit_tool_outputs.tool_calls:
+            function_name = tool_call.function.name
+            logging.info(f"Processing tool: {function_name}")
+
+            try:
+                arguments = json.loads(tool_call.function.arguments)
+            except json.JSONDecodeError:
+                logging.error(f"Failed to parse arguments for {function_name}")
+                arguments = {}
+
+            if function_name == "get_current_info":
+                query = arguments.get('query', '')
+                sources = arguments.get('sources', [])
+                image_bool = arguments.get('image_bool', False)
+
+                text_search = []
+                for i, source in enumerate(sources, 1):
+                    source_name = source.get('name', '')
+                    text_search.append({f"Sentence{i}": f"_**[LUCY is searching in {source_name}]**_"})
+
+                yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': text_search})}<ANSWER_WAITING_END>\n"
+
+                try:
+                    sources_list = get_sources_json(sources)  # Ensure async call here
+                except json.JSONDecodeError:
+                    logging.error("Error decoding JSON. Invalid data received.")
+                    sources_list = []
+
+                for source in sources_list:
+                    logging.info(f"Sending JSON document to client: {source}")
+                    yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
+
+                image_bool = False  # TODO: Change this when we have images
+                if image_bool:
+                    image_url = await google_image_search(query)  # Await for async search
+                    logging.info(f"Image URL found: {image_url}")
+                    yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
+
+                output = await get_up_to_date_info(query, image_bool, university, username, major, minor, year, school)
+                logging.info(f"Current info for query '{query}': {output}")
+
+                tool_outputs.append({
+                    "tool_call_id": tool_call.id,
+                    "output": output
+                })
+
+            elif function_name == "ask_clarifying_question":
+                logging.info(f"Processing clarifying question with arguments: {arguments}")
+                tool_output = get_clarifying_question_output(arguments)
+                logging.info(f"Clarifying question output: {tool_output}")
+                yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': tool_output})}<ANSWER_TAK_END>\n"
+                tool_outputs.append({
+                    "tool_call_id": tool_call.id,
+                    "output": json.dumps(tool_output)
+                })
+
+            else:
+                logging.warning(f"Function not implemented: {function_name}")
+                output = "Function not implemented."
+                tool_outputs.append({
+                    "tool_call_id": tool_call.id,
+                    "output": output
+                })
+
+        logging.info("Submitted all tool outputs.")
+        async for data in submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+            yield data
+    except Exception as e:
+        logging.error(f"Error in handle_requires_action: {str(e)}", exc_info=True)
+        raise
+
+@timing_decorator
+async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+    try:
+        logging.info("Submitting tool outputs...")
+        separation_added = False
+
+        stream = await client.beta.threads.runs.submit_tool_outputs(
+            thread_id=thread_id,
+            run_id=run_id,
+            tool_outputs=tool_outputs,
+            stream=True
+        )
+        async for event in stream:
+            if event.event == "thread.message.delta":
+                for block in event.data.delta.content:
+                    if block.type == "text" and hasattr(block.text, "value"):
+                        delta_text = block.text.value
+
+                        if not separation_added:
+                            yield "\n\n\n\n"
+                            separation_added = True
+
+                        logging.info(f"Delta text from submit_tool_outputs: {delta_text}")
+                        yield delta_text + "|"
+                    else:
+                        logging.warning("No text content found in delta block:", block)
+
+            elif event.event == 'thread.run.requires_action':
+                logging.info("Handling required action event during submit_tool_outputs...")
+                async for data in handle_requires_action(client, event.data, run_id, query, image_bool, university, username, major, minor, year, school):
+                    yield data
+
+            elif event.event == "thread.run.step.completed":
+                logging.info("Step completed.")
+            elif event.event == "thread.run.completed":
+                logging.info("Run completed.")
+            elif event.event == "thread.message.completed":
+                logging.info("Message completed.")
+                yield None
+            else:
+                logging.warning(f"Unhandled event: {event}")
+    except Exception as e:
+        logging.error(f"Error in submit_tool_outputs: {str(e)}", exc_info=True)
+        raise
+
+
 
 
     """

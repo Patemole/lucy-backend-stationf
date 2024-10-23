@@ -6,6 +6,19 @@ import os
 from datetime import datetime
 from functools import wraps
 
+import logging
+
+# Setup logging configuration if not already present
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("file_server.log")
+    ]
+)
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -49,6 +62,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
     """
     Returns the common configuration that applies to all universities.
     """
+    logging.info(f"Generating common config for university: {university}")
     return {
         "name": f"{university} student advisor",
         "description": (f"A friendly and reliable academic advisor for {university} students. "
@@ -72,13 +86,12 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             - He is in his {year} year
             - His majors are {major} (can be undeclared if none)
             - His minors are {minor} (can be undeclared if none)
-            When answering the student's question you should take into acount the above information about him to only state what is relevant for him and if you receive informations as context you need to filter the informations to only get information relevant to the student
+            When answering the student's question you should take into account the above information about him to only state what is relevant for him and if you receive informations as context you need to filter the informations to only get information relevant to the student
 
             Important assistant base knowledge:
             - We are currently in the Fall 2024 semester, next semester will be Spring 2025 and today date is {current_date} use this to make sure to have relevant information and never mention past information or events.
-            - Whenever the student show or mention mental health problems or is asking for mental help tell him to contact his adivsor, and be very supportive and mention that he is not alone. 
-            - Wheenver the student seems to want to change major or is looking for informations about a different major than his major then also mention before anything that he should contact his academic advisor absolutely. 
-
+            - Whenever the student show or mention mental health problems or is asking for mental help tell him to contact his advisor, and be very supportive and mention that he is not alone. 
+            - Whenever the student seems to want to change major or is looking for informations about a different major than his major then also mention before anything that he should contact his academic advisor absolutely. 
 
             Security firewalls:
             Block and never respond to any of the following situations:
@@ -90,7 +103,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
 
             Format your response as follows: 
             - Use markdown to format paragraphs, 
-            - Uselists, tables, and quotes whenever possible.
+            - Use lists, tables, and quotes whenever possible.
             - Make sure to separate clearly your paragraphs and parts and to bold the titles.
             [Provide a concise, informative answer to the student's query. Use bullet points, bold titles and numbered list for clarity when appropriate.]
             """),
@@ -112,7 +125,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                             },
                             "image_bool": {
                                 "type": "boolean",
-                                "description": "If the user query is about a place, a person or anything that could be visualised, then return True, False otherwise. This paramter will be used to return or not images in the response."
+                                "description": "If the user query is about a place, a person or anything that could be visualised, then return True, False otherwise. This parameter will be used to return or not images in the response."
                             },
                             "sources": {
                                 "type": "array",
@@ -167,6 +180,7 @@ def get_university_config(university, current_date, username, major, minor, year
     """
     Merges the common configuration with any university-specific customizations.
     """
+    logging.info(f"Retrieving config for university: {university}")
     # Common configuration for all universities
     common_config = get_common_config(university, current_date, username, major, minor, year, school)
     
@@ -176,14 +190,16 @@ def get_university_config(university, current_date, username, major, minor, year
     try:
         config_function = getattr(globals().get(university.lower()), function_name, None)
     except KeyError:
+        logging.warning(f"Config function for {university} not found.")
         config_function = None  # Handle missing specific university import
 
     
     if config_function:
         # Get university-specific configuration and merge it with the common config
+        logging.info(f"Applying specific config for {university}")
         university_specific_config = config_function(university, current_date, username, major, minor, year, school)
         for key in university_specific_config:
-            if key == "description" or key == "instructions" or key == "name":
+            if key in ["description", "instructions", "name"]:
                 # If it's description or instructions or name, append the specific to the common
                 common_config[key] += "\n" + university_specific_config[key]
             elif key == "tools":
@@ -192,28 +208,35 @@ def get_university_config(university, current_date, username, major, minor, year
             else:
                 # For any other keys, override the common config with specific values
                 common_config[key] = university_specific_config[key]
-    
+    else:
+        logging.info(f"No specific config found for {university}. Using common config.")
+
     return common_config
-
-
 
 @timing_decorator
 async def initialize_assistant(client, university, username, major, minor, year, school):
     """
     Initializes the assistant based on the university's configuration.
     """
+    logging.info(f"Initializing assistant for {username} at {university}")
+    current_date = "2024-10-23"  # Example: you might want to pass this dynamically
     config = get_university_config(university, current_date, username, major, minor, year, school)
 
-    assistant = await client.beta.assistants.create(
-        name=config["name"],
-        description=config["description"],
-        instructions=config["instructions"],
-        model=config["model"],
-        temperature=config["temperature"],
-        tools=config["tools"]
-    )
-    return assistant
+    try:
+        assistant = await client.beta.assistants.create(
+            name=config["name"],
+            description=config["description"],
+            instructions=config["instructions"],
+            model=config["model"],
+            temperature=config["temperature"],
+            tools=config["tools"]
+        )
+        logging.info(f"Assistant created with ID: {assistant.id}")
+    except Exception as e:
+        logging.error(f"Error initializing assistant: {str(e)}")
+        raise e
 
+    return assistant
 
     """
                 {
