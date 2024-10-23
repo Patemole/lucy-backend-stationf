@@ -1,19 +1,15 @@
-# backend/assistant/tools/perplexity_tool/perplexity_manager.py
-import requests
+import aiohttp
 import os
 from datetime import datetime
-from functools import wraps
-
-
-import time
-from functools import wraps
 import asyncio
+from functools import wraps
+import time
 
 def timing_decorator(func):
     @wraps(func)
     def sync_wrapper(*args, **kwargs):
         start_time = time.time()
-        result = func(*args, **kwargs)  # Call the synchronous function
+        result = func(*args, **kwargs)
         end_time = time.time()
         print(f"{func.__name__} took {end_time - start_time} seconds")
         return result
@@ -21,22 +17,20 @@ def timing_decorator(func):
     @wraps(func)
     async def async_wrapper(*args, **kwargs):
         start_time = time.time()
-        result = await func(*args, **kwargs)  # Call the async function
+        result = await func(*args, **kwargs)
         end_time = time.time()
         print(f"{func.__name__} took {end_time - start_time} seconds")
         return result
     
-    # Check if the function is async, and return the appropriate wrapper
     if asyncio.iscoroutinefunction(func):
         return async_wrapper
     else:
         return sync_wrapper
 
-
 @timing_decorator
-def get_up_to_date_info(query, image_bool, university, username, major, minor, year, school):
+async def get_up_to_date_info(query, image_bool, university, username, major, minor, year, school):
     """
-    Calls the Perplexity API to retrieve up-to-date information based on the query.
+    Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query.
 
     Parameters:
     - query (str): The user's query requiring current information.
@@ -44,41 +38,31 @@ def get_up_to_date_info(query, image_bool, university, username, major, minor, y
     Returns:
     - str: The information retrieved from the Perplexity API.
     """
-    # Load Perplexity API key from environment variables
     PPLX_API_KEY = os.getenv('PPLX_API_KEY')
 
-    # Check if API key is available
     if not PPLX_API_KEY:
         return "Error: Perplexity API key not found."
 
-    # Set up the API endpoint and headers
     url = "https://api.perplexity.ai/chat/completions"  # Replace with the actual Perplexity API endpoint
-
     current_date = datetime.now().strftime("%B %d, %Y")
-
-    print(f"Query to perplexity is: {query} \n")
 
     system_prompt = (
         f"""
             You are a reliable academic advisor at {university}, and you provide accurate, up-to-date, and factual information. 
-            You only provide answers based on current and verified data.
-            Only research on site:{university}.edu 
-            no other websites and sources should be used. 
-            We are currently in the Fall 2024 semester and today date is {current_date} use this to make sure to have relevant information and not past information.
+            Only research on site:{university}.edu. 
+            We are currently in the Fall 2024 semester, and today's date is {current_date}.
 
-            information about the student:
-            - His name is {username}
-            - He is in the {school}
-            - He is in his {year} senior
-            - His majors are {major} (can be undeclared if none)
-            - His minors are {minor} (can be undeclared if none)
-            
-            When answering the student's question you should take into acount the above information about him to only retrieve and state what is relevant for him 
+            Student details:
+            - Name: {username}
+            - School: {school}
+            - Year: {year}
+            - Majors: {major} (can be undeclared if none)
+            - Minors: {minor} (can be undeclared if none)
         """
     )
-    # Prepare the payload with system prompt and the user query
+
     payload = {
-        "model": "llama-3.1-sonar-large-128k-online",  # Model specification
+        "model": "llama-3.1-sonar-large-128k-online",
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": query}
@@ -86,9 +70,9 @@ def get_up_to_date_info(query, image_bool, university, username, major, minor, y
         "max_tokens": 500,
         "stream": False,
         "return_citations": True,
-        #"return_images": image_bool,
         "return_related_questions": True
     }
+
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
@@ -96,31 +80,25 @@ def get_up_to_date_info(query, image_bool, university, username, major, minor, y
     }
 
     try:
-        # Make the API request
-        response = requests.post(url, json=payload, headers=headers)
-        response.raise_for_status()  # Raise an exception for HTTP errors
-
-        # Parse the response (assuming JSON format)
-        data = response.json()
-
-        if response.status_code == 200:
-                data = response.json()
-                print("DATA FROM PPLX API /// CHECK IF CITATIONS OR NOT")
-                print(data)
-                content = data['choices'][0]['message']['content']
-                print(content)
-        else:
-            print(f"Error: {response.status_code}")
-            print(response.text)
-
-        return content
-
-    except requests.exceptions.RequestException as e:
-        # Handle any exceptions related to the request
+        # Use aiohttp for asynchronous HTTP requests
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=payload, headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    content = data['choices'][0]['message']['content']
+                    print("DATA FROM PPLX API:", content)
+                    return content
+                else:
+                    print(f"Error: {response.status}")
+                    error_message = await response.text()
+                    print(error_message)
+                    return f"Error: {response.status}"
+    except Exception as e:
         return f"Error retrieving information: {str(e)}"
 
 
-def get_sources_json(sources):
+
+async def get_sources_json(sources):
     """
     Generates a list of sources in the specified format.
 

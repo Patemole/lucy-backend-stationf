@@ -3,7 +3,7 @@ import asyncio
 import logging
 import datetime
 
-from openai import OpenAI
+from openai import OpenAI, AsyncOpenAI
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
@@ -173,12 +173,12 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     async def response_generator():
 
         print("OpenAI instance creation...")
-        client = OpenAI()
+        client = AsyncOpenAI()
         print("Client created")
         
         print("Initializing assistant...")
         # Initialize the assistant
-        assistant = initialize_assistant(client, university, username, major, minor, year, school)
+        assistant = await initialize_assistant(client, university, username, major, minor, year, school)
         print(f"Assistant initialized with ID: {assistant.id}")
 
         print(f"Retrieving chat history for chat_id: {chat_id}")
@@ -187,7 +187,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         
         print(f"Creating or retrieving existing thread for chat_id: {chat_id}")
         # Create a new thread if necessary, or reuse an existing thread if it exists
-        thread = create_thread(client, chat_id=chat_id, username=username, university=university, )  # Now passing chat_id to create_thread
+        thread = await create_thread(client, chat_id=chat_id, username=username, university=university, )  # Now passing chat_id to create_thread
         print(f"Thread created/retrieved with ID: {thread.id}")
 
         # Convert chat history into messages that can be added to the thread
@@ -209,30 +209,29 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             for past_message in past_messages:
                 role = past_message["role"]  # Could be 'user' or 'assistant'
                 content = past_message["content"]
-                add_message_to_thread(client, thread.id, role, content)
+                await add_message_to_thread(client, thread.id, role, content)
 
 
         print(f"Adding user message to thread {thread.id}: {input_query.message}")
         # Add the current user message to the thread
-        add_user_message(client, thread.id, input_query.message)
+        await add_user_message(client, thread.id, input_query.message)
 
         print(F"THREAD ====== \n\n\n {thread}")
 
         #print("Loading course data...")
         # Load the DataFrame once at the beginning
         #df_expanded = pd.read_csv('student_app/api_assistant/assistant/tools/filter_tool/combined_courses_final.csv')
-        df_expanded=[]
-        #print("Course data loaded.")
 
         print("Starting streaming run...")
         # Use the stream helper to create the run and stream the response
-        stream = client.beta.threads.runs.create(
+        stream = await client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=assistant.id,
             stream=True
         )
-        for event in stream:
-            for data in on_event(client, event, query=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
+        
+        async for event in stream:
+            async for data in on_event(client, event, query=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
                 if data is None:
                     print("Stream has completed.")
                     break

@@ -198,13 +198,13 @@ def get_university_config(university, current_date, username, major, minor, year
 
 
 @timing_decorator
-def initialize_assistant(client, university, username, major, minor, year, school):
+async def initialize_assistant(client, university, username, major, minor, year, school):
     """
     Initializes the assistant based on the university's configuration.
     """
     config = get_university_config(university, current_date, username, major, minor, year, school)
 
-    assistant = client.beta.assistants.create(
+    assistant = await client.beta.assistants.create(
         name=config["name"],
         description=config["description"],
         instructions=config["instructions"],

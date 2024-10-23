@@ -1,6 +1,6 @@
 import json
 import openai
-from openai import AssistantEventHandler
+from openai import AssistantEventHandler, AsyncOpenAI
 from .tools.filter_tool.filter_manager import apply_filters
 from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info, get_sources_json
 from .tools.clarification_tool.clarification_manager import get_clarifying_question_output
@@ -35,25 +35,28 @@ def timing_decorator(func):
 
     
 @timing_decorator
-def on_event(client, event, query, image_bool, university, username, major, minor, year, school):
+async def on_event(client, event, query, image_bool, university, username, major, minor, year, school):
     print(f"ON_EVENT: {event.event}")
     if event.event == 'thread.run.requires_action':
         print("Handling required action event...")
         run_id = event.data.id
         thread_id = event.data.thread_id
-        yield from handle_requires_action(client, event.data, run_id, thread_id,  query, image_bool, university, username, major, minor, year, school)
+        # Use async generator
+        async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+            yield data
 
     elif event.event == 'thread.message.delta':
         delta_text = event.data.delta.content[0].text.value
         print(delta_text, end="", flush=True)
         # Yield delta text directly
         yield delta_text + "|"
+
     elif event.event == 'thread.run.completed':
         print("\nRun completed.")
         yield None  # Indicate completion
 
 @timing_decorator
-def handle_requires_action(client, data, run_id, thread_id,  query, image_bool, university, username, major, minor, year, school):
+async def handle_requires_action(client, data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
     print("Run requires action: Processing tool calls...")  
     tool_outputs = []
     for tool_call in data.required_action.submit_tool_outputs.tool_calls:
@@ -68,9 +71,8 @@ def handle_requires_action(client, data, run_id, thread_id,  query, image_bool, 
 
         if function_name == "get_current_info":
             query = arguments.get('query', '')
-            sources = arguments.get('sources', '')
+            sources = arguments.get('sources', [])
             image_bool = arguments.get('image_bool', False)
-            image_bool = False
 
             text_search = []
             for i, source in enumerate(sources, 1):
@@ -79,9 +81,8 @@ def handle_requires_action(client, data, run_id, thread_id,  query, image_bool, 
 
             yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': text_search})}<ANSWER_WAITING_END>\n" 
 
-            
             try:
-                sources_list = get_sources_json(sources)
+                sources_list = await get_sources_json(sources)  # Ensure async call here
             except json.JSONDecodeError:
                 print("Error decoding JSON. Invalid data received.")
                 sources_list = []
@@ -92,20 +93,20 @@ def handle_requires_action(client, data, run_id, thread_id,  query, image_bool, 
         
 
             if image_bool:
-                image_url = google_image_search(query)
+                image_url = await google_image_search(query)  # Await for async search
                 yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
 
-            output = get_up_to_date_info(query, image_bool, university, username, major, minor, year, school)
+            output = await get_up_to_date_info(query, image_bool, university, username, major, minor, year, school)
             print(f"Current info for query '{query}': {output}") 
 
             tool_outputs.append({
                 "tool_call_id": tool_call.id,
                 "output": output
             })
-        
+
         elif function_name == "ask_clarifying_question":
             print(f"Processing clarifying question with arguments: {arguments}")
-            tool_output = get_clarifying_question_output(arguments)
+            tool_output = await get_clarifying_question_output(arguments)  # Await the clarifying question output
             print(tool_output)
             yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': tool_output})}<ANSWER_TAK_END>\n" 
             tool_outputs.append({
@@ -122,22 +123,22 @@ def handle_requires_action(client, data, run_id, thread_id,  query, image_bool, 
             })
 
     print("Submitted all tool outputs.") 
-    yield from submit_tool_outputs(client, tool_outputs, run_id, thread_id,  query, image_bool, university, username, major, minor, year, school)
-
+    async for data in submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+        yield data
 
 @timing_decorator
-def submit_tool_outputs(client, tool_outputs, run_id, thread_id,  query, image_bool, university, username, major, minor, year, school):
+async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
     print("Submitting tool outputs...")
 
     separation_added = False
 
-    stream = client.beta.threads.runs.submit_tool_outputs(
+    stream = await client.beta.threads.runs.submit_tool_outputs(
         thread_id=thread_id,
         run_id=run_id,
         tool_outputs=tool_outputs,
         stream=True
     )
-    for event in stream:
+    async for event in stream:  # Use async for here to iterate over the stream
         if event.event == "thread.message.delta":
             for block in event.data.delta.content:
                 if block.type == "text" and hasattr(block.text, "value"):
@@ -153,7 +154,8 @@ def submit_tool_outputs(client, tool_outputs, run_id, thread_id,  query, image_b
                     print("No text content found in delta block:", block)
         elif event.event == 'thread.run.requires_action':
             print("Handling required action event during submit_tool_outputs...")
-            handle_requires_action(client, event.data, run_id,  query, image_bool, university, username, major, minor, year, school)
+            async for data in handle_requires_action(client, event.data, run_id, query, image_bool, university, username, major, minor, year, school):
+                yield data
         elif event.event == "thread.run.step.completed":
             print("Step completed")
         elif event.event == "thread.run.completed":
