@@ -29,7 +29,7 @@ def timing_decorator(func):
 
 
 @timing_decorator
-def get_clarifying_question_output(arguments):
+async def get_clarifying_question_output(arguments):
     question = arguments.get('question', '')
     answer_options = arguments.get('answer_options', [])
     tool_output = [{
