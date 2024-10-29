@@ -219,7 +219,7 @@ async def initialize_assistant(client, university, username, major, minor, year,
     Initializes the assistant based on the university's configuration.
     """
     logging.info(f"Initializing assistant for {username} at {university}")
-    current_date = "2024-10-23"  # Example: you might want to pass this dynamically
+    current_date = datetime.now().strftime("%B %d, %Y")
     config = get_university_config(university, current_date, username, major, minor, year, school)
 
     try:

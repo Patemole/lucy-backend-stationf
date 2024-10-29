@@ -68,6 +68,13 @@ async def on_event(client, event, query, image_bool, university, username, major
         elif event.event == 'thread.run.completed':
             logging.info(f"Run completed. for {query}")
             yield None  # Indicate completion
+        elif event.event == 'thread.run.failed':
+            logging.error(f"ON_EVENT Run FAILED for event :{event} for {query}")
+            yield "Oops! We’re experiencing a high volume of activity right now. Please try resending your message in a few moments."
+        elif event.event == 'thread.run.queued ':
+            logging.info(f"ON_EVENT Run QUEUED for event :{event} for {query}")
+        elif event.event == 'thread.run.in_progress ':
+            logging.info(f"ON_EVENT Run IN_PROGRESS for event :{event} for {query}")
         else:
             logging.warning(f"Unhandled event: {event.event} for {query}")
     except Exception as e:
@@ -189,6 +196,13 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
             elif event.event == "thread.message.completed":
                 logging.info("Message completed.")
                 yield None
+            elif event.event == 'thread.run.failed':
+                logging.error(f"SUBMIT_TOOL_OUTPUTS Run FAILED for event :{event} for {query}")
+                yield "Oops! We’re experiencing a high volume of activity right now. Please try resending your message in a few moments."
+            elif event.event == 'thread.run.queued ':
+                logging.info(f"SUBMIT_TOOL_OUTPUTS Run QUEUED for event :{event} for {query}")
+            elif event.event == 'thread.run.in_progress ':
+                logging.info(f"SUBMIT_TOOL_OUTPUTS Run IN_PROGRESS for event :{event} for {query}")
             else:
                 logging.warning(f"Unhandled event: {event.event} for {query}")
     except Exception as e:
