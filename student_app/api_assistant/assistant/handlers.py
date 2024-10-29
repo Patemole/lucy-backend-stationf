@@ -48,9 +48,9 @@ def timing_decorator(func):
 @timing_decorator
 async def on_event(client, event, query, image_bool, university, username, major, minor, year, school):
     try:
-        logging.info(f"ON_EVENT triggered: {event.event}")
+        logging.info(f"ON_EVENT triggered: {event.event} for {query}")
         if event.event == 'thread.run.requires_action':
-            logging.info("Handling required action event...")
+            logging.info(f"Handling required action event... for {query}")
             run_id = event.data.id
             thread_id = event.data.thread_id
             async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
@@ -60,16 +60,18 @@ async def on_event(client, event, query, image_bool, university, username, major
             for block in event.data.delta.content:
                 if block.type == "text" and hasattr(block.text, "value"):
                     delta_text = block.text.value
-                    logging.info(f"Delta text received: {delta_text}")
+                    logging.info(f"Delta text received: {delta_text} for {query}")
                     yield delta_text + "|"
                 else:
-                    logging.warning(f"No text content found or unsupported block type: {block.type}")
+                    logging.warning(f"No text content found or unsupported block type: {block.type} for {query}")
 
         elif event.event == 'thread.run.completed':
-            logging.info("Run completed.")
+            logging.info(f"Run completed. for {query}")
             yield None  # Indicate completion
+        else:
+            logging.warning(f"Unhandled event: {event.event} for {query}")
     except Exception as e:
-        logging.error(f"Error in on_event handler: {str(e)}", exc_info=True)
+        logging.error(f"Error in on_event handler: {str(e)} for {query}", exc_info=True)
         raise
 
 @timing_decorator
@@ -188,7 +190,7 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
                 logging.info("Message completed.")
                 yield None
             else:
-                logging.warning(f"Unhandled event: {event}")
+                logging.warning(f"Unhandled event: {event.event} for {query}")
     except Exception as e:
         logging.error(f"Error in submit_tool_outputs: {str(e)}", exc_info=True)
         raise

@@ -54,22 +54,22 @@ def timing_decorator(func):
 
 
 @timing_decorator
-async def create_thread(client, chat_id, username, university):
+async def create_thread(client, chat_id, username, university, input_message):
     """
     Creates a new thread with a custom thread ID based on the provided chat_id, username, and university.
     """
     try:
-        logging.info(f"Attempting to create a new thread for chat_id: {chat_id}, username: {username}, university: {university}")
+        logging.info(f"Attempting to create a new thread for chat_id: {chat_id}, username: {username}, university: {university} for {input_message}")
         thread = await client.beta.threads.create(
             metadata={
                 "username": username,
                 "university": university
             }
         )
-        logging.info(f"Thread created with ID: {thread.id} for chat ID: {chat_id}")
+        logging.info(f"Thread created with ID: {thread.id} for chat ID: {chat_id} for {input_message}")
         return thread
     except Exception as e:
-        logging.error(f"Error creating thread for chat_id {chat_id}: {str(e)}")
+        logging.error(f"Error creating thread for chat_id {chat_id}: {str(e)} for {input_message}")
         raise
 
 @timing_decorator
@@ -78,7 +78,7 @@ async def add_user_message(client, thread_id, user_query):
     Adds a user message to the specified thread.
     """
     try:
-        logging.info(f"Adding user message to thread {thread_id}")
+        logging.info(f"Adding user message to thread {thread_id} for {user_query}")
         message = await client.beta.threads.messages.create(
             thread_id=thread_id,
             role="user",
@@ -87,7 +87,7 @@ async def add_user_message(client, thread_id, user_query):
         logging.info(f"User message added to thread {thread_id}: {user_query}")
         return message
     except Exception as e:
-        logging.error(f"Error adding user message to thread {thread_id}: {str(e)}")
+        logging.error(f"Error adding user message to thread {thread_id}: {str(e)} for {user_query}")
         raise
 
 @timing_decorator
