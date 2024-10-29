@@ -72,7 +72,7 @@ async def get_up_to_date_info(query, image_bool, university, username, major, mi
     )
 
     payload = {
-        "model": "llama-3.1-sonar-large-128k-online",
+        "model": "llama-3.1-sonar-small-128k-online",
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": query}
