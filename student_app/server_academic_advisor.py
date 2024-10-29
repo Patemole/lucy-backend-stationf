@@ -163,35 +163,35 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     year = input_query.year
     school = input_query.faculty
 
-    logging.info(f"Processing message from {username} at {university}")
+    logging.info(f"Processing message from {username} at {university} for {input_message}")
 
     try:
         await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
-        logging.info("Input message stored successfully")
+        logging.info(f"Input message stored successfully for {input_message}")
     except Exception as e:
-        logging.error(f"Error while storing the input message: {str(e)}")
+        logging.error(f"Error while storing the input message: {str(e)} for {input_message}")
         response.status_code = 500
-        return {"error": "Failed to store input message"}
+        return {"error": f"Failed to store input message for {input_message}"}
 
     # Define the generator function
     @timing_decorator
     async def response_generator():
         try:
-            logging.info("Creating OpenAI client instance...")
+            logging.info(f"Creating OpenAI client instance...for {input_message}")
             client = AsyncOpenAI()
-            logging.info("Client created successfully")
+            logging.info(f"Client created successfully for {input_message}")
 
-            logging.info("Initializing assistant...")
+            logging.info(f"Initializing assistant... for {input_message}")
             assistant = await initialize_assistant(client, university, username, major, minor, year, school)
-            logging.info(f"Assistant initialized with ID: {assistant.id}")
+            logging.info(f"Assistant initialized with ID: {assistant.id} for {input_message}")
 
-            logging.info(f"Retrieving chat history for chat_id: {chat_id}")
+            logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
             history_items = await get_chat_history(chat_id=chat_id)
-            logging.info(f"Retrieved {len(history_items)} history items")
+            logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
 
-            logging.info(f"Creating or retrieving existing thread for chat_id: {chat_id}")
-            thread = await create_thread(client, chat_id=chat_id, username=username, university=university)
-            logging.info(f"Thread created/retrieved with ID: {thread.id}")
+            logging.info(f"Creating or retrieving existing thread for chat_id: {chat_id} for {input_message}")
+            thread = await create_thread(client, chat_id=chat_id, username=username, university=university, input_message=input_message)
+            logging.info(f"Thread created/retrieved with ID: {thread.id} for {input_message}")
 
             past_messages = []
             for item in history_items:
@@ -202,15 +202,17 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 })
 
             if past_messages:
-                logging.info(f"Adding {len(past_messages)} past messages to thread {thread.id}")
+                logging.info(f"Adding {len(past_messages)} past messages to thread {thread.id} for {input_message}")
                 for past_message in past_messages:
                     await add_message_to_thread(client, thread.id, past_message["role"], past_message["content"])
+                logging.info(f"Added completed of {len(past_messages)} past messages to thread {thread.id} for {input_message}")
 
-            logging.info(f"Adding user message to thread {thread.id}: {input_query.message}")
+            logging.info(f"Adding user message to thread {thread.id}: {input_query.message} for {input_message}")
             await add_user_message(client, thread.id, input_query.message)
+            logging.info(f"Added completed user messageto thread {thread.id} for {input_message}")
 
             try:
-                logging.info("Starting streaming run...")
+                logging.info(f"Starting streaming run... for {input_message}")
 
                 # Start the streaming run
                 stream = await client.beta.threads.runs.create(
@@ -219,36 +221,36 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                     stream=True
                 )
 
-                logging.info(f"Streaming run started for thread ID: {thread.id} with assistant ID: {assistant.id}")
+                logging.info(f"Streaming run created and started for thread ID: {thread.id} with assistant ID: {assistant.id} for {input_message}")
 
                 # Process the stream asynchronously
                 async for event in stream:
                     async for data in on_event(client, event, query=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
                         if data is None:
-                            logging.info("Stream has completed.")
+                            logging.info(f"Stream has completed. for {input_message}")
                             break
                         else:
                             yield data
 
             except KeyError as e:
-                logging.error(f"KeyError during streaming run: {str(e)}", exc_info=True)
+                logging.error(f"KeyError during streaming run: {str(e)} for {input_message}", exc_info=True)
                 raise e
 
             except Exception as e:
-                logging.error(f"Error during streaming run: {str(e)}", exc_info=True)
+                logging.error(f"Error during streaming run: {str(e)} for {input_message}", exc_info=True)
                 raise e
 
         except Exception as e:
-            logging.error(f"Error during response generation: {str(e)}")
-            yield {"error": "Error in generating response"}
+            logging.error(f"Error during response generation: {str(e)} for {input_message}")
+            yield {"error": f"Error in generating response for {input_message}"}
 
     try:
-        logging.info("Received request to /send_message_socratic_langgraph")
+        logging.info(f"Received request to /send_message_socratic_langgraph for {input_message}")
         return StreamingResponse(response_generator(), media_type="text/plain")
     except Exception as e:
-        logging.error(f"Error in /send_message_socratic_langgraph: {str(e)}")
+        logging.error(f"Error in /send_message_socratic_langgraph: {str(e)} for {input_message}")
         response.status_code = 500
-        return {"error": "Internal Server Error"}
+        return {"error": f"Internal Server Error for {input_message}"}
 
 
 
