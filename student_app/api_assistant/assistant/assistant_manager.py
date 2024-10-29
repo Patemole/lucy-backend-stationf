@@ -121,7 +121,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                         "properties": {
                             "query": {
                                 "type": "string",
-                                "description": f"The specific information the student is requesting that requires up-to-date data about {university}. If it is relevant to the query, include the student information to only get the information that is relevant to them."
+                                "description": f"The specific information the student is requesting that requires up-to-date data about {university} make the query as detailed as possible. If it is relevant to the query, include the student information to only get the information that is relevant to them."
                             },
                             "image_bool": {
                                 "type": "boolean",
