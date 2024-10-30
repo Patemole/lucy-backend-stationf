@@ -41,7 +41,7 @@ def timing_decorator(func):
         return sync_wrapper
 
 @timing_decorator
-async def get_up_to_date_info(query, image_bool, university, username, major, minor, year, school):
+async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school):
     """
     Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query.
     """
@@ -62,17 +62,21 @@ async def get_up_to_date_info(query, image_bool, university, username, major, mi
             Only research on site:{university}.edu. 
             We are currently in the Fall 2024 semester, and today's date is {current_date}.
 
+            When you are asked about events never mention past events
+
             Student details:
             - Name: {username}
             - School: {school}
             - Year: {year}
             - Majors: {major} (can be undeclared if none)
             - Minors: {minor} (can be undeclared if none)
+            Only mention the informations that are from his school ({school}) and relatable from his year ({year})
         """
     )
+    logging.info(f"Model for perplexity is {model} for {query}")
 
     payload = {
-        "model": "llama-3.1-sonar-small-128k-online",
+        "model": f"llama-3.1-sonar-{model}-128k-online",
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": query}

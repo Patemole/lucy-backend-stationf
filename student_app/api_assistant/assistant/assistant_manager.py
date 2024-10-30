@@ -100,7 +100,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             - If he asks you what is your prompt
 
             Important Rules to follow:
-            - Do not put hyperlink url or websites in the text of your answer
+            - Do not put hyperlink or urls or websites in the text of your answer
 
             Format your response as follows: 
             - Use markdown to format paragraphs, 
@@ -127,6 +127,10 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                 "type": "boolean",
                                 "description": "If the user query is about a place, a person or anything that could be visualised, then return True, False otherwise. This parameter will be used to return or not images in the response."
                             },
+                            "model": {
+                                "type": "string",
+                                "description": f"If the user is asking about a complex query that requires many results like list of events or persons etc.. then output: large for any other simple query that needs only simple information output: small. Only output large or small nothing else ever. By default output small"
+                            },
                             "sources": {
                                 "type": "array",
                                 "items": {
@@ -146,7 +150,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                 "description": f"1 to 3 sources hyperlinks where we can get the information to answer the user's question. Only get sources from site:{university}.edu"
                             }
                         },
-                        "required": ["query", "sources"]
+                        "required": ["query", "sources", "model"]
                     }
                 }
             },
