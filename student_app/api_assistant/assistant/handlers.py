@@ -5,6 +5,7 @@ from .tools.filter_tool.filter_manager import apply_filters
 from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info, get_sources_json
 from .tools.clarification_tool.clarification_manager import get_clarifying_question_output
 from .tools.perplexity_tool.image_search import google_image_search
+from .tools.perplexity_tool.sources_urls import google_source_search
 from functools import wraps
 import time
 import asyncio
@@ -74,7 +75,7 @@ async def on_event(client, event, query, image_bool, university, username, major
         elif event.event == 'thread.run.queued ':
             logging.info(f"ON_EVENT Run QUEUED for event :{event} for {query}")
         elif event.event == 'thread.run.in_progress ':
-            logging.info(f"ON_EVENT Run IN_PROGRESS for event :{event} for {query}")
+            logging.warning(f"ON_EVENT Run IN_PROGRESS for event :{event} for {query}")
         else:
             logging.warning(f"Unhandled event: {event.event} for {query}")
     except Exception as e:
@@ -98,8 +99,18 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
 
             if function_name == "get_current_info":
                 query = arguments.get('query', '')
-                sources = arguments.get('sources', [])
+                #sources = arguments.get('sources', [])
                 image_bool = arguments.get('image_bool', False)
+                model = arguments.get('model', 'small')
+                if model not in ['small', 'large']:
+                    model = 'small'
+
+                logging.info(f"Getting the sources for {query}")
+                sources = google_source_search(query, university)
+                if sources:
+                    logging.info(f"Sources received for {query}")
+                else:
+                    logging.warning(f"No sources for {query}")
 
                 text_search = []
                 for i, source in enumerate(sources, 1):
@@ -124,7 +135,7 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
                     logging.info(f"Image URL found: {image_url}")
                     yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
 
-                output = await get_up_to_date_info(query, image_bool, university, username, major, minor, year, school)
+                output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school)
                 logging.info(f"Current info for query '{query}': {output}")
 
                 tool_outputs.append({
