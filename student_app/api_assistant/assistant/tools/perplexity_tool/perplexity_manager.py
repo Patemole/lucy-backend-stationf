@@ -84,7 +84,11 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
         "max_tokens": 500,
         "stream": False,
         "return_citations": True,
-        "return_related_questions": True
+        "return_related_questions": True,
+        "search_domain_filter": [f"{university}.edu"],
+        "temperature": 0.1,
+        "top_p": 0.1,
+        "frequency_penalty": 1.2
     }
 
     headers = {
