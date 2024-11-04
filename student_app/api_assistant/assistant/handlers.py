@@ -119,6 +119,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                     logging.warning(f"No sources for {input_message}")
 
                 text_search = []
+                print(f"Sources for search sentences: {sources}")
                 for i, source in enumerate(sources, 1):
                     source_name = source.get('name', '')
                     text_search.append({f"Sentence{i}": f"_**[LUCY is searching in {source_name}]**_"})
