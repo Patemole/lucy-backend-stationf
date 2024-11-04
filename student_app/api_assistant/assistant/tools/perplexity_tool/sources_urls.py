@@ -24,6 +24,8 @@ async def google_source_search(query, university, input_message, num_results=3):
     SEARCH_ENGINE_ID = 'c43aac779112b4278'
     url = "https://www.googleapis.com/customsearch/v1"
     
+    if university == "pennstate":
+        university = "psu"
     domain_restricted_query = f"{query} site:{university}.edu"
     print(f"QUERY FOR GOOGLE SEARCH: {domain_restricted_query} for {input_message}")
     
