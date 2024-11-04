@@ -2,12 +2,22 @@ import os
 import json
 from urllib.parse import urlparse
 import httpx  # Async HTTP client
+import logging
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),  # Console output
+        logging.FileHandler("file_server.log")  # Save logs to a file
+    ]
+)
+
 # Async function to search for web sources using Google Custom Search JSON API
-async def google_source_search(query, university, num_results=3):
-    print(f"QUERY FOR GOOGLE SEARCH: {query}")
+async def google_source_search(query, university, input_message, num_results=3):
     
     # Google Custom Search API details
     API_KEY = GOOGLE_API_KEY
@@ -15,6 +25,7 @@ async def google_source_search(query, university, num_results=3):
     url = "https://www.googleapis.com/customsearch/v1"
     
     domain_restricted_query = f"{query} site:{university}.edu"
+    print(f"QUERY FOR GOOGLE SEARCH: {domain_restricted_query} for {input_message}")
     
     # Search parameters
     params = {
@@ -58,9 +69,11 @@ async def google_source_search(query, university, num_results=3):
                 }
                 source_results.append(result)
             
+            logging.info(f"GOOGLE_SOUCRSE_SEARCH successfull for {source_results} for {input_message}")
             return source_results
         
         else:
-            return "No sources found"
+            logging.warning(f"GOOGLE_SOUCRSE_SEARCH not successful for {input_message}")
+            return []
     else:
-        return f"Error: {response.status_code}, {response.text}"
+        return f"Error: {response.status_code}, {response.text} for {input_message}"

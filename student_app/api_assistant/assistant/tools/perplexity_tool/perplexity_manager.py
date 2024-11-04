@@ -41,16 +41,16 @@ def timing_decorator(func):
         return sync_wrapper
 
 @timing_decorator
-async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school):
+async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message):
     """
     Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query.
     """
-    logging.info(f"Retrieving up-to-date info for query: {query} from university: {university}")
+    logging.info(f"Retrieving up-to-date info for query: {query} from university: {university} for {input_message}")
     
     PPLX_API_KEY = os.getenv('PPLX_API_KEY')
 
     if not PPLX_API_KEY:
-        logging.error("Perplexity API key not found.")
+        logging.error(f"Perplexity API key not found. for {input_message}")
         return "Error: Perplexity API key not found."
 
     url = "https://api.perplexity.ai/chat/completions"  # Replace with the actual Perplexity API endpoint
@@ -73,7 +73,7 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
             Only mention the informations that are from his school ({school}) and relatable from his year ({year})
         """
     )
-    logging.info(f"Model for perplexity is {model} for {query}")
+    logging.info(f"Model for perplexity is {model} for {input_message}")
 
     payload = {
         "model": f"llama-3.1-sonar-{model}-128k-online",
@@ -98,24 +98,24 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
     }
 
     try:
-        logging.info(f"Sending request to Perplexity API for query: {query}")
+        logging.info(f"Sending request to Perplexity API for query: {input_message}")
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=payload, headers=headers) as response:
                 if response.status == 200:
                     data = await response.json()
                     content = data['choices'][0]['message']['content']
-                    logging.info("Data successfully retrieved from Perplexity API.")
+                    logging.info(f"Data successfully retrieved from Perplexity API. for {input_message}")
                     return content
                 else:
-                    logging.error(f"Error: {response.status}")
+                    logging.error(f"Error: {response.status} for {input_message}")
                     error_message = await response.text()
-                    logging.error(f"API Error response: {error_message}")
+                    logging.error(f"API Error response: {error_message} for {input_message}")
                     return f"Error: {response.status} - {error_message}"
     except Exception as e:
-        logging.error(f"Error retrieving information from Perplexity API: {str(e)}")
+        logging.error(f"Error retrieving information from Perplexity API: {str(e)} for {input_message}")
         return f"Error retrieving information: {str(e)}"
 
-def get_sources_json(sources):
+def get_sources_json(sources, input_message):
     """
     Generates a list of sources in the specified format.
 
@@ -125,7 +125,7 @@ def get_sources_json(sources):
     Returns:
     - list: A list of dictionaries in the required output format.
     """
-    logging.info("Generating sources JSON.")
+    logging.info(f"Generating sources JSON. for {input_message}")
     tool_output = []
 
     for source in sources:
@@ -138,5 +138,5 @@ def get_sources_json(sources):
             }
         })
     
-    logging.info(f"Generated {len(tool_output)} sources.")
+    logging.info(f"Generated {len(tool_output)} sources. for {input_message}")
     return tool_output

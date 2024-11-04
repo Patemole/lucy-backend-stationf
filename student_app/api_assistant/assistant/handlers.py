@@ -47,43 +47,43 @@ def timing_decorator(func):
 
 
 @timing_decorator
-async def on_event(client, event, query, image_bool, university, username, major, minor, year, school):
+async def on_event(client, event, input_message, image_bool, university, username, major, minor, year, school):
     try:
-        logging.info(f"ON_EVENT triggered: {event.event} for {query}")
+        logging.info(f"ON_EVENT triggered: {event.event} for {input_message}")
         if event.event == 'thread.run.requires_action':
-            logging.info(f"Handling required action event... for {query}")
+            logging.info(f"Handling required action event... for {input_message}")
             run_id = event.data.id
             thread_id = event.data.thread_id
-            async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+            async for data in handle_requires_action(client, event.data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
                 yield data
 
         elif event.event == 'thread.message.delta':
             for block in event.data.delta.content:
                 if block.type == "text" and hasattr(block.text, "value"):
                     delta_text = block.text.value
-                    logging.info(f"Delta text received: {delta_text} for {query}")
+                    logging.info(f"Delta text received: {delta_text} for {input_message}")
                     yield delta_text + "|"
                 else:
-                    logging.warning(f"No text content found or unsupported block type: {block.type} for {query}")
+                    logging.warning(f"No text content found or unsupported block type: {block.type} for {input_message}")
 
         elif event.event == 'thread.run.completed':
-            logging.info(f"Run completed. for {query}")
+            logging.info(f"Run completed. for {input_message}")
             yield None  # Indicate completion
         elif event.event == 'thread.run.failed':
-            logging.error(f"ON_EVENT Run FAILED for event :{event} for {query}")
+            logging.error(f"ON_EVENT Run FAILED for event :{event} for {input_message}")
             yield "Oops! We’re experiencing a high volume of activity right now. Please try resending your message in a few moments."
         elif event.event == 'thread.run.queued ':
-            logging.info(f"ON_EVENT Run QUEUED for event :{event} for {query}")
+            logging.info(f"ON_EVENT Run QUEUED for event :{event} for {input_message}")
         elif event.event == 'thread.run.in_progress ':
-            logging.warning(f"ON_EVENT Run IN_PROGRESS for event :{event} for {query}")
+            logging.warning(f"ON_EVENT Run IN_PROGRESS for event :{event} for {input_message}")
         else:
-            logging.warning(f"Unhandled event: {event.event} for {query}")
+            logging.warning(f"Unhandled event: {event.event} for {input_message}")
     except Exception as e:
-        logging.error(f"Error in on_event handler: {str(e)} for {query}", exc_info=True)
+        logging.error(f"Error in on_event handler: {str(e)} for {input_message}", exc_info=True)
         raise
 
 @timing_decorator
-async def handle_requires_action(client, data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+async def handle_requires_action(client, data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
     try:
         logging.info("Run requires action: Processing tool calls...")
         tool_outputs = []
@@ -108,45 +108,42 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
                 #Yielding the reosoning steps
                 reasoning_steps = arguments.get('reasoning_steps', '')
                 structured_reasoning = {"reasoning_steps": [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]}
-                reason = json.dumps(structured_reasoning, indent=2)
-                logging.info(f"reasoning_steps {reason} for {query}")
-                #yield f"\n<REASONING_STEPS>{reason}<REASONING_STEPS_END>\n"
+                #yield f"\n<REASONING_STEPS>{json.dumps({'structured_reasoning': structured_reasoning})}<REASONING_STEPS_END>\n"
+                logging.info(f"reasoning_steps yield {structured_reasoning} for {input_message}")
 
-                logging.info(f"Getting the sources for {query}")
-                #sources = google_source_search(query, university)
-                logging.info(f"Creating Google task for {query}")
-                
-                sources = await google_source_search(query, university)
+                logging.info(f"Getting the sources for {input_message}")
+                sources = await google_source_search(query, university, input_message)
                 if sources:
-                    logging.info(f"Sources received for {query}")
+                    logging.info(f"Sources received for {input_message}")
                 else:
-                    logging.warning(f"No sources for {query}")
+                    logging.warning(f"No sources for {input_message}")
 
                 text_search = []
                 for i, source in enumerate(sources, 1):
                     source_name = source.get('name', '')
                     text_search.append({f"Sentence{i}": f"_**[LUCY is searching in {source_name}]**_"})
 
+                logging.info(f"Yielding lucy searching sentence {text_search} for {input_message}")
                 yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': text_search})}<ANSWER_WAITING_END>\n"
 
                 try:
-                    sources_list = get_sources_json(sources)  # Ensure async call here
+                    sources_list = get_sources_json(sources, input_message)  # Ensure async call here
                 except json.JSONDecodeError:
-                    logging.error("Error decoding JSON. Invalid data received.")
+                    logging.error(f"Error decoding JSON. Invalid data received. for {input_message}")
                     sources_list = []
 
                 for source in sources_list:
-                    logging.info(f"Sending JSON document to client: {source}")
+                    logging.info(f"Sending Source to client: {source} for {input_message}")
                     yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
 
                 image_bool = False  # TODO: Change this when we have images
                 if image_bool:
-                    image_url = await google_image_search(query)  # Await for async search
-                    logging.info(f"Image URL found: {image_url}")
+                    image_url = await google_image_search(query, input_message)  # Await for async search
+                    logging.info(f"Image URL found: {image_url} for {input_message}")
                     yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
 
-                output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school)
-                logging.info(f"Current info for query '{query}': {output}")
+                output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
+                logging.info(f"Current info for query {query} : {output} for '{input_message}'")
 
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
@@ -155,8 +152,8 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
 
             elif function_name == "ask_clarifying_question":
                 logging.info(f"Processing clarifying question with arguments: {arguments}")
-                tool_output = get_clarifying_question_output(arguments)
-                logging.info(f"Clarifying question output: {tool_output}")
+                tool_output = get_clarifying_question_output(arguments, input_message)
+                logging.info(f"Clarifying question output: {tool_output} ")
                 yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': tool_output})}<ANSWER_TAK_END>\n"
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
@@ -164,10 +161,12 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
                 })
             
             elif function_name == "redirection_to_agent":
-                logging.info(f"Processing redirection to agent: {arguments}")
+                logging.info(f"Processing redirection to agent: {arguments} for {input_message}")
                 query = arguments.get('query', '')
                 query = "Give me the most specific contacts information (person, email, location, phone number) for the query:" + query
-                #yield f"\n<CONTACT_REDIRECTION>{json.dumps('Searching the right contact info to connect to an agent')}<CONTACT_REDIRECTION_END>\n"
+                logging.info(f"Yielding answer waiting for redirection to agent for {input_message}")
+                #yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': 'Searching the right contact info to connect to an agent'})}<ANSWER_WAITING_END>\n"
+
                 output = await get_up_to_date_info(
                     query, 
                     image_bool=False, 
@@ -177,9 +176,10 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
                     major=major, 
                     minor=minor, 
                     year=year, 
-                    school=school
+                    school=school,
+                    input_message=input_message
                 )
-                logging.info(f"Getting right contact info for '{query}': {output}")
+                logging.info(f"Getting right contact info for '{input_message}': {output}")
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
                     "output": output
@@ -193,17 +193,17 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
                     "output": output
                 })
 
-        logging.info("Submitted all tool outputs.")
-        async for data in submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+        logging.info(f"Submitted all tool outputs. for {input_message}")
+        async for data in submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message):
             yield data
     except Exception as e:
-        logging.error(f"Error in handle_requires_action: {str(e)}", exc_info=True)
+        logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
         raise
 
 @timing_decorator
-async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school):
+async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message):
     try:
-        logging.info("Submitting tool outputs...")
+        logging.info(f"Submitting tool outputs... for {input_message}")
         separation_added = False
 
         stream = await client.beta.threads.runs.submit_tool_outputs(
@@ -222,32 +222,32 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
                             yield "\n\n\n\n"
                             separation_added = True
 
-                        logging.info(f"Delta text from submit_tool_outputs: {delta_text}")
+                        logging.info(f"Delta text from submit_tool_outputs: {delta_text} for {input_message}")
                         yield delta_text + "|"
                     else:
-                        logging.warning("No text content found in delta block:", block)
+                        logging.warning(f"No text content found in delta block: for {input_message}", block)
 
             elif event.event == 'thread.run.requires_action':
-                logging.info("Handling required action event during submit_tool_outputs...")
-                async for data in handle_requires_action(client, event.data, run_id, query, image_bool, university, username, major, minor, year, school):
+                logging.info(f"Handling required action event during submit_tool_outputs... for {input_message}")
+                async for data in handle_requires_action(client, event.data, run_id, input_message, image_bool, university, username, major, minor, year, school):
                     yield data
 
             elif event.event == "thread.run.step.completed":
-                logging.info("Step completed.")
+                logging.info(f"Step completed. for {input_message}")
             elif event.event == "thread.run.completed":
-                logging.info("Run completed.")
+                logging.info(f"Run completed. for {input_message}")
             elif event.event == "thread.message.completed":
-                logging.info("Message completed.")
+                logging.info(f"Message completed. for {input_message}")
                 yield None
             elif event.event == 'thread.run.failed':
-                logging.error(f"SUBMIT_TOOL_OUTPUTS Run FAILED for event :{event} for {query}")
+                logging.error(f"SUBMIT_TOOL_OUTPUTS Run FAILED for event :{event} for {input_message}")
                 yield "Oops! We’re experiencing a high volume of activity right now. Please try resending your message in a few moments."
             elif event.event == 'thread.run.queued ':
-                logging.info(f"SUBMIT_TOOL_OUTPUTS Run QUEUED for event :{event} for {query}")
+                logging.info(f"SUBMIT_TOOL_OUTPUTS Run QUEUED for event :{event} for {input_message}")
             elif event.event == 'thread.run.in_progress ':
-                logging.info(f"SUBMIT_TOOL_OUTPUTS Run IN_PROGRESS for event :{event} for {query}")
+                logging.info(f"SUBMIT_TOOL_OUTPUTS Run IN_PROGRESS for event :{event} for {input_message}")
             else:
-                logging.warning(f"Unhandled event: {event.event} for {query}")
+                logging.warning(f"Unhandled event: {event.event} for {input_message}")
     except Exception as e:
         logging.error(f"Error in submit_tool_outputs: {str(e)}", exc_info=True)
         raise

@@ -1,12 +1,23 @@
 import requests
 import os
 import json
+import logging
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),  # Console output
+        logging.FileHandler("file_server.log")  # Save logs to a file
+    ]
+)
+
 
 # Function to search for images using Google Custom Search JSON API and save locally
-def google_image_search(query, num_images=3):
+def google_image_search(query, input_message, num_images=3):
     # Your Google Custom Search API key
     API_KEY = GOOGLE_API_KEY
     
@@ -66,10 +77,13 @@ def google_image_search(query, num_images=3):
                     "image_description": ""  # Fixed value
                 }
                 image_results.append(result)
-                
+
+            logging.info(f"Image URL found: {image_results} for {input_message}")
             return image_results  # Return the list of JSON objects as a JSON string
         
         else:
-            return "No images found"
+            logging.warning(f"Image URL not found for {input_message}")
+            return []
     else:
+        logging.error(f"Image URL found: {image_url} for {input_message}")
         return f"Error: {response.status_code}, {response.text}"
