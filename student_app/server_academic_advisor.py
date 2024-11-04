@@ -225,7 +225,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
                 # Process the stream asynchronously
                 async for event in stream:
-                    async for data in on_event(client, event, query=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
+                    async for data in on_event(client, event, input_message=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
                         if data is None:
                             logging.info(f"Stream has completed. for {input_message}")
                             break

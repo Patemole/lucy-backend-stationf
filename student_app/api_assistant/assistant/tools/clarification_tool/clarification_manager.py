@@ -29,9 +29,10 @@ def timing_decorator(func):
 
 
 @timing_decorator
-def get_clarifying_question_output(arguments):
+def get_clarifying_question_output(arguments, input_message):
     question = arguments.get('question', '')
     answer_options = arguments.get('answer_options', [])
+    logging.info(f"get_clarifying_question_output for '{input_message}'")
     tool_output = [{
         "document_id": "4",
         "question": question,
