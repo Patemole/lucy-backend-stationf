@@ -77,7 +77,11 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             For general questions, provide ultra-specific answers directly without calling the function.
             
             If the question is too broad or is missing context to answer properly then call ask_clarifying_question to get clarification from the user.
+
+            If the user ask or needs to be put in contact with a real agent, an office or a service call redirection_to_agent to redirect him to the right place
             
+            When the student ask or when needed, for complex queries or when the conversation is redundant or the student seems confused, ask the student if he wished to be put in contact with an real Agent from {university}
+
             You should act as the student's best friend, talk to him as you knew him for 20 years and use emojis. 
 
             information about the student:
@@ -101,6 +105,8 @@ def get_common_config(university, current_date, username, major, minor, year, sc
 
             Important Rules to follow:
             - Do not put hyperlink or urls or websites in the text of your answer
+            - Never answer questions not related to univeristy questions 
+            - If the question is not in the field of university redirect the students 
 
             Format your response as follows: 
             - Use markdown to format paragraphs, 
@@ -115,42 +121,32 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 "type": "function",
                 "function": {
                     "name": "get_current_info",
-                    "description": (f"Retrieves up-to-date information based on the student's query about {university}. "),
+                    "description": (f"Retrieves up-to-date information based on the student's query about {university}."),
                     "parameters": {
                         "type": "object",
                         "properties": {
                             "query": {
                                 "type": "string",
-                                "description": f"The specific information the student is requesting that requires up-to-date data about {university} make the query as detailed as possible. If it is relevant to the query, include the student information to only get the information that is relevant to them."
+                                "description": f"The specific information the student is requesting that requires up-to-date data about {university}. Make the query as detailed as possible. If it is relevant to the query, include the student information to only get the information that is relevant to them."
                             },
                             "image_bool": {
                                 "type": "boolean",
-                                "description": "If the user query is about a place, a person or anything that could be visualised, then return True, False otherwise. This parameter will be used to return or not images in the response."
+                                "description": "If the user query is about a place, a person or anything that could be visualized, then return True; False otherwise. This parameter will be used to return or not images in the response."
                             },
                             "model": {
                                 "type": "string",
-                                "description": f"If the user is asking about a complex query that requires many results like list of events or persons etc.. then output: large for any other simple query that needs only simple information output: small. Only output large or small nothing else ever. By default output small"
+                                "description": f"If the user is asking about a complex query that requires many results like a list of events or persons, etc., then output: large. For any other simple query that needs only simple information, output: small. Only output 'large' or 'small', nothing else ever. By default, output 'small'."
                             },
-                            "sources": {
+                            "reasoning_steps": {
                                 "type": "array",
                                 "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "url": {
-                                            "type": "string",
-                                            "description": "The hyperlink URL to the source where the information is available to answer the student query, you should never invent URL."
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "description": "The name of the source."
-                                        }
-                                    },
-                                    "required": ["url", "name"]
+                                    "type": "string",
+                                    "description": "Each entry is a step in the reasoning process, detailing the approach to answering the query, including relevant filtering, checking for accuracy, and handling complex queries as needed."
                                 },
-                                "description": f"1 to 3 sources hyperlinks where we can get the information to answer the user's question. Only get sources from site:{university}.edu"
+                                "description": "An array of 2 to 4 steps outlining the reasoning process for addressing the user's query, shown to the user as an intermediate step before the final answer."
                             }
                         },
-                        "required": ["query", "sources", "model"]
+                        "required": ["query", "model", "image_bool", "reasoning_steps"]
                     }
                 }
             },
@@ -173,6 +169,23 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                             }
                         },
                         "required": ["question", "answer_options"]
+                    }
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "redirection_to_agent",
+                    "description": "The students wants to be put in contact with a real agent or an office or a service",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": "The user needs to be put in contact with an office or a person, we need a query that ask for the correct service giving the user question"
+                            }
+                        },
+                        "required": ["query"]
                     }
                 }
             }

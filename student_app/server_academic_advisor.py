@@ -377,23 +377,10 @@ def split_preserving_formatting(text):
     return chunks
 
 
-
 @app.post("/send_message_fake_demo")
 async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     # Method for assistant API call 
-    """
-    Endpoint to handle user messages, interact with the AI assistant, and return appropriate responses.
     
-    - If the assistant invokes a function (e.g., `get_filters`), apply the filter and return the filtered JSON.
-    - If no function is invoked, return the assistant's textual response.
-    
-    Args:
-        request (Request): The incoming HTTP request.
-        input_query (Dict): The JSON payload containing the user's message.
-    
-    Returns:
-        StreamingResponse: The assistant's response, either as JSON or plain text.
-    """
     input_message = input_query.get("message")
     if not input_message:
         raise HTTPException(status_code=400, detail="Message is required.")
@@ -406,10 +393,169 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     await asyncio.sleep(2)
 
+
+    '''
+    # Définition des associations de réponses graphiques
+    answer_chart_associations: Dict[str, List[Dict]] = {
+        "Show me some statistics": [
+            {
+                "answer_chart": {
+                    "chartType": "bar",
+                    "chartTitle": "Enrollment Statistics",
+                    "xAxisTitle": "Courses",
+                    "yAxisTitle": "Number of Students",
+                    "data": [
+                        {"label": "CIS 2400", "x": 1, "y": 120},
+                        {"label": "CIS 5020", "x": 2, "y": 85},
+                        {"label": "CIS 1210", "x": 3, "y": 200},
+                        {"label": "ESE 3060", "x": 4, "y": 60},
+                    ]
+                }
+            }
+        ],
+        "What are the current student performance metrics?": [
+            {
+                "answer_chart": {
+                    "chartType": "pie",
+                    "chartTitle": "Student Performance Metrics",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "data": [
+                        {"label": "Excellent", "x": 0, "y": 40},
+                        {"label": "Good", "x": 0, "y": 35},
+                        {"label": "Average", "x": 0, "y": 15},
+                        {"label": "Below Average", "x": 0, "y": 10},
+                    ]
+                }
+            }
+        ],
+        "What is the distribution of student majors?": [
+            {
+                "answer_chart": {
+                    "chartType": "pie",
+                    "chartTitle": "Distribution of Student Majors",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "data": [
+                        {"label": "Computer Science", "x": 0, "y": 25},
+                        {"label": "Engineering", "x": 0, "y": 20},
+                        {"label": "Business", "x": 0, "y": 30},
+                        {"label": "Humanities", "x": 0, "y": 15},
+                        {"label": "Sciences", "x": 0, "y": 10},
+                    ]
+                }
+            }
+        ],
+        "How has the enrollment trend changed over the years?": [
+            {
+                "answer_chart": {
+                    "chartType": "line",
+                    "chartTitle": "Enrollment Trend Over Years",
+                    "xAxisTitle": "Year",
+                    "yAxisTitle": "Number of Students",
+                    "data": [
+                        {"label": "2018", "x": 2018, "y": 1800},
+                        {"label": "2019", "x": 2019, "y": 1900},
+                        {"label": "2020", "x": 2020, "y": 1750},
+                        {"label": "2021", "x": 2021, "y": 2100},
+                        {"label": "2022", "x": 2022, "y": 2200},
+                    ]
+                }
+            }
+        ],
+        "Show the graduation rates by department": [
+            {
+                "answer_chart": {
+                    "chartType": "bar",
+                    "chartTitle": "Graduation Rates by Department",
+                    "xAxisTitle": "Departments",
+                    "yAxisTitle": "Graduation Rate (%)",
+                    "data": [
+                        {"label": "Computer Science", "x": 1, "y": 88},
+                        {"label": "Engineering", "x": 2, "y": 76},
+                        {"label": "Business", "x": 3, "y": 84},
+                        {"label": "Humanities", "x": 4, "y": 90},
+                        {"label": "Sciences", "x": 5, "y": 72},
+                    ]
+                }
+            }
+        ],
+        "How is the GPA distribution across different years?": [
+            {
+                "answer_chart": {
+                    "chartType": "line",
+                    "chartTitle": "GPA Distribution Over the Years",
+                    "xAxisTitle": "Year",
+                    "yAxisTitle": "Average GPA",
+                    "data": [
+                        {"label": "2018", "x": 2018, "y": 3.2},
+                        {"label": "2019", "x": 2019, "y": 3.3},
+                        {"label": "2020", "x": 2020, "y": 3.25},
+                        {"label": "2021", "x": 2021, "y": 3.35},
+                        {"label": "2022", "x": 2022, "y": 3.4},
+                    ]
+                }
+            }
+        ],
+        "What are the monthly expenses in different departments?": [
+            {
+                "answer_chart": {
+                    "chartType": "column",
+                    "chartTitle": "Monthly Departmental Expenses",
+                    "xAxisTitle": "Departments",
+                    "yAxisTitle": "Expense ($)",
+                    "data": [
+                        {"label": "Computer Science", "x": 1, "y": 50000},
+                        {"label": "Engineering", "x": 2, "y": 75000},
+                        {"label": "Business", "x": 3, "y": 40000},
+                        {"label": "Humanities", "x": 4, "y": 30000},
+                        {"label": "Sciences", "x": 5, "y": 60000},
+                    ]
+                }
+            }
+        ],
+        "Show the scholarship allocation by student category": [
+            {
+                "answer_chart": {
+                    "chartType": "doughnut",
+                    "chartTitle": "Scholarship Allocation by Student Category",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "data": [
+                        {"label": "Merit-based", "x": 0, "y": 55},
+                        {"label": "Need-based", "x": 0, "y": 30},
+                        {"label": "Athletic", "x": 0, "y": 10},
+                        {"label": "Diversity", "x": 0, "y": 5},
+                    ]
+                }
+            }
+        ],
+        "What are the current retention rates?": [
+            {
+                "answer_chart": {
+                    "chartType": "bar",
+                    "chartTitle": "Student Retention Rates by Year",
+                    "xAxisTitle": "Year",
+                    "yAxisTitle": "Retention Rate (%)",
+                    "data": [
+                        {"label": "2019", "x": 2019, "y": 85},
+                        {"label": "2020", "x": 2020, "y": 87},
+                        {"label": "2021", "x": 2021, "y": 82},
+                        {"label": "2022", "x": 2022, "y": 90},
+                    ]
+                }
+            }
+        ]
+    }
+    '''
+
     # Known responses with line breaks and bullet points
+    '''
     known_responses: Dict[str, str] = {
         "Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
         "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let’s get started.""",
+        "Show me some statistics": """Here are some enrollment statistics for your courses:""",  # Placeholder response for the chart
+        "What are the current student performance metrics?": """Here are the current student performance metrics:""",
         "4": """Great! And how many of those classes have you already decided on?""",
         "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
         "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
@@ -418,6 +564,40 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         "Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
         "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
     }
+    '''
+
+    known_responses: Dict[str, str] = {
+"Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
+"I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let’s get started.""",
+"Show me some statistics": """Here are some enrollment statistics for your courses:\n\n- **CIS 2400**: **120 students enrolled**\n- **CIS 5020**: **85 students enrolled**\n- **CIS 1210**: **200 students enrolled**\n- **ESE 3060**: **60 students enrolled**\n\nThe most popular course this semester is **CIS 1210** with **200 students**, indicating strong interest in foundational topics.""",
+"Compare course enrollment trends": """Here is a comparison of course enrollment statistics between 2022 and 2023:\n\n- **CIS 2400**: 2022 - **120 students**, 2023 - **130 students** (Increase of 8.3%)\n- **CIS 5020**: 2022 - **85 students**, 2023 - **90 students** (Increase of 5.9%)\n- **CIS 1210**: 2022 - **200 students**, 2023 - **210 students** (Increase of 5.0%)\n- **ESE 3060**: 2022 - **60 students**, 2023 - **65 students** (Increase of 8.3%)\n\nThe data shows a consistent increase in enrollment across all courses from 2022 to 2023. **CIS 1210** remains the most popular course with the highest number of enrollments, indicating sustained strong interest in this foundational subject.""",
+"What are the current student performance metrics?": """Here are the current student performance metrics:\n\n- **40%** of students are performing at an **Excellent** level.\n- **35%** are rated as **Good**.\n- **15%** are in the **Average** category.\n- **10%** fall below average.\n\n**Actionable Insight**: A significant portion of students (40%) are excelling, showing strong academic engagement across core subjects.""",
+"What is the distribution of student majors?": """The distribution of majors among students is as follows:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: The largest proportion of students, **30%**, are majoring in Business, suggesting a trend towards business-related fields.""",
+"How has the enrollment trend changed over the years?": """Here’s a look at the enrollment trends over the past years:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\nEnrollment has steadily increased, with a **22% rise since 2018** and a particularly strong recovery after 2020.""",
+"What is the retention rate by department?": """Here’s the retention rate by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Insight**: The highest retention rate is in **Humanities** at **90%**, while **Sciences** show the lowest at **72%**. Focus on targeted retention programs in Sciences could improve these numbers.""",
+"What is the department budget allocation?": """Here’s the current budget allocation by department:\n\n- **Computer Science**: **80%** utilized\n- **Engineering**: **95%** utilized\n- **Business**: **60%** utilized\n- **Humanities**: **70%** utilized\n- **Sciences**: **85%** utilized\n\n**Actionable Insight**: Engineering has the highest budget utilization at **95%**, while Business has unutilized funds. Allocating funds more effectively could improve resource availability in areas with higher utilization.""",
+"What is the enrollment trend over years?": """Here’s the enrollment trend by year:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\n**Trend**: Enrollment shows consistent growth, especially after the recovery period in 2020, with a **22% increase since 2018**.""",
+"Show the graduation rates by department": """Here’s a breakdown of graduation rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\nThe **Humanities** department has the highest graduation rate at **90%**, while **Sciences** have the lowest at **72%**.""",
+"How is the GPA distribution across different years?": """Here’s the GPA trend over recent years:\n\n- **2018**: Average GPA of **3.2**\n- **2019**: Average GPA of **3.3**\n- **2020**: Average GPA of **3.25**\n- **2021**: Average GPA of **3.35**\n- **2022**: Average GPA of **3.4**\n\nGPAs have shown a **gradual increase** over the years, with students consistently improving performance.""",
+"What are the monthly expenses in different departments?": """Monthly expenses across departments are as follows:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\nThe **Engineering** department has the highest expenses at **$75,000 per month**.""",
+"Show the scholarship allocation by student category": """Here’s how scholarships are allocated:\n\n- **Merit-based**: **55%**\n- **Need-based**: **30%**\n- **Athletic**: **10%**\n- **Diversity**: **5%**\n\n**Merit-based scholarships** form the largest category, comprising **55%** of the total scholarship allocation.""",
+"What is the distribution of majors?": """Here’s the breakdown of majors across students:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: Business leads as the most popular major with **30%** of students.""",
+"What is the student retention rate by department?": """Here are the student retention rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Actionable Insight**: Retention is lowest in the Sciences department at **72%**. Focused support for science students could boost these rates.""",
+"What are the student scores by course?": """Here’s the distribution of average scores by course:\n\n- **CIS 2400**: **85%**\n- **CIS 5020**: **90%**\n- **CIS 1210**: **78%**\n- **ESE 3060**: **82%**\n\n**Insight**: CIS 5020 shows the highest average score, indicating strong student performance in this advanced course.""",
+"What is the distribution of scores by course?": """Here’s the score distribution by course:\n\n- **CIS 2400**: Range [65, 75, 80, 85, 95]\n- **CIS 5020**: Range [70, 80, 85, 90, 100]\n- **CIS 1210**: Range [60, 70, 75, 78, 85]\n- **ESE 3060**: Range [50, 65, 72, 80, 90]\n\n**Actionable Insight**: CIS 5020 has a higher top range, showcasing challenging assessments and high achievers.""",
+"Show the monthly expenses by department": """Here’s a breakdown of monthly expenses by department:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\n**Insight**: Engineering has the highest expense, suggesting substantial investments in lab resources and equipment.""",
+"What is the impact of extra-curricular activities on grades?": """Here’s the impact of extra-curricular hours on GPA:\n\n- **Student A**: 5 hours - **GPA 3.5**\n- **Student B**: 10 hours - **GPA 3.2**\n- **Student C**: 15 hours - **GPA 3.7**\n- **Student D**: 20 hours - **GPA 3.0**\n\n**Insight**: Moderate participation (10-15 hours) correlates with higher GPAs, balancing activities with academics effectively.""",
+"How does faculty feedback vary by department?": """Here’s how faculty feedback varies:\n\n- **Computer Science**: **+15** points\n- **Engineering**: **-5** points\n- **Business**: **+10** points\n- **Humanities**: **+8** points\n- **Sciences**: **-3** points\n\n**Insight**: Engineering shows a slight negative trend, while Business has highly positive feedback, reflecting effective instructional practices as you can see on graph 4.""",
+"What are the current retention rates?": """Here are the student retention rates by year:\n\n- **2019**: **85%**\n- **2020**: **87%**\n- **2021**: **82%**\n- **2022**: **90%**\n\nRetention rates reached a high of **90%** in 2022, reflecting improved support and engagement initiatives.""",
+"4": """Great! And how many of those classes have you already decided on?""",
+"I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
+"I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
+"Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
+"CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020, please find below details on Dr. Hammish's Office Hours:""",
+"Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for workload, but you will complete several degree requirements.\n\nYou can register for your classes on PATH@PENN:""",
+"That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!"""
+}
+
 
     # Dictionary to associate specific documents with certain questions/responses
     document_associations: Dict[str, List[Dict]] = {
@@ -548,6 +728,589 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         ]
     }
 
+    ''' WITH OLD INTERFACE WITH NO MULTIPLE SERIES
+    answer_chart_associations: Dict[str, List[Dict]] = {
+        "Show me some statistics": [
+            {
+                "answer_chart": {
+                    "chartType": "bar",
+                    "chartTitle": "Enrollment Statistics",
+                    "xAxisTitle": "Courses",
+                    "yAxisTitle": "Number of Students",
+                    "data": [
+                        {"label": "CIS 2400", "x": 1, "y": 120},
+                        {"label": "CIS 5020", "x": 2, "y": 85},
+                        {"label": "CIS 1210", "x": 3, "y": 200},
+                        {"label": "ESE 3060", "x": 4, "y": 60},
+                    ]
+                }
+            }
+        ],
+        "What are the current student performance metrics?": [
+            {
+                "answer_chart": {
+                    "chartType": "pie",
+                    "chartTitle": "Student Performance Metrics",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "data": [
+                        {"label": "Excellent", "x": 0, "y": 40},
+                        {"label": "Good", "x": 0, "y": 35},
+                        {"label": "Average", "x": 0, "y": 15},
+                        {"label": "Below Average", "x": 0, "y": 10},
+                    ]
+                }
+            }
+        ],
+        "What is the enrollment trend over years?": [
+            {
+                "answer_chart": {
+                    "chartType": "line",
+                    "chartTitle": "Enrollment Trend Over Years",
+                    "xAxisTitle": "Year",
+                    "yAxisTitle": "Number of Students",
+                    "data": [
+                        {"label": "2018", "x": 2018, "y": 1800},
+                        {"label": "2019", "x": 2019, "y": 1900},
+                        {"label": "2020", "x": 2020, "y": 1750},
+                        {"label": "2021", "x": 2021, "y": 2100},
+                        {"label": "2022", "x": 2022, "y": 2200},
+                    ]
+                }
+            }
+        ],
+        "What is the retention rate by department?": [
+            {
+                "answer_chart": {
+                    "chartType": "pyramid",
+                    "chartTitle": "Student Retention Rate by Department",
+                    "xAxisTitle": "Departments",
+                    "yAxisTitle": "Retention Rate (%)",
+                    "data": [
+                        {"label": "Computer Science", "x": 1, "y": 88},
+                        {"label": "Engineering", "x": 2, "y": 76},
+                        {"label": "Business", "x": 3, "y": 84},
+                        {"label": "Humanities", "x": 4, "y": 90},
+                        {"label": "Sciences", "x": 5, "y": 72},
+                    ]
+                }
+            }
+        ],
+        "What is the department budget allocation?": [
+            {
+                "answer_chart": {
+                    "chartType": "gauge",
+                    "chartTitle": "Department Budget Utilization",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "Utilization (%)",
+                    "data": [
+                        {"label": "Computer Science", "x": 0, "y": 80},
+                        {"label": "Engineering", "x": 0, "y": 95},
+                        {"label": "Business", "x": 0, "y": 60},
+                        {"label": "Humanities", "x": 0, "y": 70},
+                        {"label": "Sciences", "x": 0, "y": 85},
+                    ]
+                }
+            }
+        ],
+        "What is the distribution of majors?": [
+            {
+                "answer_chart": {
+                    "chartType": "treemap",
+                    "chartTitle": "Distribution of Student Majors",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "data": [
+                        {"label": "Computer Science", "x": 0, "y": 25},
+                        {"label": "Engineering", "x": 0, "y": 20},
+                        {"label": "Business", "x": 0, "y": 30},
+                        {"label": "Humanities", "x": 0, "y": 15},
+                        {"label": "Sciences", "x": 0, "y": 10},
+                    ]
+                }
+            }
+        ],
+        "What are the student scores by course?": [
+            {
+                "answer_chart": {
+                    "chartType": "scatter",
+                    "chartTitle": "Student Scores by Course",
+                    "xAxisTitle": "Courses",
+                    "yAxisTitle": "Score (%)",
+                    "data": [
+                        {"label": "CIS 2400", "x": 1, "y": 85},
+                        {"label": "CIS 5020", "x": 2, "y": 90},
+                        {"label": "CIS 1210", "x": 3, "y": 78},
+                        {"label": "ESE 3060", "x": 4, "y": 82},
+                    ]
+                }
+            }
+        ],
+        "Show the monthly expenses by department": [
+            {
+                "answer_chart": {
+                    "chartType": "heatmap",
+                    "chartTitle": "Monthly Departmental Expenses",
+                    "xAxisTitle": "Departments",
+                    "yAxisTitle": "Months",
+                    "data": [
+                        {"label": "Computer Science", "x": 1, "y": 50000},
+                        {"label": "Engineering", "x": 2, "y": 75000},
+                        {"label": "Business", "x": 3, "y": 40000},
+                        {"label": "Humanities", "x": 4, "y": 30000},
+                        {"label": "Sciences", "x": 5, "y": 60000},
+                    ]
+                }
+            }
+        ],
+        "What is the distribution of scores by course?": [
+            {
+                "answer_chart": {
+                    "chartType": "boxplot",
+                    "chartTitle": "Score Distribution by Course",
+                    "xAxisTitle": "Courses",
+                    "yAxisTitle": "Score Range",
+                    "data": [
+                        {"label": "CIS 2400", "x": 1, "y": [65, 75, 80, 85, 95]},
+                        {"label": "CIS 5020", "x": 2, "y": [70, 80, 85, 90, 100]},
+                        {"label": "CIS 1210", "x": 3, "y": [60, 70, 75, 78, 85]},
+                        {"label": "ESE 3060", "x": 4, "y": [50, 65, 72, 80, 90]},
+                    ]
+                }
+            }
+        ],
+        "What is the scholarship allocation by student category?": [
+            {
+                "answer_chart": {
+                    "chartType": "doughnut",
+                    "chartTitle": "Scholarship Allocation by Student Category",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "data": [
+                        {"label": "Merit-based", "x": 0, "y": 55},
+                        {"label": "Need-based", "x": 0, "y": 30},
+                        {"label": "Athletic", "x": 0, "y": 10},
+                        {"label": "Diversity", "x": 0, "y": 5},
+                    ]
+                }
+            }
+        ],
+        "What is the impact of extra-curricular activities on grades?": [
+            {
+                "answer_chart": {
+                    "chartType": "bubble",
+                    "chartTitle": "Impact of Extra-Curricular on Grades",
+                    "xAxisTitle": "Hours Spent in Activities",
+                    "yAxisTitle": "GPA",
+                    "data": [
+                        {"label": "Student A", "x": 5, "y": 3.5, "z": 10},
+                        {"label": "Student B", "x": 10, "y": 3.2, "z": 20},
+                        {"label": "Student C", "x": 15, "y": 3.7, "z": 30},
+                        {"label": "Student D", "x": 20, "y": 3.0, "z": 40},
+                    ]
+                }
+            }
+        ],
+        "How does faculty feedback vary by department?": [
+            {
+                "answer_chart": {
+                    "chartType": "waterfall",
+                    "chartTitle": "Faculty Feedback by Department",
+                    "xAxisTitle": "Department",
+                    "yAxisTitle": "Feedback Score Change",
+                    "data": [
+                        {"label": "Computer Science", "x": 1, "y": 15},
+                        {"label": "Engineering", "x": 2, "y": -5},
+                        {"label": "Business", "x": 3, "y": 10},
+                        {"label": "Humanities", "x": 4, "y": 8},
+                        {"label": "Sciences", "x": 5, "y": -3},
+                    ]
+                }
+            }
+        ]
+    }
+    '''
+
+    answer_chart_associations: Dict[str, List[Dict]] = {
+        "Compare course enrollment trends": [
+            {
+                "answer_chart": {
+                    "chartType": "bar",
+                    "chartTitle": "Enrollment Statistics by Course (2022 vs 2023)",
+                    "xAxisTitle": "Courses",
+                    "yAxisTitle": "Number of Students",
+                    "series": [
+                        {
+                            "seriesName": "2023",
+                            "data": [
+                                {"label": "CIS 2400", "x": 1, "y": 130},
+                                {"label": "CIS 5020", "x": 2, "y": 90},
+                                {"label": "CIS 1210", "x": 3, "y": 210},
+                                {"label": "ESE 3060", "x": 4, "y": 65}
+                            ]
+                        },
+                        {
+                            "seriesName": "2022",
+                            "data": [
+                                {"label": "CIS 2400", "x": 1, "y": 120},
+                                {"label": "CIS 5020", "x": 2, "y": 85},
+                                {"label": "CIS 1210", "x": 3, "y": 200},
+                                {"label": "ESE 3060", "x": 4, "y": 60}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What are the current student performance metrics?": [
+            {
+                "answer_chart": {
+                    "chartType": "pie",
+                    "chartTitle": "Student Performance Metrics (2023)",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "series": [
+                        {
+                            "seriesName": "Performance Levels",
+                            "data": [
+                                {"label": "Excellent", "x": 0, "y": 42},
+                                {"label": "Good", "x": 0, "y": 32},
+                                {"label": "Average", "x": 0, "y": 18},
+                                {"label": "Below Average", "x": 0, "y": 8}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What is the enrollment trend over years?": [
+            {
+                "answer_chart": {
+                    "chartType": "line",
+                    "chartTitle": "Enrollment Trend Over Years (2018-2023)",
+                    "xAxisTitle": "Year",
+                    "yAxisTitle": "Number of Students",
+                    "series": [
+                        {
+                            "seriesName": "Undergraduate",
+                            "data": [
+                                {"label": "2018", "x": 2018, "y": 1850},
+                                {"label": "2019", "x": 2019, "y": 1900},
+                                {"label": "2020", "x": 2020, "y": 1780},
+                                {"label": "2021", "x": 2021, "y": 2050},
+                                {"label": "2022", "x": 2022, "y": 2200},
+                                {"label": "2023", "x": 2023, "y": 2250}
+                            ]
+                        },
+                        {
+                            "seriesName": "Graduate",
+                            "data": [
+                                {"label": "2018", "x": 2018, "y": 1100},
+                                {"label": "2019", "x": 2019, "y": 1150},
+                                {"label": "2020", "x": 2020, "y": 1050},
+                                {"label": "2021", "x": 2021, "y": 1300},
+                                {"label": "2022", "x": 2022, "y": 1350},
+                                {"label": "2023", "x": 2023, "y": 1450}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What is the retention rate by department?": [
+            {
+                "answer_chart": {
+                    "chartType": "pyramid",
+                    "chartTitle": "Student Retention Rate by Department",
+                    "xAxisTitle": "Departments",
+                    "yAxisTitle": "Retention Rate (%)",
+                    "series": [
+                        {
+                            "seriesName": "2023",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 92},
+                                {"label": "Engineering", "x": 2, "y": 78},
+                                {"label": "Business", "x": 3, "y": 87},
+                                {"label": "Humanities", "x": 4, "y": 91},
+                                {"label": "Sciences", "x": 5, "y": 74}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What is the department budget allocation?": [
+            {
+                "answer_chart": {
+                    "chartType": "gauge",
+                    "chartTitle": "Department Budget Utilization (2023)",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "Utilization (%)",
+                    "series": [
+                        {
+                            "seriesName": "2023 Budget Utilization",
+                            "data": [
+                                {"label": "Computer Science", "x": 0, "y": 85},
+                                {"label": "Engineering", "x": 0, "y": 92},
+                                {"label": "Business", "x": 0, "y": 65},
+                                {"label": "Humanities", "x": 0, "y": 78},
+                                {"label": "Sciences", "x": 0, "y": 89}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What is the distribution of majors?": [
+            {
+                "answer_chart": {
+                    "chartType": "treemap",
+                    "chartTitle": "Distribution of Student Majors (2023)",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "series": [
+                        {
+                            "seriesName": "Major Distribution",
+                            "data": [
+                                {"label": "Computer Science", "x": 0, "y": 28},
+                                {"label": "Engineering", "x": 0, "y": 22},
+                                {"label": "Business", "x": 0, "y": 30},
+                                {"label": "Humanities", "x": 0, "y": 12},
+                                {"label": "Sciences", "x": 0, "y": 8}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What are the student scores by course?": [
+            {
+                "answer_chart": {
+                    "chartType": "scatter",
+                    "chartTitle": "Average Student Scores by Course (2023)",
+                    "xAxisTitle": "Courses",
+                    "yAxisTitle": "Average Score (%)",
+                    "series": [
+                        {
+                            "seriesName": "2023 Scores",
+                            "data": [
+                                {"label": "CIS 2400", "x": 1, "y": 85},
+                                {"label": "CIS 5020", "x": 2, "y": 90},
+                                {"label": "CIS 1210", "x": 3, "y": 78},
+                                {"label": "ESE 3060", "x": 4, "y": 82}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "Show the monthly expenses by department": [
+            {
+                "answer_chart": {
+                    "chartType": "heatmap",
+                    "chartTitle": "Monthly Departmental Expenses (2023)",
+                    "xAxisTitle": "Departments",
+                    "yAxisTitle": "Months",
+                    "series": [
+                        {
+                            "seriesName": "2023 Monthly Expenses",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 52000},
+                                {"label": "Engineering", "x": 2, "y": 78000},
+                                {"label": "Business", "x": 3, "y": 42000},
+                                {"label": "Humanities", "x": 4, "y": 31000},
+                                {"label": "Sciences", "x": 5, "y": 62000}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What is the distribution of scores by course?": [
+            {
+                "answer_chart": {
+                    "chartType": "boxplot",
+                    "chartTitle": "Score Distribution by Course (2023)",
+                    "xAxisTitle": "Courses",
+                    "yAxisTitle": "Score Range",
+                    "series": [
+                        {
+                            "seriesName": "Score Range",
+                            "data": [
+                                {"label": "CIS 2400", "x": 1, "y": [65, 75, 82, 85, 95]},
+                                {"label": "CIS 5020", "x": 2, "y": [70, 80, 85, 90, 100]},
+                                {"label": "CIS 1210", "x": 3, "y": [60, 70, 75, 78, 85]},
+                                {"label": "ESE 3060", "x": 4, "y": [50, 65, 72, 80, 90]}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What is the scholarship allocation by student category?": [
+            {
+                "answer_chart": {
+                    "chartType": "doughnut",
+                    "chartTitle": "Scholarship Allocation by Student Category (2023)",
+                    "xAxisTitle": "",
+                    "yAxisTitle": "",
+                    "series": [
+                        {
+                            "seriesName": "Scholarship Allocation",
+                            "data": [
+                                {"label": "Merit-based", "x": 0, "y": 50},
+                                {"label": "Need-based", "x": 0, "y": 35},
+                                {"label": "Athletic", "x": 0, "y": 10},
+                                {"label": "Diversity", "x": 0, "y": 5}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "What is the impact of extra-curricular activities on grades?": [
+            {
+                "answer_chart": {
+                    "chartType": "bubble",
+                    "chartTitle": "Impact of Extra-Curricular Activities on GPA (2023)",
+                    "xAxisTitle": "Hours Spent in Activities",
+                    "yAxisTitle": "GPA",
+                    "series": [
+                        {
+                            "seriesName": "Extra-Curricular Impact",
+                            "data": [
+                                {"label": "Student A", "x": 5, "y": 3.6, "z": 10},
+                                {"label": "Student B", "x": 10, "y": 3.3, "z": 20},
+                                {"label": "Student C", "x": 15, "y": 3.7, "z": 30},
+                                {"label": "Student D", "x": 20, "y": 3.2, "z": 40}
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "How does faculty feedback vary by department?": [
+        {
+            "answer_charts": [
+                {
+                    "chartType": "waterfall",
+                    "chartTitle": "Faculty Feedback Score Change by Department",
+                    "xAxisTitle": "Department",
+                    "yAxisTitle": "Feedback Score Change",
+                    "series": [
+                        {
+                            "seriesName": "Feedback Change 2024",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 20},
+                                {"label": "Engineering", "x": 2, "y": -8},
+                                {"label": "Business", "x": 3, "y": 12},
+                                {"label": "Humanities", "x": 4, "y": 9},
+                                {"label": "Sciences", "x": 5, "y": -5}
+                            ]
+                        },
+                        {
+                            "seriesName": "Feedback Change 2023",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 15},
+                                {"label": "Engineering", "x": 2, "y": -3},
+                                {"label": "Business", "x": 3, "y": 10},
+                                {"label": "Humanities", "x": 4, "y": 7},
+                                {"label": "Sciences", "x": 5, "y": -2}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "chartType": "bubble",
+                    "chartTitle": "Faculty Satisfaction by Department",
+                    "xAxisTitle": "Department",
+                    "yAxisTitle": "Satisfaction Score",
+                    "series": [
+                        {
+                            "seriesName": "Satisfaction Level 2024",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 4.2, "z": 30},
+                                {"label": "Engineering", "x": 2, "y": 3.8, "z": 25},
+                                {"label": "Business", "x": 3, "y": 4.5, "z": 35},
+                                {"label": "Humanities", "x": 4, "y": 4.0, "z": 28},
+                                {"label": "Sciences", "x": 5, "y": 3.7, "z": 20}
+                            ]
+                        },
+                        {
+                            "seriesName": "Satisfaction Level 2023",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 4.0, "z": 28},
+                                {"label": "Engineering", "x": 2, "y": 3.6, "z": 23},
+                                {"label": "Business", "x": 3, "y": 4.3, "z": 33},
+                                {"label": "Humanities", "x": 4, "y": 3.9, "z": 27},
+                                {"label": "Sciences", "x": 5, "y": 3.5, "z": 18}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "chartType": "line",
+                    "chartTitle": "Faculty Interaction Hours by Department",
+                    "xAxisTitle": "Department",
+                    "yAxisTitle": "Interaction Hours",
+                    "series": [
+                        {
+                            "seriesName": "Interaction Hours 2024",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 25},
+                                {"label": "Engineering", "x": 2, "y": 30},
+                                {"label": "Business", "x": 3, "y": 28},
+                                {"label": "Humanities", "x": 4, "y": 18},
+                                {"label": "Sciences", "x": 5, "y": 20}
+                            ]
+                        },
+                        {
+                            "seriesName": "Interaction Hours 2023",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 20},
+                                {"label": "Engineering", "x": 2, "y": 25},
+                                {"label": "Business", "x": 3, "y": 22},
+                                {"label": "Humanities", "x": 4, "y": 15},
+                                {"label": "Sciences", "x": 5, "y": 18}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "chartType": "bar",
+                    "chartTitle": "Faculty Research Publications by Department",
+                    "xAxisTitle": "Department",
+                    "yAxisTitle": "Number of Publications",
+                    "series": [
+                        {
+                            "seriesName": "Publications 2024",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 50},
+                                {"label": "Engineering", "x": 2, "y": 40},
+                                {"label": "Business", "x": 3, "y": 35},
+                                {"label": "Humanities", "x": 4, "y": 30},
+                                {"label": "Sciences", "x": 5, "y": 45}
+                            ]
+                        },
+                        {
+                            "seriesName": "Publications 2023",
+                            "data": [
+                                {"label": "Computer Science", "x": 1, "y": 45},
+                                {"label": "Engineering", "x": 2, "y": 38},
+                                {"label": "Business", "x": 3, "y": 32},
+                                {"label": "Humanities", "x": 4, "y": 28},
+                                {"label": "Sciences", "x": 5, "y": 40}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+    }
+
+    
+
 
 
     answer_COURSE_associations: Dict[str, List[Dict]] = {
@@ -648,6 +1411,8 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     answer_TAK_data = answer_TAK_associations.get(input_message, [])
     answer_COURSE_data = answer_COURSE_associations.get(input_message, [])
     answer_waiting_data = answer_waiting_associations.get(input_message, [])
+    # Vérification si le message d'entrée nécessite un graphique
+    answer_CHART_data = answer_chart_associations.get(input_message, None)
 
     # Return the simulated response as streaming
     async def message_stream():
@@ -708,6 +1473,12 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             yield f"\n<ANSWER_TAK>{answer_TAK_json}<ANSWER_TAK_END>\n"
             await asyncio.sleep(0.2)
 
+        # Si des données de graphique sont présentes, les envoyer entre les balises ANSWER_CHART
+        if answer_CHART_data:
+            answer_CHART_json = json.dumps({"answer_CHART_data": answer_CHART_data})
+            yield f"\n<ANSWER_CHART>{answer_CHART_json}<ANSWER_CHART_END>\n"
+            await asyncio.sleep(0.2)  # Pause avant de continuer
+
         # Send answer_COURSE as JSON if available
         if answer_COURSE_data:
             answer_COURSE_json = json.dumps({"answer_COURSE_data": answer_COURSE_data})
@@ -715,6 +1486,9 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             await asyncio.sleep(0.2)
 
     return StreamingResponse(message_stream(), media_type="text/plain")
+
+
+#return app
 
 
 

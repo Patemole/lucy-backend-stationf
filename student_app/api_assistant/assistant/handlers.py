@@ -105,8 +105,18 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
                 if model not in ['small', 'large']:
                     model = 'small'
 
+                #Yielding the reosoning steps
+                reasoning_steps = arguments.get('reasoning_steps', '')
+                structured_reasoning = {"reasoning_steps": [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]}
+                reason = json.dumps(structured_reasoning, indent=2)
+                logging.info(f"reasoning_steps {reason} for {query}")
+                #yield f"\n<REASONING_STEPS>{reason}<REASONING_STEPS_END>\n"
+
                 logging.info(f"Getting the sources for {query}")
-                sources = google_source_search(query, university)
+                #sources = google_source_search(query, university)
+                logging.info(f"Creating Google task for {query}")
+                
+                sources = await google_source_search(query, university)
                 if sources:
                     logging.info(f"Sources received for {query}")
                 else:
@@ -151,6 +161,28 @@ async def handle_requires_action(client, data, run_id, thread_id, query, image_b
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
                     "output": json.dumps(tool_output)
+                })
+            
+            elif function_name == "redirection_to_agent":
+                logging.info(f"Processing redirection to agent: {arguments}")
+                query = arguments.get('query', '')
+                query = "Give me the most specific contacts information (person, email, location, phone number) for the query:" + query
+                #yield f"\n<CONTACT_REDIRECTION>{json.dumps('Searching the right contact info to connect to an agent')}<CONTACT_REDIRECTION_END>\n"
+                output = await get_up_to_date_info(
+                    query, 
+                    image_bool=False, 
+                    model="small", 
+                    university=university, 
+                    username=username, 
+                    major=major, 
+                    minor=minor, 
+                    year=year, 
+                    school=school
+                )
+                logging.info(f"Getting right contact info for '{query}': {output}")
+                tool_outputs.append({
+                    "tool_call_id": tool_call.id,
+                    "output": output
                 })
 
             else:

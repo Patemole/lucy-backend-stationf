@@ -1,52 +1,64 @@
-import requests
 import os
 import json
+from urllib.parse import urlparse
+import httpx  # Async HTTP client
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
-# Function to search for web sources using Google Custom Search JSON API
-def google_source_search(query, university, num_results=3):
+# Async function to search for web sources using Google Custom Search JSON API
+async def google_source_search(query, university, num_results=3):
     print(f"QUERY FOR GOOGLE SEARCH: {query}")
-    # Your Google Custom Search API key
+    
+    # Google Custom Search API details
     API_KEY = GOOGLE_API_KEY
-    
-    # Your Custom Search Engine ID
     SEARCH_ENGINE_ID = 'c43aac779112b4278'
-    
-    # Google Custom Search JSON API endpoint
     url = "https://www.googleapis.com/customsearch/v1"
-
+    
     domain_restricted_query = f"{query} site:{university}.edu"
     
     # Search parameters
     params = {
-        'q': domain_restricted_query,  # The search query (student's input)
-        'cx': SEARCH_ENGINE_ID,  # Custom Search Engine ID
-        'key': API_KEY,  # API Key
-        'num': num_results,  # Number of results to return
+        'q': domain_restricted_query,
+        'cx': SEARCH_ENGINE_ID,
+        'key': API_KEY,
+        'num': num_results
     }
     
-    # Make the request to the API
-    response = requests.get(url, params=params)
-    
+    # Make the async request to the Google Custom Search API
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, params=params)
+        
     # Check if the request was successful
     if response.status_code == 200:
         data = response.json()
         
-        # Create a list to hold all the source results
+        # Prepare list for source results
         source_results = []
         
-        # Iterate over each result to create the JSON object for each source
+        # Iterate over each result to create JSON object for each source
         if 'items' in data:
-            for i, item in enumerate(data['items']):
-                # Create the JSON output for each source
+            for item in data['items']:
+                # Extract domain and construct favicon URL
+                #parsed_url = urlparse(item.get('link', ''))
+                #favicon_url = f"{parsed_url.scheme}://{parsed_url.netloc}/favicon.ico"
+                
+                # Check if favicon URL is valid using a HEAD request
+                #try:
+                    #async with client.head(favicon_url, timeout=3) as favicon_response:
+                        #if favicon_response.status_code != 200:
+                            #favicon_url = None
+                #except httpx.RequestError:
+                    #favicon_url = None
+                
+                # Construct result JSON
                 result = {
-                    "name": item.get('title', 'No title'),  # Changed to 'name'
-                    "url": item.get('link', 'No URL')  # Changed to 'url'
+                    "name": item.get('title', 'No title'),
+                    "url": item.get('link', 'No URL'),
+                    #"favicon": favicon_url
                 }
                 source_results.append(result)
-                
-            return source_results  # Return the list of JSON objects as a JSON string
+            
+            return source_results
         
         else:
             return "No sources found"
