@@ -3,6 +3,7 @@ from functools import wraps
 import time
 from functools import wraps
 import asyncio
+import logging
 
 def timing_decorator(func):
     @wraps(func)
@@ -27,6 +28,15 @@ def timing_decorator(func):
     else:
         return sync_wrapper
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),  # Console output
+        logging.FileHandler("file_server.log")  # Save logs to a file
+    ]
+)
 
 @timing_decorator
 def get_clarifying_question_output(arguments, input_message):

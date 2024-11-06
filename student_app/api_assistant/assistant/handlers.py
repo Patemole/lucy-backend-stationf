@@ -85,11 +85,12 @@ async def on_event(client, event, input_message, image_bool, university, usernam
 @timing_decorator
 async def handle_requires_action(client, data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
     try:
-        logging.info("Run requires action: Processing tool calls...")
+        logging.info(f"Run requires action: Processing tool calls... for {input_message}")
         tool_outputs = []
+        query=input_message
         for tool_call in data.required_action.submit_tool_outputs.tool_calls:
             function_name = tool_call.function.name
-            logging.info(f"Processing tool: {function_name}")
+            logging.info(f"Processing tool: {function_name} for {input_message}")
 
             try:
                 arguments = json.loads(tool_call.function.arguments)
@@ -152,9 +153,9 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 })
 
             elif function_name == "ask_clarifying_question":
-                logging.info(f"Processing clarifying question with arguments: {arguments}")
+                logging.info(f"Processing clarifying question with arguments: {arguments} for {input_message}")
                 tool_output = get_clarifying_question_output(arguments, input_message)
-                logging.info(f"Clarifying question output: {tool_output} ")
+                logging.info(f"Clarifying question output: {tool_output} for {input_message}")
                 yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': tool_output})}<ANSWER_TAK_END>\n"
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
@@ -187,7 +188,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 })
 
             else:
-                logging.warning(f"Function not implemented: {function_name}")
+                logging.warning(f"Function not implemented: {function_name} for {input_message}")
                 output = "Function not implemented."
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
@@ -250,7 +251,7 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
             else:
                 logging.warning(f"Unhandled event: {event.event} for {input_message}")
     except Exception as e:
-        logging.error(f"Error in submit_tool_outputs: {str(e)}", exc_info=True)
+        logging.error(f"Error in submit_tool_outputs: {str(e)} for {input_message}", exc_info=True)
         raise
 
 
