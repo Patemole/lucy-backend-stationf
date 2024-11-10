@@ -17,27 +17,43 @@ logging.basicConfig(
 async def get_youtube_videos(search_query, input_message):
     logging.info(f"YouTube API for query '{search_query}' for {input_message}.")
     GOOGLE_CLOUD_API_KEY = os.getenv('GOOGLE_CLOUD_API_KEY')
-    URL = f'https://www.googleapis.com/youtube/v3/search?part=snippet&q={search_query}&type=video&key={GOOGLE_CLOUD_API_KEY}'
+    search_query = "UPenn Campus tour"
+    SEARCH_URL = f'https://www.googleapis.com/youtube/v3/search?part=snippet&q={search_query}&type=video&key={GOOGLE_CLOUD_API_KEY}'
     
     videos = []  # Initialize an empty list to store video details
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(URL) as response:
-                if response.status == 200:
+            # First API Call: Search for videos
+            async with session.get(SEARCH_URL) as search_response:
+                if search_response.status == 200:
                     logging.info(f"Successfully retrieved data from YouTube API for query '{search_query}' for {input_message}.")
-                    data = await response.json()
-                    for item in data.get('items', []):
-                        video_id = item['id'].get('videoId')
-                        if video_id:
-                            title = item['snippet'].get('title', 'No title')
-                            video_url = f'https://www.youtube.com/watch?v={video_id}'
-                            videos.append({"title": title, "link": video_url})
-                            logging.info(f"Video found: '{title}' - {video_url} for {input_message}")
-                        else:
-                            logging.warning(f"Video ID not found in response item. for {input_message}")
+                    search_data = await search_response.json()
+                    video_ids = [item['id']['videoId'] for item in search_data.get('items', []) if item['id'].get('videoId')]
+                    
+                    # Second API Call: Get statistics for each video
+                    if video_ids:
+                        stats_url = f'https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id={",".join(video_ids)}&key={GOOGLE_CLOUD_API_KEY}'
+                        async with session.get(stats_url) as stats_response:
+                            if stats_response.status == 200:
+                                stats_data = await stats_response.json()
+                                for item in stats_data.get('items', []):
+                                    title = item['snippet'].get('title', 'No title')
+                                    video_url = f'https://www.youtube.com/watch?v={item["id"]}'
+                                    #thumbnail_url = item['snippet']['thumbnails']['default']['url'] if 'thumbnails' in item['snippet'] else ""
+                                    view_count = item['statistics'].get('viewCount', "0")
+                                    
+                                    videos.append({
+                                        "title": title,
+                                        "link": video_url,
+                                        "miniature": "",
+                                        "nbr_view": view_count
+                                    })
+                                    logging.info(f"Video found: '{title}' - {video_url}, Views: {view_count} for {input_message}")
+                            else:
+                                logging.error(f"Error {stats_response.status}: Failed to retrieve video statistics from YouTube API for {input_message}.")
                 else:
-                    logging.error(f"Error {response.status}: Failed to retrieve data from YouTube API for query '{search_query}' for {input_message}.")
+                    logging.error(f"Error {search_response.status}: Failed to retrieve data from YouTube API for query '{search_query}' for {input_message}.")
     except aiohttp.ClientError as e:
         logging.error(f"Client error occurred: {e} for {input_message}")
     except asyncio.TimeoutError:

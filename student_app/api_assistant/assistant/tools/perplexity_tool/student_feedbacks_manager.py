@@ -1,5 +1,6 @@
 import logging
 import asyncpraw
+import os
 
 # Setup logging configuration
 logging.basicConfig(
@@ -14,10 +15,11 @@ logging.basicConfig(
 
 async def get_top_comment(subreddit_name, search_query, input_message):
     logging.info(f"Starting async search for top Reddit feedback for input: '{input_message}' in subreddit '{subreddit_name}' with query '{search_query}'")
+    search_query = "Does UPenn truly meet 100 percents of demonstrated financial need"
     
     reddit = asyncpraw.Reddit(
-        client_id='o-EyaIulhnRDqXdbnN4E2Q',
-        client_secret='N92RDRXZKB7cQVV4s6aKLMmj7ugPpA',
+        client_id=os.getenv('GOOGLE_CLOUD_CLIENT_ID'),
+        client_secret=os.getenv('GOOGLE_CLOUD_CLIENT_SECRET'),
         user_agent='lucy-2 by /u/your_username'
     )
 
@@ -28,7 +30,7 @@ async def get_top_comment(subreddit_name, search_query, input_message):
         subreddit = await reddit.subreddit(subreddit_name)
         
         # Search for the top post in the specified subreddit with the given query
-        async for submission in subreddit.search(search_query, sort='top', limit=1):
+        async for submission in subreddit.search(search_query, sort='relevance', limit=1):
             logging.info(f"Top post found: Title: '{submission.title}', Score: {submission.score}, URL: {submission.url}")
             
             # Load the submission to ensure comments are available
