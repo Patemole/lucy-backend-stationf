@@ -376,7 +376,6 @@ def split_preserving_formatting(text):
         chunks.append("\n")
     return chunks
 
-
 @app.post("/send_message_fake_demo")
 async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     # Method for assistant API call 
@@ -715,14 +714,14 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     answer_reddit_associations: Dict[str, List[Dict]] = {
         "I’ve already decided to take cis2400, cis1210, and ese3060": [
             {
-                    "comment": "Yes Upenn is one of the best Ivy Leagues",
+                    "comment": "UPenn is amazing but intense! Make sure to balance academics with social life—it’s easy to get swept up in the pace. Use campus resources like the Weingarten Learning Center for academic support and CAPS for mental health. And don’t underestimate the power of a solid group of friends who get what you’re going through!",
                     "score": "1.1k",
             }
         ]
     }
 
 
-    
+    '''
     answer_instagram_associations: Dict[str, List[Dict]] = {
         "I’ve already decided to take cis2400, cis1210, and ese3060": [
             {
@@ -733,9 +732,35 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             }
         ]
     }
+    '''
+
+
+    answer_instagram_club_associations: Dict[str, List[Dict]] = {
+        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+            {
+                    "username": "@penngleeclub",
+                    "title": "Penn Glee Club",
+                    "followers": "2.1k",
+                    "posts": "327",
+                    "link": 'https://www.instagram.com/penngleeclub/',
+                    "picture":"http://localhost:5001/static/academic_advisor/insta_club.png"
+            }
+        ]
+    }
+
+    answer_linkedin_associations: Dict[str, List[Dict]] = {
+        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+            {
+                    "name": "Peter Mellark",
+                    "picture": "http://localhost:5001/static/academic_advisor/picture_linkedin2.png",
+                    "headline": "http://localhost:5001/static/academic_advisor/banniere_linkedin.png",
+                    "sentence":"Wharton MBA Candidate",
+                    "link": "https://www.linkedin.com/in/lyla-jones-550348138/",
+            }
+        ]
+    }
 
     
-
     answer_youtube_associations: Dict[str, List[Dict]] = {
         "I’ve already decided to take cis2400, cis1210, and ese3060": [
             {
@@ -743,6 +768,13 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
                     "link": "https://www.youtube.com/watch?v=o2f-4h03XfY",
                     'miniature':"http://localhost:5001/static/academic_advisor/mini_youtube.png",
                     "nbr_view": "187k",
+            },
+
+            {
+                    "title": "Ultimate Freshman Housing Tour (2024)",
+                    "link": "https://www.youtube.com/watch?v=-82kDMIikZw",
+                    'miniature':"http://localhost:5001/static/academic_advisor/mini_youtube2.png",
+                    "nbr_view": "19k",
             }
         ]
     }
@@ -751,7 +783,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     answer_quora_associations: Dict[str, List[Dict]] = {
         "I’ve already decided to take cis2400, cis1210, and ese3060": [
             {
-                    "comment": "I think Upenn is better than Yales and Cornell",
+                    "comment": "To get the most out of UPenn, dive into every opportunity—join clubs, go to events, and push yourself to explore new things. The relationships you build, from classmates to alumni, have a lasting impact. Take advantage of everything UPenn and Philly have to offer—it’s all part of the journey!",
                     "score": "5.2k",
             }
         ]
@@ -982,7 +1014,6 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
         ]
     }
     '''
-
     answer_chart_associations: Dict[str, List[Dict]] = {
         "Compare course enrollment trends": [
             {
@@ -1642,9 +1673,12 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     # Get the documents, related questions, images, answer_TAK and answer_waiting associated with the input message
     answer_REDDIT_data = answer_reddit_associations.get(input_message, None)
-    answer_INSTA_data = answer_instagram_associations.get(input_message, None)
-    answer_YOUTUBE_data = answer_youtube_associations.get(input_message, None)
     answer_QUORA_data = answer_quora_associations.get(input_message, None)
+    answer_YOUTUBE_data = answer_youtube_associations.get(input_message, None)
+    #answer_INSTA_data = answer_instagram_associations.get(input_message, None)
+    answer_INSTA_CLUB_data = answer_instagram_club_associations.get(input_message, None)
+    answer_LINKEDIN_data = answer_linkedin_associations.get(input_message, None)
+    
     documents = document_associations.get(input_message, [])
     related_qs = related_questions.get(input_message, [])
     images = image_associations.get(input_message, [])
@@ -1701,10 +1735,9 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             yield f"\n<REDDIT>{answer_REDDIT_json}<REDDIT_END>\n"
             await asyncio.sleep(0.2)  # Pause avant de continuer
 
-        
-        if answer_INSTA_data:
-            answer_INSTA_json = json.dumps({"insta": answer_INSTA_data})
-            yield f"\n<INSTA>{answer_INSTA_json}<INSTA_END>\n"
+        if answer_QUORA_data:
+            answer_QUORA_json = json.dumps({"quora": answer_QUORA_data})
+            yield f"\n<QUORA>{answer_QUORA_json}<QUORA_END>\n"
             await asyncio.sleep(0.2)  # Pause avant de continuer
 
         if answer_YOUTUBE_data:
@@ -1712,10 +1745,26 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             yield f"\n<YOUTUBE>{answer_YOUTUBE_json}<YOUTUBE_END>\n"
             await asyncio.sleep(0.2)  # Pause avant de continuer
 
-        if answer_QUORA_data:
-            answer_QUORA_json = json.dumps({"quora": answer_QUORA_data})
-            yield f"\n<QUORA>{answer_QUORA_json}<QUORA_END>\n"
+
+        '''
+        if answer_INSTA_data:
+            answer_INSTA_json = json.dumps({"insta": answer_INSTA_data})
+            yield f"\n<INSTA>{answer_INSTA_json}<INSTA_END>\n"
             await asyncio.sleep(0.2)  # Pause avant de continuer
+        '''
+
+        if answer_INSTA_CLUB_data:
+            answer_INSTA_CLUB_json = json.dumps({"insta_club": answer_INSTA_CLUB_data})
+            yield f"\n<INSTA_CLUB>{answer_INSTA_CLUB_json}<INSTA_CLUB_END>\n"
+            await asyncio.sleep(0.2)  # Pause avant de continuer
+
+
+        if answer_LINKEDIN_data:
+            answer_LINKEDIN_json = json.dumps({"linkedin": answer_LINKEDIN_data})
+            yield f"\n<LINKEDIN>{answer_LINKEDIN_json}<LINKEDIN_END>\n"
+            await asyncio.sleep(0.2)  # Pause avant de continuer
+
+
         
         # Send documents one by one if available
         if documents:
@@ -1750,7 +1799,6 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             await asyncio.sleep(0.2)
 
     return StreamingResponse(message_stream(), media_type="text/plain")
-
 
 
 
