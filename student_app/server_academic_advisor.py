@@ -567,36 +567,40 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     '''
 
     known_responses: Dict[str, str] = {
-"Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
-"I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let’s get started.""",
-"Show me some statistics": """Here are some enrollment statistics for your courses:\n\n- **CIS 2400**: **120 students enrolled**\n- **CIS 5020**: **85 students enrolled**\n- **CIS 1210**: **200 students enrolled**\n- **ESE 3060**: **60 students enrolled**\n\nThe most popular course this semester is **CIS 1210** with **200 students**, indicating strong interest in foundational topics.""",
-"Compare course enrollment trends": """Here is a comparison of course enrollment statistics between 2022 and 2023:\n\n- **CIS 2400**: 2022 - **120 students**, 2023 - **130 students** (Increase of 8.3%)\n- **CIS 5020**: 2022 - **85 students**, 2023 - **90 students** (Increase of 5.9%)\n- **CIS 1210**: 2022 - **200 students**, 2023 - **210 students** (Increase of 5.0%)\n- **ESE 3060**: 2022 - **60 students**, 2023 - **65 students** (Increase of 8.3%)\n\nThe data shows a consistent increase in enrollment across all courses from 2022 to 2023. **CIS 1210** remains the most popular course with the highest number of enrollments, indicating sustained strong interest in this foundational subject.""",
-"What are the current student performance metrics?": """Here are the current student performance metrics:\n\n- **40%** of students are performing at an **Excellent** level.\n- **35%** are rated as **Good**.\n- **15%** are in the **Average** category.\n- **10%** fall below average.\n\n**Actionable Insight**: A significant portion of students (40%) are excelling, showing strong academic engagement across core subjects.""",
-"What is the distribution of student majors?": """The distribution of majors among students is as follows:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: The largest proportion of students, **30%**, are majoring in Business, suggesting a trend towards business-related fields.""",
-"How has the enrollment trend changed over the years?": """Here’s a look at the enrollment trends over the past years:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\nEnrollment has steadily increased, with a **22% rise since 2018** and a particularly strong recovery after 2020.""",
-"What is the retention rate by department?": """Here’s the retention rate by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Insight**: The highest retention rate is in **Humanities** at **90%**, while **Sciences** show the lowest at **72%**. Focus on targeted retention programs in Sciences could improve these numbers.""",
-"What is the department budget allocation?": """Here’s the current budget allocation by department:\n\n- **Computer Science**: **80%** utilized\n- **Engineering**: **95%** utilized\n- **Business**: **60%** utilized\n- **Humanities**: **70%** utilized\n- **Sciences**: **85%** utilized\n\n**Actionable Insight**: Engineering has the highest budget utilization at **95%**, while Business has unutilized funds. Allocating funds more effectively could improve resource availability in areas with higher utilization.""",
-"What is the enrollment trend over years?": """Here’s the enrollment trend by year:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\n**Trend**: Enrollment shows consistent growth, especially after the recovery period in 2020, with a **22% increase since 2018**.""",
-"Show the graduation rates by department": """Here’s a breakdown of graduation rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\nThe **Humanities** department has the highest graduation rate at **90%**, while **Sciences** have the lowest at **72%**.""",
-"How is the GPA distribution across different years?": """Here’s the GPA trend over recent years:\n\n- **2018**: Average GPA of **3.2**\n- **2019**: Average GPA of **3.3**\n- **2020**: Average GPA of **3.25**\n- **2021**: Average GPA of **3.35**\n- **2022**: Average GPA of **3.4**\n\nGPAs have shown a **gradual increase** over the years, with students consistently improving performance.""",
-"What are the monthly expenses in different departments?": """Monthly expenses across departments are as follows:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\nThe **Engineering** department has the highest expenses at **$75,000 per month**.""",
-"Show the scholarship allocation by student category": """Here’s how scholarships are allocated:\n\n- **Merit-based**: **55%**\n- **Need-based**: **30%**\n- **Athletic**: **10%**\n- **Diversity**: **5%**\n\n**Merit-based scholarships** form the largest category, comprising **55%** of the total scholarship allocation.""",
-"What is the distribution of majors?": """Here’s the breakdown of majors across students:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: Business leads as the most popular major with **30%** of students.""",
-"What is the student retention rate by department?": """Here are the student retention rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Actionable Insight**: Retention is lowest in the Sciences department at **72%**. Focused support for science students could boost these rates.""",
-"What are the student scores by course?": """Here’s the distribution of average scores by course:\n\n- **CIS 2400**: **85%**\n- **CIS 5020**: **90%**\n- **CIS 1210**: **78%**\n- **ESE 3060**: **82%**\n\n**Insight**: CIS 5020 shows the highest average score, indicating strong student performance in this advanced course.""",
-"What is the distribution of scores by course?": """Here’s the score distribution by course:\n\n- **CIS 2400**: Range [65, 75, 80, 85, 95]\n- **CIS 5020**: Range [70, 80, 85, 90, 100]\n- **CIS 1210**: Range [60, 70, 75, 78, 85]\n- **ESE 3060**: Range [50, 65, 72, 80, 90]\n\n**Actionable Insight**: CIS 5020 has a higher top range, showcasing challenging assessments and high achievers.""",
-"Show the monthly expenses by department": """Here’s a breakdown of monthly expenses by department:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\n**Insight**: Engineering has the highest expense, suggesting substantial investments in lab resources and equipment.""",
-"What is the impact of extra-curricular activities on grades?": """Here’s the impact of extra-curricular hours on GPA:\n\n- **Student A**: 5 hours - **GPA 3.5**\n- **Student B**: 10 hours - **GPA 3.2**\n- **Student C**: 15 hours - **GPA 3.7**\n- **Student D**: 20 hours - **GPA 3.0**\n\n**Insight**: Moderate participation (10-15 hours) correlates with higher GPAs, balancing activities with academics effectively.""",
-"How does faculty feedback vary by department?": """Here’s how faculty feedback varies:\n\n- **Computer Science**: **+15** points\n- **Engineering**: **-5** points\n- **Business**: **+10** points\n- **Humanities**: **+8** points\n- **Sciences**: **-3** points\n\n**Insight**: Engineering shows a slight negative trend, while Business has highly positive feedback, reflecting effective instructional practices as you can see on graph 4.""",
-"What are the current retention rates?": """Here are the student retention rates by year:\n\n- **2019**: **85%**\n- **2020**: **87%**\n- **2021**: **82%**\n- **2022**: **90%**\n\nRetention rates reached a high of **90%** in 2022, reflecting improved support and engagement initiatives.""",
-"4": """Great! And how many of those classes have you already decided on?""",
-"I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
-"I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
-"Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
-"CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020, please find below details on Dr. Hammish's Office Hours:""",
-"Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for workload, but you will complete several degree requirements.\n\nYou can register for your classes on PATH@PENN:""",
-"That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!"""
-}
+    "Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
+    "I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let’s get started.""",
+    "Show me some statistics": """Here are some enrollment statistics for your courses:\n\n- **CIS 2400**: **120 students enrolled**\n- **CIS 5020**: **85 students enrolled**\n- **CIS 1210**: **200 students enrolled**\n- **ESE 3060**: **60 students enrolled**\n\nThe most popular course this semester is **CIS 1210** with **200 students**, indicating strong interest in foundational topics.""",
+    "Compare course enrollment trends": """Here is a comparison of course enrollment statistics between 2022 and 2023:\n\n- **CIS 2400**: 2022 - **120 students**, 2023 - **130 students** (Increase of 8.3%)\n- **CIS 5020**: 2022 - **85 students**, 2023 - **90 students** (Increase of 5.9%)\n- **CIS 1210**: 2022 - **200 students**, 2023 - **210 students** (Increase of 5.0%)\n- **ESE 3060**: 2022 - **60 students**, 2023 - **65 students** (Increase of 8.3%)\n\nThe data shows a consistent increase in enrollment across all courses from 2022 to 2023. **CIS 1210** remains the most popular course with the highest number of enrollments, indicating sustained strong interest in this foundational subject.""",
+    "What are the current student performance metrics?": """Here are the current student performance metrics:\n\n- **40%** of students are performing at an **Excellent** level.\n- **35%** are rated as **Good**.\n- **15%** are in the **Average** category.\n- **10%** fall below average.\n\n**Actionable Insight**: A significant portion of students (40%) are excelling, showing strong academic engagement across core subjects.""",
+    "What is the distribution of student majors?": """The distribution of majors among students is as follows:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: The largest proportion of students, **30%**, are majoring in Business, suggesting a trend towards business-related fields.""",
+    "How has the enrollment trend changed over the years?": """Here’s a look at the enrollment trends over the past years:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\nEnrollment has steadily increased, with a **22% rise since 2018** and a particularly strong recovery after 2020.""",
+    "What is the retention rate by department?": """Here’s the retention rate by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Insight**: The highest retention rate is in **Humanities** at **90%**, while **Sciences** show the lowest at **72%**. Focus on targeted retention programs in Sciences could improve these numbers.""",
+    "What is the department budget allocation?": """Here’s the current budget allocation by department:\n\n- **Computer Science**: **80%** utilized\n- **Engineering**: **95%** utilized\n- **Business**: **60%** utilized\n- **Humanities**: **70%** utilized\n- **Sciences**: **85%** utilized\n\n**Actionable Insight**: Engineering has the highest budget utilization at **95%**, while Business has unutilized funds. Allocating funds more effectively could improve resource availability in areas with higher utilization.""",
+    "What is the enrollment trend over years?": """Here’s the enrollment trend by year:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\n**Trend**: Enrollment shows consistent growth, especially after the recovery period in 2020, with a **22% increase since 2018**.""",
+    "Show the graduation rates by department": """Here’s a breakdown of graduation rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\nThe **Humanities** department has the highest graduation rate at **90%**, while **Sciences** have the lowest at **72%**.""",
+    "How is the GPA distribution across different years?": """Here’s the GPA trend over recent years:\n\n- **2018**: Average GPA of **3.2**\n- **2019**: Average GPA of **3.3**\n- **2020**: Average GPA of **3.25**\n- **2021**: Average GPA of **3.35**\n- **2022**: Average GPA of **3.4**\n\nGPAs have shown a **gradual increase** over the years, with students consistently improving performance.""",
+    "What are the monthly expenses in different departments?": """Monthly expenses across departments are as follows:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\nThe **Engineering** department has the highest expenses at **$75,000 per month**.""",
+    "Show the scholarship allocation by student category": """Here’s how scholarships are allocated:\n\n- **Merit-based**: **55%**\n- **Need-based**: **30%**\n- **Athletic**: **10%**\n- **Diversity**: **5%**\n\n**Merit-based scholarships** form the largest category, comprising **55%** of the total scholarship allocation.""",
+    "What is the distribution of majors?": """Here’s the breakdown of majors across students:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: Business leads as the most popular major with **30%** of students.""",
+    "What is the student retention rate by department?": """Here are the student retention rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Actionable Insight**: Retention is lowest in the Sciences department at **72%**. Focused support for science students could boost these rates.""",
+    "What are the student scores by course?": """Here’s the distribution of average scores by course:\n\n- **CIS 2400**: **85%**\n- **CIS 5020**: **90%**\n- **CIS 1210**: **78%**\n- **ESE 3060**: **82%**\n\n**Insight**: CIS 5020 shows the highest average score, indicating strong student performance in this advanced course.""",
+    "What is the distribution of scores by course?": """Here’s the score distribution by course:\n\n- **CIS 2400**: Range [65, 75, 80, 85, 95]\n- **CIS 5020**: Range [70, 80, 85, 90, 100]\n- **CIS 1210**: Range [60, 70, 75, 78, 85]\n- **ESE 3060**: Range [50, 65, 72, 80, 90]\n\n**Actionable Insight**: CIS 5020 has a higher top range, showcasing challenging assessments and high achievers.""",
+    "Show the monthly expenses by department": """Here’s a breakdown of monthly expenses by department:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\n**Insight**: Engineering has the highest expense, suggesting substantial investments in lab resources and equipment.""",
+    "What is the impact of extra-curricular activities on grades?": """Here’s the impact of extra-curricular hours on GPA:\n\n- **Student A**: 5 hours - **GPA 3.5**\n- **Student B**: 10 hours - **GPA 3.2**\n- **Student C**: 15 hours - **GPA 3.7**\n- **Student D**: 20 hours - **GPA 3.0**\n\n**Insight**: Moderate participation (10-15 hours) correlates with higher GPAs, balancing activities with academics effectively.""",
+    "How does faculty feedback vary by department?": """Here’s how faculty feedback varies:\n\n- **Computer Science**: **+15** points\n- **Engineering**: **-5** points\n- **Business**: **+10** points\n- **Humanities**: **+8** points\n- **Sciences**: **-3** points\n\n**Insight**: Engineering shows a slight negative trend, while Business has highly positive feedback, reflecting effective instructional practices as you can see on graph 4.""",
+    "What are the current retention rates?": """Here are the student retention rates by year:\n\n- **2019**: **85%**\n- **2020**: **87%**\n- **2021**: **82%**\n- **2022**: **90%**\n\nRetention rates reached a high of **90%** in 2022, reflecting improved support and engagement initiatives.""",
+    "4": """Great! And how many of those classes have you already decided on?""",
+    "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
+    "I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
+    "Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
+    "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020, please find below details on Dr. Hammish's Office Hours:""",
+    "Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for workload, but you will complete several degree requirements.\n\nYou can register for your classes on PATH@PENN:""",
+    "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
+    "Most common types of questions asked to Lucy across different categories?":"""**Overall Insight**: The Enrollment Assistant is seeing increased engagement in **Financial Aid (+150 questions)** and **Career Services (+100)**, highlighting these as high-importance areas. **Academic Advising** also rose by **+80 questions**, while **Program Information** and **Admission Process** inquiries stabilized or slightly decreased (**-50** and **-20**, respectively). Average question complexity remains highest in **Career Services (8.0)** and **Financial Aid (7.5)**, indicating detailed student needs in these areas. Expanding support here will likely enhance overall student satisfaction and success.""",
+    "What is the average financial aid package": """Hey there! 😊 The average financial aid package at UPenn for the 2023-2024 academic year is **$66,222**. This package is more than the cost of tuition and includes grants and work-study funding. UPenn is committed to meeting 100% of demonstrated financial need for its students.\nWould you like me to check any specific details about financial aid eligibility or application processes? 💸""",
+    "My parents earn $120k; how much aid could I expect?": """Hey! 😊 To give you the most accurate information about how much financial aid you might expect with a family income of $120k, I'll need to check the latest details from UPenn's financial aid office. Let me do that for you right now! 🕵️‍♂️\nI'll get back to you in a moment.\nHere's what you can expect regarding financial aid at UPenn with a family income of $120,000:\n**Financial Aid Overview**\n**Need-Blind Admissions:** UPenn is need-blind for domestic students, meaning your financial need won't affect your admission decision.\n**Expected Family Contribution (EFC):** For a family earning $120,000, the EFC might be significant, potentially ranging from $30,000 to $40,000 per year. This depends on other financial factors like savings and assets.\n**Financial Aid Package**\n**Grant Aid and Work-Study**: You might receive around $45,000 in grant aid per year, though this can vary based on your specific financial situation.\n**No Loans:** UPenn does not include loans in the financial aid packages for students with demonstrated need.\nTools for Estimation\n**Net Price Calculator:** You can use UPenn's Net Price Calculator or the MyIntuition tool for a more personalized estimate.\nIf you have any specific questions or need help with the financial aid application process, feel free to ask! Would you like me to check anything else related to financial aid? 💸""",
+    "您好": """你好！😊 有什么我可以帮你的吗？如果你有关于宾夕法尼亚大学的问题，无论是学术上的还是行政上的，都可以问我哦！""",
+    }
 
 
     # Dictionary to associate specific documents with certain questions/responses
@@ -706,6 +710,54 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             }
         ]
     }
+
+
+    answer_reddit_associations: Dict[str, List[Dict]] = {
+        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+            {
+                    "comment": "Yes Upenn is one of the best Ivy Leagues",
+                    "score": "1.1k",
+            }
+        ]
+    }
+
+
+    
+    answer_instagram_associations: Dict[str, List[Dict]] = {
+        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+            {
+                    "title": "What is the BEST things about Upenn?",
+                    "nbr_view": "15k",
+                    "link": "https://ui.shadcn.com/",
+                    "picture":"http://localhost:5001/static/academic_advisor/short_insta.png"
+            }
+        ]
+    }
+
+    
+
+    answer_youtube_associations: Dict[str, List[Dict]] = {
+        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+            {
+                    "title": "A day in the life at UPenn",
+                    "link": "https://www.youtube.com/watch?v=o2f-4h03XfY",
+                    'miniature':"http://localhost:5001/static/academic_advisor/mini_youtube.png",
+                    "nbr_view": "187k",
+            }
+        ]
+    }
+
+
+    answer_quora_associations: Dict[str, List[Dict]] = {
+        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+            {
+                    "comment": "I think Upenn is better than Yales and Cornell",
+                    "score": "5.2k",
+            }
+        ]
+    }
+    
+
 
     # Dictionary for answer_TAK associated with specific input messages
     answer_TAK_associations: Dict[str, List[Dict]] = {
@@ -1306,8 +1358,192 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
                 }
             ]
         }
-    ]
-    }
+    ],
+    "Most common types of questions asked to Lucy across different categories?": [
+    {
+        "answer_charts": [
+            {
+                "chartType": "waterfall",
+                "chartTitle": "Change in Number of Questions by Category",
+                "xAxisTitle": "Category",
+                "yAxisTitle": "Change in Number of Questions",
+                "series": [
+                    {
+                        "seriesName": "Change 2024",
+                        "data": [
+                            {"label": "Financial Aid", "x": 1, "y": 150},
+                            {"label": "Program Information", "x": 2, "y": -50},
+                            {"label": "Career Services", "x": 3, "y": 100},
+                            {"label": "Academic Advising", "x": 4, "y": 80},
+                            {"label": "Admission Process", "x": 5, "y": -20}
+                        ]
+                    },
+                    {
+                        "seriesName": "Change 2023",
+                        "data": [
+                            {"label": "Financial Aid", "x": 1, "y": 100},
+                            {"label": "Program Information", "x": 2, "y": -30},
+                            {"label": "Career Services", "x": 3, "y": 90},
+                            {"label": "Academic Advising", "x": 4, "y": 70},
+                            {"label": "Admission Process", "x": 5, "y": -10}
+                        ]
+                    }
+                ]
+            },
+            {
+                "chartType": "bubble",
+                "chartTitle": "Question Complexity by Category",
+                "xAxisTitle": "Category",
+                "yAxisTitle": "Average Complexity Score",
+                "series": [
+                    {
+                        "seriesName": "Complexity 2024",
+                        "data": [
+                            {"label": "Financial Aid", "x": 1, "y": 7.5, "z": 300},
+                            {"label": "Program Information", "x": 2, "y": 6.2, "z": 250},
+                            {"label": "Career Services", "x": 3, "y": 8.0, "z": 320},
+                            {"label": "Academic Advising", "x": 4, "y": 7.0, "z": 280},
+                            {"label": "Admission Process", "x": 5, "y": 6.5, "z": 200}
+                        ]
+                    },
+                    {
+                        "seriesName": "Complexity 2023",
+                        "data": [
+                            {"label": "Financial Aid", "x": 1, "y": 7.0, "z": 280},
+                            {"label": "Program Information", "x": 2, "y": 6.0, "z": 230},
+                            {"label": "Career Services", "x": 3, "y": 7.8, "z": 310},
+                            {"label": "Academic Advising", "x": 4, "y": 6.8, "z": 260},
+                            {"label": "Admission Process", "x": 5, "y": 6.3, "z": 190}
+                        ]
+                    }
+                ]
+            },
+            {
+                "chartType": "line",
+                "chartTitle": "Trend in Number of Questions Over Time by Category",
+                "xAxisTitle": "Month",
+                "yAxisTitle": "Number of Questions",
+                "series": [
+                    {
+                        "seriesName": "Financial Aid",
+                        "data": [
+                            {"label": "Jan", "x": 1, "y": 120},
+                            {"label": "Feb", "x": 2, "y": 130},
+                            {"label": "Mar", "x": 3, "y": 140},
+                            {"label": "Apr", "x": 4, "y": 150},
+                            {"label": "May", "x": 5, "y": 160},
+                            {"label": "Jun", "x": 6, "y": 170},
+                            {"label": "Jul", "x": 7, "y": 180},
+                            {"label": "Aug", "x": 8, "y": 190},
+                            {"label": "Sep", "x": 9, "y": 200},
+                            {"label": "Oct", "x": 10, "y": 210},
+                            {"label": "Nov", "x": 11, "y": 220},
+                            {"label": "Dec", "x": 12, "y": 230}
+                        ]
+                    },
+                    {
+                        "seriesName": "Program Information",
+                        "data": [
+                            {"label": "Jan", "x": 1, "y": 80},
+                            {"label": "Feb", "x": 2, "y": 85},
+                            {"label": "Mar", "x": 3, "y": 90},
+                            {"label": "Apr", "x": 4, "y": 95},
+                            {"label": "May", "x": 5, "y": 100},
+                            {"label": "Jun", "x": 6, "y": 105},
+                            {"label": "Jul", "x": 7, "y": 110},
+                            {"label": "Aug", "x": 8, "y": 115},
+                            {"label": "Sep", "x": 9, "y": 120},
+                            {"label": "Oct", "x": 10, "y": 125},
+                            {"label": "Nov", "x": 11, "y": 130},
+                            {"label": "Dec", "x": 12, "y": 135}
+                        ]
+                    },
+                    {
+                        "seriesName": "Career Services",
+                        "data": [
+                            {"label": "Jan", "x": 1, "y": 100},
+                            {"label": "Feb", "x": 2, "y": 110},
+                            {"label": "Mar", "x": 3, "y": 120},
+                            {"label": "Apr", "x": 4, "y": 130},
+                            {"label": "May", "x": 5, "y": 140},
+                            {"label": "Jun", "x": 6, "y": 150},
+                            {"label": "Jul", "x": 7, "y": 160},
+                            {"label": "Aug", "x": 8, "y": 170},
+                            {"label": "Sep", "x": 9, "y": 180},
+                            {"label": "Oct", "x": 10, "y": 190},
+                            {"label": "Nov", "x": 11, "y": 200},
+                            {"label": "Dec", "x": 12, "y": 210}
+                        ]
+                    },
+                    {
+                        "seriesName": "Academic Advising",
+                        "data": [
+                            {"label": "Jan", "x": 1, "y": 90},
+                            {"label": "Feb", "x": 2, "y": 95},
+                            {"label": "Mar", "x": 3, "y": 100},
+                            {"label": "Apr", "x": 4, "y": 105},
+                            {"label": "May", "x": 5, "y": 110},
+                            {"label": "Jun", "x": 6, "y": 115},
+                            {"label": "Jul", "x": 7, "y": 120},
+                            {"label": "Aug", "x": 8, "y": 125},
+                            {"label": "Sep", "x": 9, "y": 130},
+                            {"label": "Oct", "x": 10, "y": 135},
+                            {"label": "Nov", "x": 11, "y": 140},
+                            {"label": "Dec", "x": 12, "y": 145}
+                        ]
+                    },
+                    {
+                        "seriesName": "Admission Process",
+                        "data": [
+                            {"label": "Jan", "x": 1, "y": 70},
+                            {"label": "Feb", "x": 2, "y": 75},
+                            {"label": "Mar", "x": 3, "y": 80},
+                            {"label": "Apr", "x": 4, "y": 85},
+                            {"label": "May", "x": 5, "y": 90},
+                            {"label": "Jun", "x": 6, "y": 95},
+                            {"label": "Jul", "x": 7, "y": 100},
+                            {"label": "Aug", "x": 8, "y": 105},
+                            {"label": "Sep", "x": 9, "y": 110},
+                            {"label": "Oct", "x": 10, "y": 115},
+                            {"label": "Nov", "x": 11, "y": 120},
+                            {"label": "Dec", "x": 12, "y": 125}
+                        ]
+                    }
+                ]
+            },
+            {
+                "chartType": "bar",
+                "chartTitle": "Top 5 Most Asked Question Types by Category",
+                "xAxisTitle": "Category",
+                "yAxisTitle": "Number of Questions",
+                "series": [
+                    {
+                        "seriesName": "Top Questions 2024",
+                        "data": [
+                            {"label": "Financial Aid", "x": 1, "y": 300},
+                            {"label": "Program Information", "x": 2, "y": 250},
+                            {"label": "Career Services", "x": 3, "y": 320},
+                            {"label": "Academic Advising", "x": 4, "y": 280},
+                            {"label": "Admission Process", "x": 5, "y": 200}
+                        ]
+                    },
+                    {
+                        "seriesName": "Top Questions 2023",
+                        "data": [
+                            {"label": "Financial Aid", "x": 1, "y": 280},
+                            {"label": "Program Information", "x": 2, "y": 230},
+                            {"label": "Career Services", "x": 3, "y": 310},
+                            {"label": "Academic Advising", "x": 4, "y": 260},
+                            {"label": "Admission Process", "x": 5, "y": 190}
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+],
+
+}
 
     
 
@@ -1405,6 +1641,10 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     response_message = known_responses.get(input_message, "Sorry, I don't understand the question.")
 
     # Get the documents, related questions, images, answer_TAK and answer_waiting associated with the input message
+    answer_REDDIT_data = answer_reddit_associations.get(input_message, None)
+    answer_INSTA_data = answer_instagram_associations.get(input_message, None)
+    answer_YOUTUBE_data = answer_youtube_associations.get(input_message, None)
+    answer_QUORA_data = answer_quora_associations.get(input_message, None)
     documents = document_associations.get(input_message, [])
     related_qs = related_questions.get(input_message, [])
     images = image_associations.get(input_message, [])
@@ -1413,6 +1653,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     answer_waiting_data = answer_waiting_associations.get(input_message, [])
     # Vérification si le message d'entrée nécessite un graphique
     answer_CHART_data = answer_chart_associations.get(input_message, None)
+    
 
     # Return the simulated response as streaming
     async def message_stream():
@@ -1455,11 +1696,33 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             yield f"\n<IMAGE_DATA>{image_data_json}<IMAGE_DATA_END>\n"
             await asyncio.sleep(0.2)
 
+        if answer_REDDIT_data:
+            answer_REDDIT_json = json.dumps({"reddit": answer_REDDIT_data})
+            yield f"\n<REDDIT>{answer_REDDIT_json}<REDDIT_END>\n"
+            await asyncio.sleep(0.2)  # Pause avant de continuer
+
+        
+        if answer_INSTA_data:
+            answer_INSTA_json = json.dumps({"insta": answer_INSTA_data})
+            yield f"\n<INSTA>{answer_INSTA_json}<INSTA_END>\n"
+            await asyncio.sleep(0.2)  # Pause avant de continuer
+
+        if answer_YOUTUBE_data:
+            answer_YOUTUBE_json = json.dumps({"youtube": answer_YOUTUBE_data})
+            yield f"\n<YOUTUBE>{answer_YOUTUBE_json}<YOUTUBE_END>\n"
+            await asyncio.sleep(0.2)  # Pause avant de continuer
+
+        if answer_QUORA_data:
+            answer_QUORA_json = json.dumps({"quora": answer_QUORA_data})
+            yield f"\n<QUORA>{answer_QUORA_json}<QUORA_END>\n"
+            await asyncio.sleep(0.2)  # Pause avant de continuer
+        
         # Send documents one by one if available
         if documents:
             for document in documents:
                 yield f"\n<JSON_DOCUMENT_START>{json.dumps(document)}<JSON_DOCUMENT_END>\n"
                 await asyncio.sleep(0.2)
+
 
         # Send related questions as JSON if available
         if related_qs:
@@ -1479,6 +1742,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             yield f"\n<ANSWER_CHART>{answer_CHART_json}<ANSWER_CHART_END>\n"
             await asyncio.sleep(0.2)  # Pause avant de continuer
 
+
         # Send answer_COURSE as JSON if available
         if answer_COURSE_data:
             answer_COURSE_json = json.dumps({"answer_COURSE_data": answer_COURSE_data})
@@ -1488,7 +1752,8 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     return StreamingResponse(message_stream(), media_type="text/plain")
 
 
-#return app
+
+
 
 
 
@@ -1500,4 +1765,4 @@ def create_app():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8004)
+    uvicorn.run(create_app(), host="0.0.0.0", port=8004)

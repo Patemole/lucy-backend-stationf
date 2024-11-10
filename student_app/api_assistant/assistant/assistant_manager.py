@@ -143,10 +143,14 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                     "type": "string",
                                     "description": "Each entry is a step in the reasoning process, detailing the approach to answering the query, including relevant filtering, checking for accuracy, and handling complex queries as needed."
                                 },
-                                "description": "An array of 2 to 4 steps outlining the reasoning process for addressing the user's query, shown to the user as an intermediate step before the final answer."
+                                "description": "An array of 1 to 4 steps outlining the reasoning process for addressing the user's query. 1 to 4 depending on the complexity of the query."
+                            },
+                            "keywords_search": {
+                                "type": "string",
+                                "description": "The most relevant keyword that is related to the query of the user has to be exactly one word"
                             }
                         },
-                        "required": ["query", "model", "image_bool", "reasoning_steps"]
+                        "required": ["query", "model", "image_bool", "reasoning_steps", "keywords_search"]
                     }
                 }
             },

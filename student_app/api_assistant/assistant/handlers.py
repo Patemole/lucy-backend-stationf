@@ -6,6 +6,8 @@ from .tools.perplexity_tool.perplexity_manager import get_up_to_date_info, get_s
 from .tools.clarification_tool.clarification_manager import get_clarifying_question_output
 from .tools.perplexity_tool.image_search import google_image_search
 from .tools.perplexity_tool.sources_urls import google_source_search
+from .tools.perplexity_tool.student_feedbacks_manager import get_top_comment
+from .tools.perplexity_tool.youtube_search_manager import get_youtube_videos
 from functools import wraps
 import time
 import asyncio
@@ -108,8 +110,8 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
 
                 #Yielding the reosoning steps
                 reasoning_steps = arguments.get('reasoning_steps', '')
-                structured_reasoning = {"reasoning_steps": [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]}
-                #yield f"\n<REASONING_STEPS>{json.dumps({'structured_reasoning': structured_reasoning})}<REASONING_STEPS_END>\n"
+                structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
+                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"             
                 logging.info(f"reasoning_steps yield {structured_reasoning} for {input_message}")
 
                 logging.info(f"Getting the sources for {input_message}")
@@ -119,6 +121,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 else:
                     logging.warning(f"No sources for {input_message}")
 
+                """
                 text_search = []
                 print(f"Sources for search sentences: {sources}")
                 for i, source in enumerate(sources, 1):
@@ -127,6 +130,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
 
                 logging.info(f"Yielding lucy searching sentence {text_search} for {input_message}")
                 yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': text_search})}<ANSWER_WAITING_END>\n"
+                """
 
                 try:
                     sources_list = get_sources_json(sources, input_message)  # Ensure async call here
@@ -143,6 +147,21 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                     image_url = await google_image_search(query, input_message)  # Await for async search
                     logging.info(f"Image URL found: {image_url} for {input_message}")
                     yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
+
+
+                #TODO look for async or not
+                keywords_reddit_search = arguments.get('keywords_search', '')
+                logging.info(f"Reddit student feedbacks with keywords: {keywords_reddit_search} for {input_message}")
+                reddit_comment_list = await get_top_comment(university, keywords_reddit_search, input_message)
+                logging.info(f"Reddit student feedbacks succesfull for {reddit_comment_list} for {input_message}")
+                #yield f"\n<REDDIT>{json.dumps({'reddit': reddit_comment_list})}<REDDIT_END>\n"
+
+                youtube_query = keywords_reddit_search + " " + university 
+                logging.info(f"Youtube video search with keywords: {youtube_query} for {input_message}")
+                result_youtube_list = await get_youtube_videos(youtube_query, input_message)
+                logging.info(f"Youtube search succesfull for {result_youtube_list} for {input_message}")
+                #yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_list})}<YOUTUBE_END>\n"
+
 
                 output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
                 logging.info(f"Current info for query {query} : {output} for '{input_message}'")
