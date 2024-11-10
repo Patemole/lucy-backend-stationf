@@ -157,13 +157,13 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 logging.info(f"Reddit student feedbacks with keywords: {keywords_reddit_search} for {input_message}")
                 reddit_comment_list = await get_top_comment(university, keywords_reddit_search, input_message)
                 logging.info(f"Reddit student feedbacks succesfull for {reddit_comment_list} for {input_message}")
-                #yield f"\n<REDDIT>{json.dumps({'reddit': reddit_comment_list})}<REDDIT_END>\n"
+                yield f"\n<REDDIT>{json.dumps({'reddit': reddit_comment_list})}<REDDIT_END>\n"
 
                 youtube_query = keywords_reddit_search + " " + university 
                 logging.info(f"Youtube video search with keywords: {youtube_query} for {input_message}")
                 result_youtube_list = await get_youtube_videos(youtube_query, input_message)
                 logging.info(f"Youtube search succesfull for {result_youtube_list} for {input_message}")
-                #yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_list})}<YOUTUBE_END>\n"
+                yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_list})}<YOUTUBE_END>\n"
 
                 #TODO change the assistant to make a instagram query
                 instagram_query = ""
@@ -171,7 +171,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 #TODO see if useful to make it async
                 result_instagram_profile_list = transform_instagram_data(instagram_query, input_message)
                 logging.info(f"Instagram profile search succesfull for {result_instagram_profile_list} for {input_message}")
-                #yield f"\n<INSTA_CLUB>{json.dumps({'insta_club': result_instagram_profile_list})}<INSTA_CLUB_END>\n"
+                yield f"\n<INSTA_CLUB>{json.dumps({'insta_club': result_instagram_profile_list})}<INSTA_CLUB_END>\n"
 
                 #TODO change the assistant to make a instagram query
                 instagram_reels_query = ""
@@ -179,14 +179,14 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 #TODO see if useful to make it async
                 result_instagram_reels_list = transform_instagram_reels_data(instagram_reels_query, input_message)
                 logging.info(f"Instagram reels search succesfull for {result_instagram_reels_list} for {input_message}")
-                #yield f"\n<INSTA>{json.dumps({'insta': result_instagram_reels_list})}<INSTA_END>\n"
+                yield f"\n<INSTA>{json.dumps({'insta': result_instagram_reels_list})}<INSTA_END>\n"
 
                 linkedin_query = ""
                 logging.info(f"Linkedin profile search with keywords: {linkedin_query} for {input_message}")
                 #TODO see if useful to make it async
                 result_linkedin_profile_list = transform_linkedin_profiles_data(linkedin_query, input_message)
                 logging.info(f"Linkedin profile search succesfull for {result_linkedin_profile_list} for {input_message}")
-                #yield f"\n<LINKEDIN>{json.dumps({'linkedin': result_linkedin_profile_list})}<LINKEDIN_END>\n"
+                yield f"\n<LINKEDIN>{json.dumps({'linkedin': result_linkedin_profile_list})}<LINKEDIN_END>\n"
 
                 output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
                 logging.info(f"Current info for query {query} : {output} for '{input_message}'")
