@@ -22,7 +22,7 @@ input_data = [
         "followersCount": 1548,
         "highlightReelCount": 9,
         "joinedRecently": False,
-        "profilePicUrlHD": "https://scontent-iad3-2.cdninstagram.com/v/t51.2885-19/228301094_346165107054059_1707756379427772474_n.jpg?stp=dst-jpg_s320x320&_nc_ht=scontent-iad3-2.cdninstagram.com&_nc_cat=111&_nc_ohc=GxwY3uSTanoQ7kNvgEC5qIq&_nc_gid=1550b97cb65b4667bf8d3ee9bc81ca31&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AYAiu9W4h5YFLllAnaKIhXD22dheiN4KxahtP-v36o1CsA&oe=6736B243&_nc_sid=8b3546",
+        "profilePicUrlHD": "http://localhost:5001/static/academic_advisor/insta_club.png",
         "postsCount": 331
     }
 ]

@@ -114,7 +114,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 #Yielding the reosoning steps
                 reasoning_steps = arguments.get('reasoning_steps', '')
                 structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
-                #yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"             
+                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"             
                 logging.info(f"reasoning_steps yield {structured_reasoning} for {input_message}")
 
                 logging.info(f"Getting the sources for {input_message}")
