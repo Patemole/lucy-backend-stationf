@@ -17,7 +17,8 @@ logging.basicConfig(
 async def get_youtube_videos(search_query, input_message):
     logging.info(f"YouTube API for query '{search_query}' for {input_message}.")
     GOOGLE_CLOUD_API_KEY = os.getenv('GOOGLE_CLOUD_API_KEY')
-    search_query = "UPenn Campus tour"
+
+    search_query="Anne duchene UPenn"
     SEARCH_URL = f'https://www.googleapis.com/youtube/v3/search?part=snippet&q={search_query}&type=video&key={GOOGLE_CLOUD_API_KEY}'
     
     videos = []  # Initialize an empty list to store video details
@@ -38,15 +39,16 @@ async def get_youtube_videos(search_query, input_message):
                             if stats_response.status == 200:
                                 stats_data = await stats_response.json()
                                 for item in stats_data.get('items', []):
+                                    if len(videos) >= 2:
+                                        break  # Limit to 2 items
                                     title = item['snippet'].get('title', 'No title')
                                     video_url = f'https://www.youtube.com/watch?v={item["id"]}'
-                                    #thumbnail_url = item['snippet']['thumbnails']['default']['url'] if 'thumbnails' in item['snippet'] else ""
                                     view_count = item['statistics'].get('viewCount', "0")
                                     
                                     videos.append({
                                         "title": title,
                                         "link": video_url,
-                                        "miniature": "",
+                                        "miniature": "",  # Add a miniature URL if available
                                         "nbr_view": view_count
                                     })
                                     logging.info(f"Video found: '{title}' - {video_url}, Views: {view_count} for {input_message}")
@@ -62,4 +64,3 @@ async def get_youtube_videos(search_query, input_message):
         logging.error(f"An unexpected error occurred: {e} for {input_message}")
 
     return videos
-
