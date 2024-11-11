@@ -15,7 +15,7 @@ logging.basicConfig(
 
 async def get_top_comment(subreddit_name, search_query, input_message):
     logging.info(f"Starting async search for top Reddit feedback for input: '{input_message}' in subreddit '{subreddit_name}' with query '{search_query}'")
-    search_query = "Does UPenn truly meet 100 percents of demonstrated financial need"
+
     
     reddit = asyncpraw.Reddit(
         client_id=os.getenv('GOOGLE_CLOUD_CLIENT_ID'),

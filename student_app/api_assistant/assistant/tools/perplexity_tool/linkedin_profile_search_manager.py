@@ -1,5 +1,6 @@
 import logging
 
+
 # Setup logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -14,10 +15,10 @@ logging.basicConfig(
 # Sample input data for LinkedIn profiles
 input_data = [
     {
-        "name": "Guy Lorenzotti",
+        "name": "Anne Duchene",
         "picture": "https://media.licdn.com/dms/image/v2/C4E03AQEdJCKHyIiWyA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1663636910616?e=1736985600&v=beta&t=2YqBhWfviiQG_wOSURkhp8Qbs2O5GHQQqBezyIJhAg4",
         "headline": "https://media.licdn.com/dms/image/v2/D4E16AQFgK-lKx4ZMow/profile-displaybackgroundimage-shrink_350_1400/profile-displaybackgroundimage-shrink_350_1400/0/1698073166590?e=1736985600&v=beta&t=w5cTRMPSnS0KusfcEx961MQnzJF_vwdLfEZHqnnUrlc",
-        "sentence": "Aspiring software developer and data enthusiast.",
+        "sentence": "ECON teacher",
         "link": "https://www.linkedin.com/in/guy-lorenzotti/"
     }
 ]

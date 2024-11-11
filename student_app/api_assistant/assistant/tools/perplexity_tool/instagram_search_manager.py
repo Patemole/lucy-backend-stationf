@@ -15,9 +15,9 @@ input_data = [
     {
         "searchSource": "threads",
         "inputUrl": "https://www.instagram.com/penngleeclub/",
-        "username": "penngleeclub",
+        "username": "Anne Duchene",
         "url": "https://www.instagram.com/penngleeclub",
-        "fullName": "Penn Glee Club",
+        "fullName": "Anne Duchene",
         "biography": "The longest continually running glee club in the US & the oldest performing arts group at @uofpenn\n⬇️ Get tickets for Soirée (Nov 13-15th, 8pm) below!",
         "followersCount": 1548,
         "highlightReelCount": 9,
