@@ -11,23 +11,39 @@ logging.basicConfig(
     ]
 )
 
-input_data = [
+input_dat_admission = [
     {
         "searchSource": "threads",
         "inputUrl": "https://www.instagram.com/penngleeclub/",
-        "username": "Anne Duchene",
-        "url": "https://www.instagram.com/penngleeclub",
-        "fullName": "Anne Duchene",
-        "biography": "The longest continually running glee club in the US & the oldest performing arts group at @uofpenn\n⬇️ Get tickets for Soirée (Nov 13-15th, 8pm) below!",
-        "followersCount": 1548,
+        "username": "previewingpenn",
+        "url": "https://www.instagram.com/previewingpenn?igsh=NXJoMmU2ejh0b2lp",
+        "fullName": "Penn Admissions",
+        "biography": "Official Instagram of Penn Undergraduate Admissions 💙  \n Visit our website to learn more! 👇 \n linktr.ee/previewingpenn",
+        "followersCount": "26.3k",
         "highlightReelCount": 9,
         "joinedRecently": False,
-        "profilePicUrlHD": "http://localhost:5001/static/academic_advisor/insta_club.png",
-        "postsCount": 331
+        "profilePicUrlHD": "http://localhost:5001/static/academic_advisor/penn_admission_logo.png",
+        "postsCount": "1,528"
     }
 ]
 
-def transform_instagram_data(query, input_message, data=input_data):
+input_dat_research = [
+    {
+        "searchSource": "threads",
+        "inputUrl": "https://www.instagram.com/previewingpenn/",
+        "username": "previewingpenn",
+        "url": "https://www.instagram.com/previewingpenn?igsh=NXJoMmU2ejh0b2lp",
+        "fullName": "Penn Admissions",
+        "biography": "Official Instagram of Penn Undergraduate Admissions 💙  \n Visit our website to learn more! 👇 \n linktr.ee/previewingpenn",
+        "followersCount": "26.3k",
+        "highlightReelCount": 9,
+        "joinedRecently": False,
+        "profilePicUrlHD": "http://localhost:5001/static/academic_advisor/penn_admission_logo.png",
+        "postsCount": "1,528"
+    }
+]
+
+def transform_instagram_data(query, input_message, data=input_dat_admission):
     transformed_data = []
     logging.info(f"Starting transformation of Instagram data. for {input_message}")
 

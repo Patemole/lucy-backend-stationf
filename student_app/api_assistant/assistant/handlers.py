@@ -120,7 +120,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 logging.info(f"Getting the sources for {input_message}")
                 sources = await google_source_search(query, university, input_message)
                 if sources:
-                    logging.info(f"Sources received for {input_message}")
+                    logging.info(f"Sources received {sources} for {input_message}")
                 else:
                     logging.warning(f"No sources for {input_message}")
 
@@ -153,7 +153,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
 
                 
                 #TODO look for async or not
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(0.3)
                 keywords_reddit_search = arguments.get('keywords_search', '')
                 logging.info(f"Reddit student feedbacks with keywords: {keywords_reddit_search} for {input_message}")
                 reddit_comment_list = await get_top_comment(university, keywords_reddit_search, input_message)
@@ -168,7 +168,6 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 logging.info(f"Youtube search succesfull for {result_youtube_list} for {input_message}")
                 yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_list})}<YOUTUBE_END>\n"
 
-            
                 #TODO change the assistant to make a instagram query
                 await asyncio.sleep(0.2)
                 instagram_reels_query = ""
@@ -185,7 +184,9 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 result_linkedin_profile_list = transform_linkedin_profiles_data(linkedin_query, input_message)
                 logging.info(f"Linkedin profile search succesfull for {result_linkedin_profile_list} for {input_message}")
                 yield f"\n<LINKEDIN>{json.dumps({'linkedin': result_linkedin_profile_list})}<LINKEDIN_END>\n"
+            
 
+                """
                 await asyncio.sleep(0.2)
                 instagram_query = ""
                 logging.info(f"Instagram search with keywords: {instagram_query} for {input_message}")
@@ -193,7 +194,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 result_instagram_profile_list = transform_instagram_data(instagram_query, input_message)
                 logging.info(f"Instagram profile search succesfull for {result_instagram_profile_list} for {input_message}")
                 yield f"\n<INSTA_CLUB>{json.dumps({'insta_club': result_instagram_profile_list})}<INSTA_CLUB_END>\n"
-
+                """
                 
                 output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
                 logging.info(f"Current info for query {query} : {output} for '{input_message}'")
