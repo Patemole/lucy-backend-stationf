@@ -15,11 +15,11 @@ logging.basicConfig(
 # Sample input data for LinkedIn profiles
 input_data = [
     {
-        "name": "Anne Duchene",
-        "picture": "https://media.licdn.com/dms/image/v2/C4E03AQEdJCKHyIiWyA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1663636910616?e=1736985600&v=beta&t=2YqBhWfviiQG_wOSURkhp8Qbs2O5GHQQqBezyIJhAg4",
-        "headline": "https://media.licdn.com/dms/image/v2/D4E16AQFgK-lKx4ZMow/profile-displaybackgroundimage-shrink_350_1400/profile-displaybackgroundimage-shrink_350_1400/0/1698073166590?e=1736985600&v=beta&t=w5cTRMPSnS0KusfcEx961MQnzJF_vwdLfEZHqnnUrlc",
-        "sentence": "ECON teacher",
-        "link": "https://www.linkedin.com/in/guy-lorenzotti/"
+        "name": "Zack Ives",
+        "picture": "https://media.licdn.com/dms/image/v2/D4E03AQGyaPhcJQib5w/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1719850160169?e=1736985600&v=beta&t=SV3Wqi6mN_bNeiJwmyPdXsC3ZA_VUJEZb1ljhAuBk6I",
+        "headline": "http://localhost:5001/static/academic_advisor/banner_linkedi_penn.png",
+        "sentence": "Professor of CIS, Penn",
+        "link": "https://www.linkedin.com/in/zack-ives-0349b5/"
     }
 ]
 

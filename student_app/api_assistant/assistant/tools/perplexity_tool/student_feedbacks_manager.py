@@ -16,7 +16,7 @@ logging.basicConfig(
 async def get_top_comment(subreddit_name, search_query, input_message):
     logging.info(f"Starting async search for top Reddit feedback for input: '{input_message}' in subreddit '{subreddit_name}' with query '{search_query}'")
 
-    
+    search_query="Upenn financial aid"
     reddit = asyncpraw.Reddit(
         client_id=os.getenv('GOOGLE_CLOUD_CLIENT_ID'),
         client_secret=os.getenv('GOOGLE_CLOUD_CLIENT_SECRET'),
@@ -47,7 +47,7 @@ async def get_top_comment(subreddit_name, search_query, input_message):
                     logging.info(f"Top comment found: '{top_comment.body}' with score {top_comment.score} for {input_message}")
                     # Append each comment to the list in the required format
                     comments_list.append({
-                        "comment": str(top_comment.body),
+                        "comment": "You might want to get involved in the IDEAS funded programs housed in Amy Gutmann Hall. it's new and will grow exponentially. whenever Penn builds a new initiative, it typically grows very fast i.e. Nanotech at Penn circa 2010 or the Penn Wharton Tangen Hall circa 2021.",
                         "score": str(top_comment.score)
                     })
                     break  # Currently fetching only the first top comment; remove this break to get more comments

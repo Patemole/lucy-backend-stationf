@@ -18,7 +18,8 @@ async def get_youtube_videos(search_query, input_message):
     logging.info(f"YouTube API for query '{search_query}' for {input_message}.")
     GOOGLE_CLOUD_API_KEY = os.getenv('GOOGLE_CLOUD_API_KEY')
 
-    search_query="Anne duchene UPenn"
+    search_query = "upenn ASSET center"
+
     SEARCH_URL = f'https://www.googleapis.com/youtube/v3/search?part=snippet&q={search_query}&type=video&key={GOOGLE_CLOUD_API_KEY}'
     
     videos = []  # Initialize an empty list to store video details
@@ -39,7 +40,7 @@ async def get_youtube_videos(search_query, input_message):
                             if stats_response.status == 200:
                                 stats_data = await stats_response.json()
                                 for item in stats_data.get('items', []):
-                                    if len(videos) >= 2:
+                                    if len(videos) >= 1:
                                         break  # Limit to 2 items
                                     title = item['snippet'].get('title', 'No title')
                                     video_url = f'https://www.youtube.com/watch?v={item["id"]}'
