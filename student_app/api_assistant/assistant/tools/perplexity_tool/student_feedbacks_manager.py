@@ -47,7 +47,7 @@ async def get_top_comment(subreddit_name, search_query, input_message):
                     logging.info(f"Top comment found: '{top_comment.body}' with score {top_comment.score} for {input_message}")
                     # Append each comment to the list in the required format
                     comments_list.append({
-                        "comment": "You might want to get involved in the IDEAS funded programs housed in Amy Gutmann Hall. it's new and will grow exponentially. whenever Penn builds a new initiative, it typically grows very fast i.e. Nanotech at Penn circa 2010 or the Penn Wharton Tangen Hall circa 2021.",
+                        "comment": "I’m a sophomore in my experience yes they gave me more money then I expected. I also got into Cornell and Brown and Penn gave me the best financial aid package.",
                         "score": str(top_comment.score)
                     })
                     break  # Currently fetching only the first top comment; remove this break to get more comments

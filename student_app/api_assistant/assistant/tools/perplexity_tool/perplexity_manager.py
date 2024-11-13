@@ -75,8 +75,8 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
     )
     logging.info(f"Model for perplexity is {model} for {input_message}")
 
-    #query = "I am high school senior applying to UPenn, my parents are earning 100k a year how much will i be expected to pay and how much help would i get. Give an estimate with actual numbers."
-    query = "I am a senior at UPenn in the SEAS studying computer science. I want to know how to get involved into AI research, tell me all Research Initiatives there is like IDEAS, ASSET center and which faculty exactly should i contact, like Zack Ives"
+    query = "I am high school senior applying to UPenn, my parents are earning 100k a year how much will i be expected to pay and how much help would i get. Give an estimate with actual numbers."
+    #query = "I am a senior at UPenn in the SEAS studying computer science. I want to know how to get involved into AI research, tell me all Research Initiatives there is like IDEAS, ASSET center and which faculty exactly should i contact, like Zack Ives"
 
     payload = {
         "model": f"llama-3.1-sonar-{model}-128k-online",
