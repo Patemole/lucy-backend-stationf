@@ -52,7 +52,6 @@ def timing_decorator(func):
         return sync_wrapper
 
 
-
 @timing_decorator
 async def create_thread(client, chat_id, username, university, input_message):
     """
@@ -77,6 +76,10 @@ async def add_user_message(client, thread_id, user_query):
     """
     Adds a user message to the specified thread.
     """
+    if not user_query.strip():  # Check if user_query is empty or whitespace
+        logging.warning(f"Attempted to add an empty user message to thread {thread_id} for {user_query}. Skipping.")
+        return None  # Return None to indicate no action taken
+
     try:
         logging.info(f"Adding user message to thread {thread_id} for {user_query}")
         message = await client.beta.threads.messages.create(
@@ -84,74 +87,78 @@ async def add_user_message(client, thread_id, user_query):
             role="user",
             content=user_query
         )
-        logging.info(f"User message added to thread {thread_id}: {user_query}")
+        logging.info(f"User message added to thread {thread_id}: for {user_query}")
         return message
     except Exception as e:
-        logging.error(f"Error adding user message to thread {thread_id}: {str(e)} for {user_query}")
+        logging.error(f"Error adding user message to thread in add_user_message {thread_id}: {str(e)} for {user_query}")
         raise
 
 @timing_decorator
-async def add_message_to_thread(client, thread_id, role, content):
+async def add_message_to_thread(client, thread_id, role, content, input_message):
     """
     Adds a message (user/assistant) to the specified thread.
     """
+    if not content.strip():  # Check if content is empty or whitespace
+        logging.warning(f"Attempted to add an empty {role} message to thread {thread_id} for {input_message}. Skipping.")
+        return None  # Return None to indicate no action taken
+
     try:
-        logging.info(f"Adding {role} message to thread {thread_id}")
+        logging.info(f"Adding {role} message to thread {thread_id} for {input_message}")
         message = await client.beta.threads.messages.create(
             thread_id=thread_id,
             role=role,
             content=content
         )
-        logging.info(f"{role.capitalize()} message added to thread {thread_id}: {content}")
+        logging.info(f"{role.capitalize()} message added to thread {thread_id}: {content} for {input_message}")
         return message
     except Exception as e:
-        logging.error(f"Error adding {role} message to thread {thread_id}: {str(e)}")
+        logging.error(f"Error adding {role} message to thread in add_message_to_thread {thread_id}: {str(e)} for {input_message}")
         raise
 
 @timing_decorator
-async def create_and_poll_run(client, thread_id, assistant_id):
+async def create_and_poll_run(client, thread_id, assistant_id, input_message):
     """
     Creates a run for the assistant and polls its status until completion.
     """
     try:
-        logging.info(f"Creating and polling run for thread {thread_id}, assistant {assistant_id}")
+        logging.info(f"Creating and polling run for thread {thread_id}, assistant {assistant_id} for {input_message}")
         run = await client.beta.threads.runs.create_and_poll(
             thread_id=thread_id,
             assistant_id=assistant_id
         )
-        logging.info(f"Run created with ID: {run.id}, Initial status: {run.status}")
+        logging.info(f"Run created with ID: {run.id}, Initial status: {run.status} for {input_message}")
         return run
     except Exception as e:
-        logging.error(f"Error creating and polling run for thread {thread_id}: {str(e)}")
+        logging.error(f"Error creating and polling run for thread {thread_id}: {str(e)} for {input_message}")
         raise
 
 @timing_decorator
-async def retrieve_run(client, run_id, thread_id):
+async def retrieve_run(client, run_id, thread_id, input_message):
     """
     Retrieves the current status of a run.
     """
     try:
-        logging.info(f"Retrieving run with ID {run_id} for thread {thread_id}")
+        logging.info(f"Retrieving run with ID {run_id} for thread {thread_id} for {input_message}")
         run = await client.beta.threads.runs.retrieve(
             thread_id=thread_id,
             run_id=run_id
         )
-        logging.info(f"Retrieved run with status: {run.status}")
+        logging.info(f"Retrieved run with status: {run.status} for {input_message}")
         return run
     except Exception as e:
-        logging.error(f"Error retrieving run {run_id} for thread {thread_id}: {str(e)}")
+        logging.error(f"Error retrieving run {run_id} for thread {thread_id}: {str(e)} for {input_message}")
         raise
 
 @timing_decorator
-async def retrieve_messages(client, thread_id):
+async def retrieve_messages(client, thread_id, input_message):
     """
     Retrieves all messages in a thread.
     """
     try:
-        logging.info(f"Retrieving messages for thread {thread_id}")
+        logging.info(f"Retrieving messages for thread {thread_id} for {input_message}")
         messages = await client.beta.threads.messages.list(thread_id=thread_id)
-        logging.info(f"Retrieved {len(messages)} messages for thread {thread_id}")
+        logging.info(f"Retrieved {len(messages)} messages for thread {thread_id} for {input_message}")
         return messages
     except Exception as e:
-        logging.error(f"Error retrieving messages for thread {thread_id}: {str(e)}")
+        logging.error(f"Error retrieving messages for thread {thread_id}: {str(e)} for {input_message}")
         raise

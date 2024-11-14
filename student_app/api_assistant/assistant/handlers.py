@@ -50,7 +50,77 @@ def timing_decorator(func):
         return sync_wrapper
 
 
+@timing_decorator
+async def on_event(client, event, input_message, image_bool, university, username, major, minor, year, school, max_retries=3):
+    """
+    Handles various event types and retries in case of failures.
+    """
+    try:
+        logging.info(f"ON_EVENT triggered: {event.event} for {input_message}")
 
+        # Define retry loop for handling 'thread.run.failed'
+        for attempt in range(max_retries):
+            try:
+                # Handle 'requires_action' event
+                if event.event == 'thread.run.requires_action':
+                    logging.info(f"Handling required action event... for {input_message}")
+                    run_id = event.data.id
+                    thread_id = event.data.thread_id
+                    async for data in handle_requires_action(client, event.data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
+                        yield data
+
+                # Handle 'delta' event
+                elif event.event == 'thread.message.delta':
+                    for block in event.data.delta.content:
+                        if block.type == "text" and hasattr(block.text, "value"):
+                            delta_text = block.text.value
+                            logging.info(f"Delta text received: {delta_text} for {input_message}")
+                            yield delta_text + "|"
+                        else:
+                            logging.warning(f"No text content found or unsupported block type: {block.type} for {input_message}")
+
+                # Handle 'completed' event
+                elif event.event == 'thread.run.completed':
+                    logging.info(f"Run completed for {input_message}")
+                    yield None  # Indicate completion
+                    return  # Exit function on successful completion
+
+                # Handle 'failed' event with retries
+                elif event.event == 'thread.run.failed':
+                    logging.error(f"ON_EVENT Run FAILED for event: {event} for {input_message}")
+                    if attempt < max_retries - 1:
+                        # Yield a message for retrying and wait before next attempt
+                        yield f"\n<ANSWER_WAITING>Retrying run due to failure... Attempt {attempt + 1} of {max_retries} for {input_message}<ANSWER_WAITING_END>\n"
+                        await asyncio.sleep(1)  # Delay before retrying
+                        continue  # Retry the event handling
+                    else:
+                        yield "Oops! We’re experiencing persistent issues. Please try resending your message in a few moments."
+                        raise Exception("Exceeded maximum retries for failed event.")
+
+                # Handle queued and in-progress events
+                elif event.event == 'thread.run.queued ':
+                    logging.info(f"ON_EVENT Run QUEUED for event: {event} for {input_message}")
+                elif event.event == 'thread.run.in_progress ':
+                    logging.warning(f"ON_EVENT Run IN_PROGRESS for event: {event} for {input_message}")
+                else:
+                    logging.warning(f"Unhandled event: {event.event} for {input_message}")
+
+            except Exception as e:
+                logging.error(f"Error in on_event handler attempt {attempt + 1} of {max_retries}: {str(e)} for {input_message}", exc_info=True)
+                if attempt == max_retries - 1:
+                    yield "Oops! We’re experiencing persistent issues. Please try again later."
+                    raise  # Re-raise the exception after max retries
+            else:
+                # Exit retry loop on successful handling without exception
+                break
+
+    except Exception as e:
+        logging.error(f"Final error in on_event: {str(e)} for {input_message}", exc_info=True)
+        raise
+
+
+
+"""
 @timing_decorator
 async def on_event(client, event, input_message, image_bool, university, username, major, minor, year, school):
     try:
@@ -86,6 +156,7 @@ async def on_event(client, event, input_message, image_bool, university, usernam
     except Exception as e:
         logging.error(f"Error in on_event handler: {str(e)} for {input_message}", exc_info=True)
         raise
+"""
 
 @timing_decorator
 async def handle_requires_action(client, data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
@@ -108,6 +179,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 #sources = arguments.get('sources', [])
                 image_bool = arguments.get('image_bool', False)
                 model = arguments.get('model', 'small')
+                google_search_query = arguments.get('google_search_query', '')
                 if model not in ['small', 'large']:
                     model = 'small'
 
@@ -118,7 +190,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 logging.info(f"reasoning_steps yield {structured_reasoning} for {input_message}")
 
                 logging.info(f"Getting the sources for {input_message}")
-                sources = await google_source_search(query, university, input_message)
+                sources = await google_source_search(google_search_query, university, input_message)
                 if sources:
                     logging.info(f"Sources received {sources} for {input_message}")
                 else:
@@ -151,7 +223,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                     logging.info(f"Image URL found: {image_url} for {input_message}")
                     yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
 
-                
+                """
                 #TODO look for async or not
                 await asyncio.sleep(0.3)
                 keywords_reddit_search = arguments.get('keywords_search', '')
@@ -160,15 +232,13 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 logging.info(f"Reddit student feedbacks succesfull for {reddit_comment_list} for {input_message}")
                 yield f"\n<REDDIT>{json.dumps({'reddit': reddit_comment_list})}<REDDIT_END>\n"
 
-
                 await asyncio.sleep(0.2)
                 youtube_query = keywords_reddit_search + " " + university 
                 logging.info(f"Youtube video search with keywords: {youtube_query} for {input_message}")
                 result_youtube_list = await get_youtube_videos(youtube_query, input_message)
                 logging.info(f"Youtube search succesfull for {result_youtube_list} for {input_message}")
                 yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_list})}<YOUTUBE_END>\n"
-
-                """
+                
                 #TODO change the assistant to make a instagram query
                 await asyncio.sleep(0.2)
                 instagram_reels_query = ""
@@ -177,9 +247,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 result_instagram_reels_list = transform_instagram_reels_data(instagram_reels_query, input_message)
                 logging.info(f"Instagram reels search succesfull for {result_instagram_reels_list} for {input_message}")
                 yield f"\n<INSTA>{json.dumps({'insta': result_instagram_reels_list})}<INSTA_END>\n"
-                """
-
-                """
+            
                 await asyncio.sleep(0.2)
                 linkedin_query = ""
                 logging.info(f"Linkedin profile search with keywords: {linkedin_query} for {input_message}")
@@ -187,8 +255,6 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 result_linkedin_profile_list = transform_linkedin_profiles_data(linkedin_query, input_message)
                 logging.info(f"Linkedin profile search succesfull for {result_linkedin_profile_list} for {input_message}")
                 yield f"\n<LINKEDIN>{json.dumps({'linkedin': result_linkedin_profile_list})}<LINKEDIN_END>\n"
-                """
-
                 
                 await asyncio.sleep(0.2)
                 instagram_query = ""
@@ -197,7 +263,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 result_instagram_profile_list = transform_instagram_data(instagram_query, input_message)
                 logging.info(f"Instagram profile search succesfull for {result_instagram_profile_list} for {input_message}")
                 yield f"\n<INSTA_CLUB>{json.dumps({'insta_club': result_instagram_profile_list})}<INSTA_CLUB_END>\n"
-                
+                """
                 
                 output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
                 logging.info(f"Current info for query {query} : {output} for '{input_message}'")
@@ -257,6 +323,82 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
         logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
         raise
 
+
+@timing_decorator
+async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message, max_retries=3):
+    try:
+        logging.info(f"Submitting tool outputs... for {input_message}")
+        separation_added = False
+
+        for attempt in range(max_retries):
+            try:
+                if attempt > 0:
+                    # Yield a waiting message to the frontend during retries
+                    waiting_message = f"Oupssss, looks like I am facing latency connecting to {university} database, let me try again ... \n"
+                    yield waiting_message
+                    await asyncio.sleep(1)  # Short delay before retrying
+
+                # Submit tool outputs
+                stream = await client.beta.threads.runs.submit_tool_outputs(
+                    thread_id=thread_id,
+                    run_id=run_id,
+                    tool_outputs=tool_outputs,
+                    stream=True
+                )
+
+                # Process streaming events
+                async for event in stream:
+                    if event.event == "thread.message.delta":
+                        for block in event.data.delta.content:
+                            if block.type == "text" and hasattr(block.text, "value"):
+                                delta_text = block.text.value
+
+                                if not separation_added:
+                                    yield "\n\n\n\n"
+                                    separation_added = True
+
+                                logging.info(f"Delta text from submit_tool_outputs: {delta_text} for {input_message}")
+                                yield delta_text + "|"
+                            else:
+                                logging.warning(f"No text content found in delta block for {input_message}")
+
+                    elif event.event == 'thread.run.requires_action':
+                        logging.info(f"Handling required action event during submit_tool_outputs for {input_message}")
+                        async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message):
+                            yield data
+
+                    elif event.event == "thread.run.step.completed":
+                        logging.info(f"Step completed for {input_message}")
+                    elif event.event == "thread.run.completed":
+                        logging.info(f"Run completed for {input_message}")
+                        yield None  # Indicate completion
+                        return  # Exit function after successful completion
+                    elif event.event == "thread.message.completed":
+                        logging.info(f"Message completed for {input_message}")
+                        yield None
+                    elif event.event == 'thread.run.failed':
+                        raise Exception("Thread run failed")
+                    elif event.event == 'thread.run.queued ':
+                        logging.info(f"SUBMIT_TOOL_OUTPUTS Run QUEUED for event :{event} for {input_message}")
+                    elif event.event == 'thread.run.in_progress ':
+                        logging.info(f"SUBMIT_TOOL_OUTPUTS Run IN_PROGRESS for event :{event} for {input_message}")
+                    else:
+                        logging.warning(f"Unhandled event: {event.event} for {input_message}")
+
+            except Exception as e:
+                logging.error(f"Error in submit_tool_outputs attempt {attempt + 1} of {max_retries}: {str(e)} for {input_message}", exc_info=True)
+                if attempt == max_retries - 1:
+                    yield "Oops! We’re experiencing persistent issues. Please try again later."
+                    raise  # Re-raise the exception after max retries
+            else:
+                # Exit the loop if no exception was raised
+                break
+    except Exception as e:
+        logging.error(f"Final error in submit_tool_outputs: {str(e)} for {input_message}", exc_info=True)
+        raise
+
+
+    """
 @timing_decorator
 async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message):
     try:
@@ -308,7 +450,7 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
     except Exception as e:
         logging.error(f"Error in submit_tool_outputs: {str(e)} for {input_message}", exc_info=True)
         raise
-
+    """
 
 
 
