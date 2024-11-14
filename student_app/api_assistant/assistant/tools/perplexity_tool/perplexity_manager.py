@@ -41,16 +41,17 @@ def timing_decorator(func):
         return sync_wrapper
 
 @timing_decorator
-async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message):
+async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message, max_retries=3):
     """
-    Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query.
+    Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query,
+    with automatic retries on failure.
     """
     logging.info(f"Retrieving up-to-date info for query: {query} from university: {university} for {input_message}")
     
     PPLX_API_KEY = os.getenv('PPLX_API_KEY')
 
     if not PPLX_API_KEY:
-        logging.error(f"Perplexity API key not found. for {input_message}")
+        logging.error(f"Perplexity API key not found for {input_message}")
         return "Error: Perplexity API key not found."
 
     url = "https://api.perplexity.ai/chat/completions"  # Replace with the actual Perplexity API endpoint
@@ -70,13 +71,130 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
             - Year: {year}
             - Majors: {major} (can be undeclared if none)
             - Minors: {minor} (can be undeclared if none)
-            Only mention the informations that are from his school ({school}) and relatable from his year ({year})
+
+            Important system rules:
+            - Only mention the informations that are from his school ({school}) and relatable from his year ({year})
+            - Be as precise as possible, if you mention a place, give the location, a person give the name and email, if you are giving advise and guidance mention exact university ressources,, building, person, OH, courses, deadlines etc ... 
         """
     )
     logging.info(f"Model for perplexity is {model} for {input_message}")
 
-    query = "I am high school senior applying to UPenn, my parents are earning 100k a year how much will i be expected to pay and how much help would i get. Give an estimate with actual numbers."
-    #query = "I am a senior at UPenn in the SEAS studying computer science. I want to know how to get involved into AI research, tell me all Research Initiatives there is like IDEAS, ASSET center and which faculty exactly should i contact, like Zack Ives"
+    payload = {
+        "model": f"llama-3.1-sonar-{model}-128k-online",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query}
+        ],
+        "max_tokens": 500,
+        "stream": False,
+        "return_citations": True,
+        "return_related_questions": True,
+        "search_domain_filter": [f"{university}.edu"],
+        "temperature": 0.1,
+        "top_p": 0.1,
+        "frequency_penalty": 1.2
+    }
+
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": f"Bearer {PPLX_API_KEY}"
+    }
+
+    for attempt in range(max_retries):
+        try:
+            if attempt > 0:
+                logging.warning(f"Retrying Perplexity API call... Attempt {attempt + 1} of {max_retries} for {input_message}")
+                await asyncio.sleep(1)  # Delay before retrying
+
+            logging.info(f"Sending request to Perplexity API for query: {input_message}")
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload, headers=headers) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        content = data['choices'][0]['message']['content']
+                        logging.info(f"Data successfully retrieved from Perplexity API for {input_message}")
+                        return content  # Return content on success
+                    else:
+                        logging.error(f"Error: {response.status} for {input_message}")
+                        error_message = await response.text()
+                        logging.error(f"API Error response: {error_message} for {input_message}")
+                        if attempt == max_retries - 1:
+                            return f"Error: {response.status} - {error_message}"
+        except Exception as e:
+            logging.error(f"Error retrieving information from Perplexity API: {str(e)} for {input_message}")
+            if attempt == max_retries - 1:
+                return f"Error retrieving information after {max_retries} attempts: {str(e)} for {input_message}"
+
+    # If all retries fail, send a final error message
+    return "Error: Unable to retrieve up-to-date information after multiple attempts."
+
+
+def get_sources_json(sources, input_message):
+    """
+    Generates a list of sources in the specified format.
+    
+    Parameters:
+    - sources (list): A list of dictionaries where each contains 'link' and 'document_name'.
+
+    Returns:
+    - list: A list of dictionaries in the required output format.
+    """
+    logging.info(f"Generating sources JSON. for {input_message}")
+    tool_output = []
+
+    for source in sources:
+        tool_output.append({
+            "answer_document": {
+                "document_id": "4",  # Fixed value
+                "link": source.get('url', ''),  # Dynamically fetched from input
+                "document_name": source.get('name', ''),  # Dynamically fetched from input
+                "source_type": "course_resource"  # Fixed value
+            }
+        })
+    
+    logging.info(f"Generated {len(tool_output)} sources. for {input_message}")
+    return tool_output
+
+"""
+@timing_decorator
+async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message):
+    
+    Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query.
+    
+    logging.info(f"Retrieving up-to-date info for query: {query} from university: {university} for {input_message}")
+    
+    PPLX_API_KEY = os.getenv('PPLX_API_KEY')
+
+    if not PPLX_API_KEY:
+        logging.error(f"Perplexity API key not found. for {input_message}")
+        return "Error: Perplexity API key not found."
+
+    url = "https://api.perplexity.ai/chat/completions"  # Replace with the actual Perplexity API endpoint
+    current_date = datetime.now().strftime("%B %d, %Y")
+
+    system_prompt = (
+        f
+            You are a reliable academic advisor at {university}, and you provide accurate, up-to-date, and factual information. 
+            Only research on site:{university}.edu. 
+            We are currently in the Fall 2024 semester, and today's date is {current_date}.
+
+            When you are asked about events never mention past events
+
+            Student details:
+            - Name: {username}
+            - School: {school}
+            - Year: {year}
+            - Majors: {major} (can be undeclared if none)
+            - Minors: {minor} (can be undeclared if none)
+
+            Important system rules:
+            - Only mention the informations that are from his school ({school}) and relatable from his year ({year})
+            - Be as precise as possible, if you mention a place, give the location, a person give the name and email, if you are giving advise and guidance mention exact university ressources,, building, person, OH, courses, deadlines etc ... 
+        
+    )
+    logging.info(f"Model for perplexity is {model} for {input_message}")
+
 
     payload = {
         "model": f"llama-3.1-sonar-{model}-128k-online",
@@ -118,28 +236,4 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
         logging.error(f"Error retrieving information from Perplexity API: {str(e)} for {input_message}")
         return f"Error retrieving information: {str(e)}"
 
-def get_sources_json(sources, input_message):
     """
-    Generates a list of sources in the specified format.
-
-    Parameters:
-    - sources (list): A list of dictionaries where each contains 'link' and 'document_name'.
-
-    Returns:
-    - list: A list of dictionaries in the required output format.
-    """
-    logging.info(f"Generating sources JSON. for {input_message}")
-    tool_output = []
-
-    for source in sources:
-        tool_output.append({
-            "answer_document": {
-                "document_id": "4",  # Fixed value
-                "link": source.get('url', ''),  # Dynamically fetched from input
-                "document_name": source.get('name', ''),  # Dynamically fetched from input
-                "source_type": "course_resource"  # Fixed value
-            }
-        })
-    
-    logging.info(f"Generated {len(tool_output)} sources. for {input_message}")
-    return tool_output

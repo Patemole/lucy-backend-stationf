@@ -204,11 +204,11 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             if past_messages:
                 logging.info(f"Adding {len(past_messages)} past messages to thread {thread.id} for {input_message}")
                 for past_message in past_messages:
-                    await add_message_to_thread(client, thread.id, past_message["role"], past_message["content"])
+                    await add_message_to_thread(client, thread.id, past_message["role"], past_message["content"], input_message)
                 logging.info(f"Added completed of {len(past_messages)} past messages to thread {thread.id} for {input_message}")
 
             logging.info(f"Adding user message to thread {thread.id}: {input_query.message} for {input_message}")
-            await add_user_message(client, thread.id, input_query.message)
+            await add_user_message(client, thread.id, input_message)
             logging.info(f"Added completed user messageto thread {thread.id} for {input_message}")
 
             try:

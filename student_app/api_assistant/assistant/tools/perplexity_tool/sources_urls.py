@@ -17,6 +17,65 @@ logging.basicConfig(
 )
 
 # Async function to search for web sources using Google Custom Search JSON API
+async def google_source_search(query, university, input_message, num_results=3, max_retries=3, timeout=10):
+    # Google Custom Search API details
+    API_KEY = GOOGLE_API_KEY
+    SEARCH_ENGINE_ID = 'c43aac779112b4278'
+    url = "https://www.googleapis.com/customsearch/v1"
+
+    if university == "pennstate":
+        university = "psu"
+    domain_restricted_query = f"{query} site:{university}.edu"
+    logging.info(f"QUERY FOR GOOGLE SEARCH: {domain_restricted_query} for {input_message}")
+    
+    # Search parameters
+    params = {
+        'q': domain_restricted_query,
+        'cx': SEARCH_ENGINE_ID,
+        'key': API_KEY,
+        'num': num_results
+    }
+
+    for attempt in range(max_retries):
+        try:
+            async with httpx.AsyncClient(timeout=timeout) as client:
+                response = await client.get(url, params=params)
+
+            if response.status_code == 200:
+                data = response.json()
+                source_results = []
+                
+                if 'items' in data:
+                    for item in data['items']:
+                        result = {
+                            "name": item.get('title', 'No title'),
+                            "url": item.get('link', 'No URL'),
+                        }
+                        source_results.append(result)
+                    
+                    logging.info(f"GOOGLE_SOURCE_SEARCH successful for {source_results} for query {query} for {input_message}")
+                    return source_results
+                else:
+                    logging.warning(f"GOOGLE_SOURCE_SEARCH returned no items for query {query} for {input_message}")
+                    return []
+
+            else:
+                logging.error(f"GOOGLE_SOURCE_SEARCH failed with status {response.status_code} for query {query} for {input_message}")
+                if attempt == max_retries - 1:
+                    return f"Error: {response.status_code}, {response.text} for {input_message}"
+        
+        except httpx.RequestError as e:
+            logging.warning(f"Timeout or network error on attempt {attempt + 1} for query {query} for {input_message}: {e}")
+            if attempt == max_retries - 1:
+                return f"Error: Network issue after {max_retries} attempts for {input_message}"
+
+    # Final fallback in case of unexpected exit
+    logging.error(f"GOOGLE_SOURCE_SEARCH failed after {max_retries} attempts for query {query} for {input_message}")
+    return []
+
+
+"""
+# Async function to search for web sources using Google Custom Search JSON API
 async def google_source_search(query, university, input_message, num_results=3):
     
     # Google Custom Search API details
@@ -27,7 +86,7 @@ async def google_source_search(query, university, input_message, num_results=3):
     if university == "pennstate":
         university = "psu"
     domain_restricted_query = f"{query} site:{university}.edu"
-    print(f"QUERY FOR GOOGLE SEARCH: {domain_restricted_query} for {input_message}")
+    logging.info(f"QUERY FOR GOOGLE SEARCH: {domain_restricted_query} for {input_message}")
     
     # Search parameters
     params = {
@@ -71,7 +130,7 @@ async def google_source_search(query, university, input_message, num_results=3):
                 }
                 source_results.append(result)
             
-            logging.info(f"GOOGLE_SOUCRSE_SEARCH successfull for {source_results} for {input_message}")
+            logging.info(f"GOOGLE_SOUCRSE_SEARCH successfull for {source_results} for query {query} for {input_message}")
             return source_results
         
         else:
@@ -79,3 +138,4 @@ async def google_source_search(query, university, input_message, num_results=3):
             return []
     else:
         return f"Error: {response.status_code}, {response.text} for {input_message}"
+"""
