@@ -90,7 +90,7 @@ async def on_event(client, event, input_message, image_bool, university, usernam
                     logging.error(f"ON_EVENT Run FAILED for event: {event} for {input_message}")
                     if attempt < max_retries - 1:
                         # Yield a message for retrying and wait before next attempt
-                        yield f"\n<ANSWER_WAITING>Retrying run due to failure... Attempt {attempt + 1} of {max_retries} for {input_message}<ANSWER_WAITING_END>\n"
+                        yield f"Oups! looks like we are facing latency connecting to {university} database, let me try again ... \n"
                         await asyncio.sleep(1)  # Delay before retrying
                         continue  # Retry the event handling
                     else:
@@ -118,45 +118,6 @@ async def on_event(client, event, input_message, image_bool, university, usernam
         logging.error(f"Final error in on_event: {str(e)} for {input_message}", exc_info=True)
         raise
 
-
-
-"""
-@timing_decorator
-async def on_event(client, event, input_message, image_bool, university, username, major, minor, year, school):
-    try:
-        logging.info(f"ON_EVENT triggered: {event.event} for {input_message}")
-        if event.event == 'thread.run.requires_action':
-            logging.info(f"Handling required action event... for {input_message}")
-            run_id = event.data.id
-            thread_id = event.data.thread_id
-            async for data in handle_requires_action(client, event.data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
-                yield data
-
-        elif event.event == 'thread.message.delta':
-            for block in event.data.delta.content:
-                if block.type == "text" and hasattr(block.text, "value"):
-                    delta_text = block.text.value
-                    logging.info(f"Delta text received: {delta_text} for {input_message}")
-                    yield delta_text + "|"
-                else:
-                    logging.warning(f"No text content found or unsupported block type: {block.type} for {input_message}")
-
-        elif event.event == 'thread.run.completed':
-            logging.info(f"Run completed. for {input_message}")
-            yield None  # Indicate completion
-        elif event.event == 'thread.run.failed':
-            logging.error(f"ON_EVENT Run FAILED for event :{event} for {input_message}")
-            yield "Oops! We’re experiencing a high volume of activity right now. Please try resending your message in a few moments."
-        elif event.event == 'thread.run.queued ':
-            logging.info(f"ON_EVENT Run QUEUED for event :{event} for {input_message}")
-        elif event.event == 'thread.run.in_progress ':
-            logging.warning(f"ON_EVENT Run IN_PROGRESS for event :{event} for {input_message}")
-        else:
-            logging.warning(f"Unhandled event: {event.event} for {input_message}")
-    except Exception as e:
-        logging.error(f"Error in on_event handler: {str(e)} for {input_message}", exc_info=True)
-        raise
-"""
 
 @timing_decorator
 async def handle_requires_action(client, data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
@@ -334,7 +295,7 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
             try:
                 if attempt > 0:
                     # Yield a waiting message to the frontend during retries
-                    waiting_message = f"Oupssss, looks like I am facing latency connecting to {university} database, let me try again ... \n"
+                    waiting_message = f"Oups! looks like I am facing latency connecting to {university} database, let me try again ... \n"
                     yield waiting_message
                     await asyncio.sleep(1)  # Short delay before retrying
 
@@ -397,6 +358,47 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
         logging.error(f"Final error in submit_tool_outputs: {str(e)} for {input_message}", exc_info=True)
         raise
 
+
+
+
+
+    """
+@timing_decorator
+async def on_event(client, event, input_message, image_bool, university, username, major, minor, year, school):
+    try:
+        logging.info(f"ON_EVENT triggered: {event.event} for {input_message}")
+        if event.event == 'thread.run.requires_action':
+            logging.info(f"Handling required action event... for {input_message}")
+            run_id = event.data.id
+            thread_id = event.data.thread_id
+            async for data in handle_requires_action(client, event.data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
+                yield data
+
+        elif event.event == 'thread.message.delta':
+            for block in event.data.delta.content:
+                if block.type == "text" and hasattr(block.text, "value"):
+                    delta_text = block.text.value
+                    logging.info(f"Delta text received: {delta_text} for {input_message}")
+                    yield delta_text + "|"
+                else:
+                    logging.warning(f"No text content found or unsupported block type: {block.type} for {input_message}")
+
+        elif event.event == 'thread.run.completed':
+            logging.info(f"Run completed. for {input_message}")
+            yield None  # Indicate completion
+        elif event.event == 'thread.run.failed':
+            logging.error(f"ON_EVENT Run FAILED for event :{event} for {input_message}")
+            yield "Oops! We’re experiencing a high volume of activity right now. Please try resending your message in a few moments."
+        elif event.event == 'thread.run.queued ':
+            logging.info(f"ON_EVENT Run QUEUED for event :{event} for {input_message}")
+        elif event.event == 'thread.run.in_progress ':
+            logging.warning(f"ON_EVENT Run IN_PROGRESS for event :{event} for {input_message}")
+        else:
+            logging.warning(f"Unhandled event: {event.event} for {input_message}")
+    except Exception as e:
+        logging.error(f"Error in on_event handler: {str(e)} for {input_message}", exc_info=True)
+        raise
+    """
 
     """
 @timing_decorator
