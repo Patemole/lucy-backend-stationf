@@ -249,6 +249,10 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 query = arguments.get('query', '')
                 query = "Give me the most specific contacts information (person, email, location, phone number) for the query:" + query
                 logging.info(f"Yielding answer waiting for redirection to agent for {input_message}")
+                reasoning_steps = arguments.get('reasoning_steps', '')
+                structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
+                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"             
+                logging.info(f"reasoning_steps yield {structured_reasoning} for {input_message}")
                 #yield f"\n<ANSWER_WAITING>{json.dumps({'answer_waiting': 'Searching the right contact info to connect to an agent'})}<ANSWER_WAITING_END>\n"
 
                 output = await get_up_to_date_info(
