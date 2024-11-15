@@ -203,9 +203,17 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                             "query": {
                                 "type": "string",
                                 "description": "The user needs to be put in contact with an office or a person, we need a query that ask for the correct service giving the user question"
-                            }
+                            },
+                            "reasoning_steps": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "description": "Each entry is a step in the reasoning process, detailing the approach to answering the query, including relevant filtering, checking for accuracy, and handling complex queries as needed. each steps should be consice (max 8 words)"
+                                },
+                                "description": "An array of 1 to 4 steps outlining the reasoning process for addressing the user's query. 1 to 4 depending on the complexity of the query."
+                            },
                         },
-                        "required": ["query"]
+                        "required": ["query", "reasoning_steps"]
                     }
                 }
             }
