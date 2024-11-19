@@ -75,7 +75,7 @@ async def cache_thread_id(chat_id, thread_id, input_message, redis_client):
     Caches the thread ID for the given chat_id.
     """
     try:
-        await redis_client.set(chat_id, thread_id, ex=86400)  # Cache for 24 hours
+        await redis_client.set(chat_id, thread_id, ex=604800)  # Cache for 24 hours
         logging.info(f"Cached thread ID {thread_id} for chat_id {chat_id} for {input_message}")
     except Exception as e:
         logging.error(f"Error caching thread ID {thread_id} for chat_id {chat_id}: {str(e)} for {input_message}", exc_info=True)

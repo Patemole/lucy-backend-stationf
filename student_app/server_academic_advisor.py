@@ -96,6 +96,8 @@ import time
 from functools import wraps
 import asyncio
 
+client = AsyncOpenAI()
+
 def timing_decorator(func):
     @wraps(func)
     def sync_wrapper(*args, **kwargs):
@@ -176,17 +178,24 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     @timing_decorator
     async def response_generator():
         try:
-            logging.info(f"Creating OpenAI client instance...for {input_message}")
-            client = AsyncOpenAI()
-            logging.info(f"Client created successfully for {input_message}")
+            async def background_store_message():
+                try:
+                    await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+                    logging.info(f"Input message stored successfully in background for {input_message}")
+                except Exception as e:
+                    logging.error(f"Error while storing the input message in background: {str(e)} for {input_message}")
 
-            logging.info(f"Initializing assistant... for {input_message}")
-            assistant_id = await initialize_assistant(client, university, username, major, minor, year, school, redis_client, input_message)
-            #assistant_id = assistant["id"]
-            logging.info(f"Assistant initialized with ID: {assistant_id} for {input_message}")
+            asyncio.create_task(background_store_message())
+
+            assistant_id_task = asyncio.create_task(
+                initialize_assistant(client, university, username, major, minor, year, school, redis_client, input_message)
+            )
+            thread_id_task = asyncio.create_task(
+                get_cached_thread_id(chat_id, input_message, redis_client)
+            )
 
             logging.info(f"Checking if thread ID in Cache for {input_message}")
-            thread_id = await get_cached_thread_id(chat_id, input_message, redis_client)
+            thread_id = await thread_id_task
             logging.info(f"Thread_id:{thread_id} for {input_message}")
             if thread_id:
                 logging.info(f"Using cached thread ID: {thread_id} for {chat_id} for {input_message}")
@@ -213,6 +222,10 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             logging.info(f"Adding user message to thread {thread_id}: {input_message}")
             await add_user_message(client, thread_id, input_message)
             logging.info(f"User message added successfully to thread {thread_id}")
+
+            logging.info(f"Initializing assistant... for {input_message}")
+            assistant_id = await assistant_id_task
+            logging.info(f"Assistant initialized with ID: {assistant_id} for {input_message}")
 
             try:
                 logging.info(f"Starting streaming run... for {input_message}")
@@ -246,18 +259,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
         except Exception as e:
             logging.error(f"Error during response generation: {str(e)} for {input_message}")
             yield {"error": f"Error in generating response for {input_message}"}
-
-    # Background task for storing the message
-    async def background_store_message():
-        try:
-            await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
-            logging.info(f"Input message stored successfully in background for {input_message}")
-        except Exception as e:
-            logging.error(f"Error while storing the input message in background: {str(e)} for {input_message}")
-
-
-    # Call the background task
-    asyncio.create_task(background_store_message())
     
     try:
         logging.info(f"Received request to /send_message_socratic_langgraph for {input_message}")
