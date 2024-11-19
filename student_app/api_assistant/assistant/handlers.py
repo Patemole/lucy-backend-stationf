@@ -184,6 +184,20 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                     logging.info(f"Image URL found: {image_url} for {input_message}")
                     yield f"\n<IMAGE_DATA>{json.dumps({'image_data': image_url})}<IMAGE_DATA_END>\n"
 
+
+                
+                await asyncio.sleep(0.2)
+                youtube_bool = arguments.get('youtube_bool', False)
+                logging.info(f"youtube_bool is {youtube_bool}")
+
+                youtube_bool = False
+                if youtube_bool:
+                    youtube_query = google_search_query + " " + university 
+                    logging.info(f"Youtube video search with keywords: {youtube_query} for {input_message}")
+                    result_youtube_list = await get_youtube_videos(youtube_query, input_message)
+                    logging.info(f"Youtube search succesfull for {result_youtube_list} for {input_message}")
+                    yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_list})}<YOUTUBE_END>\n"
+
                 """
                 #TODO look for async or not
                 await asyncio.sleep(0.3)
@@ -192,13 +206,6 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 reddit_comment_list = await get_top_comment(university, keywords_reddit_search, input_message)
                 logging.info(f"Reddit student feedbacks succesfull for {reddit_comment_list} for {input_message}")
                 yield f"\n<REDDIT>{json.dumps({'reddit': reddit_comment_list})}<REDDIT_END>\n"
-
-                await asyncio.sleep(0.2)
-                youtube_query = keywords_reddit_search + " " + university 
-                logging.info(f"Youtube video search with keywords: {youtube_query} for {input_message}")
-                result_youtube_list = await get_youtube_videos(youtube_query, input_message)
-                logging.info(f"Youtube search succesfull for {result_youtube_list} for {input_message}")
-                yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_list})}<YOUTUBE_END>\n"
                 
                 #TODO change the assistant to make a instagram query
                 await asyncio.sleep(0.2)

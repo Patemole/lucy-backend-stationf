@@ -3,9 +3,10 @@
 import openai
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
-
+from redis.asyncio import Redis
+import json
 import logging
 
 # Setup logging configuration if not already present
@@ -18,7 +19,6 @@ logging.basicConfig(
         logging.FileHandler("file_server.log")
     ]
 )
-
 
 # Load environment variables from .env file
 load_dotenv()
@@ -104,7 +104,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             You only have access to those information for the student and nothing else if a query requires more knowledge about the student mention that you only have those data but can be helpful for any recommandations
 
             Important assistant base knowledge:
-            - We are currently in the Fall 2024 semester, next semester will be Spring 2025 and today date is {current_date} use this to make sure to have relevant information and never mention past information or events.
+            - We are currently in the Fall 2024 semester, next semester will be Spring 2025 (for the exact date call get_current_info) use this to make sure to have relevant information and never mention past information or events.
             - Whenever the student show or mention mental health problems or is asking for mental help tell him to contact his advisor, and be very supportive and mention that he is not alone. 
             - Whenever the student seems to want to change major or is looking for informations about a different major than his major then also mention before anything that he should contact his academic advisor absolutely. 
 
@@ -144,6 +144,10 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                             "image_bool": {
                                 "type": "boolean",
                                 "description": "If the user query is about a place, a person or anything that could be visualized, then return True; False otherwise. This parameter will be used to return or not images in the response."
+                            },
+                            "youtube_bool": {
+                                "type": "boolean",
+                                "description": "Yes or not a youtube video could be helpful to provide the student to answer his query, then return True; False otherwise. This parameter will be used to return or not a youtube video on the in the response."
                             },
                             "model": {
                                 "type": "string",
@@ -259,9 +263,89 @@ def get_university_config(university, current_date, username, major, minor, year
     return common_config
 
 @timing_decorator
+async def get_cached_assistant(university, redis_client, input_message):
+    """
+    Retrieve the cached assistant for a university.
+    """
+    try:
+        assistant_key = f"assistant:{university}"
+        cached_data = await redis_client.get(assistant_key)
+        if cached_data:
+            logging.info(f"Found cached assistant for {university} for {input_message}.")
+            logging.info(f"Cached data: {json.loads(cached_data)} for {input_message}")
+            return json.loads(cached_data)["id"]  # Convert JSON string back to a Python dictionary
+        logging.info(f"No cached assistant found for {university} for {input_message}.")
+        return None
+    except Exception as e:
+        logging.error(f"Error retrieving cached assistant for {university}: {str(e)} for {input_message}", exc_info=True)
+        return None
+
+
+@timing_decorator
+async def set_cached_assistant(university, assistant, redis_client, input_message):
+    """
+    Cache the assistant for a university with an optional TTL (e.g., 24 hours).
+    Convert the Assistant object into a JSON-serializable format.
+    """
+    try:
+        logging.info(f"Set cache for assistant for {university} for {input_message}", exc_info=True)
+        assistant_key = f"assistant:{university}"
+        # Serialize the assistant object to a dictionary
+        assistant_data = {
+            "id": assistant.id,
+            "name": assistant.name,
+            "description": assistant.description,
+            "model": assistant.model,
+            "temperature": assistant.temperature,
+        }
+        # Cache the serialized assistant in Redis
+        now = datetime.now()
+        midnight = (now + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+        seconds_until_midnight = int((midnight - now).total_seconds())
+        print(seconds_until_midnight)
+        # Cache the serialized assistant in Redis
+        await redis_client.set(assistant_key, json.dumps(assistant_data), ex=seconds_until_midnight)
+        
+    except Exception as e:
+        logging.error(f"Error caching assistant for {university}: {str(e)} for {input_message}", exc_info=True)
+
+
+@timing_decorator
+async def initialize_assistant(client, university, username, major, minor, year, school, redis_client, input_message):
+    # Check Redis cache
+    assistant = await get_cached_assistant(university, redis_client, input_message)
+    if assistant:
+        return assistant  # Return cached assistant
+
+    # Create new assistant if not in cache
+    logging.info(f"No cached assistant found for {university}. Creating a new one.")
+    current_date = datetime.now().strftime("%B %d, %Y")
+    config = get_university_config(university, current_date, username, major, minor, year, school)
+    try:
+        assistant = await client.beta.assistants.create(
+            name=config["name"],
+            description=config["description"],
+            instructions=config["instructions"],
+            model=config["model"],
+            temperature=config["temperature"],
+            tools=config["tools"]
+        )
+        logging.info(f"Assistant created with ID: {assistant.id}")
+
+        # Cache the new assistant
+        await set_cached_assistant(university, assistant, redis_client, input_message)
+    except Exception as e:
+        logging.error(f"Error initializing assistant: {str(e)}")
+        raise e
+
+    return assistant.id
+
+
+    """
+@timing_decorator
 async def initialize_assistant(client, university, username, major, minor, year, school):
     """
-    Initializes the assistant based on the university's configuration.
+    #Initializes the assistant based on the university's configuration.
     """
     logging.info(f"Initializing assistant for {username} at {university}")
     current_date = datetime.now().strftime("%B %d, %Y")
@@ -282,7 +366,7 @@ async def initialize_assistant(client, university, username, major, minor, year,
         raise e
 
     return assistant
-
+    """
     """
                 {
                 "type": "function",

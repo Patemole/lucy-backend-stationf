@@ -5,6 +5,7 @@ from openai import OpenAI, AsyncOpenAI
 from dotenv import load_dotenv
 import os
 from functools import wraps
+from redis.asyncio import Redis
 
 
 # Load environment variables from .env file
@@ -51,22 +52,52 @@ def timing_decorator(func):
     else:
         return sync_wrapper
 
-
 @timing_decorator
-async def create_thread(client, chat_id, username, university, input_message):
+async def get_cached_thread_id(chat_id, input_message, redis_client):
     """
-    Creates a new thread with a custom thread ID based on the provided chat_id, username, and university.
+    Retrieves the cached thread ID for the given chat_id.
     """
     try:
-        logging.info(f"Attempting to create a new thread for chat_id: {chat_id}, username: {username}, university: {university} for {input_message}")
+        cached_thread_id = await redis_client.get(chat_id)
+        if cached_thread_id:
+            logging.info(f"Found cached thread ID for chat_id {chat_id}: {cached_thread_id} for {input_message}")
+            return cached_thread_id
+        logging.info(f"No cached thread ID for chat_id {chat_id} for {input_message}")
+        return None
+    except Exception as e:
+        logging.error(f"Error retrieving cached thread ID for chat_id {chat_id}: {str(e)} for {input_message}", exc_info=True)
+        return None
+
+
+@timing_decorator
+async def cache_thread_id(chat_id, thread_id, input_message, redis_client):
+    """
+    Caches the thread ID for the given chat_id.
+    """
+    try:
+        await redis_client.set(chat_id, thread_id, ex=86400)  # Cache for 24 hours
+        logging.info(f"Cached thread ID {thread_id} for chat_id {chat_id} for {input_message}")
+    except Exception as e:
+        logging.error(f"Error caching thread ID {thread_id} for chat_id {chat_id}: {str(e)} for {input_message}", exc_info=True)
+
+
+@timing_decorator
+async def create_thread(client, chat_id, username, university, input_message, redis_client):
+    """
+    Retrieves an existing thread for the chat_id or creates a new one if none exists.
+    """
+    try:
+        logging.info(f"Creating new thread for chat_id: {chat_id} for {input_message}")
         thread = await client.beta.threads.create(
             metadata={
                 "username": username,
                 "university": university
             }
         )
-        logging.info(f"Thread created with ID: {thread.id} for chat ID: {chat_id} for {input_message}")
-        return thread
+        # Cache the new thread ID
+        await cache_thread_id(chat_id, thread.id, input_message, redis_client)
+        logging.info(f"New thread created with ID {thread.id} for chat_id {chat_id} for {input_message}")
+        return thread.id
     except Exception as e:
         logging.error(f"Error creating thread for chat_id {chat_id}: {str(e)} for {input_message}")
         raise

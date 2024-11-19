@@ -28,6 +28,7 @@ from student_app.profiling.profile_generation import LLM_profile_generation
 
 from student_app.api_assistant.threads.thread_manager import (
     create_thread,
+    get_cached_thread_id,
     add_user_message,
     create_and_poll_run,
     retrieve_run,
@@ -43,6 +44,9 @@ date = datetime.date.today()
 import threading
 import queue
 from functools import wraps
+from fastapi import BackgroundTasks
+from redis.asyncio import Redis
+
 
 
 
@@ -70,6 +74,9 @@ AWS_REGION = os.getenv('AWS_REGION')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 #client = OpenAI()
+
+#redis
+redis_client = Redis(host="localhost", port=6379, decode_responses=True)
 
 # FastAPI app configuration
 app = FastAPI(
@@ -165,14 +172,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
     logging.info(f"Processing message from {username} at {university} for {input_message}")
 
-    try:
-        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
-        logging.info(f"Input message stored successfully for {input_message}")
-    except Exception as e:
-        logging.error(f"Error while storing the input message: {str(e)} for {input_message}")
-        response.status_code = 500
-        return {"error": f"Failed to store input message for {input_message}"}
-
     # Define the generator function
     @timing_decorator
     async def response_generator():
@@ -182,46 +181,50 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             logging.info(f"Client created successfully for {input_message}")
 
             logging.info(f"Initializing assistant... for {input_message}")
-            assistant = await initialize_assistant(client, university, username, major, minor, year, school)
-            logging.info(f"Assistant initialized with ID: {assistant.id} for {input_message}")
+            assistant_id = await initialize_assistant(client, university, username, major, minor, year, school, redis_client, input_message)
+            #assistant_id = assistant["id"]
+            logging.info(f"Assistant initialized with ID: {assistant_id} for {input_message}")
 
-            logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
-            history_items = await get_chat_history(chat_id=chat_id)
-            logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
+            logging.info(f"Checking if thread ID in Cache for {input_message}")
+            thread_id = await get_cached_thread_id(chat_id, input_message, redis_client)
+            logging.info(f"Thread_id:{thread_id} for {input_message}")
+            if thread_id:
+                logging.info(f"Using cached thread ID: {thread_id} for {chat_id} for {input_message}")
+            else:
+                logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
+                history_items = await get_chat_history(chat_id=chat_id)
+                logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
+                if len(history_items) == 0 or len(history_items) == 1:
+                    # New conversation, create a new thread
+                    logging.info(f"History is empty. Creating a new thread for {chat_id}.")
+                    thread_id = await create_thread(client, chat_id=chat_id, username=username, university=university, input_message=input_message, redis_client=redis_client)
+                    logging.info(f"Thread created and cached with ID: {thread_id}")
+                else:
+                    # Expired cache, reconstruct the thread with past messages
+                    logging.info(f"Cache expired. Reconstructing thread for {chat_id}.")
+                    thread_id = await create_thread(client, chat_id=chat_id, username=username, university=university, input_message=input_message, redis_client=redis_client)
+                    logging.info(f"Thread created with ID: {thread_id}. Adding past messages to thread...")
+                    for item in history_items:
+                        role = "assistant" if item["username"] == "Lucy" else "user"
+                        await add_message_to_thread(client, thread_id, role, item["body"], input_message)
+                    logging.info(f"Reconstructed thread with past messages for {thread_id}")
 
-            logging.info(f"Creating or retrieving existing thread for chat_id: {chat_id} for {input_message}")
-            thread = await create_thread(client, chat_id=chat_id, username=username, university=university, input_message=input_message)
-            logging.info(f"Thread created/retrieved with ID: {thread.id} for {input_message}")
-
-            past_messages = []
-            for item in history_items:
-                role = "assistant" if item["username"] == "Lucy" else "user"
-                past_messages.append({
-                    "role": role,
-                    "content": item["body"]
-                })
-
-            if past_messages:
-                logging.info(f"Adding {len(past_messages)} past messages to thread {thread.id} for {input_message}")
-                for past_message in past_messages:
-                    await add_message_to_thread(client, thread.id, past_message["role"], past_message["content"], input_message)
-                logging.info(f"Added completed of {len(past_messages)} past messages to thread {thread.id} for {input_message}")
-
-            logging.info(f"Adding user message to thread {thread.id}: {input_query.message} for {input_message}")
-            await add_user_message(client, thread.id, input_message)
-            logging.info(f"Added completed user messageto thread {thread.id} for {input_message}")
+            # Add the user message to the thread
+            logging.info(f"Adding user message to thread {thread_id}: {input_message}")
+            await add_user_message(client, thread_id, input_message)
+            logging.info(f"User message added successfully to thread {thread_id}")
 
             try:
                 logging.info(f"Starting streaming run... for {input_message}")
 
                 # Start the streaming run
                 stream = await client.beta.threads.runs.create(
-                    thread_id=thread.id,
-                    assistant_id=assistant.id,
+                    thread_id=thread_id,
+                    assistant_id=assistant_id,
                     stream=True
                 )
 
-                logging.info(f"Streaming run created and started for thread ID: {thread.id} with assistant ID: {assistant.id} for {input_message}")
+                logging.info(f"Streaming run created and started for thread ID: {thread_id} with assistant ID: {assistant_id} for {input_message}")
 
                 # Process the stream asynchronously
                 async for event in stream:
@@ -244,6 +247,18 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             logging.error(f"Error during response generation: {str(e)} for {input_message}")
             yield {"error": f"Error in generating response for {input_message}"}
 
+    # Background task for storing the message
+    async def background_store_message():
+        try:
+            await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+            logging.info(f"Input message stored successfully in background for {input_message}")
+        except Exception as e:
+            logging.error(f"Error while storing the input message in background: {str(e)} for {input_message}")
+
+
+    # Call the background task
+    asyncio.create_task(background_store_message())
+    
     try:
         logging.info(f"Received request to /send_message_socratic_langgraph for {input_message}")
         return StreamingResponse(response_generator(), media_type="text/plain")
