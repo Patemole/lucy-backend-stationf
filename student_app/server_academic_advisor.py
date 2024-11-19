@@ -172,7 +172,9 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     year = input_query.year
     school = input_query.faculty
 
+    logging.info(f"Redis server run: {redis_client.ping()} for {input_message}")
     logging.info(f"Processing message from {username} at {university} for {input_message}")
+    
 
     # Define the generator function
     @timing_decorator
