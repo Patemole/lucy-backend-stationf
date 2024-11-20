@@ -207,23 +207,49 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
                 if len(history_items) == 0 or len(history_items) == 1:
                     # New conversation, create a new thread
-                    logging.info(f"History is empty. Creating a new thread for {chat_id}.")
+                    logging.info(f"History is empty. Creating a new thread for {chat_id}. for {input_message}")
                     thread_id = await create_thread(client, chat_id=chat_id, username=username, university=university, input_message=input_message, redis_client=redis_client)
-                    logging.info(f"Thread created and cached with ID: {thread_id}")
+                    logging.info(f"Thread created and cached with ID: {thread_id} for {input_message}")
                 else:
                     # Expired cache, reconstruct the thread with past messages
-                    logging.info(f"Cache expired. Reconstructing thread for {chat_id}.")
+                    logging.info(f"Cache expired. Reconstructing thread for {chat_id}. for {input_message}")
                     thread_id = await create_thread(client, chat_id=chat_id, username=username, university=university, input_message=input_message, redis_client=redis_client)
-                    logging.info(f"Thread created with ID: {thread_id}. Adding past messages to thread...")
+                    logging.info(f"Thread created with ID: {thread_id}. Adding past messages to thread... for {input_message}")
                     for item in history_items:
                         role = "assistant" if item["username"] == "Lucy" else "user"
                         await add_message_to_thread(client, thread_id, role, item["body"], input_message)
-                    logging.info(f"Reconstructed thread with past messages for {thread_id}")
+                    logging.info(f"Reconstructed thread with past messages for {thread_id} for {input_message}")
 
-            # Add the user message to the thread
-            logging.info(f"Adding user message to thread {thread_id}: {input_message}")
-            await add_user_message(client, thread_id, input_message)
-            logging.info(f"User message added successfully to thread {thread_id}")
+            max_retries = 3
+            retry_delay = 3  
+            for attempt in range(max_retries):
+                try:
+                    await add_user_message(client, thread_id, input_message)
+                    logging.info(f"User message added successfully to thread {thread_id} for {input_message}")
+                    break  # Exit retry loop if successful
+                except Exception as e:
+                    logging.error(f"Error adding user message to thread {thread_id}: {e} for {input_message}")
+
+                    # Parse the error object if it is structured
+                    try:
+                        error_data = e.args[0]  # Extract error details from the exception
+                        error_message = error_data.get("error", {}).get("message", "Unknown error")
+                        error_type = error_data.get("error", {}).get("type", "Unknown type")
+
+                        # Log specific error details
+                        logging.warning(f"Add user message to thread Error details - Message: {error_message}, Type: {error_type} for {input_message}")
+
+                    except Exception as parse_error:
+                        logging.warning(f"Failed to parse error details: {parse_error} for {input_message}")
+
+                    # Retry logic
+                    if attempt < max_retries - 1:
+                        logging.info(f"Retrying adding user messsage to thread in {retry_delay} seconds (Attempt {attempt + 1}/{max_retries})... for {input_message}")
+                        await asyncio.sleep(retry_delay)
+                    else:
+                        # If all retries fail, log and raise an error
+                        logging.error(f"Failed to add user message to thread {thread_id} after {max_retries} attempts for {input_message}")
+                        raise RuntimeError(f"Failed to add user message to thread {thread_id} after {max_retries} attempts")
 
             logging.info(f"Initializing assistant... for {input_message}")
             assistant_id = await assistant_id_task
