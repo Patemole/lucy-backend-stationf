@@ -94,7 +94,7 @@ async def on_event(client, event, input_message, image_bool, university, usernam
                         await asyncio.sleep(1)  # Delay before retrying
                         continue  # Retry the event handling
                     else:
-                        yield "Oops! We’re experiencing persistent issues. Please try resending your message in a few moments."
+                        yield "Oops! I am experiencing persistent issues. Please try resending your message in a few moments."
                         raise Exception("Exceeded maximum retries for failed event.")
 
                 # Handle queued and in-progress events
@@ -360,7 +360,7 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
             except Exception as e:
                 logging.error(f"Error in submit_tool_outputs attempt {attempt + 1} of {max_retries}: {str(e)} for {input_message}", exc_info=True)
                 if attempt == max_retries - 1:
-                    yield "Oops! We’re experiencing persistent issues. Please try again later."
+                    yield "Oops! We are experiencing persistent issues. Please try again later."
                     raise  # Re-raise the exception after max retries
             else:
                 # Exit the loop if no exception was raised
