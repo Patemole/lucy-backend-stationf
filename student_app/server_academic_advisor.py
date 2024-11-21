@@ -75,8 +75,22 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 #client = OpenAI()
 
-#redis
-redis_client = Redis(host="localhost", port=6379, decode_responses=True)
+
+"""
+redis_client = Redis(
+    host="localhost",
+    port=6379,
+    decode_responses=True,  # Enables human-readable data responses
+)
+"""
+
+redis_client = Redis(
+    host="cache-lucy-assistant-thread-mmmubb.serverless.use1.cache.amazonaws.com:6379",
+    port=6379,
+    decode_responses=True,  # Enables human-readable data responses
+    ssl=True  # Required because "Encryption in Transit" is enabled
+)
+
 
 # FastAPI app configuration
 app = FastAPI(
@@ -172,7 +186,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     year = input_query.year
     school = input_query.faculty
 
-    logging.info(f"Redis server run: {redis_client.ping()} for {input_message}")
+    #logging.info(f"Redis server run: {await redis_client.ping()} for {input_message}")
     logging.info(f"Processing message from {username} at {university} for {input_message}")
     
 
@@ -259,11 +273,31 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 logging.info(f"Starting streaming run... for {input_message}")
 
                 # Start the streaming run
-                stream = await client.beta.threads.runs.create(
-                    thread_id=thread_id,
-                    assistant_id=assistant_id,
-                    stream=True
-                )
+                max_retries = 3
+                retry_delay = 3  # seconds
+
+                for attempt in range(max_retries):
+                    try:
+                        logging.info(f"Starting streaming run (attempt {attempt + 1}/{max_retries})... for {input_message}")
+                        
+                        # Start the streaming run
+                        stream = await client.beta.threads.runs.create(
+                            thread_id=thread_id,
+                            assistant_id=assistant_id,
+                            stream=True
+                        )
+                        
+                        logging.info(f"Streaming run created successfully for thread ID: {thread_id} with assistant ID: {assistant_id} for {input_message}")
+                        break  # Exit retry loop if successful
+                    except Exception as e:
+                        logging.error(f"Failed to create streaming run on attempt {attempt + 1}: {str(e)} for {input_message}")
+                        if attempt < max_retries - 1:
+                            logging.info(f"Retrying run creation in {retry_delay} seconds... for {input_message}")
+                            await asyncio.sleep(retry_delay)
+                        else:
+                            logging.error(f"Exceeded maximum retries for run creation for {input_message}")
+                            raise  # Re-raise exception if all retries fail
+
 
                 logging.info(f"Streaming run created and started for thread ID: {thread_id} with assistant ID: {assistant_id} for {input_message}")
 
