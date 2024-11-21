@@ -302,7 +302,7 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
 
             elif event.event == 'thread.run.requires_action':
                 logging.info(f"Handling required action event during submit_tool_outputs for {input_message}")
-                async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message):
+                async for data in handle_requires_action(client, event.data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
                     yield data
 
             elif event.event == "thread.run.step.completed":
