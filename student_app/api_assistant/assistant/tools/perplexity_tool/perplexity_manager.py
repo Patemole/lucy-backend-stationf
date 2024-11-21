@@ -105,7 +105,7 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
         try:
             if attempt > 0:
                 logging.warning(f"Retrying Perplexity API call... Attempt {attempt + 1} of {max_retries} for {input_message}")
-                await asyncio.sleep(1)  # Delay before retrying
+                await asyncio.sleep(3)  # Delay before retrying
 
             logging.info(f"Sending request to Perplexity API for query: {input_message}")
             async with aiohttp.ClientSession() as session:

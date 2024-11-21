@@ -51,72 +51,52 @@ def timing_decorator(func):
 
 
 @timing_decorator
-async def on_event(client, event, input_message, image_bool, university, username, major, minor, year, school, max_retries=3):
+async def on_event(client, event, input_message, image_bool, university, username, major, minor, year, school):
     """
-    Handles various event types and retries in case of failures.
+    Handles various event types without retries.
     """
     try:
         logging.info(f"ON_EVENT triggered: {event.event} for {input_message}")
 
-        # Define retry loop for handling 'thread.run.failed'
-        for attempt in range(max_retries):
-            try:
-                # Handle 'requires_action' event
-                if event.event == 'thread.run.requires_action':
-                    logging.info(f"Handling required action event... for {input_message}")
-                    run_id = event.data.id
-                    thread_id = event.data.thread_id
-                    async for data in handle_requires_action(client, event.data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
-                        yield data
+        # Handle 'requires_action' event
+        if event.event == 'thread.run.requires_action':
+            logging.info(f"Handling required action event... for {input_message}")
+            run_id = event.data.id
+            thread_id = event.data.thread_id
+            async for data in handle_requires_action(client, event.data, run_id, thread_id, input_message, image_bool, university, username, major, minor, year, school):
+                yield data
 
-                # Handle 'delta' event
-                elif event.event == 'thread.message.delta':
-                    for block in event.data.delta.content:
-                        if block.type == "text" and hasattr(block.text, "value"):
-                            delta_text = block.text.value
-                            logging.info(f"Delta text received: {delta_text} for {input_message}")
-                            yield delta_text + "|"
-                        else:
-                            logging.warning(f"No text content found or unsupported block type: {block.type} for {input_message}")
-
-                # Handle 'completed' event
-                elif event.event == 'thread.run.completed':
-                    logging.info(f"Run completed for {input_message}")
-                    yield None  # Indicate completion
-                    return  # Exit function on successful completion
-
-                # Handle 'failed' event with retries
-                elif event.event == 'thread.run.failed':
-                    logging.error(f"ON_EVENT Run FAILED for event: {event} for {input_message}")
-                    if attempt < max_retries - 1:
-                        # Yield a message for retrying and wait before next attempt
-                        yield f"Oups! looks like we are facing latency connecting to {university} database, let me try again ... \n"
-                        await asyncio.sleep(1)  # Delay before retrying
-                        continue  # Retry the event handling
-                    else:
-                        yield "Oops! I am experiencing persistent issues. Please try resending your message in a few moments."
-                        raise Exception("Exceeded maximum retries for failed event.")
-
-                # Handle queued and in-progress events
-                elif event.event == 'thread.run.queued ':
-                    logging.info(f"ON_EVENT Run QUEUED for event: {event} for {input_message}")
-                elif event.event == 'thread.run.in_progress ':
-                    logging.warning(f"ON_EVENT Run IN_PROGRESS for event: {event} for {input_message}")
+        # Handle 'delta' event
+        elif event.event == 'thread.message.delta':
+            for block in event.data.delta.content:
+                if block.type == "text" and hasattr(block.text, "value"):
+                    delta_text = block.text.value
+                    logging.info(f"Delta text received: {delta_text} for {input_message}")
+                    yield delta_text + "|"
                 else:
-                    logging.warning(f"Unhandled event: {event.event} for {input_message}")
+                    logging.warning(f"No text content found or unsupported block type: {block.type} for {input_message}")
 
-            except Exception as e:
-                logging.error(f"Error in on_event handler attempt {attempt + 1} of {max_retries}: {str(e)} for {input_message}", exc_info=True)
-                if attempt == max_retries - 1:
-                    yield "Oops! We’re experiencing persistent issues. Please try again later."
-                    raise  # Re-raise the exception after max retries
-            else:
-                # Exit retry loop on successful handling without exception
-                break
+        # Handle 'completed' event
+        elif event.event == 'thread.run.completed':
+            logging.info(f"Run completed for {input_message}")
+            yield None  # Indicate completion
+
+        # Handle 'failed' event
+        elif event.event == 'thread.run.failed':
+            logging.error(f"ON_EVENT Run FAILED for event: {event} for {input_message}")
+            yield "Oops! Something went wrong. Please try again later."
+
+        # Handle queued and in-progress events
+        elif event.event == 'thread.run.queued':
+            logging.info(f"ON_EVENT Run QUEUED for event for {input_message}")
+        elif event.event == 'thread.run.in_progress':
+            logging.info(f"ON_EVENT Run IN_PROGRESS for event: for {input_message}")
+        else:
+            logging.warning(f"Unhandled event: {event.event} for {input_message}")
 
     except Exception as e:
-        logging.error(f"Final error in on_event: {str(e)} for {input_message}", exc_info=True)
-        raise
+        logging.error(f"Error in on_event: {str(e)} for {input_message}", exc_info=True)
+        yield "Oops! An unexpected error occurred. Please try again later."
 
 
 @timing_decorator
@@ -297,80 +277,51 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
 
 
 @timing_decorator
-async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message, max_retries=3):
+async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message):
+    """
+    Submits tool outputs and handles the response.
+    """
     try:
         logging.info(f"Submitting tool outputs... for {input_message}")
-        separation_added = False
+        stream = await client.beta.threads.runs.submit_tool_outputs(
+            thread_id=thread_id,
+            run_id=run_id,
+            tool_outputs=tool_outputs,
+            stream=True
+        )
 
-        for attempt in range(max_retries):
-            try:
-                if attempt > 0:
-                    # Yield a waiting message to the frontend during retries
-                    waiting_message = f"Oups! looks like I am facing latency connecting to {university} database, let me try again ... \n"
-                    yield waiting_message
-                    await asyncio.sleep(1)  # Short delay before retrying
-
-                # Submit tool outputs
-                stream = await client.beta.threads.runs.submit_tool_outputs(
-                    thread_id=thread_id,
-                    run_id=run_id,
-                    tool_outputs=tool_outputs,
-                    stream=True
-                )
-
-                # Process streaming events
-                async for event in stream:
-                    if event.event == "thread.message.delta":
-                        for block in event.data.delta.content:
-                            if block.type == "text" and hasattr(block.text, "value"):
-                                delta_text = block.text.value
-
-                                if not separation_added:
-                                    yield "\n\n\n\n"
-                                    separation_added = True
-
-                                logging.info(f"Delta text from submit_tool_outputs: {delta_text} for {input_message}")
-                                yield delta_text + "|"
-                            else:
-                                logging.warning(f"No text content found in delta block for {input_message}")
-
-                    elif event.event == 'thread.run.requires_action':
-                        logging.info(f"Handling required action event during submit_tool_outputs for {input_message}")
-                        async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message):
-                            yield data
-
-                    elif event.event == "thread.run.step.completed":
-                        logging.info(f"Step completed for {input_message}")
-                    elif event.event == "thread.run.completed":
-                        logging.info(f"Run completed for {input_message}")
-                        yield None  # Indicate completion
-                        return  # Exit function after successful completion
-                    elif event.event == "thread.message.completed":
-                        logging.info(f"Message completed for {input_message}")
-                        yield None
-                    elif event.event == 'thread.run.failed':
-                        raise Exception("Thread run failed")
-                    elif event.event == 'thread.run.queued ':
-                        logging.info(f"SUBMIT_TOOL_OUTPUTS Run QUEUED for event :{event} for {input_message}")
-                    elif event.event == 'thread.run.in_progress ':
-                        logging.info(f"SUBMIT_TOOL_OUTPUTS Run IN_PROGRESS for event :{event} for {input_message}")
+        async for event in stream:
+            if event.event == "thread.message.delta":
+                for block in event.data.delta.content:
+                    if block.type == "text" and hasattr(block.text, "value"):
+                        delta_text = block.text.value
+                        logging.info(f"Delta text from submit_tool_outputs: {delta_text} for {input_message}")
+                        yield delta_text + "|"
                     else:
-                        logging.warning(f"Unhandled event: {event.event} for {input_message}")
+                        logging.warning(f"No text content found in delta block for {input_message}")
 
-            except Exception as e:
-                logging.error(f"Error in submit_tool_outputs attempt {attempt + 1} of {max_retries}: {str(e)} for {input_message}", exc_info=True)
-                if attempt == max_retries - 1:
-                    yield "Oops! We are experiencing persistent issues. Please try again later."
-                    raise  # Re-raise the exception after max retries
+            elif event.event == 'thread.run.requires_action':
+                logging.info(f"Handling required action event during submit_tool_outputs for {input_message}")
+                async for data in handle_requires_action(client, event.data, run_id, thread_id, query, image_bool, university, username, major, minor, year, school, input_message):
+                    yield data
+
+            elif event.event == "thread.run.step.completed":
+                logging.info(f"Step completed for {input_message}")
+            elif event.event == "thread.run.completed":
+                logging.info(f"Run completed for {input_message}")
+                yield None  # Indicate completion
+                return  # Exit function after successful completion
+            elif event.event == "thread.message.completed":
+                logging.info(f"Message completed for {input_message}")
+                yield None
+            elif event.event == 'thread.run.failed':
+                raise Exception("Thread run failed")
             else:
-                # Exit the loop if no exception was raised
-                break
+                logging.warning(f"Unhandled event in submit_tool_outputs: {event.event} for {input_message}")
+
     except Exception as e:
-        logging.error(f"Final error in submit_tool_outputs: {str(e)} for {input_message}", exc_info=True)
-        raise
-
-
-
+        logging.error(f"Error in submit_tool_outputs: {str(e)} for {input_message}", exc_info=True)
+        yield "Oops! An error occurred while finalizing your request."
 
 
     """
