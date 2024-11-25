@@ -22,7 +22,7 @@ from student_app.model.student_profile import StudentProfile
 from student_app.database.dynamo_db.new_instance_chat import delete_all_items_and_adding_first_message
 
 from student_app.database.dynamo_db.analytics import store_analytics_async
-from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history
+from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history, get_timing_history
 
 from student_app.profiling.profile_generation import LLM_profile_generation
 
@@ -348,6 +348,16 @@ async def delete_chat_history_route(chat_id: str):
     except Exception as e:
         logging.error(f"Erreur lors de la suppression de l'historique du chat : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
+
+
+
+
+
+
+# RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
+@app.get("/get_all_history/{timestamp}")
+async def get_timing_history_route(timestamp: str):
+    return await get_timing_history(timestamp)
 
 
 
