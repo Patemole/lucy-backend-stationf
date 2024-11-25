@@ -84,7 +84,8 @@ async def on_event(client, event, input_message, image_bool, university, usernam
         # Handle 'failed' event
         elif event.event == 'thread.run.failed':
             logging.error(f"ON_EVENT Run FAILED for event: {event} for {input_message}")
-            yield "Oops! Something went wrong. Please try again later."
+            yield f"\n<ERROR>{json.dumps({'error': 'Oops! An error occurred while finalizing your request.'})}<ERROR_END>\n"
+            yield None  # Indicate completion
 
         # Handle queued and in-progress events
         elif event.event == 'thread.run.queued':
@@ -96,7 +97,8 @@ async def on_event(client, event, input_message, image_bool, university, usernam
 
     except Exception as e:
         logging.error(f"Error in on_event: {str(e)} for {input_message}", exc_info=True)
-        yield "Oops! An unexpected error occurred. Please try again later."
+        yield f"\n<ERROR>{json.dumps({'error': 'Oops! An unexpected error occurred. Please try again later.'})}<ERROR_END>\n"
+        yield None
 
 
 @timing_decorator
@@ -273,7 +275,8 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
             yield data
     except Exception as e:
         logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
-        raise
+        yield f"\n<ERROR>{json.dumps({'error': 'Oops! An unexpected error occurred. Please try again later.'})}<ERROR_END>\n"
+        yield None
 
 
 @timing_decorator
@@ -315,13 +318,16 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
                 logging.info(f"Message completed for {input_message}")
                 yield None
             elif event.event == 'thread.run.failed':
-                raise Exception("Thread run failed")
+                logging.error(f"ON_EVENT Run FAILED for event: {event} for {input_message}")
+                yield f"\n<ERROR>{json.dumps({'error': 'Oops! An error occurred while finalizing your request.'})}<ERROR_END>\n"
+                yield None  # Indicate completion
             else:
                 logging.warning(f"Unhandled event in submit_tool_outputs: {event.event} for {input_message}")
 
     except Exception as e:
         logging.error(f"Error in submit_tool_outputs: {str(e)} for {input_message}", exc_info=True)
-        yield "Oops! An error occurred while finalizing your request."
+        yield f"\n<ERROR>{json.dumps({'error': 'Oops! An error occurred while finalizing your request.'})}<ERROR_END>\n"
+        yield None  # Indicate completion
 
 
     """
