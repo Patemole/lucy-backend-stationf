@@ -10,6 +10,7 @@ import boto3
 import os
 import json
 from typing import Optional
+from boto3.dynamodb.conditions import Attr
 
 
 
@@ -121,6 +122,57 @@ async def store_message_async(
         error_message = e.response['Error']['Message']
         print(f"Error inserting message into chat history: {error_code} - {error_message}")
         return None
+
+
+
+
+
+
+
+@timing_decorator
+async def get_timing_history(last_database_curated: str):  # timestamp
+    print("\n\n\n\nAttempting to retrieve chat history with intervalle: {last_database_curated}")
+    
+    try:
+        # Initialisation des paramètres de scan avec alias pour timestamp
+        scan_kwargs = {
+            'FilterExpression': Attr('timestamp').gt(last_database_curated),
+            'ProjectionExpression': '#ts, username, body',  # Utilisez l'alias #ts pour timestamp
+            'ExpressionAttributeNames': {'#ts': 'timestamp'}  # Définissez l'alias
+        }
+
+        items = []
+        done = False
+        start_key = None
+
+        while not done:
+            if start_key:
+                scan_kwargs['ExclusiveStartKey'] = start_key
+
+            response = table.scan(**scan_kwargs)
+            batch_items = response.get('Items', [])
+            items.extend(batch_items)
+            print(f"Retrieved {len(batch_items)} items from chat history.")
+
+            start_key = response.get('LastEvaluatedKey', None)
+            done = start_key is None
+
+        # Trier par alias de timestamp (optionnel)
+        items.sort(key=lambda x: x['timestamp'])
+
+        # Filtrer pour ne conserver que les champs nécessaires
+        filtered_items = [{'username': item['username'], 'body': item['body'], 'timestamp': item['timestamp']} for item in items]
+
+        return filtered_items
+
+    except ClientError as e:
+        error_code = e.response['Error']['Code']
+        error_message = e.response['Error']['Message']
+        print(f"Error querying chat history: {error_code} - {error_message}")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred: {str(e)}")
+        return []
 
     
 
