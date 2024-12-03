@@ -84,7 +84,7 @@ async def on_event(client, event, input_message, image_bool, university, usernam
         # Handle 'failed' event
         elif event.event == 'thread.run.failed':
             logging.error(f"ON_EVENT Run FAILED for event: {event} for {input_message}")
-            yield f"\n<ERROR>{json.dumps({'error': 'Oops! An error occurred while finalizing your request.'})}<ERROR_END>\n"
+            yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An error occurred while processing your request. Please resend your message'}})}<ERROR_END>\n"
             yield None  # Indicate completion
 
         # Handle queued and in-progress events
@@ -97,7 +97,7 @@ async def on_event(client, event, input_message, image_bool, university, usernam
 
     except Exception as e:
         logging.error(f"Error in on_event: {str(e)} for {input_message}", exc_info=True)
-        yield f"\n<ERROR>{json.dumps({'error': 'Oops! An unexpected error occurred. Please try again later.'})}<ERROR_END>\n"
+        yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An unexpected error occurred. Please try again later.'}})}<ERROR_END>\n"
         yield None
 
 
@@ -275,7 +275,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
             yield data
     except Exception as e:
         logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
-        yield f"\n<ERROR>{json.dumps({'error': 'Oops! An unexpected error occurred. Please try again later.'})}<ERROR_END>\n"
+        yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! Looks like we are experiencing high traffic right now. Please try again later.'}})}<ERROR_END>\n"
         yield None
 
 
@@ -319,14 +319,14 @@ async def submit_tool_outputs(client, tool_outputs, run_id, thread_id, query, im
                 yield None
             elif event.event == 'thread.run.failed':
                 logging.error(f"ON_EVENT Run FAILED for event: {event} for {input_message}")
-                yield f"\n<ERROR>{json.dumps({'error': 'Oops! An error occurred while finalizing your request.'})}<ERROR_END>\n"
+                yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An error occurred while finalizing your request. Please try again later.'}})}<ERROR_END>\n"
                 yield None  # Indicate completion
             else:
                 logging.warning(f"Unhandled event in submit_tool_outputs: {event.event} for {input_message}")
 
     except Exception as e:
         logging.error(f"Error in submit_tool_outputs: {str(e)} for {input_message}", exc_info=True)
-        yield f"\n<ERROR>{json.dumps({'error': 'Oops! An error occurred while finalizing your request.'})}<ERROR_END>\n"
+        yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! Something went wrong while finalizing your request. Please try again later.'}})}<ERROR_END>\n"
         yield None  # Indicate completion
 
 
