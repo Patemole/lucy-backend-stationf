@@ -126,19 +126,16 @@ async def store_message_async(
 
 
 
-
-
-
 @timing_decorator
 async def get_timing_history(last_database_curated: str):  # timestamp
-    print("\n\n\n\nAttempting to retrieve chat history with intervalle: {last_database_curated}")
+    print(f"\n\n\n\nAttempting to retrieve chat history with interval: {last_database_curated}")
     
     try:
         # Initialisation des paramètres de scan avec alias pour timestamp
         scan_kwargs = {
             'FilterExpression': Attr('timestamp').gt(last_database_curated),
-            'ProjectionExpression': '#ts, username, body',  # Utilisez l'alias #ts pour timestamp
-            'ExpressionAttributeNames': {'#ts': 'timestamp'}  # Définissez l'alias
+            'ProjectionExpression': '#ts, username, body, chat_id',  # Ajout de chat_id
+            'ExpressionAttributeNames': {'#ts': 'timestamp'}  # Définissez l'alias pour timestamp
         }
 
         items = []
@@ -161,7 +158,7 @@ async def get_timing_history(last_database_curated: str):  # timestamp
         items.sort(key=lambda x: x['timestamp'])
 
         # Filtrer pour ne conserver que les champs nécessaires
-        filtered_items = [{'username': item['username'], 'body': item['body'], 'timestamp': item['timestamp']} for item in items]
+        filtered_items = [{'username': item['username'], 'body': item['body'], 'timestamp': item['timestamp'], 'chat_id': item['chat_id']} for item in items]
 
         return filtered_items
 
