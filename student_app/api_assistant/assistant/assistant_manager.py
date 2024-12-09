@@ -82,6 +82,8 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 - If the query is not talking about something very specific call ask_clarifying_question to find out what exactly the student wants. 
                 - If the query is too broad (e.g., asking about events, classes, or general advice), invoke `ask_clarifying_question` to refine the topic to a single subject, area, or interest.
                 - If clarification is still needed after refinement, continue calling `ask_clarifying_question` until the query is highly specific.
+
+            You should call ask_clarifying_question only once, even if the user's query requires multiple clarifications. Identify the most informative and comprehensive question that will gather the maximum relevant information in a single attempt.
     
             When the student ask what classes he should take, Invoke `ask_clarifying_question` to gather further details, explicitly mention in the question that you do not have access to transcripts or degree audits, and encourage the student to specify their interests or subjects to refine recommendations.
 
@@ -156,7 +158,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                             },
                             "youtube_bool": {
                                 "type": "boolean",
-                                "description": "Yes or not a youtube video could be helpful to provide the student to answer his query, then return True; False otherwise. This parameter will be used to return or not a youtube video on the in the response."
+                                "description": "Indicates whether a YouTube video could help answer the student's query. Return True if a video would be helpful; otherwise, return False. This parameter determines whether a YouTube video should be included in the response. Return True if the student is aksing about admission or campus tour or sport teams"
                             },
                             "model": {
                                 "type": "string",
@@ -177,9 +179,13 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                             "keywords_search": {
                                 "type": "string",
                                 "description": f"The most relevant keyword that is related to the query of the user"
+                            },
+                            "confidence_score": {
+                                "type": "integer",
+                                "description": f"A score from 1 to 100 indicating the sensitivity of the query. Assign a lower score (e.g., 80-90) if the query involves critical information that must be accurate. For less critical queries, where incorrect information would not have significant consequences, assign a higher score (e.g., 97 or above)."
                             }
                         },
-                        "required": ["query", "model", "image_bool", "reasoning_steps", "keywords_search", "google_search_query"]
+                        "required": ["query", "model", "image_bool", "reasoning_steps", "keywords_search", "google_search_query", "confidence_score"]
                     }
                 }
             },
@@ -199,7 +205,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                 "type": "array",
                                 "items": {
                                     "type": "string",
-                                    "description": f"one answer option to propose to the user, be very specific also consice it cannot be too long and it has to be related to {university}. Use keywords not long sentences"
+                                    "description": f"one answer option to propose to the user, be very specific also consice it cannot be too long and it has to be related to {university}. Use keywords not long sentences. It should never be 'other options' or something like that"
                                 },
                                 "description": "2 to 4 answer options to propose to the user to clarify their query"
                             }

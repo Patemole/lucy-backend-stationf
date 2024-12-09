@@ -84,7 +84,52 @@ async def get_chat_history(chat_id: str):
         error_message = e.response['Error']['Message']
         print(f"Error querying chat history: {error_code} - {error_message}")
         return []
-    
+
+
+@timing_decorator
+async def get_most_recent_conversations(limit: int = 100):
+    """
+    Retrieve the most recent conversations from the DynamoDB table.
+
+    :param limit: Number of conversations to fetch (default is 100).
+    :return: A JSON object containing the most recent conversations.
+    """
+    print(f"Attempting to retrieve the {limit} most recent conversations.")
+    try:
+        # Use ScanIndexForward=False to sort by timestamp descending
+        response = table.scan(
+            Limit=limit,
+            FilterExpression=Attr('timestamp').exists(),  # Ensure 'timestamp' exists
+        )
+
+        # Extract and sort by 'timestamp' in descending order
+        items = sorted(
+            response.get('Items', []),
+            key=lambda x: x['timestamp'],
+            reverse=True
+        )
+
+        # Filter the fields to include only relevant information
+        filtered_items = [
+            {
+                'chat_id': item.get('chat_id', ''),
+                'timestamp': item.get('timestamp', ''),
+                'username': item.get('username', ''),
+                'body': item.get('body', ''),
+                'course_id': item.get('course_id', ''),
+                'message_id': item.get('message_id', ''),
+            }
+            for item in items
+        ]
+
+        print(f"Retrieved {len(filtered_items)} most recent conversations.")
+        return json.dumps({'conversations': filtered_items}, indent=2)
+    except ClientError as e:
+        error_code = e.response['Error']['Code']
+        error_message = e.response['Error']['Message']
+        print(f"Error retrieving most recent conversations: {error_code} - {error_message}")
+        return json.dumps({'error': f"{error_code} - {error_message}"})
+
 
 @timing_decorator
 async def store_message_async(
