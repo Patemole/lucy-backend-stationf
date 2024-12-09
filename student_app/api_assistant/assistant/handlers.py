@@ -126,6 +126,15 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 if model not in ['small', 'large']:
                     model = 'small'
 
+                confidence_score = arguments.get('confidence_score')
+                logging.info(f"confidence_score is {confidence_score} for {input_message}")
+
+                # Convert confidence_score to string and yield it in the desired format
+                if confidence_score is not None:  # Ensure the score exists
+                    structured_confidence = [{"confidence_score": str(confidence_score)}]
+                    yield f"\n<CONFIDENCE_SCORE>{json.dumps({'confidence_score': structured_confidence})}<CONFIDENCE_SCORE_END>\n"
+                    logging.info(f"confidence_score yield {structured_confidence} for {input_message}")
+
                 #Yielding the reosoning steps
                 reasoning_steps = arguments.get('reasoning_steps', '')
                 structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
@@ -172,13 +181,24 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 youtube_bool = arguments.get('youtube_bool', False)
                 logging.info(f"youtube_bool is {youtube_bool}")
 
-                youtube_bool = False
+
                 if youtube_bool:
                     youtube_query = google_search_query + " " + university 
                     logging.info(f"Youtube video search with keywords: {youtube_query} for {input_message}")
-                    result_youtube_list = await get_youtube_videos(youtube_query, input_message)
-                    logging.info(f"Youtube search succesfull for {result_youtube_list} for {input_message}")
-                    yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_list})}<YOUTUBE_END>\n"
+
+                    # Call the updated function to fetch videos and shorts
+                    result_youtube_data = await get_youtube_videos(youtube_query, input_message)
+                    logging.info(f"Youtube search successful for {result_youtube_data} for {input_message}")
+
+                    # Process videos and yield in the normal format
+                    if result_youtube_data["videos"]:
+                        logging.info(f"Yielding YouTube videos for {input_message}")
+                        yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_data['videos']})}<YOUTUBE_END>\n"
+
+                    # Process Shorts and yield in the Instagram-like format
+                    if result_youtube_data["shorts"]:
+                        logging.info(f"Yielding YouTube Shorts as Instagram reels for {input_message}")
+                        yield f"\n<INSTA>{json.dumps({'insta': result_youtube_data['shorts']})}<INSTA_END>\n"
 
                 """
                 #TODO look for async or not
