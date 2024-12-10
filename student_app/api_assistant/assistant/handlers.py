@@ -131,7 +131,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
 
                 # Convert confidence_score to string and yield it in the desired format
                 if confidence_score is not None:  # Ensure the score exists
-                    structured_confidence = [{"confidence_score": str(confidence_score)}]
+                    structured_confidence = {"confidence_score": str(confidence_score)}
                     yield f"\n<CONFIDENCE_SCORE>{json.dumps({'confidence_score': structured_confidence})}<CONFIDENCE_SCORE_END>\n"
                     logging.info(f"confidence_score yield {structured_confidence} for {input_message}")
 
