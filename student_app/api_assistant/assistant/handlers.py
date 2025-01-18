@@ -274,7 +274,8 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                     minor=minor, 
                     year=year, 
                     school=school,
-                    input_message=input_message
+                    input_message=input_message,
+                    domains=domains
                 )
                 logging.info(f"Getting right contact info for '{input_message}': {output}")
                 tool_outputs.append({

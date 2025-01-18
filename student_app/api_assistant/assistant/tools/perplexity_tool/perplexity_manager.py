@@ -40,6 +40,37 @@ def timing_decorator(func):
     else:
         return sync_wrapper
 
+def generate_search_domain_filter(university):
+    # Define a dictionary mapping universities to their custom website links
+    university_domain_mapping = {
+        "ccp": [
+            "prideportal.ccp.edu",
+            "www.phila.gov",
+            "www.pa.gov",
+            "foundation.ccp.edu",
+            "theindependentnews.org",
+            "ed.gov",
+            "www.whitehouse.gov/about-the-white-house/our-government/#:~:text=The%20Federal%20Government%20is%20composed,and%20the%20Federal%20courts%2C%20respectively.",
+            "www.asgaonline.com",
+            "www.globalstudentforum.org",
+            "www.congress.gov",
+            "www.aft.org",
+            "www.aft2026.org"
+        ]
+    }
+
+    # Default custom domains for the given university
+    custom_domains = university_domain_mapping.get(university.lower(), [])
+
+    # Always include the university's .edu domain
+    default_domain = f"{university}.edu"
+
+    # Combine the default domain with the custom domains
+    search_domain_filter = [default_domain] + custom_domains
+
+    return search_domain_filter
+
+
 @timing_decorator
 async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message, max_retries=3):
     """
@@ -79,6 +110,10 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
     )
     logging.info(f"Model for perplexity is {model} for {input_message}")
 
+    domains = generate_search_domain_filter(university)
+
+    print(f"DOMAINS: {domains}" )
+
     payload = {
         "model": f"llama-3.1-sonar-{model}-128k-online",
         "messages": [
@@ -89,7 +124,7 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
         "stream": False,
         "return_citations": True,
         "return_related_questions": True,
-        "search_domain_filter": [f"{university}.edu"],
+        "search_domain_filter": domains,
         "temperature": 0.1,
         "top_p": 0.1,
         "frequency_penalty": 1.2
