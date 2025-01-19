@@ -50,6 +50,7 @@ from redis.asyncio import Redis
 
 
 
+
 # Logging configuration
 logging.basicConfig(
     level=logging.INFO,
@@ -84,8 +85,10 @@ redis_client = Redis(
 )
 """
 
+
+
 redis_client = Redis(
-    host="cache-lucy-assistant-thread-mmmubb.serverless.use1.cache.amazonaws.com:6379",
+    host="cache-lucy-assistant-thread-mmmubb.serverless.use1.cache.amazonaws.com::6379",
     port=6379,
     decode_responses=True,  # Enables human-readable data responses
     ssl=True  # Required because "Encryption in Transit" is enabled
@@ -209,7 +212,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             thread_id_task = asyncio.create_task(
                 get_cached_thread_id(chat_id, input_message, redis_client)
             )
-
+            
             logging.info(f"Checking if thread ID in Cache for {input_message}")
             thread_id = await thread_id_task
             logging.info(f"Thread_id:{thread_id} for {input_message}")

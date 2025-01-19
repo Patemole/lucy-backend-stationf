@@ -118,6 +118,11 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 arguments = {}
 
             if function_name == "get_current_info":
+                reasoning_steps = arguments.get('reasoning_steps', '')
+                structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
+                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"             
+                logging.info(f"reasoning_steps yield {structured_reasoning} for {input_message}")
+
                 query = arguments.get('query', '')
                 #sources = arguments.get('sources', [])
                 image_bool = arguments.get('image_bool', False)
@@ -125,8 +130,16 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 google_search_query = arguments.get('google_search_query', '')
                 if model not in ['small', 'large']:
                     model = 'small'
+                
+                #Yielding the reosoning steps
 
-                confidence_score = arguments.get('confidence_score')
+                output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
+
+
+                logging.info(f"Current info for query {query} : {output} for '{input_message}'")
+
+                #confidence_score = arguments.get('confidence_score')
+                confidence_score = output[0].get("score") if output else None
                 logging.info(f"confidence_score is {confidence_score} for {input_message}")
 
                 # Convert confidence_score to string and yield it in the desired format
@@ -135,14 +148,9 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                     yield f"\n<CONFIDENCE_SCORE>{json.dumps({'confidence_score': structured_confidence})}<CONFIDENCE_SCORE_END>\n"
                     logging.info(f"confidence_score yield {structured_confidence} for {input_message}")
 
-                #Yielding the reosoning steps
-                reasoning_steps = arguments.get('reasoning_steps', '')
-                structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
-                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"             
-                logging.info(f"reasoning_steps yield {structured_reasoning} for {input_message}")
-
                 logging.info(f"Getting the sources for {input_message}")
-                sources = await google_source_search(google_search_query, university, input_message)
+                #sources = await google_source_search(google_search_query, university, input_message)
+                sources = [{"name": result.get("title"), "url": result.get("url")} for result in output]
                 if sources:
                     logging.info(f"Sources received {sources} for {input_message}")
                 else:
@@ -234,13 +242,13 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 logging.info(f"Instagram profile search succesfull for {result_instagram_profile_list} for {input_message}")
                 yield f"\n<INSTA_CLUB>{json.dumps({'insta_club': result_instagram_profile_list})}<INSTA_CLUB_END>\n"
                 """
-                
-                output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
-                logging.info(f"Current info for query {query} : {output} for '{input_message}'")
 
+                content = ";".join([f"{result.get('url')}:{result.get('content')}" for result in output])
+
+                
                 tool_outputs.append({
                     "tool_call_id": tool_call.id,
-                    "output": output
+                    "output": content
                 })
 
             elif function_name == "ask_clarifying_question":

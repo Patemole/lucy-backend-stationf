@@ -8,6 +8,11 @@ import time
 import logging
 
 
+from tavily import AsyncTavilyClient
+
+tavily_client = AsyncTavilyClient(api_key="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")
+
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s]: %(message)s",
@@ -73,10 +78,24 @@ def generate_search_domain_filter(university):
 
 @timing_decorator
 async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message, max_retries=3):
-    """
+    domains = generate_search_domain_filter(university)
+    current_date = datetime.now().strftime("%B %d, %Y")
+    query = query + f"-- today date is {current_date}"
+    # 'await' is critical here:
+    response = await tavily_client.search(query=query, include_images=image_bool, include_domains=domains)
+    print(f"TAVILY RESPONSE: {response}")
+    results = response.get("results", [])
+    return results
+
+
+
+"""
+@timing_decorator
+async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message, max_retries=3):
+    
     Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query,
     with automatic retries on failure.
-    """
+    
     logging.info(f"Retrieving up-to-date info for query: {query} from university: {university} for {input_message}")
     
     PPLX_API_KEY = os.getenv('PPLX_API_KEY')
@@ -89,10 +108,10 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
     current_date = datetime.now().strftime("%B %d, %Y")
 
     system_prompt = (
-        f"""
+        f
             You are a reliable academic advisor at {university}, and you provide accurate, up-to-date, and factual information. 
             Only research on site:{university}.edu. 
-            We are currently in the Fall 2024 semester, and today's date is {current_date}.
+            We are currently in the Spring 2025 semester, and today's date is {current_date}.
 
             When you are asked about events never mention past events
 
@@ -106,7 +125,7 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
             Important system rules:
             - Only mention the informations that are from his school ({school}) and relatable from his year ({year})
             - Be as precise as possible, if you mention a place, give the location, a person give the name and email, if you are giving advise and guidance mention exact university ressources,, building, person, OH, courses, deadlines etc ... 
-        """
+        
     )
     logging.info(f"Model for perplexity is {model} for {input_message}")
 
@@ -163,7 +182,7 @@ async def get_up_to_date_info(query, image_bool, model, university, username, ma
 
     # If all retries fail, send a final error message
     return "Error: Unable to retrieve up-to-date information after multiple attempts."
-
+"""
 
 def get_sources_json(sources, input_message):
     """
