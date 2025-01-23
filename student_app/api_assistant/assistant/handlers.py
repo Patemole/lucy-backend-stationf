@@ -131,9 +131,14 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
 
                 # Convert confidence_score to string and yield it in the desired format
                 if confidence_score is not None:  # Ensure the score exists
-                    structured_confidence = [{"confidence_score": str(confidence_score)}]
-                    yield f"\n<CONFIDENCE_SCORE>{json.dumps({'confidence_score': structured_confidence})}<CONFIDENCE_SCORE_END>\n"
-                    logging.info(f"confidence_score yield {structured_confidence} for {input_message}")
+                    #structured_confidence = [{"confidence_score": str(confidence_score)}]
+                    #yield f"\n<CONFIDENCE_SCORE>{json.dumps({'confidence_score': structured_confidence})}<CONFIDENCE_SCORE_END>\n"
+                    #yield f"\n<CONFIDENCE_SCORE>{json.dumps({'accuracy_score': {'confidence_score': str(confidence_score)}})}<CONFIDENCE_SCORE_END>\n"
+                    yield f"\n<CONFIDENCE>{json.dumps({'accuracy_score': {'confidenceScore': str(confidence_score)}})}<CONFIDENCE_END>\n"
+                    await asyncio.sleep(0.2)
+                    #yield None
+                    logging.info(f"Generated confidence score packet: {json.dumps({'confidence_score': {'confidence_score': str(confidence_score)}})}")
+                    #logging.info(f"confidence_score yield {structured_confidence} for {input_message}")
 
                 #Yielding the reosoning steps
                 reasoning_steps = arguments.get('reasoning_steps', '')

@@ -2,6 +2,14 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
+#cert_file = "/Users/lucy-cto/Documents/lucy-backend2/localhost+2.pem"
+#key_file = "/Users/lucy-cto/Documents/lucy-backend2/localhost+2-key.pem"
+
+#if not os.path.exists(cert_file) or not os.path.exists(key_file):
+#    raise FileNotFoundError(f"Certificat ou clé introuvable : {cert_file}, {key_file}")
+
+#print("Certificat et clé trouvés, démarrage avec HTTPS.")
+
 print("Starting the correct file")
 import logging
 from fastapi import FastAPI
@@ -149,6 +157,7 @@ except Exception as e:
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 5001))
-    print(f"Démarrage du serveur sur le port {port}")
-    logger.info(f"Démarrage du serveur sur le port {port}")
+    print(f"Démarrage du serveur sur le port {port} avec HTTPS")
+    logger.info(f"Démarrage du serveur sur le port {port} avec HTTPS")
+    #uvicorn.run(app, host="0.0.0.0", port=port, log_level="debug", ssl_certfile=cert_file, ssl_keyfile=key_file)  # Passer log_level à debug pour plus de détails
     uvicorn.run(app, host="0.0.0.0", port=port, log_level="debug")  # Passer log_level à debug pour plus de détails

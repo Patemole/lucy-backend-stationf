@@ -169,6 +169,56 @@ async def count_student_questions(chat_history):
     print("\n")
     return question_count
 
+
+############################################# FONCTION POUR LA CLASSIFICATION DE LA CONVERSATION + TITLE ###########################
+
+async def classify_query(question: str) -> dict:
+    """
+    Classifies a student's question into predefined categories and generates a conversation title.
+    Returns a JSON object with 'category' and 'conversation_title'.
+    """
+
+    # Define the JSON schema for the expected response
+    response_schema = {
+        "type": "object",
+        "properties": {
+            "category": {
+                "type": "string",
+                "enum": ["Financial Aids", "Events", "Policies", "Housing", "Courses"]
+            },
+            "conversation_title": {
+                "type": "string"
+            }
+        },
+        "required": ["category", "conversation_title"],
+        "additionalProperties": False
+    }
+
+    try:
+        # Create the chat completion request with the specified response format
+        response = await client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a classification assistant."},
+                {"role": "user", "content": f"Question: {question}"}
+            ],
+            response_format={"type": "json_schema", "json_schema": response_schema},
+            strict=True,
+            max_tokens=100,
+            temperature=0
+        )
+
+        # Extract and return the structured response
+        return response.choices[0].message.content
+
+    except Exception as e:
+        logging.error(f"Error in classify_query: {e}")
+        # Fallback response in case of an error
+        return {
+            "category": "unknown",
+            "conversation_title": "Untitled Conversation"
+        }
+
 ############################################# END POINT FOR CHAT ##################################
 
 
@@ -185,6 +235,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     minor = input_query.minor
     year = input_query.year
     school = input_query.faculty
+    is_first_message = input_query.is_first_message
 
     #logging.info(f"Redis server run: {await redis_client.ping()} for {input_message}")
     logging.info(f"Processing message from {username} at {university} for {input_message}")
@@ -209,6 +260,18 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             thread_id_task = asyncio.create_task(
                 get_cached_thread_id(chat_id, input_message, redis_client)
             )
+
+            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
+             #NEW: classification task to get category and conversation title
+            #classification_task = asyncio.create_task(classify_query(input_message))
+
+            # Définir la tâche de classification uniquement si is_first_message est True
+            if is_first_message:
+                classification_task = asyncio.create_task(classify_query(input_message))
+            else:
+                classification_task = None
+            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
+
 
             logging.info(f"Checking if thread ID in Cache for {input_message}")
             thread_id = await thread_id_task
@@ -279,6 +342,38 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             logging.info(f"Initializing assistant... for {input_message}")
             assistant_id = await assistant_id_task
             logging.info(f"Assistant initialized with ID: {assistant_id} for {input_message}")
+
+            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
+
+            '''
+            # retrieve classification result in parallel
+            classification_title_result = await classification_task
+            category = classification_title_result.get("category")
+            conversation_title = classification_title_result.get("conversation_title")
+            # you can store these or return them to the frontend
+            logging.info(f"Classification result: {classification_title_result}")
+
+            # example of yielding the classification data to the front if needed
+            yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(classification_title_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
+            await asyncio.sleep(0.2)
+            '''
+
+
+            if is_first_message:
+                classification_title_result = await classification_task
+                category = classification_title_result.get("category")
+                conversation_title = classification_title_result.get("conversation_title")
+                logging.info(f"Classification result: {classification_title_result}")
+
+                # Exemple d'envoi des résultats de classification au front
+                yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(classification_title_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
+                await asyncio.sleep(0.2)
+            else:
+                logging.info("Skipping classification task as this is not the first message.")
+
+
+            #################################END OF CODE CLASSIFICATION ############################
+
 
             try:
                 logging.info(f"Starting streaming run... for {input_message}")
@@ -363,9 +458,6 @@ async def delete_chat_history_route(chat_id: str):
     except Exception as e:
         logging.error(f"Erreur lors de la suppression de l'historique du chat : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la suppression de l'historique du chat")
-
-
-
 
 
 
@@ -1902,11 +1994,6 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
             await asyncio.sleep(0.2)
 
     return StreamingResponse(message_stream(), media_type="text/plain")
-
-
-
-
-
 
 
 
