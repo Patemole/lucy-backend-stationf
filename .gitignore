@@ -4,6 +4,7 @@ myen/*
 myenv/*
 myenvcheck/*
 .ebextensions/*
+myenv/
 
 *.pyc
 *.log
