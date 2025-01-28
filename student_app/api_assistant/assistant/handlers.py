@@ -240,6 +240,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 result_linkedin_profile_list = transform_linkedin_profiles_data(linkedin_query, input_message)
                 logging.info(f"Linkedin profile search succesfull for {result_linkedin_profile_list} for {input_message}")
                 yield f"\n<LINKEDIN>{json.dumps({'linkedin': result_linkedin_profile_list})}<LINKEDIN_END>\n"
+               
                 
                 await asyncio.sleep(0.2)
                 instagram_query = ""
