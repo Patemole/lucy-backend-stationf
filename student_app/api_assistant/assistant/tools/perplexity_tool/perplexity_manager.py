@@ -11,13 +11,9 @@ import logging
 from tavily import AsyncTavilyClient
 from pymongo import MongoClient
 
-import cohere
-co = cohere.Client("3NyDOoxt9tsAq2rqh2c2DuPGdsinyiV5OfLBOFHF")
 
-
-tavily_client = AsyncTavilyClient(api_key="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")
-
-db = MongoClient("mongodb+srv://mathieuperez:XARC2huJVlJF3ltD@cluster0.94kw5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")["HFU"]
+TAVILY_API = os.getenv('TAVILY_API')
+tavily_client = AsyncTavilyClient(api_key=TAVILY_API)
 
 logging.basicConfig(
     level=logging.INFO,
