@@ -14,6 +14,7 @@ class InputQuery(BaseModel):
     major: Optional[list[str]]
     minor: Optional[list[str]]
     year: str
+    is_first_message: bool
 
 
 class InputQueryAI(BaseModel):

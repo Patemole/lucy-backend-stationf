@@ -171,7 +171,60 @@ async def count_student_questions(chat_history):
     print(question_count)
     print("\n")
     return question_count
+ 
 
+async def classify_query(question: str) -> dict:
+    """
+    Classifies a student's question into predefined categories and generates a conversation title.
+    Returns a dictionary with 'category' and 'conversation_title'.
+    """
+
+    # Define the JSON schema for the expected response
+    response_schema = {
+        "type": "object",
+        "properties": {
+            "category": {
+                "type": "string",
+                "enum": ["Financial Aids", "Events", "Policies", "Housing", "Courses"]
+            },
+            "conversation_title": {
+                "type": "string"
+            }
+        },
+        "required": ["category", "conversation_title"],
+        "additionalProperties": False
+    }
+
+    try:
+        # Create the chat completion request with the specified response format
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "user", "content": f"Please classify the following question into one of these categories: Financial Aids, Events, Policies, Housing, or Courses. Also, suggest a short conversation title. Question: {question}"},
+                {"role": "user", "content": f"Question: {question}"}
+            ],
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "classification_response",
+                    "strict": True,
+                    "schema": response_schema
+                }
+            },
+            max_tokens=100,
+            temperature=0
+        )
+
+        # Extract and return the structured response
+        return response.choices[0].message.content
+
+    except Exception as e:
+        logging.error(f"Error in classify_query: {e}")
+        # Fallback response in case of an error
+        return {
+            "category": "unknown",
+            "conversation_title": "Untitled Conversation"
+        }
 ############################################# END POINT FOR CHAT ##################################
 
 
@@ -212,12 +265,49 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             thread_id_task = asyncio.create_task(
                 get_cached_thread_id(chat_id, input_message, redis_client)
             )
-            
+
             logging.info(f"Checking if thread ID in Cache for {input_message}")
             thread_id = await thread_id_task
             logging.info(f"Thread_id:{thread_id} for {input_message}")
             # Flag to track if the thread is reconstructed
             reconstructed = False
+
+            is_first_message = input_query.is_first_message
+            logging.info("this is the boolean value of is first message")
+            logging.info(is_first_message)
+
+            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
+             #NEW: classification task to get category and conversation title
+            #classification_task = asyncio.create_task(classify_query(input_message))
+
+            # Définir la tâche de classification uniquement si is_first_message est True
+            if is_first_message:
+                print("first message task creating")
+                classification_task = asyncio.create_task(classify_query(input_message))
+                print("first message task created")
+            else:
+                classification_task = None
+            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
+
+            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
+
+            if is_first_message:
+                print("awaiting task")
+                classification_title_result = await classification_task
+                classification_title_result = json.loads(classification_title_result)
+                print(f"classification_title_result : {classification_title_result}")
+                category = classification_title_result.get("category")
+                conversation_title = classification_title_result.get("conversation_title")
+                logging.info(f"Classification result: {classification_title_result}")
+
+                wrapped_result = {"classification_title_result": classification_title_result}
+                yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
+                await asyncio.sleep(0.2)
+            else:
+                logging.info("Skipping classification task as this is not the first message.")
+
+
+            #################################END OF CODE CLASSIFICATION ############################
 
             if thread_id:
                 logging.info(f"Using cached thread ID: {thread_id} for {chat_id} for {input_message}")

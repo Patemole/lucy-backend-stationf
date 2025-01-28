@@ -12,6 +12,7 @@ from .tools.perplexity_tool.instagram_search_manager import transform_instagram_
 from .tools.perplexity_tool.instagram_reels_manager import transform_instagram_reels_data
 from .tools.perplexity_tool.linkedin_profile_search_manager import transform_linkedin_profiles_data
 from functools import wraps
+from .tools.RAG_tool.rag_ragie import retrieve_chunks
 import time
 import asyncio
 import logging
@@ -127,25 +128,30 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 #sources = arguments.get('sources', [])
                 image_bool = arguments.get('image_bool', False)
                 model = arguments.get('model', 'small')
-                google_search_query = arguments.get('google_search_query', '')
+                rag_hypothetical_answer = arguments.get('rag_hypothetical_answer', '')
                 if model not in ['small', 'large']:
                     model = 'small'
                 
                 #Yielding the reosoning steps
+                rag_task = ""
 
-                output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
+                info_task = asyncio.create_task(get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message))
+                rag_task = asyncio.create_task(retrieve_chunks(query, university))
 
-
-                logging.info(f"Current info for query {query} : {output} for '{input_message}'")
+                output = await info_task
+                #output = await get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message)
+                info_result = ";".join([f"{result.get('url')}:{result.get('content')}" for result in output])
+                logging.info(f"Current info for query {query} : {info_result} for '{input_message}'")
 
                 #confidence_score = arguments.get('confidence_score')
+                #await asyncio.sleep(0.2)
                 confidence_score = output[0].get("score") if output else None
-                logging.info(f"confidence_score is {confidence_score} for {input_message}")
-
+                confidence_score = round(confidence_score * 100) if confidence_score is not None else None
+                logging.info(f"confidence_score is {confidence_score} for {input_message}")                
                 # Convert confidence_score to string and yield it in the desired format
                 if confidence_score is not None:  # Ensure the score exists
-                    structured_confidence = {"confidence_score": str(confidence_score)}
-                    yield f"\n<CONFIDENCE_SCORE>{json.dumps({'confidence_score': structured_confidence})}<CONFIDENCE_SCORE_END>\n"
+                    structured_confidence = {"confidenceScore": str(confidence_score)}
+                    yield f"\n<CONFIDENCE>{json.dumps({'accuracy_score': structured_confidence})}<CONFIDENCE_END>\n"
                     logging.info(f"confidence_score yield {structured_confidence} for {input_message}")
 
                 logging.info(f"Getting the sources for {input_message}")
@@ -173,6 +179,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                     logging.error(f"Error decoding JSON. Invalid data received. for {input_message}")
                     sources_list = []
 
+                await asyncio.sleep(0.2)
                 for source in sources_list:
                     logging.info(f"Sending Source to client: {source} for {input_message}")
                     yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
@@ -242,8 +249,18 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 logging.info(f"Instagram profile search succesfull for {result_instagram_profile_list} for {input_message}")
                 yield f"\n<INSTA_CLUB>{json.dumps({'insta_club': result_instagram_profile_list})}<INSTA_CLUB_END>\n"
                 """
+                
+                rag = await rag_task
+                #rag = retrieve_chunks(query, university)
+                if rag["status"] == "success":
+                    rag_result = " ".join([chunk["text"] for chunk in rag["retrieved_chunks"]])
+                    logging.info(f"RAG info for query {query} : {rag} for '{input_message}'")
+                else:
+                    rag_result = ""
 
-                content = ";".join([f"{result.get('url')}:{result.get('content')}" for result in output])
+                content = f"Web information from university websites: {info_result}\n Content from university private and verified database {rag_result}"
+
+
 
                 
                 tool_outputs.append({

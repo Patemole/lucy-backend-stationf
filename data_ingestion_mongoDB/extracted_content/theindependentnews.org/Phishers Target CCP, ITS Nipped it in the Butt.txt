@@ -1,0 +1,15 @@
+Title: Phishers Target CCP, ITS Nipped it in the Butt
+URL: https://theindependentnews.org/2024/08/09/phishers-target-ccp-its-nipped-it-in-the-butt/
+
+M.P. Hassel
+August 9, 2024
+On August 8th, the myccp.ccp.edu portal issued a warning notification to Community College of Philadelphia (CCP) students, faculty, and administrators about the threat of phishing scams.
+Phishing scams typically start with a scammer sending a flood of emails to addresses within our domain (ccp.edu or student.ccp.edu). These emails often contain malicious links or instructions designed to trick recipients into providing personal information. If someone falls for the scam and clicks the link or follows the instructions, the scammer gains access to their account. The scammer then uses this compromised account to send similar phishing emails to all the contacts in that person’s email history, further spreading the scam.
+A common phishing scam circulated during the summer months often read as:
+Dear Friends,
+This opportunity should be done at leisure taking at most 1 hour per day,2-3 times a week and earn $500 Weekly.. During this time that we are in, working from home would be great. Therefore, you have been offered a Job Opportunity at the convenience of your home or school,which serves as a gateway to pay all expenses incurred on campus. It’s a Flexible Opportunity where you will determine your working time. You can be in any location and work from your home/school..
+Send { I’m Interested } to { the phished email } using your personal email address such as gmail,hotmail,icloud,yahoo and not your school email so that you can effectively receive response from us.
+According to Aristidis “Eddie” Bekas, the Lead IT Help Desk Technician for Information Technology Services (ITS) at CCP, to counter phishing scams, ITS must take control of the original account that fell for the scam, forcefully log it out of Outlook, and change the password. ITS has been able to stop the spread of the phishing scam.
+For most students at the school, however, the problem seems to linger because people check through their email weeks later and still see several scam emails. Some signs of phishing attacks according to IT Services at CCP are emails of “job offers with unrealistic or exceptionally high hourly wages,” suspicious email addresses, misspellings, “lack of contact information in the signature block,” unusual attachments, or “hyperlinks and websites that do not match the text when hovering over them.”
+If you see any emails that seem suspicious, do not interact with them. The IT Help Desk suggests you “create unique and strong passwords for each account” and “avoid clicking on hyperlinks in emails; hover your cursor over links in the body of the email—if the links do not match the text that appears when hovering over them, the link may be spoofed.”
+For ongoing issues regarding suspicious emails, you can contact the IT Help Desk at 4itsupport@ccp.edu or 215-496-6000. The ITS office is in the Bonnell Building, B2-41.
