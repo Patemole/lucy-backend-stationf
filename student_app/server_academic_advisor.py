@@ -186,7 +186,7 @@ async def classify_query(question: str) -> dict:
         "properties": {
             "category": {
                 "type": "string",
-                "enum": ["Financial Aids", "Events", "Policies", "Housing", "Courses"]
+                "enum": ["Financial Aids", "Events", "Policies", "Housing", "Courses", "Chitchat",]
             },
             "conversation_title": {
                 "type": "string"
@@ -201,7 +201,7 @@ async def classify_query(question: str) -> dict:
         response = await client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "user", "content": f"Please classify the following question into one of these categories: Financial Aids, Events, Policies, Housing, or Courses. Also, suggest a short conversation title. Question: {question}"},
+                {"role": "user", "content": f"Please classify the following question into one of these categories: Financial Aids, Events, Policies, Housing, Courses or Chitchat. Also, suggest a short conversation title. Question: {question}"},
                 {"role": "user", "content": f"Question: {question}"}
             ],
             response_format={
