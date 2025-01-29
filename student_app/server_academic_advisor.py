@@ -274,14 +274,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
              #NEW: classification task to get category and conversation title
             #classification_task = asyncio.create_task(classify_query(input_message))
 
-            # Définir la tâche de classification uniquement si is_first_message est True
-            if is_first_message:
-                classification_task = asyncio.create_task(classify_query(input_message))
-            else:
-                classification_task = None
-            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
-
-
             logging.info(f"Checking if thread ID in Cache for {input_message}")
             thread_id = await thread_id_task
             logging.info(f"Thread_id:{thread_id} for {input_message}")
@@ -303,27 +295,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 print("first message task created")
             else:
                 classification_task = None
-            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
-
-            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
-
-            if is_first_message:
-                print("awaiting task")
-                classification_title_result = await classification_task
-                classification_title_result = json.loads(classification_title_result)
-                print(f"classification_title_result : {classification_title_result}")
-                category = classification_title_result.get("category")
-                conversation_title = classification_title_result.get("conversation_title")
-                logging.info(f"Classification result: {classification_title_result}")
-
-                wrapped_result = {"classification_title_result": classification_title_result}
-                yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
-                await asyncio.sleep(0.2)
-            else:
-                logging.info("Skipping classification task as this is not the first message.")
-
-
-            #################################END OF CODE CLASSIFICATION ############################
 
             if thread_id:
                 logging.info(f"Using cached thread ID: {thread_id} for {chat_id} for {input_message}")
@@ -389,41 +360,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             assistant_id = await assistant_id_task
             logging.info(f"Assistant initialized with ID: {assistant_id} for {input_message}")
 
-            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
-            '''
-            if is_first_message:
-                classification_title_result = await classification_task
-                category = classification_title_result.get("category")
-                conversation_title = classification_title_result.get("conversation_title")
-                logging.info(f"Classification result: {classification_title_result}")
-
-                wrapped_result = {"classification_title_result": classification_title_result}
-                yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
-                await asyncio.sleep(0.2)
-            else:
-                logging.info("Skipping classification task as this is not the first message.")
-            '''
-
-
-            if is_first_message:
-                print("awaiting task")
-                classification_title_result = await classification_task
-                classification_title_result = json.loads(classification_title_result)
-                print(f"classification_title_result : {classification_title_result}")
-                category = classification_title_result.get("category")
-                conversation_title = classification_title_result.get("conversation_title")
-                logging.info(f"Classification result: {classification_title_result}")
-
-                wrapped_result = {"classification_title_result": classification_title_result}
-                yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
-                await asyncio.sleep(0.2)
-            else:
-                logging.info("Skipping classification task as this is not the first message.")
-
-
-            #################################END OF CODE CLASSIFICATION ############################
-
-
             try:
                 logging.info(f"Starting streaming run... for {input_message}")
 
@@ -465,6 +401,21 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                             break
                         else:
                             yield data
+
+                if is_first_message:
+                    print("awaiting task")
+                    classification_title_result = await classification_task
+                    classification_title_result = json.loads(classification_title_result)
+                    print(f"classification_title_result : {classification_title_result}")
+                    category = classification_title_result.get("category")
+                    conversation_title = classification_title_result.get("conversation_title")
+                    logging.info(f"Classification result: {classification_title_result}")
+
+                    wrapped_result = {"classification_title_result": classification_title_result}
+                    yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
+                    await asyncio.sleep(0.2)
+                else:
+                    logging.info("Skipping classification task as this is not the first message.")
 
             except KeyError as e:
                 logging.error(f"KeyError during streaming run: {str(e)} for {input_message}", exc_info=True)

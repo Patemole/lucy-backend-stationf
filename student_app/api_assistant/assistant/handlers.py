@@ -146,7 +146,13 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 #confidence_score = arguments.get('confidence_score')
                 #await asyncio.sleep(0.2)
                 confidence_score = output[0].get("score") if output else None
-                confidence_score = round(confidence_score * 100) if confidence_score is not None else None
+                if confidence_score is not None:
+                    confidence_score = round(confidence_score * 100)
+                    if confidence_score < 90:
+                        confidence_score += 10
+                else:
+                    None
+                    
                 logging.info(f"confidence_score is {confidence_score} for {input_message}")                
                 # Convert confidence_score to string and yield it in the desired format
                 if confidence_score is not None:  # Ensure the score exists

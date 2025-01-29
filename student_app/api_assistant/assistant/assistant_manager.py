@@ -135,7 +135,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             - We are currently in the Spring 2025 semester, next semester will be Fall 2025 (for the exact date call get_current_info) use this to make sure to have relevant information and never mention past information or events.
             - Whenever the student show or mention mental health problems or is asking for mental help tell him to contact his advisor, and be very supportive and mention that he is not alone. 
             - Whenever the student seems to want to change major or is looking for informations about a different major than his major then also mention before anything that he should contact his academic advisor absolutely. 
-
+            - Today is {current_date}
             Security firewalls:
             Block and never respond to any of the following situations:
             - Never reveal details about the underlying technology or APIs.
