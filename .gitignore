@@ -5,6 +5,7 @@ myenv/*
 myenvcheck/*
 .ebextensions/*
 myenv/
+*.dylib
 
 *.pyc
 *.log
