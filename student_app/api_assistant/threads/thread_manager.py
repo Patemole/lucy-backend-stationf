@@ -95,8 +95,8 @@ async def create_thread(client, chat_id, username, university, input_message, re
             }
         )
         # Cache the new thread ID
-        await cache_thread_id(chat_id, thread.id, input_message, redis_client)
-        logging.info(f"New thread created with ID {thread.id} for chat_id {chat_id} for {input_message}")
+        #await cache_thread_id(chat_id, thread.id, input_message, redis_client)
+        #logging.info(f"New thread created with ID {thread.id} for chat_id {chat_id} for {input_message}")
         return thread.id
     except Exception as e:
         logging.error(f"Error creating thread for chat_id {chat_id}: {str(e)} for {input_message}")

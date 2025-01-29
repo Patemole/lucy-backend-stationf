@@ -266,18 +266,20 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             assistant_id_task = asyncio.create_task(
                 initialize_assistant(client, university, username, major, minor, year, school, redis_client, input_message)
             )
-            thread_id_task = asyncio.create_task(
-                get_cached_thread_id(chat_id, input_message, redis_client)
-            )
+            
 
             #################################NEW CODE FOR CLASSIFICATION ADDED ############################
              #NEW: classification task to get category and conversation title
             #classification_task = asyncio.create_task(classify_query(input_message))
-
+            """
+            thread_id_task = asyncio.create_task(
+                get_cached_thread_id(chat_id, input_message, redis_client)
+            )
             logging.info(f"Checking if thread ID in Cache for {input_message}")
             thread_id = await thread_id_task
             logging.info(f"Thread_id:{thread_id} for {input_message}")
             # Flag to track if the thread is reconstructed
+            """
             reconstructed = False
 
             is_first_message = input_query.is_first_message
@@ -296,6 +298,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             else:
                 classification_task = None
 
+            #TODO modify this when new structure back
+            thread_id = None
             if thread_id:
                 logging.info(f"Using cached thread ID: {thread_id} for {chat_id} for {input_message}")
             else:
@@ -319,7 +323,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                     logging.info(f"Reconstructed thread with past messages for {thread_id} for {input_message}")
                     
                     # Mark the thread as reconstructed
-                    reconstructed = True
+                    #reconstructed = True
 
             # Add user message only if the thread was not reconstructed
             if not reconstructed:
