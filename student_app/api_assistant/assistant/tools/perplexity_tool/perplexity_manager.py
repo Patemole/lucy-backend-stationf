@@ -52,17 +52,11 @@ def generate_search_domain_filter(university):
     university_domain_mapping = {
         "ccp": [
             "prideportal.ccp.edu",
-            "www.phila.gov",
-            "www.pa.gov",
             "foundation.ccp.edu",
-            "theindependentnews.org",
-            "ed.gov",
-            "www.whitehouse.gov/about-the-white-house/our-government/#:~:text=The%20Federal%20Government%20is%20composed,and%20the%20Federal%20courts%2C%20respectively.",
-            "www.asgaonline.com",
-            "www.globalstudentforum.org",
-            "www.congress.gov",
+            "theindependentnews.org",        
             "www.aft.org",
-            "www.aft2026.org"
+            "www.aft2026.org",
+            "myccp.online"
         ]
     }
 
