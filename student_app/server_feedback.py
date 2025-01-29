@@ -8,6 +8,7 @@ from botocore.exceptions import ClientError
 import uvicorn
 from student_app.database.dynamo_db.feedback import store_feedback_async
 from student_app.database.dynamo_db.academic_advisor_email import store_academic_advisor_email_async
+from typing import Optional
 
 
 # Logging configuration
@@ -43,6 +44,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+''''
 # Pydantic models for requests
 class FeedbackWrongAnswerModel(BaseModel):
     userId: str
@@ -50,6 +52,19 @@ class FeedbackWrongAnswerModel(BaseModel):
     aiMessageContent: str
     humanMessageContent: str
     feedback: str
+'''
+
+class FeedbackWrongAnswerModel(BaseModel):
+    userId: str
+    chatId: str
+    aiMessageContent: str
+    humanMessageContent: str
+    feedback: str
+    relevance: Optional[int] = None
+    accuracy: Optional[int] = None
+    format: Optional[int] = None
+    sources: Optional[int] = None
+    overall_satisfaction: Optional[int] = None
 
     
 class GeneralFeedbackModel(BaseModel):
@@ -63,55 +78,25 @@ class AcademicAdvisorEmailModel(BaseModel):
     uid: str
 
 
-
-
-'''
-# Endpoints
 @app.post("/wrong_answer")
 async def submit_feedback_wrong_answer(feedback: FeedbackWrongAnswerModel):
     try:
-        # Here, integrate the logic to process the feedback on a wrong answer
-        logging.info(f"Feedback on wrong answer received from user {feedback.userId} on chat {feedback.chatId}")
-        logging.info(f"AI Message: {feedback.aiMessageContent}")
-        logging.info(f"Human Message: {feedback.humanMessageContent}")
-        logging.info(f"Feedback: {feedback.feedback}")
-        return {"message": "Feedback on wrong answer received successfully"}
-    
-    except ValidationError as e:
-        logging.error(f"Validation error: {e.json()}")
-        raise HTTPException(status_code=422, detail=e.errors())
-    
+      
+        await store_feedback_async(
+            uid=feedback.userId, 
+            feedback=feedback.feedback,
+            chat_id=feedback.chatId, 
+            ai_message=feedback.aiMessageContent,
+            human_message=feedback.humanMessageContent,
+            
+            relevance=feedback.relevance,
+            accuracy=feedback.accuracy,
+            format=feedback.format,
+            sources=feedback.sources,
+            overall_satisfaction=feedback.overall_satisfaction
+            )
+        
 
-
-@app.post("/feedback_answer")
-async def submit_feedback_answer(feedback: GeneralFeedbackModel):
-    try:
-        # Here, integrate the logic to process the general feedback
-        logging.info(f"General feedback received from user {feedback.userId} on course {feedback.courseId}")
-        logging.info(f"Feedback: {feedback.feedback}")
-        return {"message": "General feedback received successfully"}
-    except ValidationError as e:
-        logging.error(f"Validation error: {e.json()}")
-        raise HTTPException(status_code=422, detail=e.errors())
-'''
-
-
-
-@app.post("/wrong_answer")
-async def submit_feedback_wrong_answer(feedback: FeedbackWrongAnswerModel):
-    try:
-        #logging.info(f"User {feedback.userId}")
-        #logging.info("\n")
-        #logging.info(f"On chat {feedback.chatId}")
-        #logging.info("\n")
-        #logging.info(f"AI Message: {feedback.aiMessageContent}")
-        #logging.info("\n")
-        #logging.info(f"Human Message: {feedback.humanMessageContent}")
-        #logging.info("\n")
-        #logging.info(f"Feedback: {feedback.feedback}")
-
-
-        await store_feedback_async(uid=feedback.userId, feedback=feedback.feedback,chat_id=feedback.chatId, ai_message=feedback.aiMessageContent,human_message=feedback.humanMessageContent)
         return {"message": "Feedback on wrong answer received successfully"}
     
     except ValidationError as e:
