@@ -197,9 +197,24 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
                 logging.info(f"youtube_bool is {youtube_bool}")
 
 
+
                 if youtube_bool:
                     youtube_query = google_search_query + " " + university 
                     logging.info(f"Youtube video search with keywords: {youtube_query} for {input_message}")
+
+                    # Call the updated function to fetch videos and shorts
+                    result_youtube_data = await get_youtube_videos(youtube_query, input_message)
+                    logging.info(f"Youtube search successful for {result_youtube_data} for {input_message}")
+
+                    # Process videos and yield in the normal format
+                    if result_youtube_data["videos"]:
+                        logging.info(f"Yielding YouTube videos for {input_message}")
+                        yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_data['videos']})}<YOUTUBE_END>\n"
+
+                    # Process Shorts and yield in the Instagram-like format
+                    if result_youtube_data["shorts"]:
+                        logging.info(f"Yielding YouTube Shorts as Instagram reels for {input_message}")
+                        yield f"\n<INSTA>{json.dumps({'insta': result_youtube_data['shorts']})}<INSTA_END>\n"
 
                     # Call the updated function to fetch videos and shorts
                     result_youtube_data = await get_youtube_videos(youtube_query, input_message)
