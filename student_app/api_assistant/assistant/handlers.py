@@ -187,6 +187,7 @@ async def handle_requires_action(client, data, run_id, thread_id, input_message,
 
                 await asyncio.sleep(0.2)
                 for source in sources_list:
+                    await asyncio.sleep(0.1)
                     logging.info(f"Sending Source to client: {source} for {input_message}")
                     yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
 
