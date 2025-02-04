@@ -34,6 +34,8 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 openai.api_key = OPENAI_API_KEY
 
+clientOA = AsyncOpenAI()
+
 current_date = datetime.now().strftime("%B %d, %Y")
 
 from .config.universities import upenn, drexel, ccp
@@ -77,10 +79,10 @@ def get_common_config(university, current_date, username, major, minor, year, sc
     logging.info(f"Generating common config for university: {university}")
     return {
         "name": f"{university} student advisor",
-        "description": (f"A friendly and reliable academic advisor for {university} students. "
+        "description_openai": (f"A friendly and reliable academic advisor for {university} students. "
                         "This assistant is approachable and always willing to help with specific advice. "
                         "When precision is needed, it retrieves the most up-to-date information to ensure students get accurate details."),
-        "instructions": (f"""
+        "instructions_openai": (f"""
             System:
             You are Lucy, an advisor for a student named {username} at {university}, and your role is to assist them with academic and administrative queries related to {university}.
 
@@ -180,6 +182,72 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             - When you are getting the answer and content from get_current_info the data will be in the following format:
                 "Web information from university websites: 'info_result'\n Content from university private and verified database 'rag_result'"
             - If there is content from the private database and it is related to the query then use in priority this data to answer
+            """),
+        "description_groq": (f"Lucy is a smart, sassy academic advisor that filters and refines university information to give students only what they need—nothing they don’t. Instead of searching for data, she receives queries and pre-provided school info, then delivers ultra-relevant, concise, and witty responses tailored to each student’s profile. 🎓✨"),
+        "instructions_groq": (f"""
+            Lucy – The Sassy Academic Advisor
+            Lucy is a smart, no-nonsense academic assistant designed to help students navigate their university life. Unlike a generic chatbot, Lucy doesn’t fetch information—she receives:
+
+            The student’s query and profile details (e.g., major, school, year).
+            University-provided data (public and private information relevant to the query).
+            Lucy's job is not to search for information but to analyze, filter, and deliver only what’s directly useful to the student in the most concise, engaging, and sassy way possible.
+
+            🔹 How Lucy Works
+            1. Understanding the Student’s Context
+            Lucy always tailors responses based on the student’s details, ensuring answers are hyper-relevant. She only has access to the following information:
+
+            Name: {username}
+            School: {school}
+            Year: {year}
+            Majors: {major} (can be undeclared if none)
+            Minors: {minor} (can be undeclared if none)
+            🔹 Filtering Rule:
+
+            If a question is unrelated to the student’s school, major, or academic situation, Lucy removes unnecessary details and only keeps what applies to them.
+            If the student’s major is undeclared, Lucy provides general advice but suggests seeing an advisor for more guidance.
+            If the query requires knowledge beyond the student’s profile, Lucy mentions this limitation but still offers useful recommendations.
+            2. Processing University Data & Answering Queries
+            Lucy receives two types of university information:
+
+            Web Data → Publicly available details from official university websites.
+            Private & Verified Data → Internal resources (exclusive university policies, deadlines, and student services).
+            🔹 Filtering & Prioritization:
+
+            Private database info takes priority when available.
+            Web data is used only when private data is missing or lacks key details.
+            Irrelevant details are discarded—Lucy only keeps what the student actually needs to know.
+            3. Core Assistant Knowledge
+            Lucy always operates with real-time awareness and ensures answers are up to date.
+
+            📅 Current Semester: Spring 2025 → Next semester is Fall 2025 (for exact dates, university data is used).
+            🚨 Mental Health: If a student mentions struggles, Lucy immediately recommends contacting an advisor and offers supportive words.
+            🎓 Major Changes: If a student is considering a major switch, Lucy first advises them to consult an academic advisor before anything else.
+            🕒 Today’s Date: {current_date} → All responses must be timely and relevant (no past events, expired deadlines, or outdated policies).
+            4. Response Style: Lucy’s Sassy Personality
+            Lucy is not your average academic assistant. She’s witty, sarcastic, and brutally honest—but always helpful.
+
+            ✅ Engaging & Funny – No boring, robotic answers.
+            ✅ Ultra-Concise – No fluff, just the most useful details.
+            ✅ Formatted for Clarity – Bullet points, bold highlights, and hyperlinks when needed.
+
+            Examples of Lucy’s Style
+            Student: "Can I ignore this class requirement?"
+            Lucy: "Sure, if you also want to ignore graduating. Bold move."
+            Student: "How many credits should I take?"
+            Lucy: "Well, do you like sleep? If yes, be smart. If no, go wild."
+            Student: "What happens if I miss the deadline?"
+            Lucy: "Deadlines are like horror movie villains—you can run, but they will find you."
+            Student: "Should I overload my semester with hard classes?"
+            Lucy: "Oh, I love the confidence. Hate the plan. Your sleep schedule is crying already."
+            5. Final Summary: What Makes Lucy Unique?
+            Lucy is not a search engine—she is a smart academic filter that:
+
+            Receives both student queries and university data to craft ultra-relevant responses.
+            Keeps answers concise, sassy, and highly tailored to the student’s school, major, and academic needs.
+            Prioritizes the best data source (private over public) and removes unnecessary details.
+            Ensures up-to-date answers based on the current semester and deadlines.
+            Formats information clearly, using bold highlights, bullet points, and humor to keep students engaged.
+            Lucy isn’t just an advisor—she’s your academic bestie who keeps it real. 🎓✨
             """),
         "model": "llama-3.3-70b-versatile",
         "temperature": 0.1,
@@ -292,7 +360,7 @@ def get_university_config(university, current_date, username, major, minor, year
         logging.info(f"Applying specific config for {university}")
         university_specific_config = config_function(university, current_date, username, major, minor, year, school)
         for key in university_specific_config:
-            if key in ["description", "instructions", "name"]:
+            if key in ["description_openai", "instructions_openai", "instructions_groq", "description_groq", "name"]:
                 # If it's description or instructions or name, append the specific to the common
                 common_config[key] += "\n" + university_specific_config[key]
             elif key == "tools":
@@ -308,7 +376,7 @@ def get_university_config(university, current_date, username, major, minor, year
 
 
 @timing_decorator
-async def handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
+async def handle_requires_action(client, university, username, major, minor, year, school, history_items, category, input_message):
     try:
         logging.info(f"Processing user message: {input_message}")
         logging.info("Starting handle_requires_action function")
@@ -321,30 +389,105 @@ async def handle_requires_action(client, university, username, major, minor, yea
         logging.info(f"Configuration retrieved for university: {university}")
 
         # Build system prompt with description and instructions
-        system_content = f"{config['description']}\n\n{config['instructions']}"
+        system_content_openai = f"{config['description_openai']}\n\n{config['instructions_openai']}"
+        system_content_groq = f"{config['description_groq']}\n\n{config['instructions_groq']}"
         logging.info("System prompt built")
 
         # Initialize messages list with system prompt (FIX: changed 'developer' to 'system')
-        messages = [{"role": "system", "content": system_content}]
+        messages_openai = [{"role": "system", "content": system_content_openai}]
+        messages_groq = [{"role": "system", "content": system_content_groq}]
         logging.info("Messages list initialized with system prompt")
+        messages_steps = [{
+            "role": "system",
+            "content": (
+                "You must return a JSON object containing an array of 1 to 6 reasoning steps based on the complexity of the query. "
+                "Each step should concisely describe the approach to answering the query, including relevant filtering, accuracy checks, "
+                "and handling of complex queries when necessary. Each step should be around 15 words. "
+                "Ensure the response follows this exact JSON format:\n\n"
+                "{\n"
+                '  "query": "<Rephrase the user query>",\n'
+                '  "steps": [\n'
+                '    {"step": 1, "description": "<Step 1 reasoning>"},\n'
+                '    {"step": 2, "description": "<Step 2 reasoning>"},\n'
+                '    {"step": 3, "description": "<Step 3 reasoning>"},\n'
+                '    {"step": 4, "description": "<Step 4 reasoning>"}\n'
+                "  ]\n"
+                "}\n\n"
+                "Super important: Always separate each step with a newline character `\\n`.\n"
+                "Here are three example responses based on different queries:\n\n"
+                "Example 1 (Simple query):\n"
+                "{\n"
+                '  "query": "What is the capital of France?",\n'
+                '  "steps": [\n'
+                '    {"step": 1, "description": "Identify the query as a fact-based geographical question."},\n'
+                '    {"step": 2, "description": "Retrieve the official capital of France from a trusted source."}\n'
+                "  ]\n"
+                "}\n\n"
+                "Example 2 (Moderate complexity query):\n"
+                "{\n"
+                '  "query": "How does photosynthesis work?",\n'
+                '  "steps": [\n'
+                '    {"step": 1, "description": "Identify photosynthesis as a biological process involving light energy conversion."},\n'
+                '    {"step": 2, "description": "Retrieve key stages: light absorption, carbon fixation, and energy conversion."},\n'
+                '    {"step": 3, "description": "Summarize in a structured format ensuring scientific accuracy."}\n'
+                "  ]\n"
+                "}\n\n"
+                "Always return a well-formatted JSON object following this structure."
+            )
+        }]
+
 
         # Append chat history
         for item in history_items:
             role = "assistant" if item["username"] == "Lucy" else "user"
-            messages.append({"role": role, "content": item["body"]})
+            messages_openai.append({"role": role, "content": item["body"]})
+            messages_groq.append({"role": role, "content": item["body"]})
+            messages_steps.append({"role": role, "content": item["body"]})
         logging.info("Chat history appended to messages")
 
+
+        if category != "Chitchat":
+            reasoning_response = await client.chat.completions.create(
+                model=config["model"],
+                messages=messages_steps,
+                response_format={"type": "json_object"}
+            )
+
+            print(f"Full API Response: {reasoning_response}")
+
+            # Extract response content (already in JSON format)
+            reasoning_text = reasoning_response.choices[0].message.content
+            print(f"Extracted Reasoning Text: {reasoning_text}")
+
+            # Parse JSON content correctly
+            try:
+                reasoning_data = json.loads(reasoning_text)  # Convert string to dictionary
+                steps_list = reasoning_data.get("steps", [])  # Extract steps
+
+                structured_reasoning = [
+                    {"step": i + 1, "description": step["description"]}
+                    for i, step in enumerate(steps_list)
+                ]
+
+                print(f"Structured Reasoning Steps: {structured_reasoning}")
+
+                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
+
+            except json.JSONDecodeError as e:
+                print(f"Error parsing JSON: {e}")
+                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': 'thinking'})}<REASONING_STEPS_END>\n"
+
         # Append user input
-        messages.append({"role": "user", "content": input_message})
+        messages_openai.append({"role": "user", "content": input_message})
+        messages_groq.append({"role": "user", "content": input_message})
         logging.info("User input appended to messages")
 
         # Initial API call to check if a function needs to be called
-        stream = await client.chat.completions.create(
-            model=config["model"],
-            messages=messages,
+        stream = await clientOA.chat.completions.create(
+            model="gpt-4o",
+            messages=messages_openai,
             tools=config["tools"],
-            stream=True,
-            response_format={"type": "text"}  
+            stream=True
         )
         logging.info("Initial streaming API call created")
 
@@ -406,11 +549,12 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     logging.info("Preparing to retrieve current info...")
                     query = arguments.get('query', '')
 
+                    """
                     reasoning_steps = arguments.get('reasoning_steps', '')
                     structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
                     yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
                     logging.info(f"Yielded reasoning steps for query: {query}")
-
+                    """
                     info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message))
                     logging.info("Created async task for get_up_to_date_info")
                     rag_task = asyncio.create_task(retrieve_chunks(query, university))
@@ -528,12 +672,12 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     })
 
             logging.info("Appending function results to messages")
-            messages.extend(tool_outputs)
+            messages_groq.extend(tool_outputs)
 
             logging.info("Making a follow-up streaming call to get final response")
             final_response = await client.chat.completions.create(
                 model=config["model"],
-                messages=messages,
+                messages=messages_groq,
                 stream=True,
                 response_format={"type": "text"}  # FIX: Ensuring valid response format for Groq
             )
@@ -543,6 +687,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
 
                 if delta.content:
                     logging.info(f"Appending chunk content: {delta.content}")
+                    await asyncio.sleep(0.002)
                     yield delta.content + "|"
 
     except Exception as e:

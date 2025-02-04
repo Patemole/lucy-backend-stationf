@@ -195,6 +195,7 @@ async def classify_query(question: str) -> dict:
                                         "role": "system",
                     "content": "You are a classifier. Categorize the user's question into one of these categories: "
                                "Financial Aids, Events, Policies, Housing, Courses, or Chitchat. "
+                               "Only put Chitchat only when it is not related at all with university example: hi, how are you, what can you do etc... when the student is not asking for info but just want to talks to you otherwise choose another category"
                                "Also, generate a short conversation title using a clickbait style. "
                                "Respond **ONLY** in valid JSON format with this exact structure:\n\n"
                                "{\n"
@@ -295,17 +296,31 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             #classification_task = asyncio.create_task(classify_query(input_message))
 
             # Définir la tâche de classification uniquement si is_first_message est True
-            if is_first_message:
-                print("first message task creating")
-                classification_task = asyncio.create_task(classify_query(input_message))
-                print(f"first message task created")
-            else:
-                classification_task = None
-
+            
+            print("first message task creating")
+            classification_task = asyncio.create_task(classify_query(input_message))
+            print(f"first message task created")
+            
             logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
             history_items = await get_chat_history(chat_id=chat_id)
             logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
-            
+
+
+            print("awaiting task")
+            classification_title_result = await classification_task
+            #classification_title_result = json.loads(classification_title_result)
+            print(f"classification_title_result : {classification_title_result}")
+            category = classification_title_result.get("category")
+            conversation_title = classification_title_result.get("conversation_title")
+            logging.info(f"Classification result: {classification_title_result}")
+
+            if is_first_message:
+                    wrapped_result = {"classification_title_result": classification_title_result}
+                    yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
+                    await asyncio.sleep(0.2)
+            else:
+                logging.info("Skipping classification task as this is not the first message.")
+
             try:
                 logging.info(f"Starting streaming run... for {input_message}")
 
@@ -318,7 +333,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                         logging.info(f"Starting streaming run (attempt {attempt + 1}/{max_retries})... for {input_message}")
                         
                         # Start the streaming run
-                        async for data in handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
+                        async for data in handle_requires_action(client, university, username, major, minor, year, school, history_items, category, input_message):
                                 if data is None:
                                     logging.info(f"Stream has completed. for {input_message}")
                                     break
@@ -338,21 +353,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
 
                 logging.info(f"Streaming run created and started for {input_message}")
-
-                if is_first_message:
-                    print("awaiting task")
-                    classification_title_result = await classification_task
-                    #classification_title_result = json.loads(classification_title_result)
-                    print(f"classification_title_result : {classification_title_result}")
-                    category = classification_title_result.get("category")
-                    conversation_title = classification_title_result.get("conversation_title")
-                    logging.info(f"Classification result: {classification_title_result}")
-
-                    wrapped_result = {"classification_title_result": classification_title_result}
-                    yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
-                    await asyncio.sleep(0.2)
-                else:
-                    logging.info("Skipping classification task as this is not the first message.")
 
             except KeyError as e:
                 logging.error(f"KeyError during streaming run: {str(e)} for {input_message}", exc_info=True)
