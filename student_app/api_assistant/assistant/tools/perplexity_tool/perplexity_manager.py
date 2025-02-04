@@ -73,12 +73,12 @@ def generate_search_domain_filter(university):
 
 
 @timing_decorator
-async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message, max_retries=3):
+async def get_up_to_date_info(query, university, username, major, minor, year, school, input_message, max_retries=3):
     domains = generate_search_domain_filter(university)
     current_date = datetime.now().strftime("%B %d, %Y")
     query = query + f"-- today date is {current_date}"
     # 'await' is critical here:
-    response = await tavily_client.search(query=query, include_images=image_bool, include_domains=domains)
+    response = await tavily_client.search(query=query, include_images=False, include_domains=domains)
     print(f"TAVILY RESPONSE: {response}")
     results = response.get("results", [])
     return results

@@ -36,6 +36,7 @@ from student_app.api_assistant.threads.thread_manager import (
     add_message_to_thread
 )
 from student_app.api_assistant.assistant.handlers import on_event
+from student_app.api_assistant.assistant.chat_creation import handle_requires_action
 from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
 
 # Today's date
@@ -262,10 +263,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                     logging.error(f"Error while storing the input message in background: {str(e)} for {input_message}")
 
             asyncio.create_task(background_store_message())
-
-            assistant_id_task = asyncio.create_task(
-                initialize_assistant(client, university, username, major, minor, year, school, redis_client, input_message)
-            )
             
 
             #################################NEW CODE FOR CLASSIFICATION ADDED ############################
@@ -298,72 +295,10 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             else:
                 classification_task = None
 
-            #TODO modify this when new structure back
-            thread_id = None
-            if thread_id:
-                logging.info(f"Using cached thread ID: {thread_id} for {chat_id} for {input_message}")
-            else:
-                logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
-                history_items = await get_chat_history(chat_id=chat_id)
-                logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
-                if len(history_items) == 0 or len(history_items) == 1:
-                    # New conversation, create a new thread
-                    logging.info(f"History is empty. Creating a new thread for {chat_id}. for {input_message}")
-                    thread_id = await create_thread(client, chat_id=chat_id, username=username, university=university, input_message=input_message, redis_client=redis_client)
-                    logging.info(f"Thread created and cached with ID: {thread_id} for {input_message}")
-                else:
-                    # Expired cache, reconstruct the thread with past messages
-                    logging.info(f"Cache expired. Reconstructing thread for {chat_id}. for {input_message}")
-                    thread_id = await create_thread(client, chat_id=chat_id, username=username, university=university, input_message=input_message, redis_client=redis_client)
-                    logging.info(f"Thread created with ID: {thread_id}. Adding past messages to thread... for {input_message}")
-                    
-                    for item in history_items:
-                        role = "assistant" if item["username"] == "Lucy" else "user"
-                        await add_message_to_thread(client, thread_id, role, item["body"], input_message)
-                    logging.info(f"Reconstructed thread with past messages for {thread_id} for {input_message}")
-                    
-                    # Mark the thread as reconstructed
-                    #reconstructed = True
-
-            # Add user message only if the thread was not reconstructed
-            if not reconstructed:
-                max_retries = 3
-                retry_delay = 3
-                for attempt in range(max_retries):
-                    try:
-                        await add_user_message(client, thread_id, input_message)
-                        logging.info(f"User message added successfully to thread {thread_id} for {input_message}")
-                        break  # Exit retry loop if successful
-                    except Exception as e:
-                        logging.error(f"Error adding user message to thread {thread_id}: {e} for {input_message}")
-
-                        # Parse the error object if it is structured
-                        try:
-                            error_data = e.args[0]  # Extract error details from the exception
-                            error_message = error_data.get("error", {}).get("message", "Unknown error")
-                            error_type = error_data.get("error", {}).get("type", "Unknown type")
-
-                            # Log specific error details
-                            logging.warning(f"Add user message to thread Error details - Message: {error_message}, Type: {error_type} for {input_message}")
-
-                        except Exception as parse_error:
-                            logging.warning(f"Failed to parse error details: {parse_error} for {input_message}")
-
-                        # Retry logic
-                        if attempt < max_retries - 1:
-                            logging.info(f"Retrying adding user message to thread in {retry_delay} seconds (Attempt {attempt + 1}/{max_retries})... for {input_message}")
-                            await asyncio.sleep(retry_delay)
-                        else:
-                            # If all retries fail, log and raise an error
-                            logging.error(f"Failed to add user message to thread {thread_id} after {max_retries} attempts for {input_message}")
-                            yield f"\n<ERROR>{json.dumps({'error': 'Oops! An error occurred while finalizing your request.'})}<ERROR_END>\n"
-                            return
-
-
-            logging.info(f"Initializing assistant... for {input_message}")
-            assistant_id = await assistant_id_task
-            logging.info(f"Assistant initialized with ID: {assistant_id} for {input_message}")
-
+            logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
+            history_items = await get_chat_history(chat_id=chat_id)
+            logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
+            
             try:
                 logging.info(f"Starting streaming run... for {input_message}")
 
@@ -376,13 +311,13 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                         logging.info(f"Starting streaming run (attempt {attempt + 1}/{max_retries})... for {input_message}")
                         
                         # Start the streaming run
-                        stream = await client.beta.threads.runs.create(
-                            thread_id=thread_id,
-                            assistant_id=assistant_id,
-                            stream=True
-                        )
-                        
-                        logging.info(f"Streaming run created successfully for thread ID: {thread_id} with assistant ID: {assistant_id} for {input_message}")
+                        async for data in handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
+                                if data is None:
+                                    logging.info(f"Stream has completed. for {input_message}")
+                                    break
+                                else:
+                                    yield data
+                        logging.info(f"Streaming run created successfully for {input_message}")
                         break  # Exit retry loop if successful
                     except Exception as e:
                         logging.error(f"Failed to create streaming run on attempt {attempt + 1}: {str(e)} for {input_message}")
@@ -395,16 +330,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                             return
 
 
-                logging.info(f"Streaming run created and started for thread ID: {thread_id} with assistant ID: {assistant_id} for {input_message}")
-
-                # Process the stream asynchronously
-                async for event in stream:
-                    async for data in on_event(client, event, input_message=input_message, image_bool=False, university=university, username=username, major=major, minor=minor, year=year, school=school):
-                        if data is None:
-                            logging.info(f"Stream has completed. for {input_message}")
-                            break
-                        else:
-                            yield data
+                logging.info(f"Streaming run created and started for {input_message}")
 
                 if is_first_message:
                     print("awaiting task")
