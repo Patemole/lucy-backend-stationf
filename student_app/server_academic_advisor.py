@@ -114,7 +114,11 @@ import time
 from functools import wraps
 import asyncio
 
-client = AsyncOpenAI()
+#client = AsyncOpenAI()
+client = AsyncOpenAI(
+    base_url="https://api.groq.com/openai/v1",
+    api_key=os.environ.get("GROQ_API_KEY")
+)
 
 def timing_decorator(func):
     @wraps(func)
@@ -173,59 +177,62 @@ async def count_student_questions(chat_history):
     print("\n")
     return question_count
  
-
 async def classify_query(question: str) -> dict:
     """
     Classifies a student's question into predefined categories and generates a conversation title.
     Returns a dictionary with 'category' and 'conversation_title'.
     """
 
-    # Define the JSON schema for the expected response
-    response_schema = {
-        "type": "object",
-        "properties": {
-            "category": {
-                "type": "string",
-                "enum": ["Financial Aids", "Events", "Policies", "Housing", "Courses", "Chitchat",]
-            },
-            "conversation_title": {
-                "type": "string"
-            }
-        },
-        "required": ["category", "conversation_title"],
-        "additionalProperties": False
-    }
+    # Define the JSON schema for expected response (this is only for validation, not sent in the request)
+    valid_categories = ["Financial Aids", "Events", "Policies", "Housing", "Courses", "Chitchat"]
 
     try:
-        # Create the chat completion request with the specified response format
+        # Create the chat completion request with a JSON response format
         response = await client.chat.completions.create(
-            model="gpt-4o",
+            model="llama-3.3-70b-versatile",
             messages=[
-                {"role": "user", "content": f"Please classify the following question into one of these categories: Financial Aids, Events, Policies, Housing, Courses or Chitchat. Also, suggest a short conversation title. Question: {question}"},
-                {"role": "user", "content": f"Question: {question}"}
+                {
+                                        "role": "system",
+                    "content": "You are a classifier. Categorize the user's question into one of these categories: "
+                               "Financial Aids, Events, Policies, Housing, Courses, or Chitchat. "
+                               "Also, generate a short conversation title using a clickbait style. "
+                               "Respond **ONLY** in valid JSON format with this exact structure:\n\n"
+                               "{\n"
+                               '  "category": "one of: Financial Aids, Events, Policies, Housing, Courses, Chitchat",\n'
+                               '  "conversation_title": "a short clickbait-style title"\n'
+                               "}\n\n"
+                               "Do not include any extra text or explanations, **only return the JSON object**."
+                },
+                {"role": "user", "content": question}
             ],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "classification_response",
-                    "strict": True,
-                    "schema": response_schema
-                }
-            },
+            response_format={"type": "json_object"},  
             max_tokens=100,
-            temperature=0
+            temperature=1.5
         )
 
         # Extract and return the structured response
-        return response.choices[0].message.content
+        result = response.choices[0].message.content
+
+        # Ensure the output is a valid JSON object
+        if isinstance(result, str):
+            result = json.loads(result)
+
+        # Validate response format
+        if isinstance(result, dict) and "category" in result and "conversation_title" in result:
+            if result["category"] not in valid_categories:
+                logging.warning(f"Invalid category received: {result['category']}, defaulting to 'unknown'")
+                result["category"] = "unknown"
+            return result
 
     except Exception as e:
         logging.error(f"Error in classify_query: {e}")
-        # Fallback response in case of an error
-        return {
-            "category": "unknown",
-            "conversation_title": "Untitled Conversation"
-        }
+
+    # Fallback response in case of an error
+    return {
+        "category": "unknown",
+        "conversation_title": "Untitled Conversation"
+    }
+
 ############################################# END POINT FOR CHAT ##################################
 
 
@@ -291,7 +298,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             if is_first_message:
                 print("first message task creating")
                 classification_task = asyncio.create_task(classify_query(input_message))
-                print("first message task created")
+                print(f"first message task created")
             else:
                 classification_task = None
 
@@ -335,7 +342,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 if is_first_message:
                     print("awaiting task")
                     classification_title_result = await classification_task
-                    classification_title_result = json.loads(classification_title_result)
+                    #classification_title_result = json.loads(classification_title_result)
                     print(f"classification_title_result : {classification_title_result}")
                     category = classification_title_result.get("category")
                     conversation_title = classification_title_result.get("conversation_title")

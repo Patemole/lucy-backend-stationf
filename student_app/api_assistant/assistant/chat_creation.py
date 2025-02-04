@@ -181,7 +181,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 "Web information from university websites: 'info_result'\n Content from university private and verified database 'rag_result'"
             - If there is content from the private database and it is related to the query then use in priority this data to answer
             """),
-        "model": "gpt-4o",
+        "model": "llama-3.3-70b-versatile",
         "temperature": 0.1,
         "tools": [
             {
@@ -306,6 +306,7 @@ def get_university_config(university, current_date, username, major, minor, year
 
     return common_config
 
+
 @timing_decorator
 async def handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
     try:
@@ -323,8 +324,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
         system_content = f"{config['description']}\n\n{config['instructions']}"
         logging.info("System prompt built")
 
-        # Initialize messages list with system prompt
-        messages = [{"role": "developer", "content": system_content}]
+        # Initialize messages list with system prompt (FIX: changed 'developer' to 'system')
+        messages = [{"role": "system", "content": system_content}]
         logging.info("Messages list initialized with system prompt")
 
         # Append chat history
@@ -342,14 +343,14 @@ async def handle_requires_action(client, university, username, major, minor, yea
             model=config["model"],
             messages=messages,
             tools=config["tools"],
-            stream=True
+            stream=True,
+            response_format={"type": "text"}  
         )
         logging.info("Initial streaming API call created")
 
         # For storing the final aggregated function calls
         final_tool_calls = {}
         logging.info("Initialized final_tool_calls dictionary")
-        # Keep track of whether we've completed the tool calls
         function_calls_done = False
         logging.info("Set function_calls_done to False")
 
@@ -358,20 +359,16 @@ async def handle_requires_action(client, university, username, major, minor, yea
             delta = chunk.choices[0].delta
             logging.info(f"Received a new chunk from the stream: {delta}")
 
-            # accumulate only if content is not None
             if delta.content:
                 logging.info(f"Appending chunk content: {delta.content}")
-                # you can yield each partial chunk immediately if you want real-time streaming
                 yield delta.content + "|"
 
-
-            # 2) Accumulate function call arguments
+            # Handle function calls
             if delta.tool_calls:
                 for tool_call in delta.tool_calls:
                     logging.info(f"Detected tool call for index {tool_call.index}")
                     index = tool_call.index
 
-                    # If this is a new function call, initialize it
                     if index not in final_tool_calls:
                         final_tool_calls[index] = {
                             "id": tool_call.id,
@@ -382,8 +379,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                             }
                         }
                         logging.info(f"Created new entry in final_tool_calls for function: {tool_call.function.name}")
-                    
-                    # Append new argument fragments
+
                     final_tool_calls[index]["function"]["arguments"] += tool_call.function.arguments
                     logging.info(f"Appended argument fragment for function: {tool_call.function.name}")
 
@@ -392,13 +388,11 @@ async def handle_requires_action(client, university, username, major, minor, yea
             function_calls_done = True
             tool_outputs = []
 
-            # Parse each final function call’s arguments
             for index, tool_call in final_tool_calls.items():
                 function_name = tool_call["function"]["name"]
                 raw_arguments = tool_call["function"]["arguments"]
                 logging.info(f"Function name: {function_name}, raw arguments: {raw_arguments}")
 
-                # Safely parse the JSON arguments
                 try:
                     arguments = json.loads(raw_arguments)
                 except json.JSONDecodeError:
@@ -493,9 +487,9 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     tool_outputs.append({
                         "role": "function",
                         "name": function_name,
-                        "content": json.dumps(content)
+                        "content": json.dumps({"info_result": info_result})
                     })
-
+                
                 elif function_name == "ask_clarifying_question":
                     logging.info("Handling ask_clarifying_question")
                     logging.info(f"Clarifying question arguments: {arguments}")
@@ -510,14 +504,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     })
 
                 elif function_name == "redirection_to_agent":
-                    logging.info("Handling redirection_to_agent")
-                    logging.info(f"Redirection arguments: {arguments}")
+                    logging.info(f"Processing redirection to agent: {arguments}")
                     query = f"Provide the most specific contact information for: {arguments.get('query', '')}"
-
-                    reasoning_steps = arguments.get('reasoning_steps', '')
-                    structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
-                    yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
-                    logging.info("Yielded reasoning steps for redirection_to_agent")
 
                     output = await get_up_to_date_info(
                         query, image_bool=False, model="small", university=university,
@@ -526,18 +514,17 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     logging.info(f"Contact information retrieved: {output}")
 
                     tool_outputs.append({
-                        "role": "function",
+                        "role": "function",  # FIX: Changed from 'tool' to 'function'
                         "name": function_name,
                         "content": json.dumps(output)
                     })
 
                 else:
                     logging.warning(f"Function {function_name} is not implemented")
-                    output = "Function not implemented."
                     tool_outputs.append({
-                        "role": "function",
+                        "role": "function",  # FIX: Changed from 'tool' to 'function'
                         "name": function_name,
-                        "content": json.dumps(output)
+                        "content": json.dumps("Function not implemented.")
                     })
 
             logging.info("Appending function results to messages")
@@ -547,18 +534,17 @@ async def handle_requires_action(client, university, username, major, minor, yea
             final_response = await client.chat.completions.create(
                 model=config["model"],
                 messages=messages,
-                #tools=config["tools"],
-                stream=True
+                stream=True,
+                response_format={"type": "text"}  # FIX: Ensuring valid response format for Groq
             )
             async for chunk in final_response:
                 delta = chunk.choices[0].delta
                 logging.info(f"Received a new chunk from the stream: {delta}")
 
-                # accumulate only if content is not None
                 if delta.content:
                     logging.info(f"Appending chunk content: {delta.content}")
-                    # you can yield each partial chunk immediately if you want real-time streaming
                     yield delta.content + "|"
+
     except Exception as e:
         logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
         yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! We are experiencing high traffic right now. Please try again later.'}})}<ERROR_END>\n"
