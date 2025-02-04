@@ -397,85 +397,14 @@ async def handle_requires_action(client, university, username, major, minor, yea
         messages_openai = [{"role": "system", "content": system_content_openai}]
         messages_groq = [{"role": "system", "content": system_content_groq}]
         logging.info("Messages list initialized with system prompt")
-        messages_steps = [{
-            "role": "system",
-            "content": (
-                "You must return a JSON object containing an array of 1 to 6 reasoning steps based on the complexity of the query. "
-                "Each step should concisely describe the approach to answering the query, including relevant filtering, accuracy checks, "
-                "and handling of complex queries when necessary. Each step should be around 15 words. "
-                "Ensure the response follows this exact JSON format:\n\n"
-                "{\n"
-                '  "query": "<Rephrase the user query>",\n'
-                '  "steps": [\n'
-                '    {"step": 1, "description": "<Step 1 reasoning>"},\n'
-                '    {"step": 2, "description": "<Step 2 reasoning>"},\n'
-                '    {"step": 3, "description": "<Step 3 reasoning>"},\n'
-                '    {"step": 4, "description": "<Step 4 reasoning>"}\n'
-                "  ]\n"
-                "}\n\n"
-                "Super important: Always separate each step with a newline character `\\n`.\n"
-                "Here are three example responses based on different queries:\n\n"
-                "Example 1 (Simple query):\n"
-                "{\n"
-                '  "query": "What is the capital of France?",\n'
-                '  "steps": [\n'
-                '    {"step": 1, "description": "Identify the query as a fact-based geographical question."},\n'
-                '    {"step": 2, "description": "Retrieve the official capital of France from a trusted source."}\n'
-                "  ]\n"
-                "}\n\n"
-                "Example 2 (Moderate complexity query):\n"
-                "{\n"
-                '  "query": "How does photosynthesis work?",\n'
-                '  "steps": [\n'
-                '    {"step": 1, "description": "Identify photosynthesis as a biological process involving light energy conversion."},\n'
-                '    {"step": 2, "description": "Retrieve key stages: light absorption, carbon fixation, and energy conversion."},\n'
-                '    {"step": 3, "description": "Summarize in a structured format ensuring scientific accuracy."}\n'
-                "  ]\n"
-                "}\n\n"
-                "Always return a well-formatted JSON object following this structure."
-            )
-        }]
-
 
         # Append chat history
         for item in history_items:
             role = "assistant" if item["username"] == "Lucy" else "user"
             messages_openai.append({"role": role, "content": item["body"]})
             messages_groq.append({"role": role, "content": item["body"]})
-            messages_steps.append({"role": role, "content": item["body"]})
         logging.info("Chat history appended to messages")
 
-
-        if category != "Chitchat":
-            reasoning_response = await client.chat.completions.create(
-                model=config["model"],
-                messages=messages_steps,
-                response_format={"type": "json_object"}
-            )
-
-            print(f"Full API Response: {reasoning_response}")
-
-            # Extract response content (already in JSON format)
-            reasoning_text = reasoning_response.choices[0].message.content
-            print(f"Extracted Reasoning Text: {reasoning_text}")
-
-            # Parse JSON content correctly
-            try:
-                reasoning_data = json.loads(reasoning_text)  # Convert string to dictionary
-                steps_list = reasoning_data.get("steps", [])  # Extract steps
-
-                structured_reasoning = [
-                    {"step": i + 1, "description": step["description"]}
-                    for i, step in enumerate(steps_list)
-                ]
-
-                print(f"Structured Reasoning Steps: {structured_reasoning}")
-
-                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
-
-            except json.JSONDecodeError as e:
-                print(f"Error parsing JSON: {e}")
-                yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': 'thinking'})}<REASONING_STEPS_END>\n"
 
         # Append user input
         messages_openai.append({"role": "user", "content": input_message})
@@ -549,12 +478,11 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     logging.info("Preparing to retrieve current info...")
                     query = arguments.get('query', '')
 
-                    """
                     reasoning_steps = arguments.get('reasoning_steps', '')
                     structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
                     yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
                     logging.info(f"Yielded reasoning steps for query: {query}")
-                    """
+                    
                     info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message))
                     logging.info("Created async task for get_up_to_date_info")
                     rag_task = asyncio.create_task(retrieve_chunks(query, university))
