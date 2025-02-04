@@ -120,7 +120,9 @@ def get_common_config(university, current_date, username, major, minor, year, sc
 
             Always prioritize clarity and precision in your responses by refining queries to their most specific form before answering.
 
-            Whent the student ask about financial aid ask for specification about his profile liek if he is international by calling ask_clarifying_question then asnwer the question
+            When the student ask about financial aid ask for specification about his profile liek if he is international by calling ask_clarifying_question then asnwer the question
+
+            When a student ask for courses you should always mention the exact course code (ex. CIS 3200, EAS 2030 etc..)
 
             information about the student:
             - His name is {username}

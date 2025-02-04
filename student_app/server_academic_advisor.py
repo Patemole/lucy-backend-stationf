@@ -418,9 +418,9 @@ async def save_ai_message(ai_message: InputQueryAI):
 
     word_count_task = await count_words(input_message)
 
-    chat_history = await get_chat_history(chat_id)
-    number_of_question_per_chat_id = await count_student_questions(chat_history)
-    number_of_question_per_chat_id = number_of_question_per_chat_id + 1
+    #chat_history = await get_chat_history(chat_id)
+    #number_of_question_per_chat_id = await count_student_questions(chat_history)
+    #number_of_question_per_chat_id = number_of_question_per_chat_id + 1
 
     
 
