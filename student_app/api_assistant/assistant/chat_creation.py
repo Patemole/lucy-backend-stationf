@@ -181,7 +181,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 "Web information from university websites: 'info_result'\n Content from university private and verified database 'rag_result'"
             - If there is content from the private database and it is related to the query then use in priority this data to answer
             """),
-        "model": "gpt-4o-mini",
+        "model": "gpt-4o",
         "temperature": 0.1,
         "tools": [
             {
