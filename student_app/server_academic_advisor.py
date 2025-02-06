@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 from typing import Dict, List
 import json
 
-import pandas as pd
 
 import asyncio
 import time

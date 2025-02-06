@@ -5,7 +5,6 @@ from openai import OpenAI, AsyncOpenAI
 from dotenv import load_dotenv
 import os
 from functools import wraps
-from redis.asyncio import Redis
 
 
 # Load environment variables from .env file

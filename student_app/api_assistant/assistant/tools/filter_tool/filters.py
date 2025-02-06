@@ -2,7 +2,6 @@
 
 import re
 from datetime import datetime
-import pandas as pd
 
 def filter_exact_match(df, column, values):
     if df[column].dtype == object:

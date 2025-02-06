@@ -25,7 +25,6 @@ from dotenv import load_dotenv
 import os
 from datetime import datetime, timedelta
 from functools import wraps
-from redis.asyncio import Redis
 import json
 import logging
 

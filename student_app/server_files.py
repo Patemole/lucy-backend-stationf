@@ -8,21 +8,11 @@ from fastapi import APIRouter, FastAPI, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Dict, Any, List, Tuple
-from langchain_openai import OpenAIEmbeddings
 from openai import OpenAI
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from PyPDF2 import PdfReader
-from pdf2image import convert_from_path
-import langchain_pinecone
-from pinecone import Pinecone
 import boto3
 from botocore.exceptions import ClientError
 from datetime import datetime
 from uuid import uuid4
-from pinecone import Pinecone, ServerlessSpec
-import io
-import requests
-import tempfile
 from dotenv import load_dotenv
 
 PINECONE_POOL_THREADS = 4
@@ -62,6 +52,8 @@ app.add_middleware(
 )
 
 #file_router = APIRouter(prefix='/files', tags=['file'])
+
+'''
 
 ##################################AWS CONFIGURATION############################################
 load_dotenv()
@@ -455,6 +447,8 @@ async def embeddings_treatment(uploaded_file: UploadFile, uid: str, course_id: s
     return s3_url, preview_url
 
 #app.include_router(file_router)
+
+'''
 
 def create_app():
     return app

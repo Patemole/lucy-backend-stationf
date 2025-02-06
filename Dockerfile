@@ -1,8 +1,15 @@
-# Utiliser une image de base officielle Python 3.11.7
-FROM python:3.11.7
+# Utiliser une image de base plus légère et sécurisée
+FROM python:3.11.11-slim
 
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app
+
+# Mettre à jour les paquets système pour corriger les vulnérabilités
+RUN apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y && \
+    apt-get autoremove -y && apt-get clean
+
+# Installer les mises à jour critiques de pip et des dépendances
+RUN pip install --upgrade --no-cache-dir pip setuptools cryptography
 
 # Copier le fichier requirements.txt et installer les dépendances
 COPY requirements.txt .
