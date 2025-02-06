@@ -232,7 +232,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 "type": "function",
                 "function": {
                     "name": "ask_clarifying_question",
-                    "description": "Handles situations where the student's query is too broad or lacks sufficient detail. Generates a clarifying question to refine the query and presents tailored answer options to guide the student toward a more specific request with a single area, interest or info request.",
+                    "description": "Handles situations where the student's query is too broad or lacks sufficient detail. Generates a clarifying question to refine the query and presents tailored answer options to guide the student toward a more specific request with a single area, interest or info request. Be very complete in your question but also very consice and short.",
                     "parameters": {
                         "type": "object",
                         "properties": {
