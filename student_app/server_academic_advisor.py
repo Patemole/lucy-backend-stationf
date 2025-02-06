@@ -287,18 +287,30 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
              #NEW: classification task to get category and conversation title
             #classification_task = asyncio.create_task(classify_query(input_message))
 
-            # Définir la tâche de classification uniquement si is_first_message est True
+            # Définir la tâche de classification uniquement si is_first_message est True            
+            history_items = []
+        
             if is_first_message:
                 print("first message task creating")
                 classification_task = asyncio.create_task(classify_query(input_message))
-                print("first message task created")
+                print(f"first message task created")
+                print("awaiting task")
+                classification_title_result = await classification_task
+                #classification_title_result = json.loads(classification_title_result)
+                print(f"classification_title_result : {classification_title_result}")
+                category = classification_title_result.get("category")
+                conversation_title = classification_title_result.get("conversation_title")
+                logging.info(f"Classification result: {classification_title_result}")
+                wrapped_result = {"classification_title_result": classification_title_result}
+                yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
+                await asyncio.sleep(0.2)
             else:
-                classification_task = None
+                logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
+                history_items = await get_chat_history(chat_id=chat_id)
+                logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
+                logging.info("Skipping classification task as this is not the first message.")
 
-            logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
-            history_items = await get_chat_history(chat_id=chat_id)
-            logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
-            
+
             try:
                 logging.info(f"Starting streaming run... for {input_message}")
 
@@ -331,22 +343,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
 
                 logging.info(f"Streaming run created and started for {input_message}")
-
-                if is_first_message:
-                    print("awaiting task")
-                    classification_title_result = await classification_task
-                    classification_title_result = json.loads(classification_title_result)
-                    print(f"classification_title_result : {classification_title_result}")
-                    category = classification_title_result.get("category")
-                    conversation_title = classification_title_result.get("conversation_title")
-                    logging.info(f"Classification result: {classification_title_result}")
-
-                    wrapped_result = {"classification_title_result": classification_title_result}
-                    yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
-                    await asyncio.sleep(0.2)
-                else:
-                    logging.info("Skipping classification task as this is not the first message.")
-
+                
             except KeyError as e:
                 logging.error(f"KeyError during streaming run: {str(e)} for {input_message}", exc_info=True)
                 yield f"\n<ERROR>{json.dumps({'error': 'A KeyError occurred while processing your request.'})}<ERROR_END>\n"
