@@ -201,7 +201,17 @@ async def classify_query(question: str) -> dict:
         response = await client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "user", "content": f"Please classify the following question into one of these categories: Financial Aids, Events, Policies, Housing, Courses or Chitchat. Also, suggest a short conversation title. Question: {question}"},
+                {
+                    "role": "system",
+                    "content": "You are a classifier. Categorize the user's question into one of these categories: "
+                               "Financial Aids, Events, Policies, Housing, Courses, or Chitchat. "
+                               "Only put Chitchat only when it is not related at all with university example: hi, how are you, what can you do etc... when the student is not asking for info but just want to talks to you otherwise choose another category"
+                               "Also, generate a short conversation title using a clickbait style. "
+                               "{\n"
+                               '  "category": "one of: Financial Aids, Events, Policies, Housing, Courses, Chitchat",\n'
+                               '  "conversation_title": "a short clickbait-style title"\n'
+                               "}\n\n"
+                },
                 {"role": "user", "content": f"Question: {question}"}
             ],
             response_format={
@@ -296,7 +306,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 print(f"first message task created")
                 print("awaiting task")
                 classification_title_result = await classification_task
-                #classification_title_result = json.loads(classification_title_result)
+                classification_title_result = json.loads(classification_title_result)
                 print(f"classification_title_result : {classification_title_result}")
                 category = classification_title_result.get("category")
                 conversation_title = classification_title_result.get("conversation_title")
