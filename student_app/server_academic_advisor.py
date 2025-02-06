@@ -173,7 +173,7 @@ async def count_student_questions(chat_history):
     print("\n")
     return question_count
  
-
+@timing_decorator
 async def classify_query(question: str) -> dict:
     """
     Classifies a student's question into predefined categories and generates a conversation title.
@@ -331,7 +331,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 for attempt in range(max_retries):
                     try:
                         logging.info(f"Starting streaming run (attempt {attempt + 1}/{max_retries})... for {input_message}")
-                        
                         # Start the streaming run
                         async for data in handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
                                 if data is None:
