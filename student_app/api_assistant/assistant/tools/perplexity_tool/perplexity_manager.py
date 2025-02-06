@@ -1,4 +1,4 @@
-import aiohttp
+
 import os
 from datetime import datetime
 import asyncio
@@ -9,8 +9,7 @@ import logging
 
 
 from tavily import AsyncTavilyClient
-from pymongo import MongoClient
-import httpx
+
 
 
 TAVILY_API = os.getenv('TAVILY_API')
