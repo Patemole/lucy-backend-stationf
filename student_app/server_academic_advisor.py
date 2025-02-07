@@ -4,7 +4,7 @@ import logging
 import datetime
 
 from openai import OpenAI, AsyncOpenAI
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from dotenv import load_dotenv
@@ -22,6 +22,7 @@ from student_app.database.dynamo_db.new_instance_chat import delete_all_items_an
 
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history, get_timing_history
+from student_app.database.dynamo_db.events import fetch_events_from_dynamoDB
 
 from student_app.profiling.profile_generation import LLM_profile_generation
 
@@ -400,6 +401,54 @@ async def delete_chat_history_route(chat_id: str):
 @app.get("/get_all_history/{timestamp}")
 async def get_timing_history_route(timestamp: str):
     return await get_timing_history(timestamp)
+
+
+'''
+@app.post("/get_calendar_events")
+async def get_calendar_events(profile: StudentProfile):
+    """
+    Retrieves personalized calendar events based on student profile.
+    """
+    try:
+        #How to retrieve studentProfile data
+        
+        # Étape 1 : Extraire les informations du profil étudiant
+        student_id = profile.userId
+        university = profile.university
+        major = profile.major
+        minor = profile.minor
+        faculty = profile.faculty
+        year = profile.year
+        
+
+        # Étape 2 : Récupérer les événements depuis la base de données ou un service externe
+        events = await fetch_events_from_dynamoDB()
+
+        # Étape 3 : Retourner les événements formatés
+        return JSONResponse(content={"events": events}, status_code=200)
+
+    except Exception as e:
+        logging.error(f"Erreur lors de la récupération des événements du calendrier : {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la récupération des événements")
+'''
+    
+
+
+@app.post("/get_calendar_events")
+async def get_calendar_events(profile: StudentProfile = Body(...)):
+    """
+    Récupère tous les événements du calendrier depuis DynamoDB.
+    """
+    try:
+        events = await fetch_events_from_dynamoDB()
+
+        return JSONResponse(content={"events": events}, status_code=200)
+
+    except Exception as e:
+        logging.error(f"Erreur lors de la récupération des événements du calendrier : {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la récupération des événements")
+
+
 
 
 
