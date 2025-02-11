@@ -20,8 +20,8 @@ AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 # Configuration de la connexion à DynamoDB
 dynamodb = boto3.resource(
     'dynamodb',
-    #region_name="eu-west-3",
-    region_name="us-east-1",
+    region_name="eu-west-3",
+    #region_name="us-east-1",
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
@@ -79,6 +79,7 @@ async def fetch_events_from_dynamoDB_all_events() -> List[Dict]:
             {
                 "title": item.get("Title", "Untitled Event"),
                 "audience": item.get("Audience", "Unknown"),
+                "banner": item.get("Banner", "Unknown"),
                 "category": item.get("Category", "General"),
                 "day": item.get("Day", "Unknown"),
                 "description": item.get("Description", "No description available"),
@@ -88,6 +89,7 @@ async def fetch_events_from_dynamoDB_all_events() -> List[Dict]:
                 "month": item.get("Month", "Unknown"),
                 "organizer": item.get("Organizer", "No organizer specified"),
                 "start_time": item.get("Start_time", "Unknown"),
+                "sub-category": item.get("Sub-Category", "General"),
                 "tags": item.get("Tags and Keywords", []),
                 "year": item.get("Year", "Unknown"),
             }
@@ -171,6 +173,7 @@ async def fetch_events_from_dynamoDB() -> List[Dict]:
                 filtered_events.append({
                     "title": item.get("Title", "Untitled Event"),
                     "audience": item.get("Audience", "Unknown"),
+                    "banner": item.get("Banner", "Unknown"),
                     "category": item.get("Category", "General"),
                     "day": item.get("Day", "Unknown"),
                     "description": item.get("Description", "No description available"),
@@ -180,6 +183,7 @@ async def fetch_events_from_dynamoDB() -> List[Dict]:
                     "month": item.get("Month", "Unknown"),
                     "organizer": item.get("Organizer", "No organizer specified"),
                     "start_time": item.get("Start_time", "Unknown"),
+                    "sub_category": item.get("Sub-Category", "General"),
                     "tags": item.get("Tags and Keywords", []),
                     "year": item.get("Year", "Unknown"),
                 })
