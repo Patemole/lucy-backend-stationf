@@ -467,7 +467,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     logging.info(f"youtube_bool is {youtube_bool}")
 
                     if youtube_bool:
-                        youtube_query = google_search_query + " " + university 
+                        youtube_query = query + " " + university 
                         logging.info(f"Performing YouTube video search with: {youtube_query}")
 
                         result_youtube_data = await get_youtube_videos(youtube_query, input_message)
