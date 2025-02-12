@@ -385,34 +385,3 @@ def find_top_events_for_student(student_profile: dict, top_k=20):
 
     print(f"✅ Found {len(events)} matching events!")
     return events
-
-# Example usage:
-if __name__ == "__main__":
-    #upload_to_pinecone()
-    sample_profile = {
-        "name": "John Doe",
-        "university": "MIT",
-        "year": "2025",
-        "faculty": [],
-        "major": ["Computer Science"],
-        "minor": [],
-        "looking_for_events": True,
-        "looking_for_clubs": True,
-        "looking_for_internships": True,
-        "looking_for_sports_events": False,
-        "interest": "tech" 
-    }
-
-    results = find_top_events_for_student(sample_profile)
-    
-    print("\n🔹 **Top 5 Events for Student:**")
-    for idx, event in enumerate(results, start=1):
-        print(f"\n🎯 Event {idx}: {event['title']}")
-        print(f"   📍 Location: {event['location']}")
-        print(f"   📅 Date: {event['day']}")
-        print(f"   🏛 Organizer: {event['organizer']}")
-        print(f"   🎭 Category: {event['category']}")
-        print(f"   👥 Audience: {event['audience']}")
-        print(f"   🏷 Tags:  {event['tags']}")
-        print(f"   🔢 Similarity Score: {event['similarity_score']}")
-
