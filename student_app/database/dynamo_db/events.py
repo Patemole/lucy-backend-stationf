@@ -16,36 +16,6 @@ from pinecone import Pinecone, ServerlessSpec
 import uuid
 import asyncio
 
-
-
-pc = Pinecone(
-        api_key="pcsk_3xcDZJ_QLDJvhSBAxx8LB2ipTFeDU3n6P1P8Bic57J3ic4srpKrWrCkGUQPSPVRW9Jj8tt"
-    )
-#PINECONE_ENVIRONMENT = "us-west1-gcp"  # Change based on your Pinecone account settings
-
-
-# Define Pinecone Index Name
-INDEX_NAME = "events-index-hfu"
-
-print(f"FUCKYOU {pc.list_indexes().names()}")  
-pc.delete_index("events-index-hfu")  # Replace with the name of an unused index
-
-
-if INDEX_NAME not in pc.list_indexes().names():
-        pc.create_index(
-            name=INDEX_NAME, 
-            dimension=1536, 
-            metric='cosine',
-            spec=ServerlessSpec(
-                cloud='aws',
-                region='us-east-1'
-            )
-        )
-
-index = pc.Index(INDEX_NAME)
-
-client = OpenAI()
-
 load_dotenv()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -55,16 +25,23 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 # Configuration de la connexion à DynamoDB
 dynamodb = boto3.resource(
     'dynamodb',
-    #region_name="eu-west-3",
-    region_name="us-east-1",
+    region_name="eu-west-3",
+    #region_name="us-east-1",
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
+client = OpenAI()
+
+PINECONE_API_KEY=os.getenv("PINECONE_API_KEY")
+pc = Pinecone(api_key=PINECONE_API_KEY)
+
+INDEX_NAME = os.getenv('INDEX_NAME')
+index = pc.Index(INDEX_NAME)
+
+
 
 # Référence à la table 
 table = dynamodb.Table("test-event-HFU") 
-#table = dynamodb.Table("prod_preprod_feedback")
-#table = dynamodb.Table("prod_prod_feedback")
 
 # Définir le décorateur
 def timing_decorator(func):
@@ -81,8 +58,6 @@ def timing_decorator(func):
 
 
 @timing_decorator
-
-
 async def fetch_events_from_dynamoDB_all_events() -> List[Dict]:
 
     """
@@ -114,6 +89,7 @@ async def fetch_events_from_dynamoDB_all_events() -> List[Dict]:
             {
                 "title": item.get("Title", "Untitled Event"),
                 "audience": item.get("Audience", "Unknown"),
+                "banner": item.get("Banner", "Unknown"),
                 "category": item.get("Category", "General"),
                 "day": item.get("Day", "Unknown"),
                 "description": item.get("Description", "No description available"),
@@ -123,6 +99,7 @@ async def fetch_events_from_dynamoDB_all_events() -> List[Dict]:
                 "month": item.get("Month", "Unknown"),
                 "organizer": item.get("Organizer", "No organizer specified"),
                 "start_time": item.get("Start_time", "Unknown"),
+                "sub-category": item.get("Sub-Category", "General"),
                 "tags": item.get("Tags and Keywords", []),
                 "year": item.get("Year", "Unknown"),
             }
@@ -206,6 +183,7 @@ async def fetch_events_from_dynamoDB() -> List[Dict]:
                 filtered_events.append({
                     "title": item.get("Title", "Untitled Event"),
                     "audience": item.get("Audience", "Unknown"),
+                    "banner": item.get("Banner", "Unknown"),
                     "category": item.get("Category", "General"),
                     "day": item.get("Day", "Unknown"),
                     "description": item.get("Description", "No description available"),
@@ -215,6 +193,7 @@ async def fetch_events_from_dynamoDB() -> List[Dict]:
                     "month": item.get("Month", "Unknown"),
                     "organizer": item.get("Organizer", "No organizer specified"),
                     "start_time": item.get("Start_time", "Unknown"),
+                    "sub_category": item.get("Sub-Category", "General"),
                     "tags": item.get("Tags and Keywords", []),
                     "year": item.get("Year", "Unknown"),
                 })
@@ -237,20 +216,22 @@ def format_event(event: dict) -> str:
     """
     Convert an event dictionary into a structured natural-language sentence.
     """
+    print(f"event is {event}")
     title = event.get("title", "Untitled Event")
     description = event.get("description", "No description available")
     category = event.get("category", "General")
+    sub_category = event.get("sub_category", "General")
     audience = event.get("audience", "General Audience")
     organizer = event.get("organizer", "No organizer specified")
     
     # Process tags and keywords
     tags = event.get("tags", [])
-    tags_text = ", ".join(tags) if tags else "No specific tags"
+    #tags_text = ", ".join(tags) if tags else "No specific tags"
 
     # Format the event details into a readable sentence
-    event_text = f"{title}. {description} This event is organized by {organizer} under the category of {category}. "
-    event_text += f"It is intended for {audience}. Tags include: {tags_text}."
-
+    event_text = f"{title}. {description} This event is organized by {organizer} under the category of {category} and sub-category of {sub_category}. "
+    event_text += f"It is intended for {audience}. Tags include: {tags}."
+    print(f"event formatting: {event_text}")
     return event_text
 
 
@@ -286,19 +267,21 @@ def upload_to_pinecone():
         
         # Attach metadata
         metadata = {
-            "title": event.get("Title", "Untitled Event"),
-            "audience": event.get("Audience", "Unknown"),
-            "category": event.get("Category", "General"),
-            "day": event.get("Day", "Unknown"),
-            "description": event.get("Description", "No description available"),
-            "end_day": event.get("End_day", "Unknown"),
-            "end_time": event.get("End_time", "Unknown"),
-            "location": event.get("Location", "No location specified"),
-            "month": event.get("Month", "Unknown"),
-            "organizer": event.get("Organizer", "No organizer specified"),
-            "start_time": event.get("Start_time", "Unknown"),
-            "tags": event.get("Tags and Keywords", []),
-            "year": event.get("Year", "Unknown")
+            "title": event.get("title", "Untitled Event"),
+            "audience": event.get("audience", "Unknown"),
+            "sub_category": event.get("sub_category", "General"),
+            "category": event.get("category", "General"),
+            "day": event.get("day", "Unknown"),
+            "description": event.get("description", "No description available"),
+            "end_day": event.get("end_day", "Unknown"),
+            "end_time": event.get("end_time", "Unknown"),
+            "location": event.get("location", "No location specified"),
+            "month": event.get("month", "Unknown"),
+            "organizer": event.get("organizer", "No organizer specified"),
+            "start_time": event.get("start_time", "Unknown"),
+            "tags": event.get("tags", []),
+            "year": event.get("year", "Unknown"),
+            "banner": event.get("banner", "Unknown"),
         }
 
         # Append to Pinecone upload batch
@@ -378,23 +361,25 @@ def find_top_events_for_student(student_profile: dict, top_k=20):
     # Step 3: Extract and display results
     events = []
     for match in query_result["matches"]:
-        event_data = match["metadata"]
+        event = match["metadata"]
         similarity_score = match["score"]
 
         events.append({
-            "title": event.get("Title", "Untitled Event"),
-            "audience": event.get("Audience", "Unknown"),
-            "category": event.get("Category", "General"),
-            "day": event.get("Day", "Unknown"),
-            "description": event.get("Description", "No description available"),
-            "end_day": event.get("End_day", "Unknown"),
-            "end_time": event.get("End_time", "Unknown"),
-            "location": event.get("Location", "No location specified"),
-            "month": event.get("Month", "Unknown"),
-            "organizer": event.get("Organizer", "No organizer specified"),
-            "start_time": event.get("Start_time", "Unknown"),
-            "tags": event.get("Tags and Keywords", []),
-            "year": event.get("Year", "Unknown"),
+            "title": event.get("title", "Untitled Event"),
+            "audience": event.get("audience", "Unknown"),
+            "category": event.get("category", "General"),
+            "day": event.get("day", "Unknown"),
+            "description": event.get("description", "No description available"),
+            "end_day": event.get("end_day", "Unknown"),
+            "end_time": event.get("end_time", "Unknown"),
+            "location": event.get("location", "No location specified"),
+            "month": event.get("month", "Unknown"),
+            "organizer": event.get("organizer", "No organizer specified"),
+            "start_time": event.get("start_time", "Unknown"),
+            "tags": event.get("tags", []),
+            "year": event.get("year", "Unknown"),
+            "banner": event.get("banner", "Unknown"),
+            "sub_category": event.get("sub_category", "General"),
             "similarity_score": round(similarity_score, 4)
         })
 
@@ -403,7 +388,7 @@ def find_top_events_for_student(student_profile: dict, top_k=20):
 
 # Example usage:
 if __name__ == "__main__":
-    upload_to_pinecone()
+    #upload_to_pinecone()
     sample_profile = {
         "name": "John Doe",
         "university": "MIT",
@@ -415,7 +400,7 @@ if __name__ == "__main__":
         "looking_for_clubs": True,
         "looking_for_internships": True,
         "looking_for_sports_events": False,
-        "interest": "Bowling and sports" 
+        "interest": "tech" 
     }
 
     results = find_top_events_for_student(sample_profile)
@@ -424,10 +409,10 @@ if __name__ == "__main__":
     for idx, event in enumerate(results, start=1):
         print(f"\n🎯 Event {idx}: {event['title']}")
         print(f"   📍 Location: {event['location']}")
-        print(f"   📅 Date: {event['date']}")
+        print(f"   📅 Date: {event['day']}")
         print(f"   🏛 Organizer: {event['organizer']}")
         print(f"   🎭 Category: {event['category']}")
         print(f"   👥 Audience: {event['audience']}")
-        print(f"   🏷 Tags: {', '.join(event['tags'])}")
+        print(f"   🏷 Tags:  {event['tags']}")
         print(f"   🔢 Similarity Score: {event['similarity_score']}")
 
