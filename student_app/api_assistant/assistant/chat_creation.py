@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 import json
 import logging
+from .config.universities import upenn, drexel, ccp, berkeley
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
