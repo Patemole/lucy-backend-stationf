@@ -18,10 +18,6 @@ import asyncio
 from zeroentropy import ZeroEntropy
 import time
 zclient = ZeroEntropy()
-import os
-import uuid
-
-
 
 load_dotenv()
 
@@ -243,26 +239,8 @@ def format_event(event: dict) -> str:
     print(f"event formatting: {event_text}")
     return event_text
 
-def save_event_to_txt(event: dict, file_path: str):
-    """
-    Saves an event dictionary to a .txt file in a structured format.
-    """
-    with open(file_path, "w", encoding="utf-8") as file:
-        title = event.get("title", "Untitled Event")
-        description = event.get("description", "No description available")
-        category = event.get("category", "General")
-        sub_category = event.get("sub_category", "General")
-        audience = event.get("audience", "General Audience")
-        organizer = event.get("organizer", "No organizer specified")
-        tags = ", ".join(event.get("tags", [])) if event.get("tags") else "No specific tags"
-        
-        # Format the event details into a readable sentence
-        event_text = f"{title}. {description} This event is organized by {organizer} under the category of {category} and sub-category of {sub_category}. "
-        event_text += f"It is intended for {audience}. Tags include: {tags}."
-        
-        file.write(event_text)
 
-def generate_embeddings_pinecone(text_list, model="text-embedding-3-small"):
+def generate_embeddings(text_list, model="text-embedding-3-small"):
     """
     Generate embeddings for a list of text inputs using OpenAI.
     Returns a list of embedding vectors.
@@ -275,90 +253,15 @@ def generate_embeddings_pinecone(text_list, model="text-embedding-3-small"):
     return embeddings
 
 
-def upload_to_zclient():
-    """
-    Processes events and uploads them as documents to Zclient with metadata.
-    """
-
-    # TODO: Change the collection to the correct university
-    collection_name = "holyfamily"  # Replace with your desired collection name
-
-    events = asyncio.run(fetch_events_from_dynamoDB())
-
-    # Step 1: Prepare data for uploading to Zclient
-    for event in events:
-        event_id = str(uuid.uuid4())  # Generate a unique ID for the event
-        file_path = f"./event_files/{event_id}.txt"
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Ensure the directory exists
-        
-        # Save the event text to the .txt file
-        save_event_to_txt(event, file_path)  # This function saves the event to a text file
-        
-        # Step 2: Add the document to Zclient
-        document = zclient.documents.add(
-            collection_name=collection_name,
-            path=f"docs/{event_id}.txt",  # Use the event_id for the file path
-            content={
-                "type": "text",
-                "text": open(file_path, "r").read(),  # Read the event text from the file
-            },
-        )
-
-        # Attach metadata
-        metadata = {
-            "title": event.get("title", "Untitled Event"),
-            "audience": event.get("audience", "Unknown"),
-            "sub_category": event.get("sub_category", "General"),
-            "category": event.get("category", "General"),
-            "day": event.get("day", "Unknown"),
-            "description": event.get("description", "No description available"),
-            "end_day": event.get("end_day", "Unknown"),
-            "end_time": event.get("end_time", "Unknown"),
-            "location": event.get("location", "No location specified"),
-            "month": event.get("month", "Unknown"),
-            "organizer": event.get("organizer", "No organizer specified"),
-            "start_time": event.get("start_time", "Unknown"),
-            "tags": event.get("tags", []),
-            "year": event.get("year", "Unknown"),
-            "banner": event.get("banner", "Unknown"),
-        }
-
-        # Add metadata to the document
-        zclient.documents.update_metadata(
-            collection_name=collection_name,
-            path=f"docs/{event_id}.txt",
-            metadata=metadata
-        )
-
-        # Step 3: Wait for the document to be indexed
-        while True:
-            status = zclient.documents.get_info(collection_name=collection_name, path=f"docs/{event_id}.txt")
-            if status.document.index_status == "indexed":
-                print(f"Document {event_id} indexed successfully.")
-                break
-            time.sleep(1)
-
-    print(f"✅ Successfully uploaded {len(events)} events to Zclient!")
 
 
 def upload_to_pinecone():
     """
     Processes events, generates embeddings, and uploads them to Pinecone with metadata.
     """
-
-    #TODO change the collection to the correct university
-    collection = zclient.collections.add(collection_name="holyfamily")
-
     events = asyncio.run(fetch_events_from_dynamoDB())
     # Step 1: Convert event details into structured text
-    txt_files = []
-    for event in events:
-        event_id = str(uuid.uuid4())  # Generate a unique ID for the event
-        file_path = f"./event_files/{event_id}.txt"
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Ensure the directory exists
-        save_event_to_txt(event, file_path)
-        txt_files.append(file_path)
-    
+    event_texts = [format_event(event) for event in events]
 
     # Step 2: Generate embeddings
     embedding_vectors = generate_embeddings(event_texts)
@@ -395,8 +298,6 @@ def upload_to_pinecone():
     index.upsert(vectors)
 
     print(f"✅ Successfully uploaded {len(vectors)} events to Pinecone!")
-
-
 
 
 def format_profile(profile: dict) -> str:
