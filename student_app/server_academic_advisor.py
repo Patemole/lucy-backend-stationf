@@ -23,6 +23,7 @@ from student_app.database.dynamo_db.new_instance_chat import delete_all_items_an
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history, get_timing_history
 from student_app.database.dynamo_db.events import fetch_events_from_dynamoDB
+from student_app.database.dynamo_db.events_zeroentropy import find_top_events_for_student
 
 from student_app.profiling.profile_generation import LLM_profile_generation
 
@@ -440,7 +441,7 @@ async def get_calendar_events(profile: StudentProfile = Body(...)):
     Récupère tous les événements du calendrier depuis DynamoDB.
     """
     try:
-        events = await fetch_events_from_dynamoDB()
+        events = find_top_events_for_student(profile)
 
         return JSONResponse(content={"events": events}, status_code=200)
 

@@ -11,23 +11,11 @@ import traceback
 import logging
 from datetime import datetime, timedelta
 from typing import List, Dict
-from openai import OpenAI
-from pinecone import Pinecone, ServerlessSpec
-import uuid
-import asyncio
-from zeroentropy import ZeroEntropy
-import time
-zclient = ZeroEntropy()
-import os
-import uuid
-
-
 
 load_dotenv()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Configuration de la connexion à DynamoDB
 dynamodb = boto3.resource(
@@ -37,18 +25,11 @@ dynamodb = boto3.resource(
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
-client = OpenAI()
-
-PINECONE_API_KEY=os.getenv("PINECONE_API_KEY")
-pc = Pinecone(api_key=PINECONE_API_KEY)
-
-INDEX_NAME = os.getenv('INDEX_NAME')
-index = pc.Index(INDEX_NAME)
-
-
 
 # Référence à la table 
 table = dynamodb.Table("test-event-HFU") 
+#table = dynamodb.Table("prod_preprod_feedback")
+#table = dynamodb.Table("prod_prod_feedback")
 
 # Définir le décorateur
 def timing_decorator(func):
@@ -65,6 +46,8 @@ def timing_decorator(func):
 
 
 @timing_decorator
+
+
 async def fetch_events_from_dynamoDB_all_events() -> List[Dict]:
 
     """
@@ -109,7 +92,6 @@ async def fetch_events_from_dynamoDB_all_events() -> List[Dict]:
                 "sub-category": item.get("Sub-Category", "General"),
                 "tags": item.get("Tags and Keywords", []),
                 "year": item.get("Year", "Unknown"),
-                "university": item.get("University", "Unknown"),
             }
             for item in items
         ]
@@ -204,7 +186,6 @@ async def fetch_events_from_dynamoDB() -> List[Dict]:
                     "sub_category": item.get("Sub-Category", "General"),
                     "tags": item.get("Tags and Keywords", []),
                     "year": item.get("Year", "Unknown"),
-                    "university": item.get("University", "Unknown"),
                 })
 
         logging.info(f"✅ {len(filtered_events)} événements trouvés pour la semaine en cours.")
@@ -219,306 +200,4 @@ async def fetch_events_from_dynamoDB() -> List[Dict]:
         logging.error(f"❌ Erreur inattendue lors de la récupération des événements: {str(e)}")
         return []
 
-
-
-def format_event(event: dict) -> str:
-    """
-    Convert an event dictionary into a structured natural-language sentence.
-    """
-    print(f"event is {event}")
-    title = event.get("title", "Untitled Event")
-    description = event.get("description", "No description available")
-    category = event.get("category", "General")
-    sub_category = event.get("sub_category", "General")
-    audience = event.get("audience", "General Audience")
-    organizer = event.get("organizer", "No organizer specified")
-    
-    # Process tags and keywords
-    tags = event.get("tags", [])
-    #tags_text = ", ".join(tags) if tags else "No specific tags"
-
-    # Format the event details into a readable sentence
-    event_text = f"{title}. {description} This event is organized by {organizer} under the category of {category} and sub-category of {sub_category}. "
-    event_text += f"It is intended for {audience}. Tags include: {tags}."
-    print(f"event formatting: {event_text}")
-    return event_text
-
-def save_event_to_txt(event: dict, file_path: str):
-    """
-    Saves an event dictionary to a .txt file in a structured format.
-    """
-    with open(file_path, "w", encoding="utf-8") as file:
-        title = event.get("title", "Untitled Event")
-        description = event.get("description", "No description available")
-        category = event.get("category", "General")
-        sub_category = event.get("sub_category", "General")
-        audience = event.get("audience", "General Audience")
-        organizer = event.get("organizer", "No organizer specified")
-        tags = ", ".join(event.get("tags", [])) if event.get("tags") else "No specific tags"
-        
-        # Format the event details into a readable sentence
-        event_text = f"{title}. {description} This event is organized by {organizer} under the category of {category} and sub-category of {sub_category}. "
-        event_text += f"It is intended for {audience}. Tags include: {tags}."
-        
-        file.write(event_text)
-
-def generate_embeddings_pinecone(text_list, model="text-embedding-3-small"):
-    """
-    Generate embeddings for a list of text inputs using OpenAI.
-    Returns a list of embedding vectors.
-    """
-    print(f"🔹 Generating embeddings for {len(text_list)} events...")
-    
-    response = client.embeddings.create(input=text_list, model=model)
-    embeddings = [data.embedding for data in response.data]
-    print(f"✅ Generated embeddings: {len(embeddings)}!")
-    return embeddings
-
-
-def upload_to_zclient():
-    """
-    Processes events and uploads them as documents to Zclient with metadata.
-    """
-
-    # TODO: Change the collection to the correct university
-    collection_name = "holyfamily"  # Replace with your desired collection name
-
-    events = asyncio.run(fetch_events_from_dynamoDB())
-
-    # Step 1: Prepare data for uploading to Zclient
-    for event in events:
-        event_id = str(uuid.uuid4())  # Generate a unique ID for the event
-        file_path = f"./event_files/{event_id}.txt"
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Ensure the directory exists
-        
-        # Save the event text to the .txt file
-        save_event_to_txt(event, file_path)  # This function saves the event to a text file
-        
-        # Step 2: Add the document to Zclient
-        document = zclient.documents.add(
-            collection_name=collection_name,
-            path=f"docs/{event_id}.txt",  # Use the event_id for the file path
-            content={
-                "type": "text",
-                "text": open(file_path, "r").read(),  # Read the event text from the file
-            },
-        )
-
-        # Attach metadata
-        metadata = {
-            "title": event.get("title", "Untitled Event"),
-            "audience": event.get("audience", "Unknown"),
-            "sub_category": event.get("sub_category", "General"),
-            "category": event.get("category", "General"),
-            "day": event.get("day", "Unknown"),
-            "description": event.get("description", "No description available"),
-            "end_day": event.get("end_day", "Unknown"),
-            "end_time": event.get("end_time", "Unknown"),
-            "location": event.get("location", "No location specified"),
-            "month": event.get("month", "Unknown"),
-            "organizer": event.get("organizer", "No organizer specified"),
-            "start_time": event.get("start_time", "Unknown"),
-            "tags": event.get("tags", []),
-            "year": event.get("year", "Unknown"),
-            "banner": event.get("banner", "Unknown"),
-        }
-
-        # Add metadata to the document
-        zclient.documents.update_metadata(
-            collection_name=collection_name,
-            path=f"docs/{event_id}.txt",
-            metadata=metadata
-        )
-
-        # Step 3: Wait for the document to be indexed
-        while True:
-            status = zclient.documents.get_info(collection_name=collection_name, path=f"docs/{event_id}.txt")
-            if status.document.index_status == "indexed":
-                print(f"Document {event_id} indexed successfully.")
-                break
-            time.sleep(1)
-
-    print(f"✅ Successfully uploaded {len(events)} events to Zclient!")
-
-
-def upload_to_pinecone():
-    """
-    Processes events, generates embeddings, and uploads them to Pinecone with metadata.
-    """
-
-    #TODO change the collection to the correct university
-    collection = zclient.collections.add(collection_name="holyfamily")
-
-    events = asyncio.run(fetch_events_from_dynamoDB())
-    # Step 1: Convert event details into structured text
-    txt_files = []
-    for event in events:
-        event_id = str(uuid.uuid4())  # Generate a unique ID for the event
-        file_path = f"./event_files/{event_id}.txt"
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # Ensure the directory exists
-        save_event_to_txt(event, file_path)
-        txt_files.append(file_path)
-    
-
-    # Step 2: Generate embeddings
-    embedding_vectors = generate_embeddings(event_texts)
-
-    # Step 3: Prepare data for Pinecone
-    vectors = []
-    for event, embedding in zip(events, embedding_vectors):
-        # Generate unique ID for each event
-        event_id = str(uuid.uuid4())  # Generates a random UUID
-        
-        # Attach metadata
-        metadata = {
-            "title": event.get("title", "Untitled Event"),
-            "audience": event.get("audience", "Unknown"),
-            "sub_category": event.get("sub_category", "General"),
-            "category": event.get("category", "General"),
-            "day": event.get("day", "Unknown"),
-            "description": event.get("description", "No description available"),
-            "end_day": event.get("end_day", "Unknown"),
-            "end_time": event.get("end_time", "Unknown"),
-            "location": event.get("location", "No location specified"),
-            "month": event.get("month", "Unknown"),
-            "organizer": event.get("organizer", "No organizer specified"),
-            "start_time": event.get("start_time", "Unknown"),
-            "tags": event.get("tags", []),
-            "year": event.get("year", "Unknown"),
-            "banner": event.get("banner", "Unknown"),
-        }
-
-        # Append to Pinecone upload batch
-        vectors.append({"id": event_id, "values": embedding, "metadata": metadata})
-
-    # Step 4: Upload to Pinecone
-    index.upsert(vectors)
-
-    print(f"✅ Successfully uploaded {len(vectors)} events to Pinecone!")
-
-
-
-
-def format_profile(profile: dict) -> str:
-    """
-    Convert a student profile dictionary into a structured natural-language sentence.
-    """
-    print(f"🔹 Formatting student profile: {profile.get('name', 'Unknown Student')}")
-
-    name = profile.get("name", "Unknown")
-    university = profile.get("university", "Unknown University")
-    year = profile.get("year", "Unknown Year")
-    
-    faculty_list = profile.get("faculty", []) or []
-    major_list = profile.get("major", []) or []
-    minor_list = profile.get("minor", []) or []
-    interest = profile.get("interest", "Various topics")
-
-    description_parts = []
-    if major_list:
-        majors_text = " and ".join(major_list)
-        description_parts.append(f"{majors_text} major")
-    if minor_list:
-        minors_text = " and ".join(minor_list)
-        description_parts.append(f"{minors_text} minor")
-    if faculty_list:
-        faculty_text = " and ".join(faculty_list)
-        description_parts.append(f"{faculty_text}")
-
-    if description_parts:
-        academic_desc = " and ".join(description_parts)
-        profile_text = f"{name}, a {academic_desc} at {university}, class of {year}"
-    else:
-        profile_text = f"{name} at {university}, class of {year}"
-    
-    profile_text += f", is interested in {interest}."
-
-    looking_for = []
-    if profile.get("looking_for_events"):
-        looking_for.append("events")
-    if profile.get("looking_for_clubs"):
-        looking_for.append("clubs")
-    if profile.get("looking_for_internships"):
-        looking_for.append("internships")
-    if profile.get("looking_for_sports_events"):
-        looking_for.append("sports events")
-
-    if looking_for:
-        looking_str = ", ".join(looking_for[:-1]) + f", and {looking_for[-1]}" if len(looking_for) > 1 else looking_for[0]
-        profile_text += f" Looking for {looking_str}."
-
-    print(f"✅ Formatted Profile Text: {profile_text}")
-    return profile_text
-
-
-def find_top_events_for_student(student_profile: dict, top_k=20):
-    """
-    Finds the top 5 closest events to a student's profile using Pinecone.
-    """
-    print("🔹 Searching for the most relevant events for the student...")
-
-    # Step 1: Format and embed the student profile
-    profile_text = format_profile(student_profile)
-    profile_embedding = generate_embeddings([profile_text])[0]  
-
-    # Step 2: Query Pinecone to find the closest events
-    query_result = index.query(vector=profile_embedding, top_k=top_k, include_metadata=True)
-
-    # Step 3: Extract and display results
-    events = []
-    for match in query_result["matches"]:
-        event = match["metadata"]
-        similarity_score = match["score"]
-
-        events.append({
-            "title": event.get("title", "Untitled Event"),
-            "audience": event.get("audience", "Unknown"),
-            "category": event.get("category", "General"),
-            "day": event.get("day", "Unknown"),
-            "description": event.get("description", "No description available"),
-            "end_day": event.get("end_day", "Unknown"),
-            "end_time": event.get("end_time", "Unknown"),
-            "location": event.get("location", "No location specified"),
-            "month": event.get("month", "Unknown"),
-            "organizer": event.get("organizer", "No organizer specified"),
-            "start_time": event.get("start_time", "Unknown"),
-            "tags": event.get("tags", []),
-            "year": event.get("year", "Unknown"),
-            "banner": event.get("banner", "Unknown"),
-            "sub_category": event.get("sub_category", "General"),
-            "similarity_score": round(similarity_score, 4)
-        })
-
-    print(f"✅ Found {len(events)} matching events!")
-    return events
-
-# Example usage:
-if __name__ == "__main__":
-    #upload_to_pinecone()
-    sample_profile = {
-        "name": "John Doe",
-        "university": "MIT",
-        "year": "2025",
-        "faculty": [],
-        "major": ["Computer Science"],
-        "minor": [],
-        "looking_for_events": True,
-        "looking_for_clubs": True,
-        "looking_for_internships": True,
-        "looking_for_sports_events": False,
-        "interest": "tech" 
-    }
-
-    results = find_top_events_for_student(sample_profile)
-    
-    print("\n🔹 **Top 5 Events for Student:**")
-    for idx, event in enumerate(results, start=1):
-        print(f"\n🎯 Event {idx}: {event['title']}")
-        print(f"   📍 Location: {event['location']}")
-        print(f"   📅 Date: {event['day']}")
-        print(f"   🏛 Organizer: {event['organizer']}")
-        print(f"   🎭 Category: {event['category']}")
-        print(f"   👥 Audience: {event['audience']}")
-        print(f"   🏷 Tags:  {event['tags']}")
-        print(f"   🔢 Similarity Score: {event['similarity_score']}")
 
