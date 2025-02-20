@@ -27,6 +27,8 @@ from datetime import datetime, timedelta
 from functools import wraps
 import json
 import logging
+import requests
+
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -217,6 +219,25 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             {
                 "type": "function",
                 "function": {
+                    "name": "answer_complex_query",
+                    "description": f"Processes advanced and multi-layered inquiries requiring deep contextual reasoning, cross-referencing multiple data sources, and leveraging search tools. This function is designed to handle complex queries related to course selection, visa regulations, intricate administrative cases, policy exceptions, and uncommon edge cases at {university}. It synthesizes information across academic catalogs, university policies, government guidelines, and institutional exceptions to provide well-structured, precise, and context-aware responses.",
+                    "strict": True,
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "query": {
+                                "type": "string",
+                                "description": f"The specific information the student is requesting that requires up-to-date data about {university}. Be as detailed as possible and add at the end that exact and precises ressources, Make the query as detailed as and as long as possible. If it is relevant to the query, include the student information to only get the information that is relevant to them."
+                            }
+                        },
+                        "required": ["query"],
+                        "additionalProperties": False
+                    }
+                }
+            },
+            {
+                "type": "function",
+                "function": {
                     "name": "ask_clarifying_question",
                     "description": "Handles situations where the student's query is too broad or lacks sufficient detail. Generates a clarifying question to refine the query and presents tailored answer options to guide the student toward a more specific request with a single area, interest or info request.",
                     "parameters": {
@@ -304,6 +325,7 @@ def get_university_config(university, current_date, username, major, minor, year
         logging.info(f"No specific config found for {university}. Using common config.")
 
     return common_config
+
 
 @timing_decorator
 async def handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
@@ -530,6 +552,22 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         "content": json.dumps(output)
                     })
 
+                elif function_name == "answer_complex_query":
+                    logging.info("Handling answer_complex_query")
+                    query = arguments.get("query", "")
+
+                    # call deepsearch api with the user's query
+                    logging.info(f"Sending query to deepsearch: {query}")
+                    deepsearch_response = call_deepsearch_api(query)
+                    logging.info(f"Received deepsearch response: {deepsearch_response}")
+
+                    # add the deepsearch response to tool outputs
+                    tool_outputs.append({
+                        "role": "function",
+                        "name": function_name,
+                        "content": json.dumps(deepsearch_response)
+                    })
+
                 else:
                     logging.warning(f"Function {function_name} is not implemented")
                     output = "Function not implemented."
@@ -562,3 +600,27 @@ async def handle_requires_action(client, university, username, major, minor, yea
         logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
         yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! We are experiencing high traffic right now. Please try again later.'}})}<ERROR_END>\n"
         yield None
+
+
+def call_deepsearch_api(query):
+    """
+    Calls jina's deepsearch api to handle complex queries requiring advanced reasoning.
+    """
+    url = "https://deepsearch.jina.ai/v1/chat/completions"
+    headers = {"Content-Type": "application/json"}
+
+    # build your data payload
+    data = {
+        "model": "jina-deepsearch-v1",
+        "messages": [
+            {"role": "user", "content": "Hi!"},
+            {"role": "assistant", "content": "Hi, how can I help you?"},
+            {"role": "user", "content": query}
+        ],
+        "stream": True,
+        "reasoning_effort": "medium"
+    }
+
+    # post the request
+    response = requests.post(url, headers=headers, json=data)
+    return response.text
