@@ -434,13 +434,11 @@ async def get_calendar_events(profile: StudentProfile):
 '''
     
 
-
+"""
 @app.post("/get_calendar_events")
 async def get_calendar_events(profile: StudentProfile = Body(...)):
-    """
-    Récupère tous les événements du calendrier depuis DynamoDB.
-    """
     try:
+        print(f"profile: {profile}")
         events = find_top_events_for_student(profile)
 
         return JSONResponse(content={"events": events}, status_code=200)
@@ -448,8 +446,213 @@ async def get_calendar_events(profile: StudentProfile = Body(...)):
     except Exception as e:
         logging.error(f"Erreur lors de la récupération des événements du calendrier : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la récupération des événements")
+"""
 
+@app.post("/get_calendar_events")
+async def get_calendar_events(profile: StudentProfile = Body(...)):
+    """
+    Retrieves all calendar events from DynamoDB.
+    Now returns a manually defined list of events with the specified format.
+    """
+    try:
+        print(f"profile: {profile}")
 
+        events = []
+
+        # 1. Penn Men's Soccer Friendly vs Drexel
+        events.append({
+            "title": "Penn Men's Soccer Friendly vs Drexel",
+            "audience": "Students interested in collegiate soccer",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/soccer_pics.jpeg",
+            "category": "athletics",
+            "day": "11",
+            "description": "A friendly soccer match between Penn and Drexel, giving students a chance to watch local collegiate soccer talent in action.",
+            "end_day": "",
+            "end_time": "20:00",
+            "location": "Penn Park",
+            "month": "February",
+            "organizer": "UPenn Athletics",
+            "start_time": "18:00",
+            "sub_category": "Soccer",
+            "tags": ["soccer", "friendly match", "sports", "college athletics", "Drexel"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        # 2. AI Talk: AI in Higher Ed by Dr. Michael Weiss
+        events.append({
+            "title": "AI Talk: AI in Higher Ed by Dr. Michael Weiss",
+            "audience": "Tech enthusiasts, students in AI and CS",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/tech_pic.jpg",
+            "category": "academic",
+            "day": "13",
+            "description": "Dr. Michael Weiss, an AI researcher specializing in educational applications, discusses AI’s role in academic advising and learning analytics.",
+            "end_day": "",
+            "end_time": "17:30",
+            "location": "Huntsman Hall G50",
+            "month": "February",
+            "organizer": "Penn AI Society",
+            "start_time": "16:00",
+            "sub_category": "AI & Tech",
+            "tags": ["AI", "Higher Education", "Machine Learning", "EdTech", "Talk"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        # 3. Coffee Chat with Google Engineers
+        events.append({
+            "title": "Coffee Chat with Google Engineers",
+            "audience": "Students interested in software engineering",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/coffee_chat_pic.jpg",
+            "category": "career",
+            "day": "13",
+            "description": "Join Google engineers for a casual coffee chat about careers in tech, internships, and software engineering best practices.",
+            "end_day": "",
+            "end_time": "12:00",
+            "location": "The Study at University City",
+            "month": "February",
+            "organizer": "Penn CS Club",
+            "start_time": "10:30",
+            "sub_category": "Networking",
+            "tags": ["Google", "Networking", "Software Engineering", "Tech Careers"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        # 4. Penn Student Founder Joiner Fair
+        events.append({
+            "title": "Penn Student Founder Joiner Fair",
+            "audience": "Aspiring student founders and team members",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/tech_pic.jpg",
+            "category": "career",
+            "day": "12",
+            "description": "An exclusive event where student founders pitch their startups and recruit fellow Penn students to join their teams.",
+            "end_day": "",
+            "end_time": "16:00",
+            "location": "Tangen Hall",
+            "month": "February",
+            "organizer": "Penn Wharton Entrepreneurship",
+            "start_time": "13:00",
+            "sub_category": "Entrepreneurship",
+            "tags": ["entrepreneurship", "startups", "founders", "team recruitment"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        # 5. Deadline to Withdraw from a Course
+        events.append({
+            "title": "Deadline to Withdraw from a Course",
+            "audience": "All Penn students",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/career_picture.jpg",
+            "category": "academic",
+            "day": "14",
+            "description": "Last day to withdraw from a course without it appearing on the transcript. Ensure you check your academic standing before making a decision.",
+            "end_day": "",
+            "end_time": "23:59",
+            "location": "Online - Path@Penn",
+            "month": "February",
+            "organizer": "UPenn Registrar",
+            "start_time": "22:00",
+            "sub_category": "Academic",
+            "tags": ["academic deadlines", "withdrawal deadline", "Path@Penn"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        # 6. Penn Basketball vs Princeton
+        events.append({
+            "title": "Penn Basketball vs Princeton",
+            "audience": "Students interested in Ivy League basketball",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/basket_picture.jpg",
+            "category": "athletics",
+            "day": "14",
+            "description": "Watch Penn take on Ivy League rival Princeton in an exciting basketball showdown at the historic Palestra.",
+            "end_day": "",
+            "end_time": "21:00",
+            "location": "The Palestra",
+            "month": "February",
+            "organizer": "UPenn Athletics",
+            "start_time": "19:00",
+            "sub_category": "Basketball",
+            "tags": ["basketball", "college sports", "Ivy League", "Penn vs Princeton"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        # 7. Hack the Future: Penn Hackathon
+        events.append({
+            "title": "Hack the Future: Penn Hackathon",
+            "audience": "Students interested in coding and innovation",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/esport_picture.jpg",
+            "category": "campus life",
+            "day": "15",
+            "description": "A full-day hackathon for students to build innovative tech projects, with mentorship from industry experts and prizes for the best solutions.",
+            "end_day": "",
+            "end_time": "21:00",
+            "location": "Towne Building",
+            "month": "February",
+            "organizer": "Penn Engineering",
+            "start_time": "09:00",
+            "sub_category": "Hackathon",
+            "tags": ["hackathon", "coding", "technology", "software development"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        # 8. Penn Sports Networking Night
+        events.append({
+            "title": "Penn Sports Networking Night",
+            "audience": "Students interested in careers in sports",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/career_picture.jpg",
+            "category": "career",
+            "day": "11",
+            "description": "An opportunity for students to network with professionals in sports management, coaching, and athletic administration.",
+            "end_day": "",
+            "end_time": "20:00",
+            "location": "Jon M. Huntsman Hall",
+            "month": "February",
+            "organizer": "Penn Athletics & Career Services",
+            "start_time": "18:00",
+            "sub_category": "Networking",
+            "tags": ["sports careers", "networking", "sports management", "career fair"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        # 9. Venture Lab: Pitch Night Competition
+        events.append({
+            "title": "Venture Lab: Pitch Night Competition",
+            "audience": "Aspiring student entrepreneurs, investors, startup enthusiasts",
+            "banner": "https://event-banner.s3.us-east-1.amazonaws.com/career_picture.jpg",
+            "category": "campus life",
+            "day": "13",
+            "description": "Penn Venture Lab's Pitch Night Competition gives student startups a chance to pitch their ideas to a panel of investors and judges for funding, mentorship, and networking opportunities.",
+            "end_day": "",
+            "end_time": "21:30",
+            "location": "Tangen Hall",
+            "month": "February",
+            "organizer": "Penn Venture Lab",
+            "start_time": "19:30",
+            "sub_category": "Entrepreneurship",
+            "tags": ["pitch competition", "startups", "entrepreneurship", "venture capital", "Penn Venture Lab"],
+            "year": "2025",
+            "university": "UPenn",
+            "similarity_score": 1.0
+        })
+
+        return JSONResponse(content={"events": events}, status_code=200)
+
+    except Exception as e:
+        logging.error(f"Erreur lors de la récupération des événements du calendrier : {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de la récupération des événements")
 
 
 

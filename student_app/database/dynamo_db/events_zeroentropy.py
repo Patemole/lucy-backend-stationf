@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Dict, List, Optional
 from botocore.exceptions import ClientError
 import time
@@ -7,7 +8,6 @@ import os
 from dotenv import load_dotenv
 import json
 import traceback
-import logging
 from typing import List, Dict
 from openai import OpenAI
 from pinecone import Pinecone, ServerlessSpec
@@ -19,6 +19,19 @@ import requests
 from datetime import datetime, timedelta
 import calendar  # to get the number of days in a given month/year
 
+# -------------------------------------------------------------------
+# Logging configuration as requested (no additional print statements).
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("file_server.log")
+    ]
+)
+# -------------------------------------------------------------------
+
 zclient = ZeroEntropy(api_key="ze_xyS13kPdsxUu0wfT")
 
 # load environment variables
@@ -28,10 +41,10 @@ def timing_decorator(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         start_time = time.time()
-        print(f"Starting {func.__name__} with args: {args}, kwargs: {kwargs}")
+        logging.info(f"Starting {func.__name__} with args: {args}, kwargs: {kwargs}")
         result = await func(*args, **kwargs)
         end_time = time.time()
-        print(f"{func.__name__} took {end_time - start_time} seconds")
+        logging.info(f"{func.__name__} took {end_time - start_time} seconds")
         return result
     return wrapper
 
@@ -56,7 +69,7 @@ def format_profile_segments(profile: Any):
     minor_list = getattr(profile, "minor", []) or []
     interests_list = getattr(profile, "interests", []) or []
 
-    print(f"🔹 Formatting student profile: {username}")
+    logging.info(f"Formatting student profile: {username}")
 
     # Build the base text (excluding explicit interests)
     faculty_text = ""
@@ -81,7 +94,7 @@ def format_profile_segments(profile: Any):
             minor_text = f"and minoring in {minor_list[0]}"
 
     # Construct a short base text
-    base_text = f""
+    base_text = ""
     if faculty_text:
         base_text += f"{faculty_text} "
     if major_text:
@@ -93,11 +106,10 @@ def format_profile_segments(profile: Any):
     if not base_text.endswith("."):
         base_text += "."
 
-    print(f"✅ Base Profile Text: {base_text}")
-    print(f"✅ Interests List: {interests_list}")
+    logging.info(f"Base Profile Text: {base_text}")
+    logging.info(f"Interests List: {interests_list}")
 
     return base_text, interests_list
-
 
 def build_date_filter():
     """
@@ -108,7 +120,7 @@ def build_date_filter():
     start_of_week = today - timedelta(days=today.weekday())  # monday
     end_of_week = start_of_week + timedelta(days=6)          # sunday
 
-    print(f"Filtering events between {start_of_week.date()} and {end_of_week.date()}.")
+    logging.info(f"Filtering events between {start_of_week.date()} and {end_of_week.date()}.")
 
     year_str = str(start_of_week.year)
     start_month_str = start_of_week.strftime("%B")
@@ -163,15 +175,15 @@ def build_date_filter():
                 }
             ]
         }
+    logging.info(f"Filter criteria: {filter_criteria}")
     return filter_criteria
-
 
 def retrieve_metadata_from_response(response, university: str):
     """
     Given a ZeroEntropy response, fetch the metadata for each document
     and build a list of event dictionaries.
     """
-    print(f"response.results: {response.results}")
+    logging.info(f"Response results: {response.results}")
 
     url = "https://api.zeroentropy.dev/v1/documents/get-document-info"
     headers = {
@@ -182,7 +194,7 @@ def retrieve_metadata_from_response(response, university: str):
     events = []
     for match in response.results:
         document_path = match.path
-        print(f"Document path: {document_path}")
+        logging.info(f"Document path: {document_path}")
 
         payload = {
             "collection_name": university,
@@ -215,10 +227,9 @@ def retrieve_metadata_from_response(response, university: str):
                 "similarity_score": round(similarity_score, 4)
             })
         else:
-            print(f"❌ Failed to retrieve metadata for document {document_path}. "
-                  f"Status code: {metadata_response.status_code}")
+            logging.error(f"Failed to retrieve metadata for document {document_path}. "
+                          f"Status code: {metadata_response.status_code}")
     return events
-
 
 def find_top_events_for_student(student_profile: Any, top_k=5):
     """
@@ -230,7 +241,7 @@ def find_top_events_for_student(student_profile: Any, top_k=5):
       4) Combines the results into one unified list (deduplicates if needed).
     """
 
-    print("🔹 Searching for the most relevant events for the student...")
+    logging.info("Searching for the most relevant events for the student...")
 
     # step 1: get the base profile text and the list of interests
     base_text, interests_list = format_profile_segments(student_profile)
@@ -249,7 +260,8 @@ def find_top_events_for_student(student_profile: Any, top_k=5):
         # if the user has no interests, just query once with the base text
         query_text = base_text
         try:
-            response = zclient.queries.top_pages(
+            print(2)
+            response = zclient.queries.top_documents(
                 collection_name=university,
                 query=query_text,
                 k=top_k,
@@ -258,14 +270,15 @@ def find_top_events_for_student(student_profile: Any, top_k=5):
             events = retrieve_metadata_from_response(response, university)
             all_events.extend(events)
         except Exception as e:
-            print(f"❌ Error occurred during query with no interests: {e}")
+            logging.error(f"Error occurred during query with no interests: {e}")
     else:
         for interest in interests_list:
+            print(1)
             query_text = f"{base_text} he is interested in {interest}."
-            print(f"\n🔸 Querying for interest: {interest}\nQuery Text: {query_text}\n")
+            logging.info(f"Querying for interest: {interest} | Query Text: {query_text}")
 
             try:
-                response = zclient.queries.top_pages(
+                response = zclient.queries.top_documents(
                     collection_name=university,
                     query=query_text,
                     k=top_k,
@@ -274,7 +287,7 @@ def find_top_events_for_student(student_profile: Any, top_k=5):
                 events = retrieve_metadata_from_response(response, university)
                 all_events.extend(events)
             except Exception as e:
-                print(f"❌ Error occurred during query for interest '{interest}': {e}")
+                logging.error(f"Error occurred during query for interest '{interest}': {e}")
 
     # optional: deduplicate events to avoid repeating the same event
     deduplicated = {}
@@ -285,5 +298,5 @@ def find_top_events_for_student(student_profile: Any, top_k=5):
     
     final_events = list(deduplicated.values())
 
-    print(f"\n✅ Found {len(final_events)} unique matching events across all interests!")
+    logging.info(f"Found {len(final_events)} unique matching events across all interests!")
     return final_events
