@@ -198,6 +198,10 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                 "type": "string",
                                 "description": f"The specific information the student is requesting that requires up-to-date data about {university}. Be as detailed as possible and add at the end that exact and precises ressources, Make the query as detailed as and as long as possible. If it is relevant to the query, include the student information to only get the information that is relevant to them."
                             },
+                            "number_of_sources": {
+                                "type": "integer",
+                                "description": "Provide an integer between 4 and 10 representing the estimated number of sources required to retrieve the necessary information based on the query's complexity. Simple queries with a single definitive answer (e.g., 'Who is the president of UPenn?') require only minimum sources, while more complex queries that involve analysis, multiple perspectives, or synthesis of data from various places may require up to 10 sources."
+                            },
                             "youtube_bool": {
                                 "type": "boolean",
                                 "description": "Indicates whether a YouTube video could help answer the student's query. Return True if a video would be helpful; otherwise, return False. This parameter determines whether a YouTube video should be included in the response. Return True if the student is aksing about admission or campus tour or sport teams"
@@ -211,7 +215,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                 "description": "An array of 1 to 4 steps outlining the reasoning process for addressing the user's query. 1 to 4 depending on the complexity of the query."
                             }
                         },
-                        "required": ["query", "reasoning_steps", "youtube_bool"],
+                        "required": ["query", "reasoning_steps", "youtube_bool", "number_of_sources"],
                         "additionalProperties": False
                     }
                 }
@@ -219,7 +223,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             {
                 "type": "function",
                 "function": {
-                    "name": "answer_complex_query",
+                    "name": "deep_search",
                     "description": f"Processes advanced and multi-layered inquiries requiring deep contextual reasoning, cross-referencing multiple data sources, and leveraging search tools. This function is designed to handle complex queries related to course selection, visa regulations, intricate administrative cases, policy exceptions, and uncommon edge cases at {university}. It synthesizes information across academic catalogs, university policies, government guidelines, and institutional exceptions to provide well-structured, precise, and context-aware responses.",
                     "strict": True,
                     "parameters": {
@@ -432,14 +436,15 @@ async def handle_requires_action(client, university, username, major, minor, yea
                 if function_name == "get_current_info":
                     logging.info("Preparing to retrieve current info...")
                     query = arguments.get('query', '')
+                    nb_sources = arguments.get('number_of_sources', '')
                     
                     reasoning_steps = arguments.get('reasoning_steps', '')
                     structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
                     yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
                     logging.info(f"Yielded reasoning steps for query: {query}")
                     
-                    info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message))
-                    logging.info("Created async task for get_up_to_date_info")
+                    info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
+                    logging.info(f"Created async task for get_up_to_date_info with nb_sources: {nb_sources}")
                     rag_task = asyncio.create_task(retrieve_chunks(query, university))
                     logging.info("Created async task for retrieve_chunks")
 
@@ -552,8 +557,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         "content": json.dumps(output)
                     })
 
-                elif function_name == "answer_complex_query":
-                    logging.info("Handling answer_complex_query")
+                elif function_name == "deep_search":
+                    logging.info("Handling deep_search")
                     query = arguments.get("query", "")
 
                     # call deepsearch api with the user's query
@@ -623,4 +628,6 @@ def call_deepsearch_api(query):
 
     # post the request
     response = requests.post(url, headers=headers, json=data)
+    print(f"Status Code: {response.status_code}")
+    print(f"Response Text: {response.text}")
     return response.text
