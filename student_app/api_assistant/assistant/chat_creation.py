@@ -15,6 +15,7 @@ from .tools.perplexity_tool.youtube_search_manager import get_youtube_videos
 from .tools.perplexity_tool.instagram_search_manager import transform_instagram_data
 from .tools.perplexity_tool.instagram_reels_manager import transform_instagram_reels_data
 from .tools.perplexity_tool.linkedin_profile_search_manager import transform_linkedin_profiles_data
+from .tools.deep_search_tool.deep_search import call_deepsearch_api
 from functools import wraps
 from .tools.RAG_tool.rag_ragie import retrieve_chunks
 import time
@@ -350,16 +351,20 @@ async def handle_requires_action(client, university, username, major, minor, yea
 
         # Initialize messages list with system prompt
         messages = [{"role": "developer", "content": system_content}]
+        #messages_assist = [{"role": "system", "content": system_content}]
         logging.info("Messages list initialized with system prompt")
+        messages_assist = []
 
         # Append chat history
         for item in history_items:
             role = "assistant" if item["username"] == "Lucy" else "user"
             messages.append({"role": role, "content": item["body"]})
+            messages_assist.append({"role": role, "content": item["body"]})
         logging.info("Chat history appended to messages")
 
         # Append user input
         messages.append({"role": "user", "content": input_message})
+        messages_assist.append({"role": "user", "content": input_message})
         logging.info("User input appended to messages")
 
         # Initial API call to check if a function needs to be called
@@ -381,11 +386,11 @@ async def handle_requires_action(client, university, username, major, minor, yea
         # Read chunks as they arrive
         async for chunk in stream:
             delta = chunk.choices[0].delta
-            logging.info(f"Received a new chunk from the stream: {delta}")
+            #logging.info(f"Received a new chunk from the stream: {delta}")
 
             # accumulate only if content is not None
             if delta.content:
-                logging.info(f"Appending chunk content: {delta.content}")
+                #logging.info(f"Appending chunk content: {delta.content}")
                 # you can yield each partial chunk immediately if you want real-time streaming
                 yield delta.content + "|"
 
@@ -393,7 +398,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
             # 2) Accumulate function call arguments
             if delta.tool_calls:
                 for tool_call in delta.tool_calls:
-                    logging.info(f"Detected tool call for index {tool_call.index}")
+                    #logging.info(f"Detected tool call for index {tool_call}")
                     index = tool_call.index
 
                     # If this is a new function call, initialize it
@@ -406,15 +411,16 @@ async def handle_requires_action(client, university, username, major, minor, yea
                                 "arguments": ""
                             }
                         }
-                        logging.info(f"Created new entry in final_tool_calls for function: {tool_call.function.name}")
+                        #logging.info(f"Created new entry in final_tool_calls for function: {tool_call.function.name}")
                     
                     # Append new argument fragments
                     final_tool_calls[index]["function"]["arguments"] += tool_call.function.arguments
-                    logging.info(f"Appended argument fragment for function: {tool_call.function.name}")
+                    #logging.info(f"Appended argument fragment for function: {tool_call.function.name}")
 
         if final_tool_calls:
             logging.info("Aggregated function calls detected, proceeding with handling")
             function_calls_done = True
+            deep_search_encountered = False
             tool_outputs = []
 
             # Parse each final function call’s arguments
@@ -494,7 +500,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     logging.info(f"youtube_bool is {youtube_bool}")
 
                     if youtube_bool:
-                        youtube_query = google_search_query + " " + university 
+                        youtube_query = query + " " + university 
                         logging.info(f"Performing YouTube video search with: {youtube_query}")
 
                         result_youtube_data = await get_youtube_videos(youtube_query, input_message)
@@ -558,20 +564,15 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     })
 
                 elif function_name == "deep_search":
+                    deep_search_encountered = True
                     logging.info("Handling deep_search")
                     query = arguments.get("query", "")
 
                     # call deepsearch api with the user's query
                     logging.info(f"Sending query to deepsearch: {query}")
-                    deepsearch_response = call_deepsearch_api(query)
-                    logging.info(f"Received deepsearch response: {deepsearch_response}")
-
-                    # add the deepsearch response to tool outputs
-                    tool_outputs.append({
-                        "role": "function",
-                        "name": function_name,
-                        "content": json.dumps(deepsearch_response)
-                    })
+                    async for data in call_deepsearch_api(query, messages_assist, client, university, username, major, minor, year, school):
+                        #logging.info(f"yielding deepsearch data chunk: {data}")
+                        yield data
 
                 else:
                     logging.warning(f"Function {function_name} is not implemented")
@@ -582,52 +583,21 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         "content": json.dumps(output)
                     })
 
-            logging.info("Appending function results to messages")
-            messages.extend(tool_outputs)
+            if not deep_search_encountered:
+                logging.info("appending function results to messages")
+                messages.extend(tool_outputs)
+                logging.info("making a follow-up streaming call to get final response")
+                final_response = await client.chat.completions.create(
+                    model=config["model"],
+                    messages=messages,
+                    stream=True
+                )
+                async for chunk in final_response:
+                    delta = chunk.choices[0].delta
+                    if delta.content:
+                        yield delta.content + "|"
 
-            logging.info("Making a follow-up streaming call to get final response")
-            final_response = await client.chat.completions.create(
-                model=config["model"],
-                messages=messages,
-                #tools=config["tools"],
-                stream=True
-            )
-            async for chunk in final_response:
-                delta = chunk.choices[0].delta
-                logging.info(f"Received a new chunk from the stream: {delta}")
-
-                # accumulate only if content is not None
-                if delta.content:
-                    logging.info(f"Appending chunk content: {delta.content}")
-                    # you can yield each partial chunk immediately if you want real-time streaming
-                    yield delta.content + "|"
     except Exception as e:
         logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
         yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! We are experiencing high traffic right now. Please try again later.'}})}<ERROR_END>\n"
         yield None
-
-
-def call_deepsearch_api(query):
-    """
-    Calls jina's deepsearch api to handle complex queries requiring advanced reasoning.
-    """
-    url = "https://deepsearch.jina.ai/v1/chat/completions"
-    headers = {"Content-Type": "application/json"}
-
-    # build your data payload
-    data = {
-        "model": "jina-deepsearch-v1",
-        "messages": [
-            {"role": "user", "content": "Hi!"},
-            {"role": "assistant", "content": "Hi, how can I help you?"},
-            {"role": "user", "content": query}
-        ],
-        "stream": True,
-        "reasoning_effort": "medium"
-    }
-
-    # post the request
-    response = requests.post(url, headers=headers, json=data)
-    print(f"Status Code: {response.status_code}")
-    print(f"Response Text: {response.text}")
-    return response.text
