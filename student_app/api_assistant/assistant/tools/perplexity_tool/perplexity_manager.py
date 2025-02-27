@@ -79,6 +79,7 @@ async def get_up_to_date_info(query, university, username, major, minor, year, s
         current_date = datetime.now().strftime("%B %d, %Y")
         query = query + f"-- today date is {current_date}"
         # 'await' is critical here:
+        logging.info(f"Tavily request: query: {query}, nb_sources: {nb_sources}, include_domains: {domains}")
         response = await tavily_client.search(query=query, max_results=nb_sources, searchDepth="advanced", include_images=False, include_domains=domains)
         print(f"TAVILY RESPONSE: {response}")
         results = response.get("results", [])
