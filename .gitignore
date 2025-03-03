@@ -1,0 +1,19 @@
+.env
+.lucy_env/
+myen/*
+myenv/*
+myenvcheck/*
+.ebextensions/*
+myenv/
+*.dylib
+myenv/
+!myenv/lib/python3.11/site-packages/numpy/.dylibs/libopenblas64_.0.dylib
+*.pyc
+*.log
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+

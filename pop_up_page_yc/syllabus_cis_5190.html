@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIS 4190/5190: Applied Machine Learning (Spring 2024)</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ttitle {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .htitle a {
+            margin: 0 15px;
+            font-size: 18px;
+            font-weight: 800;
+            text-decoration: none;
+            color: #8B0000;
+        }
+
+        hr {
+            width: 80%;
+            border-top: 2px solid #ccc;
+        }
+
+        .stitle {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .txt {
+            margin: 0 auto;
+            padding: 20px;
+            max-width: 1000px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            margin: 20px 0;
+            font-size: 14px;
+            border-spacing: 5px;
+        }
+
+        table th,
+        table td {
+            padding: 5px;
+            text-align: left;
+        }
+
+        table th {
+            font-weight: bold;
+        }
+
+        .col-md-3 {
+            font-weight: bold;
+            font-size: 20px;
+            text-align: left;
+        }
+
+        p {
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div align="center">
+        <br /><br />
+        <div class="all">
+            <div class="row txt" style="text-align:center">
+                <span class="ttitle">CIS 4190/5190: Applied Machine Learning (Spring 2024)</span>
+                <br />
+                <span class="htitle"><a href="./index.html">syllabus</a></span>
+                <span class="htitle"><a href="./schedule.html">schedule</a></span>
+                <span class="htitle"><a href="./files.html">files</a></span>
+                <span class="htitle"><a href="./resources.html">resources</a></span>
+            </div>
+            <hr />
+            <br />
+            <div class="row txt">
+                <div class="col-md-3 stitle">logistics</div>
+                <div class="col-md-7">
+                    <p><b>time:</b> Mon/Wed 1:45-3:15pm</p>
+                    <p><b>location:</b> Stiteler Hall, Room B6</p>
+                    <p><b>instructors:</b><br />
+                        Prof. Dinesh Jayaraman (dineshj@seas.upenn.edu)<br />
+                        Prof. Osbert Bastani (obastani@seas.upenn.edu)
+                    </p>
+                    <p><b>teaching assistants:</b> We have the following wonderful team of TAs this semester (with bios introducing them <a href="./docs/ta_bios.pdf">here</a>):<br />
+                        Benedict Florance Arockiaraj, Anish Bhattacharya, Brian Chen, Mudan Chen, Harsh Goel, Yiming Huang, Remy (Jongkook) Kim, Jinhui (Javion) Luo, Bharathrushab Manthripragada, Anisha Singrodia, Kausik Sivakumar, Anusha Srikanthan, Abriana Stewart-Height, Yufei Wang, Crescent (Zihan) Xiong, David Yan
+                    </p>
+                    <p><b>office hours:</b> We are currently holding the office hours listed below.</p>
+                    <table>
+                        <tr>
+                            <th>name</th>
+                            <th>time slot</th>
+                            <th>location</th>
+                        </tr>
+                        <tr>
+                            <td>Anusha Srikanthan</td>
+                            <td>Mon 10am - 11am</td>
+                            <td>Levine 612</td>
+                        </tr>
+                        <tr>
+                            <td>Brian Chen</td>
+                            <td>Mon 3:30pm - 4:30pm</td>
+                            <td>Levine 612</td>
+                        </tr>
+                        <tr>
+                            <td>Yufei Wang</td>
+                            <td>Mon 5pm - 6pm</td>
+                            <td>Levine GRW 5th floor bump space</td>
+                        </tr>
+                        <tr>
+                            <td>Bharathrushab Manthripragada</td>
+                            <td>Tue 10am - 11am</td>
+                            <td>GRW basement space</td>
+                        </tr>
+                        <tr>
+                            <td>Jongkook Remy Kim</td>
+                            <td>Tue 1pm - 2pm</td>
+                            <td>Levine 501 bump space</td>
+                        </tr>
+                        <tr>
+                            <td>David Yan</td>
+                            <td>Tue 3pm - 4pm</td>
+                            <td>Levine 612</td>
+                        </tr>
+                        <tr>
+                            <td>Zihan Xiong (Crescent)</td>
+                            <td>Tue 6pm - 7pm</td>
+                            <td>Levine 612</td>
+                        </tr>
+                        <tr>
+                            <td>Benedict Florance Arockiaraj</td>
+                            <td>Wed 10am - 11am</td>
+                            <td>Levine 612</td>
+                        </tr>
+                        <tr>
+                            <td>Jinhui Luo</td>
+                            <td>Wed 3:30pm - 4:30pm</td>
+                            <td>Levine 601 bump space</td>
+                        </tr>
+                        <tr>
+                            <td>Harsh Goel</td>
+                            <td>Wed 6pm - 7pm</td>
+                            <td>Levine 512</td>
+                        </tr>
+                        <tr>
+                            <td>Abriana Stewart-Height</td>
+                            <td>Thu 11am - 12pm</td>
+                            <td>Levine 601 bump space</td>
+                        </tr>
+                        <tr>
+                            <td>Osbert Bastani</td>
+                            <td>Thu 2pm - 3pm</td>
+                            <td>Levine 611</td>
+                        </tr>
+                        <tr>
+                            <td>Anisha Singrodia</td>
+                            <td>Thu 3pm - 4pm</td>
+                            <td>Levine 612</td>
+                        </tr>
+                        <tr>
+                            <td>Anish Bhattacharya</td>
+                            <td>Thu 6pm - 7pm</td>
+                            <td>Levine 501 bump space</td>
+                        </tr>
+                        <tr>
+                            <td>Dinesh Jayaraman</td>
+                            <td>Fri 9:15am - 10:15am</td>
+                            <td>Levine 401</td>
+                        </tr>
+                        <tr>
+                            <td>Yiming Huang</td>
+                            <td>Fri 10am - 11am</td>
+                            <td>Levine 501 bump space</td>
+                        </tr>
+                        <tr>
+                            <td>Kausik Sivakumar</td>
+                            <td>Fri 4pm - 5pm</td>
+                            <td>Levine 501 bump space</td>
+                        </tr>
+                        <tr>
+                            <td>Mudan Chen</td>
+                            <td>Sat 9am - 10am</td>
+                            <td>Online (Zoom)</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <br />
+            <div class="row txt">
+                <div class="col-md-3 stitle">content</div>
+                <div class="col-md-7">
+                    <p><b>description:</b> Machine learning has been essential to the success of many recent technologies, including autonomous vehicles, search engines, genomics, automated medical diagnosis, image recognition, and social network analysis. This course will introduce the fundamental concepts and algorithms that enable computers to learn from experience, with an emphasis on their practical application. It will introduce supervised learning (linear and logistic regression, decision trees, neural networks and deep learning, and Bayesian networks), unsupervised learning (clustering and dimensionality reduction), and reinforcement learning.</p>
+                    <p><b>CIS 4190 vs. 5190:</b> This course has an undergraduate version (CIS 4190) and a graduate version (CIS 5190). The lectures are the same, but you will be evaluated differently on your homeworks and projects; in particular, some homeworks will have components that are mandatory for CIS 5190 but optional for CIS 4190. Importantly, since the two versions have different requirements, you cannot complete the course as CIS 4190 and petition afterwards to have it changed to CIS 5190 for graduate credit.</p>
+                    <p><b>CIS 5190 vs. 5200:</b> Penn CIS offers two different introductory machine learning courses: CIS 4190/5190 (Applied Machine Learning) and CIS 5200 (Machine Learning). While there is overlap, the former (this course!) emphasizes practical application of existing machine learning methods, whereas the latter emphasizes the statistical foundations and theory of ML. CIS 5190 is NOT a prerequisite for CIS 5200. It makes little sense to take both courses (though taking CIS 4190/5190 and later CIS 5200 is possible).</p>
+                    <p><b>CIS 5190 vs. 5450:</b> Penn CIS also offers CIS 5450, which offers a holistic view of the data science pipeline, including data wrangling, data visualization, machine learning, and scalable data processing. In contrast, this course focuses primarily on machine learning, covering machine learning algorithms in greater breadth and depth. The two courses can be taken in either order, but students should consider taking CIS 5450 first.</p>
+                    <p><b>prerequisites:</b> Introductory probability and statistics, multivariable calculus, and linear algebra are required (HW 1 will test your knowledge of this material). In addition, you are expected to be able to program comfortably in some language. We will use Python throughout the course, and can help you pick it up (primer + office hours). If you are not confident of your coding skills in any language at all, the homework may be very difficult.</p>
+                    <p><b>textbook:</b> There is no required textbook, but you can find useful resources <a href="./resources.html">here</a>.</p>
+                </div>
+            </div>
+            <br />
+            <div class="row txt">
+                <div class="col-md-3 stitle">grading</div>
+                <div class="col-md-7">
+                    <p><span style="color:red">This grading scheme is tentative and will be finalized soon.</span></p>
+                    <p><b>homework (30%):</b> There will be 6 homework assignments, each containing both a written component and a coding component. The written portion will be submitted via GradeScope; the coding portion will be submitted both via GradeScope and programmatically to an autograder. Detailed instructions will be provided in the assignment.</p>
+                    <p><b>project (20%):</b> We will provide more details on the final project shortly.</p>
+                    <p><b>final exam (35%):</b> There will be a 2 hour long final exam during finals period, covering content from the entire course.</p>
+                    <p><b>quizzes (10%):</b> There will be 12 (roughly weekly) quizzes testing basic understanding of the material covered that week; these will be submitted on GradeScope. You will receive full credit if you correctly answer at least 50% of the questions.</p>
+                    <p><b>participation (5%):</b> You are expected to participate by coming to class, asking/answering questions on Ed Discussion, etc.</p>
+                    <p><b>grading scheme:</b> A+: 95+, A: 90-95, A-: 85-90, B+: 80-85, B: 75-80, B-: 70-75, lower passing grades: 50-70 (may be curved upwards)</p>
+                    <p><b>late policy:</b> For homework assignments, you will lose 0.5% per late hour (rounded up), with a maximum of 48 late hours per assignment. For example, if you submit HW 1 20 hours late, you lose 10% of points on HW 1 (which is 0.5% of your overall course grade). If you have medical reason for an extension, send both professors a copy of your medical visit report, and we will grant an extension (typically 2 days); we will consider other requests on a case-by-case basis.</p>
+                </div>
+            </div>
+            <br /><br />
+        </div>
+    </div>
+</body>
+
+</html>
+

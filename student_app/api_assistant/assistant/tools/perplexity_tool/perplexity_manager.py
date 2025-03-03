@@ -1,0 +1,293 @@
+
+import os
+from datetime import datetime
+import asyncio
+from functools import wraps
+import time
+
+import logging
+
+
+from tavily import AsyncTavilyClient
+
+
+
+TAVILY_API = os.getenv('TAVILY_API')
+tavily_client = AsyncTavilyClient(api_key=TAVILY_API)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s]: %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("file_server.log")
+    ]
+)
+
+def timing_decorator(func):
+    @wraps(func)
+    def sync_wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time} seconds")
+        return result
+    
+    @wraps(func)
+    async def async_wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = await func(*args, **kwargs)
+        end_time = time.time()
+        print(f"{func.__name__} took {end_time - start_time} seconds")
+        return result
+    
+    if asyncio.iscoroutinefunction(func):
+        return async_wrapper
+    else:
+        return sync_wrapper
+
+def generate_search_domain_filter(university):
+    # Define a dictionary mapping universities to their custom website links
+    university_domain_mapping = {
+        "ccp": [
+            "prideportal.ccp.edu",
+            "foundation.ccp.edu",
+            "theindependentnews.org",        
+            "www.aft.org",
+            "www.aft2026.org",
+            "myccp.online"
+        ]
+    }
+
+    # Default custom domains for the given university
+    custom_domains = university_domain_mapping.get(university.lower(), [])
+
+    # Always include the university's .edu domain
+    default_domain = f"{university}.edu"
+
+    # Combine the default domain with the custom domains
+    search_domain_filter = [default_domain] + custom_domains
+
+    return search_domain_filter
+
+
+@timing_decorator
+async def get_up_to_date_info(query, university, username, major, minor, year, school, input_message, max_retries=3):
+    try:    
+        domains = generate_search_domain_filter(university)
+        current_date = datetime.now().strftime("%B %d, %Y")
+        query = query + f"-- today date is {current_date}"
+        # 'await' is critical here:
+        response = await tavily_client.search(query=query, include_images=False, include_domains=domains)
+        print(f"TAVILY RESPONSE: {response}")
+        results = response.get("results", [])
+        return results
+    except Exception as e:
+        logging.error(f"Error retrieving information from Tavily API: {str(e)} for {input_message}")
+        return f"Error retrieving information: {str(e)}"
+
+
+
+"""
+@timing_decorator
+async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message, max_retries=3):
+    
+    Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query,
+    with automatic retries on failure.
+    
+    logging.info(f"Retrieving up-to-date info for query: {query} from university: {university} for {input_message}")
+    
+    PPLX_API_KEY = os.getenv('PPLX_API_KEY')
+
+    if not PPLX_API_KEY:
+        logging.error(f"Perplexity API key not found for {input_message}")
+        return "Error: Perplexity API key not found."
+
+    url = "https://api.perplexity.ai/chat/completions"  # Replace with the actual Perplexity API endpoint
+    current_date = datetime.now().strftime("%B %d, %Y")
+
+    system_prompt = (
+        f
+            You are a reliable academic advisor at {university}, and you provide accurate, up-to-date, and factual information. 
+            Only research on site:{university}.edu. 
+            We are currently in the Spring 2025 semester, and today's date is {current_date}.
+
+            When you are asked about events never mention past events
+
+            Student details:
+            - Name: {username}
+            - School: {school}
+            - Year: {year}
+            - Majors: {major} (can be undeclared if none)
+            - Minors: {minor} (can be undeclared if none)
+
+            Important system rules:
+            - Only mention the informations that are from his school ({school}) and relatable from his year ({year})
+            - Be as precise as possible, if you mention a place, give the location, a person give the name and email, if you are giving advise and guidance mention exact university ressources,, building, person, OH, courses, deadlines etc ... 
+        
+    )
+    logging.info(f"Model for perplexity is {model} for {input_message}")
+
+    domains = generate_search_domain_filter(university)
+
+    print(f"DOMAINS: {domains}" )
+
+    payload = {
+        "model": f"llama-3.1-sonar-{model}-128k-online",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query}
+        ],
+        "max_tokens": 500,
+        "stream": False,
+        "return_citations": True,
+        "return_related_questions": True,
+        "search_domain_filter": domains,
+        "temperature": 0.1,
+        "top_p": 0.1,
+        "frequency_penalty": 1.2
+    }
+
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": f"Bearer {PPLX_API_KEY}"
+    }
+
+    for attempt in range(max_retries):
+        try:
+            if attempt > 0:
+                logging.warning(f"Retrying Perplexity API call... Attempt {attempt + 1} of {max_retries} for {input_message}")
+                await asyncio.sleep(3)  # Delay before retrying
+
+            logging.info(f"Sending request to Perplexity API for query: {input_message}")
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, json=payload, headers=headers) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        content = data['choices'][0]['message']['content']
+                        logging.info(f"Data successfully retrieved from Perplexity API for {input_message}")
+                        return content  # Return content on success
+                    else:
+                        logging.error(f"Error: {response.status} for {input_message}")
+                        error_message = await response.text()
+                        logging.error(f"API Error response: {error_message} for {input_message}")
+                        if attempt == max_retries - 1:
+                            return f"Error: {response.status} - {error_message}"
+        except Exception as e:
+            logging.error(f"Error retrieving information from Perplexity API: {str(e)} for {input_message}")
+            if attempt == max_retries - 1:
+                return f"Error retrieving information after {max_retries} attempts: {str(e)} for {input_message}"
+
+    # If all retries fail, send a final error message
+    return "Error: Unable to retrieve up-to-date information after multiple attempts."
+"""
+
+def get_sources_json(sources, input_message):
+    """
+    Generates a list of sources in the specified format.
+    
+    Parameters:
+    - sources (list): A list of dictionaries where each contains 'link' and 'document_name'.
+
+    Returns:
+    - list: A list of dictionaries in the required output format.
+    """
+    logging.info(f"Generating sources JSON. for {input_message}")
+    tool_output = []
+
+    for source in sources:
+        tool_output.append({
+            "answer_document": {
+                "document_id": "4",  # Fixed value
+                "link": source.get('url', ''),  # Dynamically fetched from input
+                "document_name": source.get('name', ''),  # Dynamically fetched from input
+                "source_type": "course_resource"  # Fixed value
+            }
+        })
+    
+    logging.info(f"Generated {len(tool_output)} sources. for {input_message}")
+    return tool_output
+
+"""
+@timing_decorator
+async def get_up_to_date_info(query, image_bool, model, university, username, major, minor, year, school, input_message):
+    
+    Calls the Perplexity API asynchronously to retrieve up-to-date information based on the query.
+    
+    logging.info(f"Retrieving up-to-date info for query: {query} from university: {university} for {input_message}")
+    
+    PPLX_API_KEY = os.getenv('PPLX_API_KEY')
+
+    if not PPLX_API_KEY:
+        logging.error(f"Perplexity API key not found. for {input_message}")
+        return "Error: Perplexity API key not found."
+
+    url = "https://api.perplexity.ai/chat/completions"  # Replace with the actual Perplexity API endpoint
+    current_date = datetime.now().strftime("%B %d, %Y")
+
+    system_prompt = (
+        f
+            You are a reliable academic advisor at {university}, and you provide accurate, up-to-date, and factual information. 
+            Only research on site:{university}.edu. 
+            We are currently in the Fall 2024 semester, and today's date is {current_date}.
+
+            When you are asked about events never mention past events
+
+            Student details:
+            - Name: {username}
+            - School: {school}
+            - Year: {year}
+            - Majors: {major} (can be undeclared if none)
+            - Minors: {minor} (can be undeclared if none)
+
+            Important system rules:
+            - Only mention the informations that are from his school ({school}) and relatable from his year ({year})
+            - Be as precise as possible, if you mention a place, give the location, a person give the name and email, if you are giving advise and guidance mention exact university ressources,, building, person, OH, courses, deadlines etc ... 
+        
+    )
+    logging.info(f"Model for perplexity is {model} for {input_message}")
+
+
+    payload = {
+        "model": f"llama-3.1-sonar-{model}-128k-online",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": query}
+        ],
+        "max_tokens": 500,
+        "stream": False,
+        "return_citations": True,
+        "return_related_questions": True,
+        "search_domain_filter": [f"{university}.edu"],
+        "temperature": 0.1,
+        "top_p": 0.1,
+        "frequency_penalty": 1.2
+    }
+
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": f"Bearer {PPLX_API_KEY}"
+    }
+
+    try:
+        logging.info(f"Sending request to Perplexity API for query: {input_message}")
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=payload, headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    content = data['choices'][0]['message']['content']
+                    logging.info(f"Data successfully retrieved from Perplexity API. for {input_message}")
+                    return content
+                else:
+                    logging.error(f"Error: {response.status} for {input_message}")
+                    error_message = await response.text()
+                    logging.error(f"API Error response: {error_message} for {input_message}")
+                    return f"Error: {response.status} - {error_message}"
+    except Exception as e:
+        logging.error(f"Error retrieving information from Perplexity API: {str(e)} for {input_message}")
+        return f"Error retrieving information: {str(e)}"
+
+    """

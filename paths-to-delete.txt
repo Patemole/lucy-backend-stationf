@@ -1,0 +1,11 @@
+myenv/lib/python3.11/site-packages/cryptography/hazmat/bindings/_rust.abi3.so
+myenv/lib/python3.11/site-packages/fitz/_mupdf.so
+myenv/lib/python3.11/site-packages/grpc/_cython/cygrpc.cpython-311-darwin.so
+my_application.zip
+myenv/lib/python3.11/site-packages/tokenizers/tokenizers.cpython-311-darwin.so
+myenv/lib/python3.11/site-packages/fitz/libmupdf.dylib
+myenv/lib/python3.11/site-packages/pyarrow/libarrow.1601.dylib
+myenv/lib/python3.11/site-packages/pyarrow/libarrow_flight.1601.dylib
+myenv/lib/python3.11/site-packages/scipy/.dylibs/libopenblas.0.dylib
+myenv/lib/python3.11/site-packages/llvmlite/binding/libllvmlite.dylib
+
