@@ -38,7 +38,7 @@ openai.api_key = OPENAI_API_KEY
 
 current_date = datetime.now().strftime("%B %d, %Y")
 
-from .config.universities import upenn, drexel, ccp, holyfamily
+from .config.universities import upenn, drexel, ccp, holyfamily, berkeley
 
 import time
 from functools import wraps
