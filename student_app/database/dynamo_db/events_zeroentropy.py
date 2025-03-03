@@ -32,10 +32,14 @@ logging.basicConfig(
 )
 # -------------------------------------------------------------------
 
-zclient = ZeroEntropy(api_key="ze_xyS13kPdsxUu0wfT")
-
 # load environment variables
 load_dotenv()
+
+# retrieve the api key from the environment variable
+api_key = os.getenv("ZEROENTROPY_API_KEY")
+
+# initialize the zero entropy client using the environment variable
+zclient = ZeroEntropy(api_key=api_key)
 
 def timing_decorator(func):
     @wraps(func)
