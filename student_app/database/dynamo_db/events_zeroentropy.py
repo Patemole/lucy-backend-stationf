@@ -10,7 +10,6 @@ import json
 import traceback
 from typing import List, Dict
 from openai import OpenAI
-from pinecone import Pinecone, ServerlessSpec
 import uuid
 import asyncio
 from zeroentropy import ZeroEntropy
@@ -117,7 +116,7 @@ def format_profile_segments(profile: Any):
 
 def build_date_filter():
     """
-    Builds a Pinecone/ZeroEntropy filter_criteria to retrieve events
+    Builds a ZeroEntropy filter_criteria to retrieve events
     within the current week (monday -> sunday), even if they span two months.
     """
     today = datetime.today()
