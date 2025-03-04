@@ -18,6 +18,7 @@ from .tools.perplexity_tool.linkedin_profile_search_manager import transform_lin
 from .tools.deep_search_tool.deep_search import call_deepsearch_api
 from functools import wraps
 from .tools.RAG_tool.rag_ragie import retrieve_chunks
+from .tools.RAG_tool.zeroentropy import search_top_pages
 import time
 import asyncio
 import logging
@@ -102,9 +103,9 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 continue calling ask_clarifying_question until you have an ultra-specific understanding of the student’s request.
                 
             3. tool usage and integration
-            get_current_info and file_search:
+            get_current_info :
                 for every query related to {university} or its resources (academic, extracurricular, or administrative), call get_current_info to retrieve accurate, up-to-date details.
-                always call file_search when calling get_current_info to find the best information.
+                calling get_current_info to find the best information do not trsut your knowledge and find the up to date info for every question that non chitchat with you.
                 for general queries not related to school or extracurriculars, provide ultra-specific answers directly without calling get_current_info.
             complex queries:
                 if a query is complex or the student seems confused, ask if they would like to connect with a real agent or service and call redirection_to_agent if necessary.
@@ -633,7 +634,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     
                     info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
                     logging.info(f"Created async task for get_up_to_date_info with nb_sources: {nb_sources}")
-                    rag_task = asyncio.create_task(retrieve_chunks(query, university))
+                    rag_task = asyncio.create_task(search_top_pages(query, university))
                     logging.info("Created async task for retrieve_chunks")
 
                     output = await info_task
@@ -696,12 +697,14 @@ async def handle_requires_action(client, university, username, major, minor, yea
                             logging.info("Yielding YouTube shorts as Instagram reels")
                             yield f"\n<INSTA>{json.dumps({'insta': result_youtube_data['shorts']})}<INSTA_END>\n"
 
-                    rag = await rag_task
+                    rag_result = await rag_task
+                    """
                     logging.info(f"RAG result: {rag}")
                     rag_result = " ".join([chunk["text"] for chunk in rag["retrieved_chunks"]]) if rag["status"] == "success" else ""
                     logging.info(f"Aggregated RAG data: {rag_result}")
+                    """
 
-                    content = f"Web information from university websites: {info_result}\n Content from university private and verified database {rag_result}"
+                    content = f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result}"
                     logging.info(f"Tool output content: {content}")
 
                     tool_outputs.append({
