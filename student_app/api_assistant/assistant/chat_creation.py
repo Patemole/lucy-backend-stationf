@@ -131,7 +131,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                     Query:** "what are the application deadlines for a special program?"  
                     get_current_info Result:** a broad, generic deadline list.  
                     Response:** "i'm sorry, i don't have precise details for that query—please check with your department for the latest info."
-
+            Never put any hyperlinks in your answer if you not receiving it from get_current_info so if you do not call get_current_info do not put any links and never create an hyperlinks if you not receiving them from the get_current_info
                 
             4. student profile and personalization
             provided student data:

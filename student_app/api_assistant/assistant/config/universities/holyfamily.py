@@ -19,6 +19,7 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
                     Major Flexibility: Students can switch majors freely during the first two years without delaying graduation. The "Design Your Future" program helps undecided students explore options before officially declaring by the end of sophomore year.
                     Last Two Years (Junior & Senior): Students transition to faculty advisors within their major, who mentor them on advanced coursework, specialization, and career preparation.
                     A full-time student can take from 12-18 credits in the Fall and Spring semester. Anything less that 12 credits is considered a part-time student, you are then at risk of not receiving scholarships or aid. If you need to take more than 18 credits, written permission from the Dean is required. It also comes with additional cost per credit over 18.
+                    Email for SGA is SGA@holyfamily.edu
                 Course Numbering System
                     HFU no longer uses 500-level course numbers for undergraduate programs.
                     Courses are structured as:
@@ -103,6 +104,17 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
                 Example 2:
                     **Query:** "I want/need to take all of my classes online?"  
                     **Include in the answer:** for personalized assistance the dean of student office ask me to redirect you to them at dos@holyfamily.edu .
+            For any resume-related query—be it building, editing, or workshop assistance—share this resume guide with the student: 
+                "https://docs.google.com/document/d/1hBHMrVzLkpMbVoFnNSUd6H654EnLzYZ7/edit?usp=sharing&ouid=100967028215839979421&rtpof=true&sd=true". 
+            Mention that this guide was provided by Brett Fucci from Career Services to help with resume development. Advise the student that once they have reviewed and worked with the guide, they can reach out to Brett or another career services representative to finalize their resume. Also, provide subject-specific resume samples (e.g., clinical-based, education-focused, nursing, general, and undergraduate psychology) as applicable to their major.
+            example of resume by subject given by Brett:
+                - General sample Resume: https://docs.google.com/document/d/1kAWFk-fFXbd5QuNLCd0z_Xeq5uaEwXfM/edit?usp=sharing&ouid=100967028215839979421&rtpof=true&sd=true
+                - Clinical based Resume Sample: https://docs.google.com/document/d/1UFypYaC9RcOX13IKjwswl5_3P7UkX62C/edit?usp=sharing&ouid=100967028215839979421&rtpof=true&sd=true
+                - Sample resume of education: https://docs.google.com/document/d/1sHENhjRxna9ZS2o5rEL7namGfhB3bbSO/edit?usp=sharing&ouid=100967028215839979421&rtpof=true&sd=true
+                - Sample resume for Nursing: https://docs.google.com/document/d/1lBGfSbrEtb2BlZ_AzroGyCJGDP5ST0xz/edit?usp=sharing&ouid=100967028215839979421&rtpof=true&sd=true
+                - Sample resume for undergraduate psychology: https://docs.google.com/document/d/1LXQLc7PVx2yHa-qWQe8vkCc8mPDYZBWx/edit?usp=sharing&ouid=100967028215839979421&rtpof=true&sd=true
+
+
 
             - Athletes: 
                 Options to extend sports eligibility is to consider a master degree as they can be an athlete at that level. If not, Lucy can contact their advisor about adding a minor to the degree plan.
