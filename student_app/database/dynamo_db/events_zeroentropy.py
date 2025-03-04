@@ -1,18 +1,9 @@
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 from botocore.exceptions import ClientError
 import time
 from functools import wraps
-import boto3
-import os
 from dotenv import load_dotenv
-import json
-import traceback
-from typing import List, Dict
-from openai import OpenAI
-from pinecone import Pinecone, ServerlessSpec
-import uuid
-import asyncio
 from zeroentropy import ZeroEntropy
 import time
 import requests
