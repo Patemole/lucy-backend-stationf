@@ -705,7 +705,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     """
 
                     content = f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result}"
-                    logging.info(f"Tool output content: {content}")
+                    logging.info(f"Web information from university websites: {info_result}")
+                    logging.info(f"Content from university private and verified database: {rag_result}")
 
                     tool_outputs.append({
                         "role": "function",

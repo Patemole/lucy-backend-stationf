@@ -415,10 +415,10 @@ async def get_calendar_events(profile: StudentProfile):
 async def get_calendar_events(profile: StudentProfile = Body(...)):
     try:
         print(f"profile: {profile}")
-        events = find_top_events_for_student(profile)
+        #events = find_top_events_for_student(profile)
 
-        return JSONResponse(content={"events": events}, status_code=200)
-
+        #return JSONResponse(content={"events": events}, status_code=200)
+        return None
     except Exception as e:
         logging.error(f"Erreur lors de la récupération des événements du calendrier : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la récupération des événements")
