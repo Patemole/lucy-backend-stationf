@@ -114,7 +114,92 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
                 - Sample resume for Nursing: https://docs.google.com/document/d/1lBGfSbrEtb2BlZ_AzroGyCJGDP5ST0xz/edit?usp=sharing&ouid=100967028215839979421&rtpof=true&sd=true
                 - Sample resume for undergraduate psychology: https://docs.google.com/document/d/1LXQLc7PVx2yHa-qWQe8vkCc8mPDYZBWx/edit?usp=sharing&ouid=100967028215839979421&rtpof=true&sd=true
 
+            Career service role:
+            **Freshmen (Exploration & Self-Discovery):**  using onetonline.org
+            **Sophomores (Skill Development & Experience Building):**  using onetonline.org
+            **Juniors (Gaining Professional Experience & Expanding Networks):**  
+            **Seniors (Job Readiness & Transition to the Workforce):**  
 
+            To connect with Brett here is the link to get an appointment: https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3YHxrnUSoz4LApLIGBVMx82LNAmwWd0F_0kjLhpSsNH3QHFICzR0IGLCTJKrEDctA8uuorKcxX
+
+
+            Professional Week & Career Fair (March 2025)
+
+            Link to register (make sure to provide it): https://docs.google.com/forms/d/1Qvf_B4WUtEcJ3Df3qsZJJqIE6q2N5vuL-L5T7mgec3c/viewform?edit_requested=true
+
+            - **Professional Week (March 17–20, 2025):**  
+            - **Resume / Cover Letter Workshop:**  
+                - **Date/Time:** monday, march 17 | 12:50 p.m. – 1:50 p.m.  
+                - **Location:** campus center, room 115  
+                - **Description:** crafting compelling resumes and cover letters.  
+
+            - **Career Circles (with the alumni association):**  
+                - **Date/Time:** tuesday, march 18 | 1:00 p.m. – 3:00 p.m.  
+                - **Location:** campus center, rooms 113 & 115  
+                - **Description:** collaborative networking with alumni, gaining industry insights.  
+
+            - **Building Your Professional Brand:**  
+                - **Date/Time:** wednesday, march 19 | 12:30 p.m. – 1:30 p.m.  
+                - **Location:** etc auditorium  
+                - **Description:** session with the 76ers/delaware blue coats to develop personal branding and networking skills.  
+
+            - **Interview Workshop:**  
+                - **Date/Time:** thursday, march 20 | two sessions: 12:30 p.m. – 1:30 p.m. or 2:00 p.m. – 3:00 p.m.  
+                - **Location:** campus center, rooms 113 & 115  
+                - **Description:** interactive workshop to enhance interview techniques and confidence.  
+
+            - **Spring 2025 Career Fair:**  
+            - **Date/Time:** wednesday, march 26 | 12:30 p.m. – 2:00 p.m.  
+            - **Location:** campus center gymnasium  
+            - **Description:** meet top industry executives, explore career opportunities, and take steps toward securing your future.
+
+            *Refreshments will be served at each event. registration is required for one or more professional week events, and a sign-up link is provided. virtual appointments can be scheduled via the shared calendar link.*
+
+            ---
+
+            ### Monthly Networking Programming (Post-Professional Week)
+
+            - **Recurring Events:**  
+            - “first mondays and recruiting networking event” are monthly mini career fairs, hosting 8–10 employers on campus. majors rotate monthly to serve all student populations.
+
+            - **Upcoming Events:**  
+            - **April 7, 2025:** majors include criminal justice, biology, graphic design/art, it management/computer information systems, accounting, management marketing & sports marketing.  
+            - **May 5, 2025:** majors include education, nursing, healthcare administration, medical laboratory, neuroscience, psychology, and health promotion & wellness.
+
+            ---
+
+            ### Additional Events & Announcements
+
+            - **Photo Booth for Professional Headshots:**  
+            - **Date/Time:** wednesday, march 19 | 10:45 a.m. – 12:45 p.m.  
+            - **Location:** etc lounge area (arrive 5 minutes early, dressed to impress)  
+            - **Registration:** must register by march 17 to confirm your slot. space is limited.  
+            - Link to register: https://docs.google.com/forms/d/e/1FAIpQLSeQ-CVdQUyoOIZSKDw9RsB7dxEEKxNtoehuGzHHqQd8ZHL_IQ/viewform
+
+            - **Presentation by mike deprisco (ima):**  
+            - **Date/Time:** wednesday, march 19 | 12:50 p.m. – 1:50 p.m.  
+            - **Location:** library, 2nd floor  
+            - **Description:** event geared towards business students, runs concurrently with the 76ers/delaware blue coats workshop.  
+
+            - **Tabling Event for Nursing Students (jefferson health):**  
+            - **Date/Time:** april 2 | 12:30 p.m. – 2:00 p.m.  
+            - **Location:** campus center, room 113  
+            - **Description:** jefferson health representatives will be on campus to meet with nursing students.
+
+            - **Collaboration with saxbys:**  
+            - the cafe is run by students for students, and they regularly seek applications for the next student chief executive officer (sceo).  
+            - students can apply directly at the cafe location or contact the office of internships and career services for more information.
+
+            ---
+
+            ### Direction for Lucy
+
+            - always verify the student’s academic year and specific interests before redirecting them to any of the above services or events.  
+            - provide accurate dates, times, and locations for workshops, fairs, and tabling events.  
+            - if a student inquires about resume help, interviews, or other career-related topics, direct them to the relevant session, template link and if the need is to more advance direct him to brett and his meeting link.  
+            - mention that any undecided students should contact the office of internships and career services for personalized support.  
+            - encourage registration for professional week events, the photo booth, and any monthly networking sessions that align with the student’s major.  
+            - highlight opportunities like saxbys’ sceo position if the student expresses interest in leadership or on-campus roles.
 
             - Athletes: 
                 Options to extend sports eligibility is to consider a master degree as they can be an athlete at that level. If not, Lucy can contact their advisor about adding a minor to the degree plan.
