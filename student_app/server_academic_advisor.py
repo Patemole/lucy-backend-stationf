@@ -23,6 +23,7 @@ from student_app.database.dynamo_db.new_instance_chat import delete_all_items_an
 from student_app.database.dynamo_db.analytics import store_analytics_async
 from student_app.database.dynamo_db.chat import get_chat_history, store_message_async, get_messages_from_history, get_timing_history
 from student_app.database.dynamo_db.events import fetch_events_from_dynamoDB
+from student_app.database.dynamo_db.events_zeroentropy import find_top_events_for_student
 
 from student_app.profiling.profile_generation import LLM_profile_generation
 
@@ -46,7 +47,7 @@ import threading
 import queue
 from functools import wraps
 from fastapi import BackgroundTasks
-from redis.asyncio import Redis
+
 
 
 
@@ -78,22 +79,8 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 #client = OpenAI()
 
 
-"""
-redis_client = Redis(
-    host="localhost",
-    port=6379,
-    decode_responses=True,  # Enables human-readable data responses
-)
-"""
 
 
-
-redis_client = Redis(
-    host="cache-lucy-assistant-thread-mmmubb.serverless.use1.cache.amazonaws.com::6379",
-    port=6379,
-    decode_responses=True,  # Enables human-readable data responses
-    ssl=True  # Required because "Encryption in Transit" is enabled
-)
 
 
 # FastAPI app configuration
@@ -257,7 +244,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     logging.info("this is the boolean value of is first message")
     logging.info(is_first_message)
 
-    #logging.info(f"Redis server run: {await redis_client.ping()} for {input_message}")
     logging.info(f"Processing message from {username} at {university} for {input_message}")
     
 
@@ -278,15 +264,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             #################################NEW CODE FOR CLASSIFICATION ADDED ############################
              #NEW: classification task to get category and conversation title
             #classification_task = asyncio.create_task(classify_query(input_message))
-            """
-            thread_id_task = asyncio.create_task(
-                get_cached_thread_id(chat_id, input_message, redis_client)
-            )
-            logging.info(f"Checking if thread ID in Cache for {input_message}")
-            thread_id = await thread_id_task
-            logging.info(f"Thread_id:{thread_id} for {input_message}")
-            # Flag to track if the thread is reconstructed
-            """
             reconstructed = False
 
             is_first_message = input_query.is_first_message
@@ -436,19 +413,15 @@ async def get_calendar_events(profile: StudentProfile):
 
 @app.post("/get_calendar_events")
 async def get_calendar_events(profile: StudentProfile = Body(...)):
-    """
-    Récupère tous les événements du calendrier depuis DynamoDB.
-    """
     try:
-        events = await fetch_events_from_dynamoDB()
+        print(f"profile: {profile}")
+        #events = find_top_events_for_student(profile)
 
-        return JSONResponse(content={"events": events}, status_code=200)
-
+        #return JSONResponse(content={"events": events}, status_code=200)
+        return None
     except Exception as e:
         logging.error(f"Erreur lors de la récupération des événements du calendrier : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la récupération des événements")
-
-
 
 
 

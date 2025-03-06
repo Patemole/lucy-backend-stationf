@@ -11,16 +11,11 @@ import traceback
 import logging
 from datetime import datetime, timedelta
 from typing import List, Dict
-from openai import OpenAI
-from pinecone import Pinecone, ServerlessSpec
-import uuid
-import asyncio
 
 load_dotenv()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Configuration de la connexion à DynamoDB
 dynamodb = boto3.resource(
@@ -30,18 +25,11 @@ dynamodb = boto3.resource(
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY
 )
-client = OpenAI()
-
-PINECONE_API_KEY=os.getenv("PINECONE_API_KEY")
-pc = Pinecone(api_key=PINECONE_API_KEY)
-
-INDEX_NAME = os.getenv('INDEX_NAME')
-index = pc.Index(INDEX_NAME)
-
-
 
 # Référence à la table 
 table = dynamodb.Table("test-event-HFU") 
+#table = dynamodb.Table("prod_preprod_feedback")
+#table = dynamodb.Table("prod_prod_feedback")
 
 # Définir le décorateur
 def timing_decorator(func):
@@ -58,6 +46,8 @@ def timing_decorator(func):
 
 
 @timing_decorator
+
+
 async def fetch_events_from_dynamoDB_all_events() -> List[Dict]:
 
     """
@@ -211,177 +201,3 @@ async def fetch_events_from_dynamoDB() -> List[Dict]:
         return []
 
 
-
-def format_event(event: dict) -> str:
-    """
-    Convert an event dictionary into a structured natural-language sentence.
-    """
-    print(f"event is {event}")
-    title = event.get("title", "Untitled Event")
-    description = event.get("description", "No description available")
-    category = event.get("category", "General")
-    sub_category = event.get("sub_category", "General")
-    audience = event.get("audience", "General Audience")
-    organizer = event.get("organizer", "No organizer specified")
-    
-    # Process tags and keywords
-    tags = event.get("tags", [])
-    #tags_text = ", ".join(tags) if tags else "No specific tags"
-
-    # Format the event details into a readable sentence
-    event_text = f"{title}. {description} This event is organized by {organizer} under the category of {category} and sub-category of {sub_category}. "
-    event_text += f"It is intended for {audience}. Tags include: {tags}."
-    print(f"event formatting: {event_text}")
-    return event_text
-
-
-def generate_embeddings(text_list, model="text-embedding-3-small"):
-    """
-    Generate embeddings for a list of text inputs using OpenAI.
-    Returns a list of embedding vectors.
-    """
-    print(f"🔹 Generating embeddings for {len(text_list)} events...")
-    
-    response = client.embeddings.create(input=text_list, model=model)
-    embeddings = [data.embedding for data in response.data]
-    print(f"✅ Generated embeddings: {len(embeddings)}!")
-    return embeddings
-
-
-def upload_to_pinecone():
-    """
-    Processes events, generates embeddings, and uploads them to Pinecone with metadata.
-    """
-    events = asyncio.run(fetch_events_from_dynamoDB())
-    # Step 1: Convert event details into structured text
-    event_texts = [format_event(event) for event in events]
-
-    # Step 2: Generate embeddings
-    embedding_vectors = generate_embeddings(event_texts)
-
-    # Step 3: Prepare data for Pinecone
-    vectors = []
-    for event, embedding in zip(events, embedding_vectors):
-        # Generate unique ID for each event
-        event_id = str(uuid.uuid4())  # Generates a random UUID
-        
-        # Attach metadata
-        metadata = {
-            "title": event.get("title", "Untitled Event"),
-            "audience": event.get("audience", "Unknown"),
-            "sub_category": event.get("sub_category", "General"),
-            "category": event.get("category", "General"),
-            "day": event.get("day", "Unknown"),
-            "description": event.get("description", "No description available"),
-            "end_day": event.get("end_day", "Unknown"),
-            "end_time": event.get("end_time", "Unknown"),
-            "location": event.get("location", "No location specified"),
-            "month": event.get("month", "Unknown"),
-            "organizer": event.get("organizer", "No organizer specified"),
-            "start_time": event.get("start_time", "Unknown"),
-            "tags": event.get("tags", []),
-            "year": event.get("year", "Unknown"),
-            "banner": event.get("banner", "Unknown"),
-        }
-
-        # Append to Pinecone upload batch
-        vectors.append({"id": event_id, "values": embedding, "metadata": metadata})
-
-    # Step 4: Upload to Pinecone
-    index.upsert(vectors)
-
-    print(f"✅ Successfully uploaded {len(vectors)} events to Pinecone!")
-
-
-def format_profile(profile: dict) -> str:
-    """
-    Convert a student profile dictionary into a structured natural-language sentence.
-    """
-    print(f"🔹 Formatting student profile: {profile.get('name', 'Unknown Student')}")
-
-    name = profile.get("name", "Unknown")
-    university = profile.get("university", "Unknown University")
-    year = profile.get("year", "Unknown Year")
-    
-    faculty_list = profile.get("faculty", []) or []
-    major_list = profile.get("major", []) or []
-    minor_list = profile.get("minor", []) or []
-    interest = profile.get("interest", "Various topics")
-
-    description_parts = []
-    if major_list:
-        majors_text = " and ".join(major_list)
-        description_parts.append(f"{majors_text} major")
-    if minor_list:
-        minors_text = " and ".join(minor_list)
-        description_parts.append(f"{minors_text} minor")
-    if faculty_list:
-        faculty_text = " and ".join(faculty_list)
-        description_parts.append(f"{faculty_text}")
-
-    if description_parts:
-        academic_desc = " and ".join(description_parts)
-        profile_text = f"{name}, a {academic_desc} at {university}, class of {year}"
-    else:
-        profile_text = f"{name} at {university}, class of {year}"
-    
-    profile_text += f", is interested in {interest}."
-
-    looking_for = []
-    if profile.get("looking_for_events"):
-        looking_for.append("events")
-    if profile.get("looking_for_clubs"):
-        looking_for.append("clubs")
-    if profile.get("looking_for_internships"):
-        looking_for.append("internships")
-    if profile.get("looking_for_sports_events"):
-        looking_for.append("sports events")
-
-    if looking_for:
-        looking_str = ", ".join(looking_for[:-1]) + f", and {looking_for[-1]}" if len(looking_for) > 1 else looking_for[0]
-        profile_text += f" Looking for {looking_str}."
-
-    print(f"✅ Formatted Profile Text: {profile_text}")
-    return profile_text
-
-
-def find_top_events_for_student(student_profile: dict, top_k=20):
-    """
-    Finds the top 5 closest events to a student's profile using Pinecone.
-    """
-    print("🔹 Searching for the most relevant events for the student...")
-
-    # Step 1: Format and embed the student profile
-    profile_text = format_profile(student_profile)
-    profile_embedding = generate_embeddings([profile_text])[0]  
-
-    # Step 2: Query Pinecone to find the closest events
-    query_result = index.query(vector=profile_embedding, top_k=top_k, include_metadata=True)
-
-    # Step 3: Extract and display results
-    events = []
-    for match in query_result["matches"]:
-        event = match["metadata"]
-        similarity_score = match["score"]
-
-        events.append({
-            "title": event.get("title", "Untitled Event"),
-            "audience": event.get("audience", "Unknown"),
-            "category": event.get("category", "General"),
-            "day": event.get("day", "Unknown"),
-            "description": event.get("description", "No description available"),
-            "end_day": event.get("end_day", "Unknown"),
-            "end_time": event.get("end_time", "Unknown"),
-            "location": event.get("location", "No location specified"),
-            "month": event.get("month", "Unknown"),
-            "organizer": event.get("organizer", "No organizer specified"),
-            "start_time": event.get("start_time", "Unknown"),
-            "tags": event.get("tags", []),
-            "year": event.get("year", "Unknown"),
-            "banner": event.get("banner", "Unknown"),
-            "sub_category": event.get("sub_category", "General"),
-            "similarity_score": round(similarity_score, 4)
-        })
-
-    print(f"✅ Found {len(events)} matching events!")
-    return events
