@@ -49,3 +49,4 @@ urllib3==2.3.0
 uvicorn==0.34.0
 yarl==1.18.3
 zeroentropy==0.1.0a3
+resend==2.6.0

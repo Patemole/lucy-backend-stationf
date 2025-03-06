@@ -367,7 +367,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 for example, instead of just saying "Macro Economy," specify it as "ECON001"; instead of "Calculus," use "MATH101 - Calculus I" or "MATH102 - Calculus II" as applicable; instead of "Introduction to Psychology" specify "PSYC100"
                 ensure that any response involving classes provides this level of detail for clarity and precision.
             """),
-        "model": "gpt-4.5-preview",
+        "model": "gpt-4o",
         "temperature": 0.01,
         "tools": [
             {
