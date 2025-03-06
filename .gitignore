@@ -16,3 +16,10 @@ myenv/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
+
+# SAML Certs
+certs/cert.pem
+certs/key.pem
+
+sso_configs/*.json
+
