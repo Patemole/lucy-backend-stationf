@@ -683,6 +683,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     youtube_bool = arguments.get('youtube_bool', False)
                     logging.info(f"youtube_bool is {youtube_bool}")
 
+                    youtube_bool = False
                     if youtube_bool:
                         youtube_query = query + " " + university 
                         logging.info(f"Performing YouTube video search with: {youtube_query}")
