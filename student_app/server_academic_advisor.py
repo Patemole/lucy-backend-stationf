@@ -210,7 +210,7 @@ async def classify_query(question: str) -> dict:
                 }
             },
             max_tokens=100,
-            temperature=1.9
+            temperature=1.0
         )
 
         # Extract and return the structured response
@@ -283,12 +283,23 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 print(f"first message task created")
                 print("awaiting task")
                 classification_title_result = await classification_task
-                classification_title_result = json.loads(classification_title_result)
-                print(f"classification_title_result : {classification_title_result}")
-                category = classification_title_result.get("category")
-                conversation_title = classification_title_result.get("conversation_title")
-                logging.info(f"Classification result: {classification_title_result}")
-                wrapped_result = {"classification_title_result": classification_title_result}
+
+                # Ensure the result is always a dict
+                if isinstance(classification_title_result, dict):
+                    classification_title_json = classification_title_result
+                else:
+                    try:
+                        classification_title_json = json.loads(classification_title_result)
+                    except json.JSONDecodeError:
+                        logging.warning(f"Classification result not valid JSON, using default category for result: {classification_title_result}")
+                        classification_title_json = {
+                            "category": "unknown",
+                            "conversation_title": "Untitled Conversation"
+                        }
+                    else:
+                        classification_title_json = classification_title_json
+                print(f"classification_title_json : {classification_title_json}")
+                wrapped_result = {"classification_title_result": classification_title_json}
                 yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
                 await asyncio.sleep(0.2)
             else:
