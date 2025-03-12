@@ -68,7 +68,7 @@ async def send_email(request: EmailRequest):
         logging.info(f"📤 Envoi de l'email à {request.to} via Resend...")
 
         response = resend.Emails.send({
-            "from": "onboarding@resend.dev",
+            "from": "team@updates.my-lucy.com",
             "to": [request.to],
             "subject": request.subject,
             "html": request.html
