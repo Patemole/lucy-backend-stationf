@@ -210,7 +210,7 @@ async def classify_query(question: str) -> dict:
                 }
             },
             max_tokens=100,
-            temperature=0
+            temperature=1.9
         )
 
         # Extract and return the structured response
@@ -324,7 +324,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                             await asyncio.sleep(retry_delay)
                         else:
                             logging.error(f"Exceeded maximum retries for run creation for {input_message}")
-                            yield f"\n<ERROR>{json.dumps({'error': 'Oops! An error occurred while finalizing your request.'})}<ERROR_END>\n"
+                            yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An error occurred while finalizing your request. Please try again later.'}})}<ERROR_END>\n"
                             return
 
 
@@ -332,17 +332,17 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 
             except KeyError as e:
                 logging.error(f"KeyError during streaming run: {str(e)} for {input_message}", exc_info=True)
-                yield f"\n<ERROR>{json.dumps({'error': 'A KeyError occurred while processing your request.'})}<ERROR_END>\n"
+                yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'A KeyError occurred while processing your request.'}})}<ERROR_END>\n"
                 return  # Stop execution after yielding the error
 
             except Exception as e:
                 logging.error(f"Error during streaming run: {str(e)} for {input_message}", exc_info=True)
-                yield f"\n<ERROR>{json.dumps({'error': 'Oops! An unexpected error occurred while processing your request.'})}<ERROR_END>\n"
+                yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': f'Sorry boss an error occured while generating your response, please try again {username}.'}})}<ERROR_END>\n"
                 return  # Stop execution after yielding the error
 
         except Exception as e:
             logging.error(f"Error during response generation: {str(e)} for {input_message}")
-            yield f"\n<ERROR>{json.dumps({'error': 'Error in generating response.'})}<ERROR_END>\n"
+            yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': f'Oops! Sorry boss an unexpected error occurred, please try again {username}.'}})}<ERROR_END>\n"
             return  # Stop execution after yielding the error
     
     try:
