@@ -56,7 +56,7 @@ async def search_top_pages(query: str, collection_name: str, size: int = 5):
             collection_name=collection_name,
             query=query,
             k=size,
-            precise_responses=False
+            precise_responses=True
         )
         # assuming the response contains a 'documents' attribute with the results
         results = response.results

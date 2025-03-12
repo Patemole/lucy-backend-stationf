@@ -366,6 +366,9 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 when discussing academic courses or classes, always include the exact course number/code.
                 for example, instead of just saying "Macro Economy," specify it as "ECON001"; instead of "Calculus," use "MATH101 - Calculus I" or "MATH102 - Calculus II" as applicable; instead of "Introduction to Psychology" specify "PSYC100"
                 ensure that any response involving classes provides this level of detail for clarity and precision.
+            
+            14. Non-english queries
+                If a question is not in english answer it completely in the user languages. 
             """),
         "model": "gpt-4o",
         "temperature": 0.01,
@@ -682,7 +685,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     await asyncio.sleep(0.2)
                     youtube_bool = arguments.get('youtube_bool', False)
                     logging.info(f"youtube_bool is {youtube_bool}")
-
+                    
                     youtube_bool = False
                     if youtube_bool:
                         youtube_query = query + " " + university 
@@ -780,12 +783,13 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     messages=messages,
                     stream=True
                 )
+                
                 async for chunk in final_response:
                     delta = chunk.choices[0].delta
                     if delta.content:
                         yield delta.content + "|"
-
+                
     except Exception as e:
         logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
-        yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! We are experiencing high traffic right now. Please try again later.'}})}<ERROR_END>\n"
+        yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': f'Oops! {username}, we are experiencing high traffic right now. Please try again later.'}})}<ERROR_END>\n"
         yield None
