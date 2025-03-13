@@ -1,3 +1,5 @@
+from student_app.model.student_profile import StudentProfile
+
 def get_holyfamily_config(university, current_date, username, major, minor, year, school):
     return {
         "instructions": (
@@ -114,7 +116,7 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
 
             Professional Headshots: March 19, ETC Lounge, registration by March 17: https://docs.google.com/forms/d/e/1FAIpQLSeQ-CVdQUyoOIZSKDw9RsB7dxEEKxNtoehuGzHHqQd8ZHL_IQ/viewform
 
-            Mike DePrisco Presentation: March 19, Library 2nd floor, 12:50–1:50 p.m.
+                  Mike DePrisco Presentation: March 19, Library 2nd floor, 12:50–1:50 p.m.
 
             Jefferson Health Nursing Event: April 2, Campus Center Room 113, 12:30–2:00 p.m.
 
@@ -131,5 +133,50 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
             Ireland (March 2025): https://www.efstudyabroad.com/programs/rm9c
             Spain (May 2025): https://www.efstudyabroad.com/my-quotes/2782516bc/quote/3332615/4dcb687ff53e4969b2
             Greece (May 2025): https://www.efstudyabroad.com/professors-trip/2767791ea"""
+
+           """
         ),
     }
+
+
+
+def holyfamily_onboarding_prompt(student_profile: StudentProfile, linkedin_data) -> str:
+    """
+    Constructs a prompt combining satirical roast instructions, student profile details,
+    and optional LinkedIn profile details.
+    """
+    username = getattr(student_profile, "username", "unknown")
+    university = getattr(student_profile, "university", "unknown university")
+    year = getattr(student_profile, "year", "unknown year")
+    faculty_list = getattr(student_profile, "faculty", [])
+    major_list = getattr(student_profile, "major", [])
+    minor_list = getattr(student_profile, "minor", [])
+    interests_list = getattr(student_profile, "interests", [])
+
+    linkedin_details = (
+        f"Occupation: {linkedin_data.get('occupation', 'N/A')}\n"
+        f"Headline: {linkedin_data.get('headline', 'N/A')}\n"
+        f"Summary: {linkedin_data.get('summary', 'N/A')}\n"
+        f"Followers: {linkedin_data.get('follower_count', 0)}\n"
+        f"Profile Picture: {linkedin_data.get('profile_pic_url', 'N/A')}\n"
+        f"Experiences: {', '.join([exp.get('title', 'N/A') + ' at ' + exp.get('company', 'N/A') for exp in linkedin_data.get('experiences', [])])}\n"
+        f"Education: {', '.join([edu.get('degree_name', 'N/A') + ' from ' + edu.get('school', 'N/A') for edu in linkedin_data.get('education', [])])}\n"
+        f"Awards: {', '.join([award.get('title', 'N/A') for award in linkedin_data.get('accomplishment_honors_awards', [])])}"
+    ) if linkedin_data else "No LinkedIn data provided."
+
+    base_text = f"{username} at {university}, {year}"
+    faculty_text = f"studying in {', '.join(faculty_list)}" if faculty_list else ""
+    major_text = f"majoring in {', '.join(major_list)}" if major_list else ""
+    minor_text = f"and minoring in {', '.join(minor_list)}" if minor_list else ""
+    interests_text = f"the student's interests include: {', '.join(interests_list)}." if interests_list else "no specific interests provided."
+
+    final_prompt = (
+        f"lucy, you are an advisor for {username} at {university}. Deliver a satirical roast humorously highlighting {username}'s quirks, habits, and LinkedIn profile if available, demonstrating familiarity with {university}. "
+        "Be extremely sassy, sarcastic, funny, and concise. Then clearly explain how you can help with academic queries, course guidance, and campus resources. "
+        f"LinkedIn profile details:\n{linkedin_details}\n"
+        f"Student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text} "
+        "Next week starting on the 17th is Career Week, perfect for refining resumes and cover letters, practicing interviews, networking, and finding a job or internship. "
+        "Ask if the student would like more details or help registering. Be short and concise, no more than 5 sentences, very funny, sarcastic, and clear on how you can help."
+    )
+
+    return final_prompt

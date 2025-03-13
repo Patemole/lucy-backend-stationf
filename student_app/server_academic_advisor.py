@@ -39,6 +39,9 @@ from student_app.api_assistant.threads.thread_manager import (
 from student_app.api_assistant.assistant.handlers import on_event
 from student_app.api_assistant.assistant.chat_creation import handle_requires_action
 from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
+#from student_app.api_assistant.assistant.config.universities import holyfamily
+from .api_assistant.assistant.config import universities
+
 
 # Today's date
 date = datetime.date.today()
@@ -78,9 +81,7 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 #client = OpenAI()
 
-
-
-
+api_key_proxycurl = os.getenv("PROXYCURL_API_KEY")
 
 
 # FastAPI app configuration
@@ -159,7 +160,107 @@ async def count_student_questions(chat_history):
     print(question_count)
     print("\n")
     return question_count
- 
+
+
+@timing_decorator
+def scrape_linkedin_profile(api_key_proxycurl, linkedin_url):
+    endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
+
+    try:
+        response = requests.get(
+            endpoint,
+            params={'url': linkedin_url, 'fallback_to_cache': 'on-error'},
+            headers={'Authorization': f'Bearer {api_key_proxycurl}'},
+            timeout=10
+        )
+
+        if response.status_code != 200:
+            logging.error(f'linkedin scrape error {response.status_code}: {response.text}')
+            return {}
+
+        logging.info(f'successfully scraped LinkedIn profile: {linkedin_url}')
+        return response.json()
+
+    except requests.RequestException as e:
+        logging.error(f'request exception while scraping LinkedIn profile: {e}')
+        return {}
+
+
+
+
+@timing_decorator
+async def onboarding_sentence(student_profile: StudentProfile, linkedin_data) -> dict:
+    """
+    classifies a student's question into predefined categories and generates a conversation title.
+    retrieves a university-specific onboarding prompt function (which takes the student_profile as a parameter)
+    and uses it to generate the system prompt. if not available, falls back to a default prompt.
+    optionally enriches the prompt with data scraped from the student's LinkedIn profile.
+    """
+    university = getattr(student_profile, "university", "unknown university")
+    logging.info(f"starting onboarding_sentence for student at {university}")
+
+    try:
+        # dynamically retrieve the university-specific onboarding prompt function
+        uni_module = getattr(universities, university.lower())
+        prompt_func_name = f"{university.lower()}_onboarding_prompt"
+        onboarding_prompt_func = getattr(uni_module, prompt_func_name)
+        system_prompt = onboarding_prompt_func(student_profile, linkedin_data)
+        logging.info(f"loaded onboarding prompt for {university}")
+    except Exception as e:
+        logging.warning(f"error loading university onboarding prompt for {university}, using default prompt: {e}")
+
+        username = getattr(student_profile, "username", "unknown")
+        year = getattr(student_profile, "year", "unknown year")
+        faculty_list = getattr(student_profile, "faculty", [])
+        major_list = getattr(student_profile, "major", [])
+        minor_list = getattr(student_profile, "minor", [])
+        interests_list = getattr(student_profile, "interests", [])
+
+        linkedin_details = (
+            f"Occupation: {linkedin_data.get('occupation', 'N/A')}\n"
+            f"Headline: {linkedin_data.get('headline', 'N/A')}\n"
+            f"Summary: {linkedin_data.get('summary', 'N/A')}\n"
+            f"Followers: {linkedin_data.get('follower_count', 0)}\n"
+            f"Profile Picture: {linkedin_data.get('profile_pic_url', 'N/A')}\n"
+            f"Experiences: {', '.join([exp.get('title', 'N/A') + ' at ' + exp.get('company', 'N/A') for exp in linkedin_data.get('experiences', [])])}\n"
+            f"Education: {', '.join([edu.get('degree_name', 'N/A') + ' from ' + edu.get('school', 'N/A') for edu in linkedin_data.get('education', [])])}\n"
+            f"Awards: {', '.join([award.get('title', 'N/A') for award in linkedin_data.get('accomplishment_honors_awards', [])])}"
+        ) if linkedin_data else "No LinkedIn data provided."
+
+        base_text = f"{username} at {university}, {year}"
+        faculty_text = f"studying in {', '.join(faculty_list)}" if faculty_list else ""
+        major_text = f"majoring in {', '.join(major_list)}" if major_list else ""
+        minor_text = f"and minoring in {', '.join(minor_list)}" if minor_list else ""
+        interests_text = f"the student's interests include: {', '.join(interests_list)}." if interests_list else "no specific interests provided."
+
+        system_prompt = (
+            f"lucy, you are an advisor for {username} at {university}. deliver a satirical roast humorously highlighting {username}'s quirks, habits, and LinkedIn profile if available, demonstrating familiarity with {university}. "
+            "be extremely sassy, sarcastic, funny, and concise. then clearly explain how you can help with academic queries, course guidance, and campus resources. "
+            f"LinkedIn profile details:\n{linkedin_details}\n"
+            f"student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text}"
+        )
+
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": (
+                    "show me that you know me well and what you can do, "
+                    "and end your comment with a proposal that can interest me given my profile"
+                )}
+            ],
+            temperature=1.2
+        )
+        logging.info("OpenAI API call successful for onboarding sentence")
+        return response.choices[0].message.content
+    except Exception as e:
+        logging.error(f"error in classify_query: {e}")
+        return None
+
+
+
+
 @timing_decorator
 async def classify_query(question: str) -> dict:
     """

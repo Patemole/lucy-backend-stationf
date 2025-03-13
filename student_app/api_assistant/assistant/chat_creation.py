@@ -40,7 +40,7 @@ openai.api_key = OPENAI_API_KEY
 
 current_date = datetime.now().strftime("%B %d, %Y")
 
-from .config.universities import upenn, drexel, ccp, holyfamily, berkeley
+from .config.universities import upenn, drexel, ccp, holyfamily, berkeley, brynmawr
 
 import time
 from functools import wraps
@@ -369,6 +369,11 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             
             14. Non-english queries
                 If a question is not in english answer it completely in the user languages. 
+            
+            15. Lucy Platform knowledge and features
+                Social thread feature: this function allows students to choose whether their conversation with lucy is public or private using the button on the left of the message bar. when set to public, conversations are anonymously visible to other students, fostering community and inspiration; when set to private, the conversation remains accessible only to the individual student.
+                Recommended event system: located above the “AI Peer Advisor” in the left menu, this feature centralizes all campus events and opportunities. it filters events based on student interests to ensure no opportunity is overlooked.
+                The lucy mobile app is in development and will be available on both the app store and play store before the end of the semester.
             """),
         "model": "gpt-4o",
         "temperature": 0.01,
