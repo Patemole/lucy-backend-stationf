@@ -370,7 +370,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             14. Non-english queries
                 If a question is not in english answer it completely in the user languages. 
             """),
-        "model": "gpt-4o-mini",
+        "model": "gpt-4o",
         "temperature": 0.01,
         "tools": [
             {
@@ -571,7 +571,9 @@ async def handle_requires_action(client, university, username, major, minor, yea
         logging.info("Set function_calls_done to False")
 
         # Read chunks as they arrive
+        logging.info(f"got HEREEEE")
         async for chunk in stream:
+            logging.info(f"chunk: {chunk}")
             delta = chunk.choices[0].delta
             #logging.info(f"Received a new chunk from the stream: {delta}")
 
@@ -585,6 +587,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
             # 2) Accumulate function call arguments
             if delta.tool_calls:
                 for tool_call in delta.tool_calls:
+                    logging.info(f"tool_call: {tool_call}")
                     #logging.info(f"Detected tool call for index {tool_call}")
                     index = tool_call.index
 
