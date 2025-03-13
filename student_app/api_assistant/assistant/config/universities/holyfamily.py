@@ -252,13 +252,13 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
         ),
     }
 
-def holyfamily_onboarding_prompt(student_profile: StudentProfile) -> str:
+
+
+def holyfamily_onboarding_prompt(student_profile: StudentProfile, linkedin_data) -> str:
     """
-    constructs a final prompt that combines the satirical roast instructions with the student's profile details.
-    it extracts username, university, year, faculty, major, minor, and interests from the student_profile,
-    and integrates these into the prompt for lucy.
+    Constructs a prompt combining satirical roast instructions, student profile details,
+    and optional LinkedIn profile details.
     """
-    # extract basic profile attributes
     username = getattr(student_profile, "username", "unknown")
     university = getattr(student_profile, "university", "unknown university")
     year = getattr(student_profile, "year", "unknown year")
@@ -267,54 +267,30 @@ def holyfamily_onboarding_prompt(student_profile: StudentProfile) -> str:
     minor_list = getattr(student_profile, "minor", [])
     interests_list = getattr(student_profile, "interests", [])
 
-    # build the base profile overview
-    base_text = f"{username} at {university}, {year}"
-    
-    # format faculty text
-    if faculty_list:
-        if len(faculty_list) > 1:
-            faculty_text = f"studying in {', '.join(faculty_list[:-1])}, and {faculty_list[-1]}"
-        else:
-            faculty_text = f"studying in {faculty_list[0]}"
-    else:
-        faculty_text = ""
-    
-    # format major text
-    if major_list:
-        if len(major_list) > 1:
-            major_text = f"majoring in {', '.join(major_list[:-1])}, and {major_list[-1]}"
-        else:
-            major_text = f"majoring in {major_list[0]}"
-    else:
-        major_text = ""
-    
-    # format minor text
-    if minor_list:
-        if len(minor_list) > 1:
-            minor_text = f"and minoring in {', '.join(minor_list[:-1])}, and {minor_list[-1]}"
-        else:
-            minor_text = f"and minoring in {minor_list[0]}"
-    else:
-        minor_text = ""
-    
-    # construct interests text
-    if interests_list:
-        interests_text = f"the student's interests include: {', '.join(interests_list)}."
-    else:
-        interests_text = "no specific interests provided."
+    linkedin_details = (
+        f"Occupation: {linkedin_data.get('occupation', 'N/A')}\n"
+        f"Headline: {linkedin_data.get('headline', 'N/A')}\n"
+        f"Summary: {linkedin_data.get('summary', 'N/A')}\n"
+        f"Followers: {linkedin_data.get('follower_count', 0)}\n"
+        f"Profile Picture: {linkedin_data.get('profile_pic_url', 'N/A')}\n"
+        f"Experiences: {', '.join([exp.get('title', 'N/A') + ' at ' + exp.get('company', 'N/A') for exp in linkedin_data.get('experiences', [])])}\n"
+        f"Education: {', '.join([edu.get('degree_name', 'N/A') + ' from ' + edu.get('school', 'N/A') for edu in linkedin_data.get('education', [])])}\n"
+        f"Awards: {', '.join([award.get('title', 'N/A') for award in linkedin_data.get('accomplishment_honors_awards', [])])}"
+    ) if linkedin_data else "No LinkedIn data provided."
 
-    # combine everything into the final prompt
+    base_text = f"{username} at {university}, {year}"
+    faculty_text = f"studying in {', '.join(faculty_list)}" if faculty_list else ""
+    major_text = f"majoring in {', '.join(major_list)}" if major_list else ""
+    minor_text = f"and minoring in {', '.join(minor_list)}" if minor_list else ""
+    interests_text = f"the student's interests include: {', '.join(interests_list)}." if interests_list else "no specific interests provided."
+
     final_prompt = (
-        f"lucy, you are an advisor for a student named {username} at {university}. "
-        f"you are the go-to gal for all things related to {university}. your task is to deliver a satirical roast that humorously highlights {username}'s quirks and habits, and also shows that you know {university}. Be extremely Sassy and sarcarstic and funny "
-        "demonstrating that you know them well, and then smoothly transition to explaining how you can help with academic queries, course guidance, and campus resources. "
-        "ensure that your response begins with a witty, personalized introduction that leaves a wow effect, and then clearly outlines the support you can provide.\n\n"
-        f"student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text} "
-        "please provide tailored answer on this background."
-        f"Mention that next week starting ont he 17th is Career week, perfect to refine resume and cover letters, pratice interviews , network and find a job or an internship. So ask if the student want more details on that or want to register for it. Mention it personally to the student like say, I know you are a {major_list}, and you are job looking for a job so check out..."
-        "mention that next week starting on the 17th is career week—perfect for refining resumes and cover letters, practicing interviews, networking, and finding a job or internship. "
-        "ask if the student would like more details or help registering."
-        "be short and consice no more than 5 sentences, be very funny and sarcarstic but clear on how you can help the student"
+        f"lucy, you are an advisor for {username} at {university}. Deliver a satirical roast humorously highlighting {username}'s quirks, habits, and LinkedIn profile if available, demonstrating familiarity with {university}. "
+        "Be extremely sassy, sarcastic, funny, and concise. Then clearly explain how you can help with academic queries, course guidance, and campus resources. "
+        f"LinkedIn profile details:\n{linkedin_details}\n"
+        f"Student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text} "
+        "Next week starting on the 17th is Career Week, perfect for refining resumes and cover letters, practicing interviews, networking, and finding a job or internship. "
+        "Ask if the student would like more details or help registering. Be short and concise, no more than 5 sentences, very funny, sarcastic, and clear on how you can help."
     )
-    
+
     return final_prompt
