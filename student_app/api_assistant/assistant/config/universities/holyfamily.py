@@ -1,3 +1,5 @@
+from student_app.model.student_profile import StudentProfile
+
 def get_holyfamily_config(university, current_date, username, major, minor, year, school):
     return {
         "instructions": (
@@ -248,3 +250,70 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
            """
         ),
     }
+
+def holyfamily_onboarding_prompt(student_profile: StudentProfile) -> str:
+    """
+    constructs a final prompt that combines the satirical roast instructions with the student's profile details.
+    it extracts username, university, year, faculty, major, minor, and interests from the student_profile,
+    and integrates these into the prompt for lucy.
+    """
+    # extract basic profile attributes
+    username = getattr(student_profile, "username", "unknown")
+    university = getattr(student_profile, "university", "unknown university")
+    year = getattr(student_profile, "year", "unknown year")
+    faculty_list = getattr(student_profile, "faculty", [])
+    major_list = getattr(student_profile, "major", [])
+    minor_list = getattr(student_profile, "minor", [])
+    interests_list = getattr(student_profile, "interests", [])
+
+    # build the base profile overview
+    base_text = f"{username} at {university}, {year}"
+    
+    # format faculty text
+    if faculty_list:
+        if len(faculty_list) > 1:
+            faculty_text = f"studying in {', '.join(faculty_list[:-1])}, and {faculty_list[-1]}"
+        else:
+            faculty_text = f"studying in {faculty_list[0]}"
+    else:
+        faculty_text = ""
+    
+    # format major text
+    if major_list:
+        if len(major_list) > 1:
+            major_text = f"majoring in {', '.join(major_list[:-1])}, and {major_list[-1]}"
+        else:
+            major_text = f"majoring in {major_list[0]}"
+    else:
+        major_text = ""
+    
+    # format minor text
+    if minor_list:
+        if len(minor_list) > 1:
+            minor_text = f"and minoring in {', '.join(minor_list[:-1])}, and {minor_list[-1]}"
+        else:
+            minor_text = f"and minoring in {minor_list[0]}"
+    else:
+        minor_text = ""
+    
+    # construct interests text
+    if interests_list:
+        interests_text = f"the student's interests include: {', '.join(interests_list)}."
+    else:
+        interests_text = "no specific interests provided."
+
+    # combine everything into the final prompt
+    final_prompt = (
+        f"lucy, you are an advisor for a student named {username} at {university}. "
+        f"you are the go-to gal for all things related to {university}. your task is to deliver a satirical roast that humorously highlights {username}'s quirks and habits, and also shows that you know {university}. Be extremely Sassy and sarcarstic and funny "
+        "demonstrating that you know them well, and then smoothly transition to explaining how you can help with academic queries, course guidance, and campus resources. "
+        "ensure that your response begins with a witty, personalized introduction that leaves a wow effect, and then clearly outlines the support you can provide.\n\n"
+        f"student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text} "
+        "please provide tailored answer on this background."
+        f"Mention that next week starting ont he 17th is Career week, perfect to refine resume and cover letters, pratice interviews , network and find a job or an internship. So ask if the student want more details on that or want to register for it. Mention it personally to the student like say, I know you are a {major_list}, and you are job looking for a job so check out..."
+        "mention that next week starting on the 17th is career week—perfect for refining resumes and cover letters, practicing interviews, networking, and finding a job or internship. "
+        "ask if the student would like more details or help registering."
+        "be short and consice no more than 5 sentences, be very funny and sarcarstic but clear on how you can help the student"
+    )
+    
+    return final_prompt

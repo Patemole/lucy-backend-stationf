@@ -39,6 +39,9 @@ from student_app.api_assistant.threads.thread_manager import (
 from student_app.api_assistant.assistant.handlers import on_event
 from student_app.api_assistant.assistant.chat_creation import handle_requires_action
 from student_app.api_assistant.assistant.assistant_manager import initialize_assistant
+#from student_app.api_assistant.assistant.config.universities import holyfamily
+from .api_assistant.assistant.config import universities
+
 
 # Today's date
 date = datetime.date.today()
@@ -160,6 +163,70 @@ async def count_student_questions(chat_history):
     print("\n")
     return question_count
  
+@timing_decorator
+async def onboarding_sentence(student_profile: StudentProfile) -> dict:
+    """
+    classifies a student's question into predefined categories and generates a conversation title.
+    retrieves a university-specific onboarding prompt function (which takes the student_profile as a parameter)
+    and uses it to generate the system prompt. if not available, falls back to a default prompt.
+    returns a dictionary with 'category' and 'conversation_title'.
+    """
+    university = getattr(student_profile, "university", "unknown university")
+    print(f"university : {university}")
+    try:
+        # dynamically retrieve the university-specific onboarding prompt function
+        # example: for university "holyfamily", this retrieves holyfamily_onboarding_prompt
+        uni_module = getattr(universities, university.lower())
+        prompt_func_name = f"{university.lower()}_onboarding_prompt"
+        onboarding_prompt_func = getattr(uni_module, prompt_func_name)
+        # call the function with the student_profile to get the system prompt
+        system_prompt = onboarding_prompt_func(student_profile)
+    except Exception as e:
+        logging.warning(f"error loading university onboarding prompt for {university} going for basic system prompt: {e}")
+        # fallback: manually build a default prompt using student profile details
+        username = getattr(student_profile, "username", "unknown")
+        year = getattr(student_profile, "year", "unknown year")
+        faculty_list = getattr(student_profile, "faculty", [])
+        major_list = getattr(student_profile, "major", [])
+        minor_list = getattr(student_profile, "minor", [])
+        interests_list = getattr(student_profile, "interests", [])
+
+        base_text = f"{username} at {university}, {year}"
+        faculty_text = f"studying in {', '.join(faculty_list)}" if faculty_list else ""
+        major_text = f"majoring in {', '.join(major_list)}" if major_list else ""
+        minor_text = f"and minoring in {', '.join(minor_list)}" if minor_list else ""
+        interests_text = f"the student's interests include: {', '.join(interests_list)}." if interests_list else "no specific interests provided."
+
+        system_prompt = (
+            f"lucy, you are an advisor for a student named {username} at {university}. "
+            f"you are the go-to gal for all things related to {university}. your task is to deliver a satirical roast that humorously highlights {username}'s quirks and habits, and also shows that you know {university}. Be extremely Sassy and sarcarstic and funny."
+            "demonstrating that you know them well, and then smoothly transition to explaining how you can help with academic queries, course guidance, and campus resources. "
+            "ensure that your response begins with a witty, personalized introduction that leaves a wow effect, and then clearly outlines the support you can provide.\n\n"
+            f"student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text}"
+            "be short and consice no more than 5 sentences, be very funny and sarcarstic but clear on how you can help the student"
+        )
+
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": (
+                    "show me that you know me well and what you can do, "
+                    "and end your comment with a proposal that can interest me given my profile"
+                )}
+            ],
+            temperature=1.2
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        logging.error(f"error in classify_query: {e}")
+        return None
+
+
+
+
+
 @timing_decorator
 async def classify_query(question: str) -> dict:
     """
