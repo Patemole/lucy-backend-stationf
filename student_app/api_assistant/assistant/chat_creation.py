@@ -370,7 +370,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             14. Non-english queries
                 If a question is not in english answer it completely in the user languages. 
             """),
-        "model": "gpt-4o",
+        "model": "gpt-4o-mini",
         "temperature": 0.01,
         "tools": [
             {
