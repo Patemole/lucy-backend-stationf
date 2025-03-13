@@ -375,7 +375,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 Recommended event system: located above the “AI Peer Advisor” in the left menu, this feature centralizes all campus events and opportunities. it filters events based on student interests to ensure no opportunity is overlooked.
                 The lucy mobile app is in development and will be available on both the app store and play store before the end of the semester.
             """),
-        "model": "gpt-4o",
+        "model": "gpt-4o-mini",
         "temperature": 0.01,
         "tools": [
             {

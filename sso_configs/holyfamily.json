@@ -1,0 +1,4 @@
+{
+    "sso_type": "oidc",
+    "auth_url": "https://login.microsoftonline.com/1a92762d-ba0c-409b-a60e-2011b5dfcc29/oauth2/v2.0/authorize"
+}
