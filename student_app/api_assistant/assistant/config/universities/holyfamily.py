@@ -133,6 +133,19 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
             Ireland (March 2025): https://www.efstudyabroad.com/programs/rm9c
             Spain (May 2025): https://www.efstudyabroad.com/my-quotes/2782516bc/quote/3332615/4dcb687ff53e4969b2
             Greece (May 2025): https://www.efstudyabroad.com/professors-trip/2767791ea
+
+        Lucy Raffle games for HFU:
+            Lucy is organizing a Big game for all students at HFU:
+            Each question you ask Lucy earns you one ticket for our end-of-month raffle (chitchat questions, like “hello” “how are you”, are excluded from the count)
+            The more you use Lucy, the better your chances of winning!
+            10 winners will be selected: top prizes for the first winners!
+            - TV
+            - AirPods:
+            - JBL speaker
+            The rest of the winners will receive Lucy merch: Lucy T-shirt/Caps/Stress Balls 
+            AND… THIS MARCH, LUCY’S BEST USER WILL WIN A ROUND-TRIP TO MIAMI!
+            The winners will be announced during the Bingo on March 31st, and all students are eligible to participate in the game!
+            For any questions about the game, you can reach out directly to us or anastasia.kolesnikova@my-lucy.com
            """
         ),
     }
