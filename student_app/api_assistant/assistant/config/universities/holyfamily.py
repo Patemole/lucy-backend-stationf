@@ -132,8 +132,7 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
         Study Abroad:
             Ireland (March 2025): https://www.efstudyabroad.com/programs/rm9c
             Spain (May 2025): https://www.efstudyabroad.com/my-quotes/2782516bc/quote/3332615/4dcb687ff53e4969b2
-            Greece (May 2025): https://www.efstudyabroad.com/professors-trip/2767791ea"""
-
+            Greece (May 2025): https://www.efstudyabroad.com/professors-trip/2767791ea
            """
         ),
     }
