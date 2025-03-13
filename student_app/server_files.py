@@ -43,13 +43,18 @@ app = FastAPI(
     version="0.0.1"
 )
 
+'''
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+    #allow_credentials=True,
+    #allow_methods=["*"],
+    #allow_headers=["*"],
 )
+'''
 
 #file_router = APIRouter(prefix='/files', tags=['file'])
 

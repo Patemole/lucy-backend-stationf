@@ -14,6 +14,7 @@ print("Starting the correct file")
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from student_app.server_files import create_app as create_files_app
 from student_app.server_academic_advisor import create_app as create_academic_advisor_app
@@ -30,14 +31,32 @@ logger.info("Démarrage de l'application")
 
 app = FastAPI()
 
+'''
 # Configurer CORS avant de monter les sous-applications
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    #allow_credentials=True,
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+    #allow_methods=["*"],
+    #allow_headers=["*"],
 )
+'''
+
+# Configurer CORS pour chaque sous-application
+def add_cors_middleware(app_instance):
+    app_instance.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["*"],
+    )
+
+# Ajouter le middleware CORS sur l'application principale
+add_cors_middleware(app)
 
 # Middleware pour journaliser les requêtes
 @app.middleware("http")
@@ -49,6 +68,23 @@ async def log_request(request, call_next):
     logger.info(f"Response: {response.status_code}")
     return response
 
+'''
+# Route OPTIONS pour toutes les requêtes préflight (fixe les erreurs CORS restantes)
+@app.options("/{full_path:path}")
+async def preflight_response(full_path: str):
+    return {"message": "CORS preflight OK"}
+'''
+@app.options("/{full_path:path}")
+async def preflight_response(full_path: str):
+    from fastapi.responses import JSONResponse
+
+    headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+    }
+    
+    return JSONResponse(content={"message": "CORS preflight OK"}, headers=headers)
 
 
 
@@ -134,15 +170,19 @@ try:
     logger.info("Montage des applications")
 
     if files_app:
+        add_cors_middleware(files_app)
         app.mount("/files", files_app)
 
     if chat_app:
+        add_cors_middleware(chat_app)
         app.mount("/chat", chat_app)
 
     if feedback_app:
+        add_cors_middleware(feedback_app)
         app.mount("/feedback", feedback_app)
 
     if analytics_app:
+        add_cors_middleware(analytics_app)
         app.mount("/analytics", analytics_app)
 
     print("Applications montées avec succès")
