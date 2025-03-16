@@ -241,7 +241,7 @@ async def onboarding_sentence(student_profile: StudentProfile, linkedin_data) ->
         system_prompt = (
             f"lucy, you are an advisor for {username} at {university}. deliver a satirical roast humorously highlighting {username}'s quirks, habits, and LinkedIn profile if available, demonstrating familiarity with {university}. "
             "be extremely sassy, sarcastic, funny, and concise. then clearly explain how you can help with academic queries, course guidance, and campus resources. "
-            f"LinkedIn profile details:\n{linkedin_details}\n"
+            f"LinkedIn profile details:\n {linkedin_details}\n"
             f"student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text}"
         )
 
