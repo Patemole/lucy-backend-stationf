@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException, Request, Response, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from dotenv import load_dotenv
+from pydantic import BaseModel
 from typing import Dict, List
 import json
 
@@ -495,6 +496,27 @@ async def delete_chat_history_route(chat_id: str):
 @app.get("/get_all_history/{timestamp}")
 async def get_timing_history_route(timestamp: str):
     return await get_timing_history(timestamp)
+
+
+#PERMET DE SCRAPER LINKEDIN ET D ENVOYER LES INFORMATIONS CORRESPONDANTES DANS FIRESTORE AU FRONTEND
+class LinkedinLinkRequest(BaseModel):
+    url: str
+@app.post("/linkedin_scraping")
+async def scrape_linkedin(request: LinkedinLinkRequest):
+    try:
+        logging.info(f"Récupération de l'URL LinkedIn : {request.url}")
+
+        # Scraper les informations LinkedIn
+        linkedin_student_info = scrape_linkedin_profile(api_key_proxycurl, request.url)
+
+        if not linkedin_student_info:
+            raise HTTPException(status_code=500, detail="Impossible de récupérer les informations LinkedIn")
+
+        # Retourne les données récupérées sous forme de JSON
+        return Response(content=json.dumps(linkedin_student_info), media_type="application/json")
+    except Exception as e:
+        logging.error(f"🚨 Erreur lors du scraping LinkedIn : {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 '''
