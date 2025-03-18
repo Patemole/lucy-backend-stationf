@@ -2,13 +2,15 @@ import os
 import asyncio
 import logging
 import datetime
+#import requests
+import httpx  # ✅ Remplace `requests` par `httpx`
 
 from openai import OpenAI, AsyncOpenAI
 from fastapi import FastAPI, HTTPException, Request, Response, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from dotenv import load_dotenv
-import requests
+
 from pydantic import BaseModel
 from typing import Dict, List
 import json
@@ -168,7 +170,7 @@ async def count_student_questions(chat_history):
     print("\n")
     return question_count
 
-
+'''
 @timing_decorator
 def scrape_linkedin_profile(api_key_proxycurl, linkedin_url):
     endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
@@ -191,6 +193,35 @@ def scrape_linkedin_profile(api_key_proxycurl, linkedin_url):
     except requests.RequestException as e:
         logging.error(f'request exception while scraping LinkedIn profile: {e}')
         return {}
+'''
+
+
+
+
+@timing_decorator
+def scrape_linkedin_profile(api_key_proxycurl, linkedin_url):
+    endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
+
+    try:
+        with httpx.Client() as client:
+            response = client.get(
+                endpoint,
+                params={'url': linkedin_url, 'fallback_to_cache': 'on-error'},
+                headers={'Authorization': f'Bearer {api_key_proxycurl}'},
+                timeout=10
+            )
+
+        if response.status_code != 200:
+            logging.error(f'❌ LinkedIn scrape error {response.status_code}: {response.text}')
+            return {}
+
+        logging.info(f'✅ Successfully scraped LinkedIn profile: {linkedin_url}')
+        return response.json()
+
+    except httpx.RequestError as e:
+        logging.error(f'🚨 Request exception while scraping LinkedIn profile: {e}')
+        return {}
+
 
 
 
