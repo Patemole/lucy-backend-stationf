@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException, Request, Response, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from dotenv import load_dotenv
+import requests
 from pydantic import BaseModel
 from typing import Dict, List
 import json
