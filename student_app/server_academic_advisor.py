@@ -225,7 +225,7 @@ def scrape_linkedin_profile(api_key_proxycurl, linkedin_url):
 
 
 
-
+'''
 @timing_decorator
 async def onboarding_sentence(student_profile: StudentProfile, linkedin_data) -> dict:
     """
@@ -294,6 +294,69 @@ async def onboarding_sentence(student_profile: StudentProfile, linkedin_data) ->
         return response.choices[0].message.content
     except Exception as e:
         logging.error(f"error in classify_query: {e}")
+        return None
+'''
+
+@timing_decorator
+async def onboarding_sentence(user) -> str:
+    """
+    Generates onboarding sentence from complete user data.
+    """
+    university = getattr(user, "university", "unknown university")
+    logging.info(f"Starting onboarding_sentence for student at {university}")
+
+    try:
+        # Dynamically retrieve the university-specific onboarding prompt function
+        uni_module = getattr(universities, university.lower())
+        prompt_func_name = f"{university.lower()}_onboarding_prompt"
+        onboarding_prompt_func = getattr(uni_module, prompt_func_name)
+        system_prompt = onboarding_prompt_func(user, user.linkedin_profile)
+        logging.info(f"Loaded onboarding prompt for {university}")
+    except Exception as e:
+        logging.warning(f"Error loading university onboarding prompt for {university}, using default prompt: {e}")
+
+        linkedin_profile = getattr(user, "linkedin_profile", {})
+        
+        linkedin_details = (
+            f"Occupation: {linkedin_profile.get('occupation', 'N/A')}\n"
+            f"Headline: {linkedin_profile.get('headline', 'N/A')}\n"
+            f"Summary: {linkedin_profile.get('summary', 'N/A')}\n"
+            f"Followers: {linkedin_profile.get('follower_count', 0)}\n"
+            f"Profile Picture: {linkedin_profile.get('profile_pic_url', 'N/A')}\n"
+            f"Experiences: {', '.join([exp.get('title', 'N/A') + ' at ' + exp.get('company', 'N/A') for exp in linkedin_profile.get('experiences', [])])}\n"
+            f"Education: {', '.join([edu.get('degree_name', 'N/A') + ' from ' + edu.get('school', 'N/A') for edu in linkedin_profile.get('education', [])])}\n"
+            f"Awards: {', '.join([award.get('title', 'N/A') for award in linkedin_profile.get('accomplishment_honors_awards', [])])}"
+        ) if linkedin_profile else "No LinkedIn profile provided."
+
+        base_text = f"{user.username} at {university}, {user.year}"
+        faculty_text = f"studying in {', '.join(user.faculty)}" if user.faculty else ""
+        major_text = f"majoring in {', '.join(user.major)}" if user.major else ""
+        minor_text = f"and minoring in {', '.join(user.minor)}" if user.minor else ""
+        interests_text = f"the student's interests include: {', '.join(user.interests)}." if user.interests else "no specific interests provided."
+
+        system_prompt = (
+            f"Lucy, you are an advisor for {user.username} at {university}. Deliver a satirical roast humorously highlighting {user.username}'s quirks, habits, and LinkedIn profile if available, demonstrating familiarity with {university}. "
+            "Be extremely sassy, sarcastic, funny, and concise. Then clearly explain how you can help with academic queries, course guidance, and campus resources. "
+            f"LinkedIn profile details:\n{linkedin_details}\n"
+            f"Student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text}"
+        )
+
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": (
+                    "Show me that you know me well and what you can do, "
+                    "and end your comment with a proposal that can interest me given my profile"
+                )}
+            ],
+            temperature=1.2
+        )
+        logging.info("OpenAI API call successful for onboarding sentence")
+        return response.choices[0].message.content
+    except Exception as e:
+        logging.error(f"Error generating onboarding sentence: {e}")
         return None
 
 
@@ -380,6 +443,9 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     school = input_query.faculty
     is_first_message = input_query.is_first_message
 
+    user = input_query.user #All user informations are now here
+    is_onboarding_message = input_query.isOnboardingMessage #To know if Lucy already send an onboarding message to the user
+
     logging.info("this is the boolean value of is first message")
     logging.info(is_first_message)
 
@@ -390,6 +456,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     @timing_decorator
     async def response_generator():
         try:
+
             async def background_store_message():
                 try:
                     await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
@@ -441,6 +508,43 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
                 wrapped_result = {"classification_title_result": classification_title_json}
                 yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
                 await asyncio.sleep(0.2)
+
+
+                '''
+                #Partie qui gere l envoie du message de Lucy a l onboarding
+                if is_onboarding_message:
+                    logging.info("Onboarding message detected, calling onboarding_sentence.")
+                    
+                    onboarding_content = await onboarding_sentence(user)  # ← Appel à la nouvelle fonction onboarding_sentence modifiée
+                    
+                    if onboarding_content is None:
+                        yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An error occurred during onboarding. Please try again later.'}})}<ERROR_END>\n"
+                    
+                    # Envoie ton message exactement comme un chunk normal
+                    yield f"\n<ONBOARDING_MESSAGE>{json.dumps({'onboardingmessage': onboarding_content})}<ONBOARDING_MESSAGE_END>\n"
+                    logging.info("Onboarding content streamed successfully.")
+                    return  # Fin anticipée si onboarding
+                '''
+
+                #Partie qui gere l envoie du message de Lucy a l onboarding
+                if is_onboarding_message:
+                    logging.info("Onboarding message detected, creating test message manually.")
+                    
+                    # Création manuelle du message simple avec des données de l'utilisateur
+                    final_response = f"Bienvenue {user.username}, étudiant en {user.major} à {user.university} ! Voici tes recommandations personnalisées."
+                    
+                    # Découpage en fragments pour streaming progressif
+                    fragments = [final_response[i:i+30] for i in range(0, len(final_response), 30)]
+                    
+                    # Envoi progressif des fragments
+                    for fragment in fragments:
+                        yield fragment + "|"
+                        await asyncio.sleep(0.05)
+
+                    logging.info("Test onboarding content streamed successfully.")
+                    return  # Fin anticipée pour le test
+
+
             else:
                 logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
                 history_items = await get_chat_history(chat_id=chat_id)
@@ -498,6 +602,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     try:
         logging.info(f"Received request to /send_message_socratic_langgraph for {input_message}")
         return StreamingResponse(response_generator(), media_type="text/plain")
+    
     except Exception as e:
         logging.error(f"Error in /send_message_socratic_langgraph: {str(e)} for {input_message}")
         response.status_code = 500
@@ -549,6 +654,18 @@ async def scrape_linkedin(request: LinkedinLinkRequest):
     except Exception as e:
         logging.error(f"🚨 Erreur lors du scraping LinkedIn : {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/first_lucy_message_onboarding")
+async def onboarding_message(profile: StudentProfile, linkedin_data: dict = {}):
+    try:
+        onboarding_text = await onboarding_sentence(profile, linkedin_data)
+        return {"message": onboarding_text}
+    except Exception as e:
+        logging.error(f"Erreur lors de la génération du message onboarding: {e}")
+        raise HTTPException(status_code=500, detail="Erreur serveur lors de la génération du message onboarding.")
+    
+
 
 
 '''

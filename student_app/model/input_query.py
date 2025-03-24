@@ -15,6 +15,8 @@ class InputQuery(BaseModel):
     minor: Optional[list[str]]
     year: str
     is_first_message: bool
+    user: dict
+    isOnboardingMessage: bool
 
 
 class InputQueryAI(BaseModel):
