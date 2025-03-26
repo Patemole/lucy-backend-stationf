@@ -16,3 +16,5 @@ myenv/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
+# Firebase credentials (JSON)
+firestore_credentials/*.json

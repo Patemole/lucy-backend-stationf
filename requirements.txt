@@ -50,3 +50,6 @@ uvicorn==0.34.0
 yarl==1.18.3
 zeroentropy==0.1.0a3
 resend==2.6.0
+firebase-admin==6.7.0
+oauthlib==3.2.2
+python-multipart==0.0.20

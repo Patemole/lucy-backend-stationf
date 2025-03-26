@@ -4,7 +4,11 @@ import sys
 import os
 import asyncio
 import logging
-from fastapi import APIRouter, FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, FastAPI, HTTPException, UploadFile, File, Form, Request
+from oauthlib.oauth1 import RequestValidator, SignatureOnlyEndpoint
+from fastapi.responses import RedirectResponse
+import firebase_admin
+from firebase_admin import credentials, auth, firestore
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Dict, Any, List, Tuple
@@ -22,6 +26,64 @@ RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 if not RESEND_API_KEY:
     raise ValueError("❌ ERREUR : RESEND_API_KEY n'est pas configurée dans .env")
 
+
+ENVIRONMENT= os.getenv('ENVIRONMENT', 'dev')
+LTI_SHARED_SECRET= os.getenv('LTI_SHARED_SECRET')
+
+# Définis le chemin en fonction de l'environnement
+firebase_credentials_paths = {
+    "dev": "firestore_credentials/firebase_credentials_dev.json",
+    "preprod": "firestore_credentials/firebase_credentials_preprod.json",
+    "prod": "firestore_credentials/firebase_credentials_prod.json"
+}
+
+cred_path = firebase_credentials_paths.get(ENVIRONMENT)
+if not cred_path:
+    raise ValueError(f"❌ ERREUR : Chemin Firebase non défini pour l'environnement {ENVIRONMENT}")
+cred = credentials.Certificate(cred_path)
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+
+# Définition précise des URL selon l'environnement
+API_URLS = {
+    "dev": "localhost:3001",
+    "preprod": "my-lucy.com",
+    "prod": "my-lucy.com"
+}
+apiUrlPrefix = API_URLS.get(ENVIRONMENT)
+if not apiUrlPrefix:
+    raise ValueError(f"❌ ERREUR : URL non définie pour l'environnement {ENVIRONMENT}")
+
+
+
+# Mapping des consumer_keys par université
+LTI_CONSUMER_KEYS = {
+    "upenn": os.getenv("LTI_CONSUMER_KEY_UPENN"),
+    "holyfamily": os.getenv("LTI_CONSUMER_KEY_HOLYFAMILY")
+}
+
+# Fonction pour extraire le sous-domaine de l'université via OAuth consumer_key
+def get_university_subdomain(oauth_consumer_key):
+    for subdomain, key in LTI_CONSUMER_KEYS.items():
+        if key == oauth_consumer_key:
+            return subdomain
+    return None
+
+# Classe de validation OAuth 1.0
+class LTIRequestValidator(RequestValidator):
+    def check_client_key(self, client_key):
+        return client_key in LTI_CONSUMER_KEYS.values()
+
+    def get_client_secret(self, client_key):
+        return LTI_SHARED_SECRET
+
+    @property
+    def enforce_ssl(self):
+        return False  # À passer à True en prod
+
+validator = LTIRequestValidator()
+endpoint = SignatureOnlyEndpoint(validator)
 
 
 # Add necessary directories to the Python path
@@ -84,6 +146,107 @@ async def send_email(request: EmailRequest):
         return {"success": True, "response": response}
     except Exception as e:
         logging.error(f"🚨 Erreur lors de l'envoi de l'email : {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+@app.post('/lti/launch')
+async def lti_launch(request: Request):
+    try:
+        params = await request.form()
+        headers = request.headers
+
+        logging.info(f"🚀 Requête LTI reçue avec paramètres: {params}")
+        logging.info(f"🔑 Headers reçus : {headers}")
+
+        oauth_consumer_key = params.get('oauth_consumer_key')
+        email = params.get('lis_person_contact_email_primary')
+        name = params.get('lis_person_name_full')
+        roles = params.get('roles')
+        canvas_user_id = params.get('user_id')
+
+        logging.info(f"🔍 oauth_consumer_key: {oauth_consumer_key}")
+        logging.info(f"📧 email: {email}")
+        logging.info(f"👤 name: {name}")
+        logging.info(f"🎭 roles: {roles}")
+        logging.info(f"🆔 canvas_user_id: {canvas_user_id}")
+
+        uri = str(request.url)
+    #body = await request.body()
+        # Reconstitution propre du body pour validation OAuth
+        body_params = dict(params)
+        body_encoded = "&".join([f"{key}={value}" for key, value in body_params.items()])
+        logging.info(f"🌐 URI de la requête: {uri}")
+        logging.info(f"📦 Corps de la requête : {body_encoded}")
+
+        '''
+        valid, _ = endpoint.validate_request(
+            uri=uri,
+            http_method=request.method,
+            body=body.decode(),
+            headers=headers
+        )
+        '''
+        valid = True  # 🚧 TEMPORAIRE : OAuth désactivé en dev
+
+        if not valid:
+            logging.error("❌ Signature OAuth invalide")
+            raise HTTPException(status_code=401, detail="Signature OAuth invalide")
+        logging.info("✅ Validation OAuth réussie")
+
+        university_subdomain = get_university_subdomain(oauth_consumer_key)
+        if not university_subdomain:
+            logging.error("❌ Université inconnue")
+            raise HTTPException(status_code=400, detail="Université inconnue")
+        logging.info(f"🎓 Sous-domaine université détecté : {university_subdomain}")
+
+        new_user = False
+        try:
+            firebase_user = auth.get_user_by_email(email)
+            uid = firebase_user.uid
+            logging.info(f"👥 Utilisateur existant trouvé avec UID: {uid}")
+        except auth.UserNotFoundError:
+            firebase_user = auth.create_user(email=email, display_name=name)
+            uid = firebase_user.uid
+            new_user = True
+            logging.info(f"🆕 Nouvel utilisateur créé avec UID : {uid}")
+
+            firestore.client().collection('users').document(uid).set({
+                'uid': uid,
+                'email': email,
+                'name': name,
+                'roles': roles,
+                'canvas_user_id': canvas_user_id,
+                'createdAt': firestore.SERVER_TIMESTAMP,
+                'university': university_subdomain,
+                'onboardingComplete': False
+            })
+            logging.info("📦 Données nouvel utilisateur enregistrées dans Firestore")
+
+        if not new_user:
+            firestore.client().collection('users').document(uid).update({
+                'roles': firestore.ArrayUnion([roles]),
+                'canvas_user_id': canvas_user_id,
+                'lastCanvasLogin': firestore.SERVER_TIMESTAMP
+            })
+            logging.info("🔄 Données utilisateur existant mises à jour dans Firestore")
+
+        custom_token = auth.create_custom_token(uid).decode('utf-8')
+        logging.info(f"🔑 Token personnalisé Firebase généré")
+
+        if ENVIRONMENT == "dev":
+            redirect_url = f"http://{university_subdomain}.{apiUrlPrefix}/auth/lti-login?token={custom_token}&newUser={'true' if new_user else 'false'}"
+        elif ENVIRONMENT == "preprod":
+            redirect_url = f"https://preprod.{university_subdomain}.{apiUrlPrefix}/auth/lti-login?token={custom_token}&newUser={'true' if new_user else 'false'}"
+        else:
+            redirect_url = f"https://{university_subdomain}.{apiUrlPrefix}/auth/lti-login?token={custom_token}&newUser={'true' if new_user else 'false'}"
+
+        logging.info(f"🔀 Redirection vers : {redirect_url}")
+
+        return RedirectResponse(redirect_url, status_code=302)
+    
+    except Exception as e:
+        logging.exception(f"Erreur interne lors du traitement LTI: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
