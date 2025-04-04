@@ -1,10 +1,10 @@
-
 import os
 import asyncio
 from openai import OpenAI, AsyncOpenAI
 from dotenv import load_dotenv
 import json
-
+from functools import wraps
+import logging
 
 
 # Logging configuration
@@ -102,12 +102,12 @@ async def onboarding_sentence(user) -> str:
         "text": (
             """
                 On context you have info about me like my academic background, my school, my linkedin profile and insta with pics (attached)            
-                I want you to act like my closest, most observant friend.  you understand the culture of the school I attend. You know what I post and what I don’t, how I present myself publicly, and what that might reveal privately. 
+                I want you to act like my closest, most observant friend.  you understand the culture of the school I attend. You know what I post and what I don't, how I present myself publicly, and what that might reveal privately. 
                 Now, based only on that, tell me:
                 Who do you think I really am?
                 Not what I say I am, but what you see. What kind of student, thinker, friend, and person am I? What drives me? What patterns do you notice? What contradictions stand out?
 
-                This isn’t a roast it is more a game. It’s more like a private voice memo from someone who knows me better than I know myself. Be insightful, thoughtful, a little playful—and make me pause, smile, and maybe see myself in a new light.    
+                This isn't a roast it is more a game. It's more like a private voice memo from someone who knows me better than I know myself. Be insightful, thoughtful, a little playful—and make me pause, smile, and maybe see myself in a new light.    
 
                 ---
                 format:
