@@ -8,8 +8,8 @@ import os
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 
-# Assume Firestore client is already set up.
-db = firestore.Client()
+# Comment out or remove this line as it's causing the error
+# db = firestore.Client()
 
 def timing_decorator(func):
     import functools, time
@@ -42,7 +42,7 @@ if not cred_path:
     raise ValueError(f"❌ ERREUR : Chemin Firebase non défini pour l'environnement {ENVIRONMENT}")
 cred = credentials.Certificate(cred_path)
 firebase_admin.initialize_app(cred)
-db = firestore.client()
+db = firebase_admin.firestore.client()
 
 # These are assumed to be defined somewhere in your config.
 ACTOR_RUN_ID = "dPrF3WOkNGnISo9Co"
@@ -93,7 +93,7 @@ def scrape_instagram(username, uid):
             time.sleep(10)  # wait for 10 seconds before checking again
 
         # Retrieve the dataset items.
-        dataset_url = f'https://api.apify.com/v2/datasets/{DATASET_ID}/items?token={API_TOKEN}'
+        dataset_url = f'https://api.apify.com/v2/datasets/{DATASET_ID}/items?token={APIFY_API_KEY}'
         logger.info("Fetching dataset items...")
         response = requests.get(dataset_url)
         data = response.json()
@@ -170,11 +170,15 @@ def scrape_instagram(username, uid):
         # Update Firestore document for the user (using the uid).
         try:
             doc_ref = db.collection("users").document(uid)
+            # Check if document exists
+            doc = doc_ref.get()
+            if not doc.exists:
+                logger.error(f"Document with uid {uid} does not exist")
+                return None
             doc_ref.update({"insta_profile": curated_output})
             logger.info("Firestore updated with insta_profile successfully.")
         except Exception as firestore_error:
             logger.error(f"Failed to update Firestore: {firestore_error}")
-            # Depending on your requirements, you might choose to return None or still return the curated_output.
             return None
 
         return curated_output
@@ -210,6 +214,11 @@ def scrape_linkedin_profile(linkedin_url, uid):
         # Update Firestore document for the user with the linkedin_profile field.
         try:
             doc_ref = db.collection("users").document(uid)
+            # Check if document exists
+            doc = doc_ref.get()
+            if not doc.exists:
+                logging.error(f"Document with uid {uid} does not exist")
+                return {}
             doc_ref.update({"linkedin_profile": result})
             logging.info("Firestore updated with linkedin_profile successfully.")
         except Exception as e:
@@ -312,14 +321,18 @@ def enrich_person_data(first_name: str, last_name: str, school: str, uid: str):
             education_list.append(edu_item)
         curated_data["education"] = education_list
 
-        # Update Firestore document for the user with the linkedin_profile field.
         try:
             doc_ref = db.collection("users").document(uid)
+            # Check if document exists
+            doc = doc_ref.get()
+            if not doc.exists:
+                logging.error(f"Document with uid {uid} does not exist")
+                return {}
             doc_ref.update({"linkedin_profile": curated_data})
             logging.info("Firestore updated with linkedin_profile successfully.")
         except Exception as e:
             logging.error(f"Failed to update Firestore: {e}")
-            return {}, False
+            return {}
 
         return curated_data, linkedin_found
     else:
@@ -345,16 +358,49 @@ def LLM_profile_generation(username: str, academic_advisor: str, year: str, univ
 def main():
     # modify these variables for testing
     test_username = 'holyfamilyu'
-    test_uid = '01by8i9eUoNVG6eBxtFAs8ER1rm2'
+    test_uid = '07rS7v9k5YYdLRDOX9gxKI7M29L2'
     test_linkedin_url = 'linkedin.com/in/mathieu-perez-719019201'
 
+    # Test Firebase connection first
+    try:
+        print(f"\nTesting Firebase connection...")
+        print(f"Environment: {ENVIRONMENT}")
+        print(f"Credentials path: {cred_path}")
+        
+        # Try to list all documents in users collection
+        users_ref = db.collection('users')
+        docs = users_ref.stream()
+        print("\nAvailable user documents:")
+        for doc in docs:
+            print(f"Document ID: {doc.id}")
+            
+        # Try to get specific document
+        doc_ref = db.collection('users').document(test_uid)
+        doc = doc_ref.get()
+        if doc.exists:
+            print(f"\nFound test document: {test_uid}")
+            print(f"Document data: {doc.to_dict().keys()}")
+        else:
+            print(f"\nTest document not found: {test_uid}")
+            
+    except Exception as e:
+        print(f"Firebase test failed: {str(e)}")
+
     # call the instagram scrape function
+    print("\nTesting Instagram scraping...")
     insta_result = scrape_instagram(test_username, test_uid)
-    print("instagram result:", insta_result)
+    if insta_result is not None:
+        print("✅ Instagram scraping and Firebase update successful")
+    else:
+        print("❌ Instagram scraping or Firebase update failed")
 
     # call the linkedin scrape function
-    linkedin_result = scrape_linkedin_profile(test_linkedin_url, test_uid)
-    print("linkedin result:", linkedin_result)
+    print("\nTesting LinkedIn scraping...")
+    linkedin_result = enrich_person_data("mathieu", "perez", "university of Pennsylvania", test_uid)
+    if linkedin_result:  # Check if the result is not an empty dict
+        print("✅ LinkedIn scraping and Firebase update successful")
+    else:
+        print("❌ LinkedIn scraping or Firebase update failed")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
