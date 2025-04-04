@@ -5,6 +5,9 @@ import time
 from google.cloud import firestore
 import os
 
+import firebase_admin
+from firebase_admin import credentials, auth, firestore
+
 # Assume Firestore client is already set up.
 db = firestore.Client()
 
@@ -26,7 +29,20 @@ from google.cloud import firestore
 
 # Firestore client initialization.
 # Make sure that your environment is set up with the correct credentials.
-db = firestore.Client()
+
+ENVIRONMENT= os.getenv('ENVIRONMENT', 'dev')
+firebase_credentials_paths = {
+    "dev": "firestore_credentials/firebase_credentials_dev.json",
+    "preprod": "firestore_credentials/firebase_credentials_preprod.json",
+    "prod": "firestore_credentials/firebase_credentials_prod.json"
+}
+
+cred_path = firebase_credentials_paths.get(ENVIRONMENT)
+if not cred_path:
+    raise ValueError(f"❌ ERREUR : Chemin Firebase non défini pour l'environnement {ENVIRONMENT}")
+cred = credentials.Certificate(cred_path)
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 # These are assumed to be defined somewhere in your config.
 ACTOR_RUN_ID = "dPrF3WOkNGnISo9Co"
@@ -324,3 +340,22 @@ def LLM_profile_generation(username: str, academic_advisor: str, year: str, univ
         return student_profile
     except Exception as e:
         print(e)
+
+
+def main():
+    # modify these variables for testing
+    test_username = 'holyfamilyu'
+    test_uid = '01by8i9eUoNVG6eBxtFAs8ER1rm2'
+    test_linkedin_url = 'linkedin.com/in/mathieu-perez-719019201'
+
+    # call the instagram scrape function
+    insta_result = scrape_instagram(test_username, test_uid)
+    print("instagram result:", insta_result)
+
+    # call the linkedin scrape function
+    linkedin_result = scrape_linkedin_profile(test_linkedin_url, test_uid)
+    print("linkedin result:", linkedin_result)
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    main()

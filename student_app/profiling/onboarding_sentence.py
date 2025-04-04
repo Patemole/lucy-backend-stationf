@@ -124,21 +124,22 @@ async def onboarding_sentence(user) -> str:
         })
     
     try:
-        # Create the AsyncOpenAI client with the API key and USE IT
         client = openai.AsyncOpenAI(api_key=openai.api_key)
-        
-        # Use the client variable here instead of creating a new instance
-        response = await client.chat.completions.create(
+        stream = await client.chat.completions.create(
             model="gpt-4o",  # Use the appropriate model.
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message_content}
             ],
-            temperature=1.2
+            temperature=1.2,
+            stream=True
         )
-        logging.info("OpenAI API call successful for onboarding sentence")
-        return response.choices[0].message.content
+        logging.info("OpenAI API call successful for onboarding sentence with streaming")
+        
+        async for chunk in stream:
+            delta = chunk.choices[0].delta
+            if delta.content:
+                yield delta.content + "|"
     except Exception as e:
         logging.error(f"Error generating onboarding sentence: {e}")
-        return None
-
+        return
