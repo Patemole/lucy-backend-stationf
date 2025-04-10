@@ -18,3 +18,9 @@ myenv/
 
 # Firebase credentials (JSON)
 firestore_credentials/*.json
+
+# Test notebooks and Jupyter files
+test_notebooks/
+.ipynb_checkpoints/
+*.ipynb
+.jupyter/
