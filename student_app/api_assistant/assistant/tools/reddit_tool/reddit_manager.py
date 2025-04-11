@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import openai # Added for OpenAI integration
 import json # Added for parsing JSON output
 import logging # Added for logging
+import asyncio # Added for async
+from typing import AsyncGenerator # Added for type hint
 
 # Basic logging configuration (can be overridden by importing application)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -13,11 +15,11 @@ logger = logging.getLogger(__name__) # Get logger for this module
 # Load environment variables
 load_dotenv()
 
-# OpenAI Client Initialization
+# Async OpenAI Client Initialization
 openai_api_key = os.getenv('OPENAI_API_KEY')
 if not openai_api_key:
     raise ValueError("Missing OpenAI API key in environment variables (OPENAI_API_KEY)")
-client = openai.OpenAI(api_key=openai_api_key)
+async_client = openai.AsyncOpenAI(api_key=openai_api_key)
 
 # Reddit API configuration (Reads credentials ONLY from environment variables)
 reddit_client_id = os.getenv('REDDIT_CLIENT_ID')
@@ -115,36 +117,39 @@ def search_reddit_upenn(query: str, limit: int = 5, sort: str = 'relevance') -> 
 
     return '\n'.join(output_lines)
 
-# Refactored function to perform search and summarization
-def get_reddit_summary_for_query(query: str, search_limit: int = 3, sort_method: str = 'relevance') -> list[dict]:
+# Refactored function to perform search and yield summaries asynchronously
+async def get_reddit_summary_for_query(query: str, search_limit: int = 3, sort_method: str = 'relevance') -> AsyncGenerator[str, None]:
     """
-    Searches r/UPenn for a query, then summarizes the results using GPT-4o,
-    returning structured data. Handles empty/irrelevant search results.
+    Searches r/UPenn, summarizes results using GPT-4o, and yields structured data
+    formatted as <REDDIT>JSON</REDDIT_END> strings asynchronously.
 
     Args:
         query: The search term.
-        search_limit: Max number of posts to fetch from Reddit. Defaults to 3.
+        search_limit: Max Reddit posts to fetch. Defaults to 3.
         sort_method: Reddit search sort method. Defaults to 'relevance'.
 
-    Returns:
-        A list of dictionaries, each containing at least a 'summary'.
-        Returns an empty list if the process fails.
+    Yields:
+        Strings in the format <REDDIT>JSON_OBJECT</REDDIT_END> where JSON_OBJECT
+        contains 'comment', 'score', 'author', and 'link'.
     """
     
-    # Step 1: Perform the Reddit search internally
     logger.info(f"Performing Reddit search for query: '{query}'")
-    reddit_search_output = search_reddit_upenn(query, limit=search_limit, sort=sort_method)
-    if reddit_search_output.startswith("Error"):
-        logger.error(f"Reddit search failed: {reddit_search_output}")
-        reddit_search_output = "" # Pass empty string to potentially trigger invention
+    reddit_search_output = "" # Initialize
+    try:
+        # Run the synchronous PRAW search in a separate thread
+        reddit_search_output = await asyncio.to_thread(
+            search_reddit_upenn, query, limit=search_limit, sort=sort_method
+        )
+        if reddit_search_output.startswith("Error"):
+            logger.error(f"Reddit search failed: {reddit_search_output}")
+            reddit_search_output = "" 
+    except Exception as search_exc:
+        logger.error(f"Exception during Reddit search thread: {search_exc}", exc_info=True)
+        reddit_search_output = "" 
 
     logger.info(f"Reddit search output length: {len(reddit_search_output)} chars")
-    # Optional: Log snippet of reddit_search_output for debugging
-    # print(f"Reddit search snippet: {reddit_search_output[:500]}...")
 
-    # Step 2: Summarize the results using OpenAI
-    
-    # Define the desired JSON schema for the output
+    # Define the JSON schema requesting the FULL details from OpenAI
     output_schema = {
         "type": "object",
         "properties": {
@@ -158,7 +163,7 @@ def get_reddit_summary_for_query(query: str, search_limit: int = 3, sort_method:
                         "score": {"type": "integer", "description": "The comment score (or 0)."},
                         "link": {"type": "string", "description": "The Reddit POST URL (or 'N/A')."}
                     },
-                    "required": ["summary", "author", "score", "link"],
+                    "required": ["summary", "author", "score", "link"], 
                     "additionalProperties": False
                 }
             }
@@ -167,6 +172,7 @@ def get_reddit_summary_for_query(query: str, search_limit: int = 3, sort_method:
         "additionalProperties": False
     }
     
+    # System prompt requesting the FULL details
     system_prompt = f"""
 You are an expert summarizer tasked with extracting key insights from Reddit search results for the query: '{query}'.
 The input is formatted text from r/UPenn posts and comments.
@@ -183,9 +189,9 @@ Your Task:
 3. **Summarize**: Summarize the core message of 1-3 key comments concisely, using a very young, relatable, informal student tone.
 4. **Handle Empty/Irrelevant Input**: IF the provided 'reddit_search_output' is empty, contains no useful comments, shows 'No posts found', or is generally irrelevant to the original query '{query}', THEN invent ONE single, concise, plausible answer to the query '{query}', still using the young student tone. In this invented case, use an empty string "" for author, 0 for score, and "N/A" for the link.
 5. **Extract Details (If Relevant Input)**: For summaries based on actual comments, extract the original comment's author, score, and the URL of the POST it belongs to.
-6. **Format Output**: Output ONLY a JSON object conforming precisely to the provided schema. The main key must be "summaries", containing a list of objects. Each object MUST have at least a "summary" key. Include "author", "score", and "link" if available from the source comment, otherwise use the placeholders defined in step 4 for invented answers.
+6. **Format Output**: Output ONLY a JSON object conforming precisely to the provided schema. The main key must be "summaries", containing a list of objects. Each object MUST have keys: "summary", "author", "score", and "link".
 
-Example of a SINGLE item (from real comment):
+Example of a SINGLE item in the expected OpenAI output summaries list:
 {{
   "summary": "Basically everyone says Huntsman is packed, try Fisher Fine Arts instead lol",
   "author": "student_redditor_1",
@@ -204,13 +210,13 @@ Example of a SINGLE item (invented answer for empty input):
 Ensure the output is a single, valid JSON object with the specified structure. Aim for brevity, 1-3 summaries max.
 """
 
-    logger.info("Calling OpenAI for summarization...")
+    logger.info("Calling OpenAI asynchronously for summarization...")
     try:
-        response = client.chat.completions.create(
+        # Use await with the async client
+        response = await async_client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": system_prompt},
-                # Pass the potentially empty search output here
                 {"role": "user", "content": reddit_search_output} 
             ],
             temperature=0.7,
@@ -227,28 +233,36 @@ Ensure the output is a single, valid JSON object with the specified structure. A
         summary_json_string = response.choices[0].message.content
         summary_data = json.loads(summary_json_string)
         
-        # Validate the parsed data - check for summaries list
         if isinstance(summary_data, dict) and "summaries" in summary_data and isinstance(summary_data["summaries"], list):
-            validated_summaries = []
+            validated_full_summaries = []
             for item in summary_data["summaries"]:
-                if isinstance(item, dict) and "summary" in item:
-                    item.setdefault('author', 'Unknown') # Default if missing
-                    item.setdefault('score', 0)
-                    item.setdefault('link', 'N/A')
-                    validated_summaries.append(item)
+                if isinstance(item, dict) and all(key in item for key in ["summary", "author", "score", "link"]):
+                     validated_full_summaries.append(item)
                 else:
-                    logger.warning(f"Skipping invalid summary item (missing 'summary' key): {item}")
-            logger.info(f"OpenAI summarization successful, returning {len(validated_summaries)} summaries.")
-            return validated_summaries
+                    logger.warning(f"Skipping invalid item from OpenAI (missing required keys): {item}")
+            
+            logger.info(f"OpenAI processing successful, yielding {len(validated_full_summaries)} summaries.")
+            # Yield each summary in the desired format
+            for full_summary in validated_full_summaries:
+                # Create the final dictionary with the desired keys
+                output_dict = {
+                    "comment": full_summary["summary"], # Map summary to comment
+                    "score": full_summary["score"],
+                    "author": full_summary["author"],
+                    "link": full_summary["link"]
+                }
+                # Yield the formatted string
+                yield f"\n<REDDIT>{json.dumps(output_dict)}<REDDIT_END>\n"
+                await asyncio.sleep(0.05) # Small sleep to allow other tasks if needed
         else:
-             logger.error(f"Error: Unexpected JSON structure received from OpenAI: {summary_data}")
-             return []
+             logger.error(f"Unexpected JSON structure received from OpenAI: {summary_data}")
+             # Stop yielding
 
     except json.JSONDecodeError as json_err:
         logger.error(f"Error decoding JSON response from OpenAI: {json_err}")
         logger.error(f"Received raw JSON: {summary_json_string}")
-        return []
+        # Stop yielding
     except Exception as e:
-        logger.error(f"Error during OpenAI summarization: {e}", exc_info=True) # Added exc_info for more details
-        return []
+        logger.error(f"Error during OpenAI processing: {e}", exc_info=True)
+        # Stop yielding
     
