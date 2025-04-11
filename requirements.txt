@@ -53,3 +53,4 @@ resend==2.6.0
 firebase-admin==6.7.0
 oauthlib==3.2.2
 python-multipart==0.0.20
+praw==7.7.1
