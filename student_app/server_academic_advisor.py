@@ -371,7 +371,6 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     @timing_decorator
     async def response_generator():
         try:
-            is_onboarding_message=True
             if is_onboarding_message:
                 logging.info("Onboarding message detected, calling onboarding_sentence generator.")
                 try:
