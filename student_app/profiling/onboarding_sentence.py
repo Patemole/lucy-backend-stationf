@@ -60,8 +60,7 @@ async def onboarding_sentence(user) -> str:
     # Safely get profile data using getattr with default values
     linkedin_profile = getattr(user, "linkedin_profile", None)
     insta_profile = getattr(user, "insta_profile", None)
-    #username = getattr(user, "username", "the student")
-    username = user.username
+    username = getattr(user, "name", "the student")    
     year = getattr(user, "year", "an unknown year")
     faculty = getattr(user, "faculty", [])
     major = getattr(user, "major", [])
