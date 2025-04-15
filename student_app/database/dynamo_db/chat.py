@@ -10,6 +10,7 @@ import boto3
 import os
 import json
 from typing import Optional
+from decimal import Decimal
 from boto3.dynamodb.conditions import Attr
 
 
@@ -76,7 +77,13 @@ async def get_chat_history(chat_id: str):
         print(f"Retrieved {len(items)} items from chat history.")
         
         # Ne retourner que le username et le body
-        filtered_items = [{'username': item['username'], 'body': item['body']} for item in items]
+        filtered_items = [{'username': item['username'], 
+                           'body': item['body'], 
+                           'step_metadata': item.get('step_metadata'),
+                           'sources': item.get('sources', []),  # 👈 ajouté
+                           'confidence_score': float(item['confidence_score']) if 'confidence_score' in item else None  # 👈 ajouté
+                           } 
+                           for item in items]
 
         return filtered_items
     except ClientError as e:
@@ -84,6 +91,8 @@ async def get_chat_history(chat_id: str):
         error_message = e.response['Error']['Message']
         print(f"Error querying chat history: {error_code} - {error_message}")
         return []
+
+
 
 
 @timing_decorator
@@ -138,7 +147,13 @@ async def store_message_async(
         message_body: str, 
         #username: str = "TAI",
         username: str,
-        documents: List[Dict[str, Any]] = []):
+        documents: List[Dict[str, Any]] = [],
+        step_metadata: Optional[str] = None,
+        sources: Optional[List[Dict[str, Any]]] = None,  # 👈 nouveau paramètre
+        confidence_score: Optional[float] = None  # 👈 nouveau paramètre
+        ):
+    
+
     print(f"Attempting to store message for chat_id: {chat_id}, course_id: {course_id}, username: {username}")
     try:
 
@@ -154,8 +169,19 @@ async def store_message_async(
             'body': message_body,
             'username': username
         }
+
+        if step_metadata:
+            args['step_metadata'] = step_metadata
+
         if username == "TAI" and documents:
             args['documents'] = documents
+
+        # 👇 Sauvegarde systématique des sources et du confidence_score s'ils existent
+        if sources:
+            args['sources'] = sources
+
+        if confidence_score is not None:
+            args['confidence_score'] = Decimal(str(confidence_score))  # DynamoDB requiert Decimal pour les floats
 
         table.put_item(Item=args)
         print(f"Message stored successfully with message_id: {args['message_id']}")
@@ -167,8 +193,7 @@ async def store_message_async(
         error_message = e.response['Error']['Message']
         print(f"Error inserting message into chat history: {error_code} - {error_message}")
         return None
-
-
+    
 
 
 @timing_decorator

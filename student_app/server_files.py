@@ -215,7 +215,7 @@ async def lti_launch(request: Request):
                 'uid': uid,
                 'email': email,
                 'name': name,
-                'roles': roles,
+                'canvas_roles': roles,
                 'canvas_user_id': canvas_user_id,
                 'createdAt': firestore.SERVER_TIMESTAMP,
                 'university': university_subdomain,
