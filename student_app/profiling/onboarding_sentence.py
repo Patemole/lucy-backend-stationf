@@ -57,42 +57,61 @@ async def onboarding_sentence(user) -> str:
     logging.info(f"Starting onboarding_sentence for student at {university}")
 
     # Build the system prompt.
-    linkedin_info = f"LinkedIn Profile: {user.linkedin_profile}"
-    insta_info = f"Instagram Profile: {user.insta_profile['profile']}"  # Excluding post images.
-    base_text = f"{user.username} at {university}, {user.year}"
-    faculty_text = f"School: {', '.join(user.faculty)}" if user.faculty else ""
-    major_text = f"Major: {', '.join(user.major)}" if user.major else ""
-    minor_text = f"Minor: {', '.join(user.minor)}" if user.minor else ""
-    interests_text = f"Interests: {', '.join(user.interests)}" if user.interests else ""
+    # Safely get profile data using getattr with default values
+    linkedin_profile = getattr(user, "linkedin_profile", None)
+    insta_profile = getattr(user, "insta_profile", None)
+    #username = getattr(user, "username", "the student")
+    username = user.username
+    year = getattr(user, "year", "an unknown year")
+    faculty = getattr(user, "faculty", [])
+    major = getattr(user, "major", [])
+    minor = getattr(user, "minor", [])
+    interests = getattr(user, "interests", [])
+
+    # Format profile info, handling None cases
+    linkedin_info = f"LinkedIn Profile: {json.dumps(linkedin_profile) if linkedin_profile else 'Not provided'}"
+    # Safely access nested insta_profile data
+    insta_profile_data = insta_profile.get('profile', {}) if insta_profile else {}
+    insta_info = f"Instagram Profile Summary: {json.dumps(insta_profile_data) if insta_profile_data else 'Not provided'}"  # Excluding post images for brevity in prompt
+    
+    base_text = f"{username} at {university}, {year}"
+    faculty_text = f"School: {', '.join(faculty)}" if faculty else ""
+    major_text = f"Major: {', '.join(major)}" if major else ""
+    minor_text = f"Minor: {', '.join(minor)}" if minor else ""
+    interests_text = f"Interests: {', '.join(interests)}" if interests else ""
 
     system_prompt = (
-        f"Lucy, you are an advisor for {user.username} at {university}. "
+        f"Lucy, you are an advisor for {username} at {university}. "
         f"You role is to show everything you know about the student from all the context you have but in a funny way. I want you to roast him on his profile, also link it to what you know about his school find something niche and be very very sarcastic "
         f"Here are their profile details:\n{linkedin_info}\n{insta_info}\n"
         f"Profile Overview: {base_text}. {faculty_text}. {major_text}. {minor_text}. {interests_text}"
     )
+
+    print(f"system_prompt: {system_prompt}")
     
     logging.info("Constructed system prompt:")
     logging.info(system_prompt)
     
     # Extract all image URLs from insta_profile (but not the taggedUsers' images).
     image_urls = []
-    # Add the profile picture from insta_profile.
-    profile_section = user.insta_profile.get("profile", {})
-    if profile_section.get("profilePicUrlHD"):
-        image_urls.append(profile_section["profilePicUrlHD"])
-    # Loop over posts and add displayUrl and each image in images.
-    for post in user.insta_profile.get("posts", []):
-        if post.get("displayUrl"):
-            image_urls.append(post["displayUrl"])
-        if post.get("images"):
-            image_urls.extend(post["images"])
-    # Remove duplicates while preserving order.
-    image_urls = list(dict.fromkeys(image_urls))
+    if insta_profile: # Check if insta_profile exists
+        # Add the profile picture from insta_profile.
+        profile_section = insta_profile.get("profile", {})
+        if profile_section.get("profilePicUrlHD"):
+            image_urls.append(profile_section["profilePicUrlHD"])
+        # Loop over posts and add displayUrl and each image in images.
+        for post in insta_profile.get("posts", []):
+            if post.get("displayUrl"):
+                image_urls.append(post["displayUrl"])
+            if post.get("images"):
+                image_urls.extend(post["images"])
+        # Remove duplicates while preserving order.
+        image_urls = list(dict.fromkeys(image_urls))
     
     logging.info("Extracted image URLs from Instagram:")
-    for url in image_urls:
-        logging.info(url)
+    if image_urls:
+        for url in image_urls:
+            logging.info(url)
     
     # Build the user message content with both text and image parts.
     user_message_content = []
@@ -124,7 +143,7 @@ async def onboarding_sentence(user) -> str:
         })
     
     try:
-        client = openai.AsyncOpenAI(api_key=openai.api_key)
+        client = AsyncOpenAI()
         stream = await client.chat.completions.create(
             model="gpt-4o",  # Use the appropriate model.
             messages=[
@@ -142,4 +161,5 @@ async def onboarding_sentence(user) -> str:
                 yield delta.content + "|"
     except Exception as e:
         logging.error(f"Error generating onboarding sentence: {e}")
-        return
+        # Yield an error message or handle as appropriate
+        yield "|Error generating onboarding message.|"

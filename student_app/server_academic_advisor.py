@@ -30,6 +30,7 @@ from student_app.database.dynamo_db.events import fetch_events_from_dynamoDB
 from student_app.database.dynamo_db.events_zeroentropy import find_top_events_for_student
 
 from student_app.profiling.profile_generation import LLM_profile_generation
+from student_app.profiling.onboarding_sentence import onboarding_sentence
 
 from student_app.api_assistant.threads.thread_manager import (
     create_thread,
@@ -198,32 +199,6 @@ def scrape_linkedin_profile(api_key_proxycurl, linkedin_url):
 
 
 
-@timing_decorator
-def scrape_linkedin_profile(api_key_proxycurl, linkedin_url):
-    endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
-
-    try:
-        with httpx.Client() as client:
-            response = client.get(
-                endpoint,
-                params={'url': linkedin_url, 'fallback_to_cache': 'on-error'},
-                headers={'Authorization': f'Bearer {api_key_proxycurl}'},
-                timeout=10
-            )
-
-        if response.status_code != 200:
-            logging.error(f'❌ LinkedIn scrape error {response.status_code}: {response.text}')
-            return {}
-
-        logging.info(f'✅ Successfully scraped LinkedIn profile: {linkedin_url}')
-        return response.json()
-
-    except httpx.RequestError as e:
-        logging.error(f'🚨 Request exception while scraping LinkedIn profile: {e}')
-        return {}
-
-
-
 
 '''
 @timing_decorator
@@ -295,71 +270,9 @@ async def onboarding_sentence(student_profile: StudentProfile, linkedin_data) ->
     except Exception as e:
         logging.error(f"error in classify_query: {e}")
         return None
+
+
 '''
-
-@timing_decorator
-async def onboarding_sentence(user) -> str:
-    """
-    Generates onboarding sentence from complete user data.
-    """
-    university = getattr(user, "university", "unknown university")
-    logging.info(f"Starting onboarding_sentence for student at {university}")
-
-    try:
-        # Dynamically retrieve the university-specific onboarding prompt function
-        uni_module = getattr(universities, university.lower())
-        prompt_func_name = f"{university.lower()}_onboarding_prompt"
-        onboarding_prompt_func = getattr(uni_module, prompt_func_name)
-        system_prompt = onboarding_prompt_func(user, user.linkedin_profile)
-        logging.info(f"Loaded onboarding prompt for {university}")
-    except Exception as e:
-        logging.warning(f"Error loading university onboarding prompt for {university}, using default prompt: {e}")
-
-        linkedin_profile = getattr(user, "linkedin_profile", {})
-        
-        linkedin_details = (
-            f"Occupation: {linkedin_profile.get('occupation', 'N/A')}\n"
-            f"Headline: {linkedin_profile.get('headline', 'N/A')}\n"
-            f"Summary: {linkedin_profile.get('summary', 'N/A')}\n"
-            f"Followers: {linkedin_profile.get('follower_count', 0)}\n"
-            f"Profile Picture: {linkedin_profile.get('profile_pic_url', 'N/A')}\n"
-            f"Experiences: {', '.join([exp.get('title', 'N/A') + ' at ' + exp.get('company', 'N/A') for exp in linkedin_profile.get('experiences', [])])}\n"
-            f"Education: {', '.join([edu.get('degree_name', 'N/A') + ' from ' + edu.get('school', 'N/A') for edu in linkedin_profile.get('education', [])])}\n"
-            f"Awards: {', '.join([award.get('title', 'N/A') for award in linkedin_profile.get('accomplishment_honors_awards', [])])}"
-        ) if linkedin_profile else "No LinkedIn profile provided."
-
-        base_text = f"{user.username} at {university}, {user.year}"
-        faculty_text = f"studying in {', '.join(user.faculty)}" if user.faculty else ""
-        major_text = f"majoring in {', '.join(user.major)}" if user.major else ""
-        minor_text = f"and minoring in {', '.join(user.minor)}" if user.minor else ""
-        interests_text = f"the student's interests include: {', '.join(user.interests)}." if user.interests else "no specific interests provided."
-
-        system_prompt = (
-            f"Lucy, you are an advisor for {user.username} at {university}. Deliver a satirical roast humorously highlighting {user.username}'s quirks, habits, and LinkedIn profile if available, demonstrating familiarity with {university}. "
-            "Be extremely sassy, sarcastic, funny, and concise. Then clearly explain how you can help with academic queries, course guidance, and campus resources. "
-            f"LinkedIn profile details:\n{linkedin_details}\n"
-            f"Student profile overview: {base_text}. {faculty_text} {major_text} {minor_text}. {interests_text}"
-        )
-
-    try:
-        response = await client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": (
-                    "Show me that you know me well and what you can do, "
-                    "and end your comment with a proposal that can interest me given my profile"
-                )}
-            ],
-            temperature=1.2
-        )
-        logging.info("OpenAI API call successful for onboarding sentence")
-        return response.choices[0].message.content
-    except Exception as e:
-        logging.error(f"Error generating onboarding sentence: {e}")
-        return None
-
-
 
 
 @timing_decorator
@@ -456,143 +369,128 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     @timing_decorator
     async def response_generator():
         try:
-
-            async def background_store_message():
+            is_onboarding_message=True
+            if is_onboarding_message:
+                logging.info("Onboarding message detected, calling onboarding_sentence generator.")
                 try:
-                    await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
-                    logging.info(f"Input message stored successfully in background for {input_message}")
-                except Exception as e:
-                    logging.error(f"Error while storing the input message in background: {str(e)} for {input_message}")
-
-            asyncio.create_task(background_store_message())
-            
-
-            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
-             #NEW: classification task to get category and conversation title
-            #classification_task = asyncio.create_task(classify_query(input_message))
-            reconstructed = False
-
-            is_first_message = input_query.is_first_message
-            logging.info("this is the boolean value of is first message")
-            logging.info(is_first_message)
-
-            #################################NEW CODE FOR CLASSIFICATION ADDED ############################
-             #NEW: classification task to get category and conversation title
-            #classification_task = asyncio.create_task(classify_query(input_message))
-
-            # Définir la tâche de classification uniquement si is_first_message est True            
-            history_items = []
-        
-            if is_first_message:
-                print("first message task creating")
-                classification_task = asyncio.create_task(classify_query(input_message))
-                print(f"first message task created")
-                print("awaiting task")
-                classification_title_result = await classification_task
-
-                # Ensure the result is always a dict
-                if isinstance(classification_title_result, dict):
-                    classification_title_json = classification_title_result
-                else:
-                    try:
-                        classification_title_json = json.loads(classification_title_result)
-                    except json.JSONDecodeError:
-                        logging.warning(f"Classification result not valid JSON, using default category for result: {classification_title_result}")
-                        classification_title_json = {
-                            "category": "unknown",
-                            "conversation_title": "Untitled Conversation"
-                        }
-                    else:
-                        classification_title_json = classification_title_json
-                print(f"classification_title_json : {classification_title_json}")
-                wrapped_result = {"classification_title_result": classification_title_json}
-                yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
-                await asyncio.sleep(0.2)
-
-
-                '''
-                #Partie qui gere l envoie du message de Lucy a l onboarding
-                if is_onboarding_message:
-                    logging.info("Onboarding message detected, calling onboarding_sentence.")
+                    # Iterate through the async generator and yield each chunk
+                    print(user)
+                    async for chunk in onboarding_sentence(user):
+                        yield chunk # onboarding_sentence already adds the "|"
+                        #await asyncio.sleep(0.05) 
                     
-                    onboarding_content = await onboarding_sentence(user)  # ← Appel à la nouvelle fonction onboarding_sentence modifiée
-                    
-                    if onboarding_content is None:
-                        yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An error occurred during onboarding. Please try again later.'}})}<ERROR_END>\n"
-                    
-                    # Envoie ton message exactement comme un chunk normal
-                    yield f"\n<ONBOARDING_MESSAGE>{json.dumps({'onboardingmessage': onboarding_content})}<ONBOARDING_MESSAGE_END>\n"
                     logging.info("Onboarding content streamed successfully.")
-                    return  # Fin anticipée si onboarding
-                '''
-
-                #Partie qui gere l envoie du message de Lucy a l onboarding
-                if is_onboarding_message:
-                    logging.info("Onboarding message detected, creating test message manually.")
-                    
-                    # Création manuelle du message simple avec des données de l'utilisateur
-                    final_response = f"Bienvenue {user.username}, étudiant en {user.major} à {user.university} ! Voici tes recommandations personnalisées."
-                    
-                    # Découpage en fragments pour streaming progressif
-                    fragments = [final_response[i:i+30] for i in range(0, len(final_response), 30)]
-                    
-                    # Envoi progressif des fragments
-                    for fragment in fragments:
-                        yield fragment + "|"
-                        await asyncio.sleep(0.05)
-
-                    logging.info("Test onboarding content streamed successfully.")
-                    return  # Fin anticipée pour le test
-
-
-            else:
-                logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
-                history_items = await get_chat_history(chat_id=chat_id)
-                logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
-                logging.info("Skipping classification task as this is not the first message.")
-
-
-            try:
-                logging.info(f"Starting streaming run... for {input_message}")
-
-                # Start the streaming run
-                max_retries = 3
-                retry_delay = 3  # seconds
-
-                for attempt in range(max_retries):
-                    try:
-                        logging.info(f"Starting streaming run (attempt {attempt + 1}/{max_retries})... for {input_message}")
-                        # Start the streaming run
-                        async for data in handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
-                                if data is None:
-                                    logging.info(f"Stream has completed. for {input_message}")
-                                    break
-                                else:
-                                    yield data
-                        logging.info(f"Streaming run created successfully for {input_message}")
-                        break  # Exit retry loop if successful
-                    except Exception as e:
-                        logging.error(f"Failed to create streaming run on attempt {attempt + 1}: {str(e)} for {input_message}")
-                        if attempt < max_retries - 1:
-                            logging.info(f"Retrying run creation in {retry_delay} seconds... for {input_message}")
-                            await asyncio.sleep(retry_delay)
-                        else:
-                            logging.error(f"Exceeded maximum retries for run creation for {input_message}")
-                            yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An error occurred while finalizing your request. Please try again later.'}})}<ERROR_END>\n"
-                            return
-
-
-                logging.info(f"Streaming run created and started for {input_message}")
+                    # Store the complete message after streaming (optional)
+                    # Need to accumulate chunks if storing is required
+                    # complete_onboarding_message = "".join(list_of_chunks_from_generator)
+                    # await store_message_async(...) 
+                        
+                except Exception as onboard_error:
+                    logging.error(f"Error during onboarding_sentence streaming: {onboard_error}", exc_info=True)
+                    yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An error occurred during onboarding.'}})}<ERROR_END>\n"
                 
-            except KeyError as e:
-                logging.error(f"KeyError during streaming run: {str(e)} for {input_message}", exc_info=True)
-                yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'A KeyError occurred while processing your request.'}})}<ERROR_END>\n"
-                return  # Stop execution after yielding the error
+            else:
 
-            except Exception as e:
-                logging.error(f"Error during streaming run: {str(e)} for {input_message}", exc_info=True)
-                yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': f'Sorry boss an error occured while generating your response, please try again {username}.'}})}<ERROR_END>\n"
-                return  # Stop execution after yielding the error
+                async def background_store_message():
+                    try:
+                        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+                        logging.info(f"Input message stored successfully in background for {input_message}")
+                    except Exception as e:
+                        logging.error(f"Error while storing the input message in background: {str(e)} for {input_message}")
+
+                asyncio.create_task(background_store_message())
+                
+
+                #################################NEW CODE FOR CLASSIFICATION ADDED ############################
+                #NEW: classification task to get category and conversation title
+                #classification_task = asyncio.create_task(classify_query(input_message))
+                reconstructed = False
+
+                is_first_message = input_query.is_first_message
+                logging.info("this is the boolean value of is first message")
+                logging.info(is_first_message)
+
+                #################################NEW CODE FOR CLASSIFICATION ADDED ############################
+                #NEW: classification task to get category and conversation title
+                #classification_task = asyncio.create_task(classify_query(input_message))
+
+                # Définir la tâche de classification uniquement si is_first_message est True            
+                history_items = []
+            
+                if is_first_message:
+                    print("first message task creating")
+                    classification_task = asyncio.create_task(classify_query(input_message))
+                    print(f"first message task created")
+                    print("awaiting task")
+                    classification_title_result = await classification_task
+
+                    # Ensure the result is always a dict
+                    if isinstance(classification_title_result, dict):
+                        classification_title_json = classification_title_result
+                    else:
+                        try:
+                            classification_title_json = json.loads(classification_title_result)
+                        except json.JSONDecodeError:
+                            logging.warning(f"Classification result not valid JSON, using default category for result: {classification_title_result}")
+                            classification_title_json = {
+                                "category": "unknown",
+                                "conversation_title": "Untitled Conversation"
+                            }
+                        else:
+                            classification_title_json = classification_title_json
+                    print(f"classification_title_json : {classification_title_json}")
+                    wrapped_result = {"classification_title_result": classification_title_json}
+                    yield f"\n<CLASSIFICATION_AND_TITLE_RESULT>{json.dumps(wrapped_result)}<CLASSIFICATION_AND_TITLE_RESULT_END>\n"
+                    await asyncio.sleep(0.2)
+
+                else:
+                    logging.info(f"Retrieving chat history for chat_id: {chat_id} for {input_message}")
+                    history_items = await get_chat_history(chat_id=chat_id)
+                    logging.info(f"Retrieved {len(history_items)} history items for {input_message}")
+                    logging.info("Skipping classification task as this is not the first message.")
+
+
+                try:
+                    logging.info(f"Starting streaming run... for {input_message}")
+
+                    # Start the streaming run
+                    max_retries = 3
+                    retry_delay = 3  # seconds
+
+                    for attempt in range(max_retries):
+                        try:
+                            logging.info(f"Starting streaming run (attempt {attempt + 1}/{max_retries})... for {input_message}")
+                            # Start the streaming run
+                            async for data in handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
+                                    if data is None:
+                                        logging.info(f"Stream has completed. for {input_message}")
+                                        break
+                                    else:
+                                        yield data
+                            logging.info(f"Streaming run created successfully for {input_message}")
+                            break  # Exit retry loop if successful
+                        except Exception as e:
+                            logging.error(f"Failed to create streaming run on attempt {attempt + 1}: {str(e)} for {input_message}")
+                            if attempt < max_retries - 1:
+                                logging.info(f"Retrying run creation in {retry_delay} seconds... for {input_message}")
+                                await asyncio.sleep(retry_delay)
+                            else:
+                                logging.error(f"Exceeded maximum retries for run creation for {input_message}")
+                                yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Oops! An error occurred while finalizing your request. Please try again later.'}})}<ERROR_END>\n"
+                                return
+
+
+                    logging.info(f"Streaming run created and started for {input_message}")
+                    
+                except KeyError as e:
+                    logging.error(f"KeyError during streaming run: {str(e)} for {input_message}", exc_info=True)
+                    yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'A KeyError occurred while processing your request.'}})}<ERROR_END>\n"
+                    return  # Stop execution after yielding the error
+
+                except Exception as e:
+                    logging.error(f"Error during streaming run: {str(e)} for {input_message}", exc_info=True)
+                    yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': f'Sorry boss an error occured while generating your response, please try again {username}.'}})}<ERROR_END>\n"
+                    return  # Stop execution after yielding the error
 
         except Exception as e:
             logging.error(f"Error during response generation: {str(e)} for {input_message}")
