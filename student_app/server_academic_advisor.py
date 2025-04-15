@@ -635,6 +635,7 @@ async def get_timing_history_route(timestamp: str):
     return await get_timing_history(timestamp)
 
 
+
 #PERMET DE SCRAPER LINKEDIN ET D ENVOYER LES INFORMATIONS CORRESPONDANTES DANS FIRESTORE AU FRONTEND
 class LinkedinLinkRequest(BaseModel):
     url: str
@@ -656,6 +657,7 @@ async def scrape_linkedin(request: LinkedinLinkRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+#Outdated
 @app.post("/first_lucy_message_onboarding")
 async def onboarding_message(profile: StudentProfile, linkedin_data: dict = {}):
     try:
@@ -725,6 +727,9 @@ async def save_ai_message(ai_message: InputQueryAI):
     type = ai_message.type #Pas utilisé pour l'instant, on va faire la selection quand on récupérera le username if !== "Lucy" alors on mets "human" else "ai"
     uid = ai_message.uid
     university = ai_message.university
+    step_metadata = ai_message.metadataOnboarding
+    sources = ai_message.sources
+    confidence_score = ai_message.confidence_score
 
     print("input_message de l'utilisateur:")
     print(input_message)
@@ -740,7 +745,7 @@ async def save_ai_message(ai_message: InputQueryAI):
     
 
     try:
-        message_id = await store_message_async(chat_id, username=username, course_id=course_id, message_body=output_message)
+        message_id = await store_message_async(chat_id, username=username, course_id=course_id, message_body=output_message, step_metadata=step_metadata, sources=sources, confidence_score=confidence_score)
         print(f"Stored message with ID: {message_id}")
 
         #data à récupérer et faire la logic 

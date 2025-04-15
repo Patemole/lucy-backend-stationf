@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 
 class InputQuery(BaseModel):
@@ -28,4 +28,9 @@ class InputQueryAI(BaseModel):
     uid: str
     input_message: str
     university: str
+    metadataOnboarding: Optional[str] = None
+    sources: Optional[List[Dict[str, Any]]] = None  # ✅ pour gérer les sources
+    confidence_score: Optional[float] = None  # ✅ ajout du confidence_score
+
+
         
