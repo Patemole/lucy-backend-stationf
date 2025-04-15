@@ -53,19 +53,20 @@ async def onboarding_sentence(user) -> str:
     Also extracts all image URLs from the Instagram profile (profilePicUrlHD,
     displayUrl, and images from posts) and passes them as additional content.
     """
-    university = getattr(user, "university", "unknown university")
+    # Safely get profile data using .get() for dictionaries
+    university = user.get("university", "unknown university")
     logging.info(f"Starting onboarding_sentence for student at {university}")
 
     # Build the system prompt.
-    # Safely get profile data using getattr with default values
-    linkedin_profile = getattr(user, "linkedin_profile", None)
-    insta_profile = getattr(user, "insta_profile", None)
-    username = getattr(user, "name", "the student")    
-    year = getattr(user, "year", "an unknown year")
-    faculty = getattr(user, "faculty", [])
-    major = getattr(user, "major", [])
-    minor = getattr(user, "minor", [])
-    interests = getattr(user, "interests", [])
+    # Safely get profile data using .get() with default values
+    linkedin_profile = user.get("linkedin_profile", None)
+    insta_profile = user.get("insta_profile", None)
+    username = user.get("name", "the student") # Changed from getattr to .get()
+    year = user.get("year", "an unknown year") # Changed from getattr to .get()
+    faculty = user.get("faculty", []) # Changed from getattr to .get()
+    major = user.get("major", []) # Changed from getattr to .get()
+    minor = user.get("minor", []) # Changed from getattr to .get()
+    interests = user.get("interests", []) # Changed from getattr to .get()
 
     # Format profile info, handling None cases
     linkedin_info = f"LinkedIn Profile: {json.dumps(linkedin_profile) if linkedin_profile else 'Not provided'}"
@@ -84,6 +85,7 @@ async def onboarding_sentence(user) -> str:
         f"You role is to show everything you know about the student from all the context you have but in a funny way. I want you to roast him on his profile, also link it to what you know about his school find something niche and be very very sarcastic "
         f"Here are their profile details:\n{linkedin_info}\n{insta_info}\n"
         f"Profile Overview: {base_text}. {faculty_text}. {major_text}. {minor_text}. {interests_text}"
+        f"be consice but very creative and funny starts of with the intro of what you did and then who you think the student is two simple paragrpahs"
     )
 
     print(f"system_prompt: {system_prompt}")
@@ -127,10 +129,13 @@ async def onboarding_sentence(user) -> str:
 
                 This isn't a roast it is more a game. It's more like a private voice memo from someone who knows me better than I know myself. Be insightful, thoughtful, a little playful—and make me pause, smile, and maybe see myself in a new light.    
 
+                tone:
+                be very nochalant and non formal and use simple words and short sentences. Be young
                 ---
                 format:
                 do 2 or 3 paragraphs 
                 start off with a sentence like: i stalked you on the internet (only public data, i promise) just to get to know you better. no sharing, not even with the school—just between us bff and then about me
+                use emojis and make it funny
             """
         )
     })
@@ -144,7 +149,7 @@ async def onboarding_sentence(user) -> str:
     try:
         client = AsyncOpenAI()
         stream = await client.chat.completions.create(
-            model="gpt-4o",  # Use the appropriate model.
+            model="gpt-4.1",  # Use the appropriate model.
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message_content}
