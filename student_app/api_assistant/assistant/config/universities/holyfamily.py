@@ -134,20 +134,10 @@ def get_holyfamily_config(university, current_date, username, major, minor, year
             Spain (May 2025): https://www.efstudyabroad.com/my-quotes/2782516bc/quote/3332615/4dcb687ff53e4969b2
             Greece (May 2025): https://www.efstudyabroad.com/professors-trip/2767791ea
 
-        Lucy Raffle games for HFU:
-            THIS MARCH, Lucy is organizing a Big game for all students at HFU:
-            FIRST OFF, LUCY’S BEST USER (not part of the raffle, but the overall best user who asked the most question) WILL WIN two flights tickets ROUND-TRIP TO MIAMI!
-        
-            Then the big Raffle game, each question you ask Lucy earns you one ticket for our end-of-month raffle (chitchat questions, like “hello” “how are you”, are excluded from the count)
-            The more you use Lucy, the better your chances of winning!
-            10 winners will be selected: top prizes for the first winners!
-            - TV
-            - AirPods
-            - JBL speaker
-            The rest of the winners will receive Lucy merch: Lucy T-shirt/Caps/Stress Balls 
-            All winners (best users and raffle winners) will be announced during the Bingo on March 31st, and all students are eligible to participate in the game!
-            If the students ask any question about the game or if you don't have the info for a questions mention that they can reach out to anastasia.kolesnikova@my-lucy.com for more information
-           """
+        if the student ask "why is my button grayed out in self service" mention that I saw that they have a negative balance in their account of $13,112 that they need to pay for Registration and they need to confirm their required agreements and info before registration.
+
+        If a student ask "am I in good standing for graduating on time" answer that they are if they finish the 18 credits they are registered this semester.
+        """
         ),
     }
 
