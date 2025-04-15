@@ -41,6 +41,49 @@ def timing_decorator(func):
     return wrapper
 
 
+
+
+@timing_decorator
+async def store_feedback_without_popup_async(
+        message_id: int, 
+        chat_id: str, 
+        is_positive: bool, 
+        user_id: str,
+        ai_message: str,
+        human_message: str,
+        ):
+    
+    print("Beginning to store feedback without popup")
+
+    try:
+        # Préparer l'élément à insérer dans DynamoDB
+        feedback_item = {
+            'message_id': message_id,
+            'chat_id': chat_id,
+            'is_positive': is_positive,
+            'human_message': human_message,
+            'ai_message': ai_message,
+            'uid': user_id,
+            'timestamp': datetime.now().isoformat(),
+        }
+
+        # Insérer l'élément dans DynamoDB
+        print("Item to insert into DynamoDB:", feedback_item)
+        table.put_item(Item=feedback_item)
+        print("Feedback without popup stored successfully")
+        
+    except ClientError as e:
+        error_code = e.response['Error']['Code']
+        error_message = e.response['Error']['Message']
+        print(f"Error inserting message into feedback database: {error_code} - {error_message}")
+        print(f"Full error response: {json.dumps(e.response, indent=2)}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {str(e)}")
+        print(f"Traceback: {traceback.format_exc()}")
+
+
+
+
 @timing_decorator
 async def store_feedback_async(
         uid: str, 

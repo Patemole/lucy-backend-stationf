@@ -29,6 +29,8 @@ from student_app.database.dynamo_db.chat import get_chat_history, store_message_
 from student_app.database.dynamo_db.events import fetch_events_from_dynamoDB
 from student_app.database.dynamo_db.events_zeroentropy import find_top_events_for_student
 
+from student_app.database.dynamo_db.feedback import store_feedback_without_popup_async
+
 from student_app.profiling.profile_generation import LLM_profile_generation
 
 from student_app.api_assistant.threads.thread_manager import (
@@ -712,6 +714,30 @@ async def get_calendar_events(profile: StudentProfile = Body(...)):
     except Exception as e:
         logging.error(f"Erreur lors de la récupération des événements du calendrier : {str(e)}")
         raise HTTPException(status_code=500, detail="Erreur lors de la récupération des événements")
+    
+
+
+
+@app.post("/save_feedback")
+async def save_feedback_without_popup(request: Request):
+    try:
+        request_data = await request.json()
+        message_id = request_data['message_id']
+        chat_id = request_data['chat_id']
+        is_positive = request_data['is_positive']
+        user_id = request_data['user_id']
+        ai_message = request_data['ai_message_content']
+        human_message = request_data['humain_message_content']
+
+        # Appel à la nouvelle fonction pour enregistrer le feedback
+        await store_feedback_without_popup_async(message_id, chat_id, is_positive, user_id, ai_message, human_message)
+
+        return {"message": "Feedback saved successfully"}
+
+    except Exception as e:
+        logging.error(f"Erreur lors de l'enregistrement du feedback : {str(e)}")
+        raise HTTPException(status_code=500, detail="Erreur lors de l'enregistrement du feedback")
+
 
 
 
