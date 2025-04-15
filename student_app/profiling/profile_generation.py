@@ -340,7 +340,7 @@ def enrich_person_data(first_name: str, last_name: str, school: str, uid: str):
             logging.error(f"Failed to update Firestore: {e}")
             return {}
 
-        return curated_data, linkedin_found
+        return linkedin_found
     else:
         error_data = {"error": response.status_code, "message": response.text}
         return error_data, False
