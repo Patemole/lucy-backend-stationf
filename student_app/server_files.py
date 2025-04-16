@@ -21,6 +21,10 @@ from dotenv import load_dotenv
 import resend
 
 
+from student_app.profiling.profile_generation import enrich_person_data
+
+
+
 # Configuration de Resend avec la clé API
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 if not RESEND_API_KEY:
@@ -147,6 +151,36 @@ async def send_email(request: EmailRequest):
     except Exception as e:
         logging.error(f"🚨 Erreur lors de l'envoi de l'email : {e}")
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+class LinkedInScrapingRequest(BaseModel):
+    first_name: str
+    last_name: str
+    university: str
+    user_id: str
+
+@app.post("/files/linkedin_scraping")
+async def linkedin_scraping_endpoint(payload: LinkedInScrapingRequest):
+    print("📥 Requête reçue pour /files/linkedin_scraping")
+    print(f"• Prénom        : {payload.first_name}")
+    print(f"• Nom           : {payload.last_name}")
+    print(f"• Université    : {payload.university}")
+    print(f"• ID utilisateur: {payload.user_id}")
+
+    try:
+        # Appel à la fonction d'enrichissement
+        linkedin_found = enrich_person_data(
+            first_name=payload.first_name,
+            last_name=payload.last_name,
+            school=payload.university,
+            uid=payload.user_id
+        )
+
+        return {"linkedInFound": linkedin_found}
+    except Exception as e:
+        logging.error(f"Erreur dans linkedin_scraping_endpoint : {str(e)}")
+        return {"linkedInFound": False}
     
 
 
