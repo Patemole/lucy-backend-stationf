@@ -142,8 +142,7 @@ async def onboarding_sentence(user) -> str:
         yield "|Error: Invalid user data for onboarding.|"
         return
         
-    #user_id = user.get("id")
-    user_id = "CcUsYMEmKlQDEPGhmyaXiauUNRx1"
+    user_id = user.get("id")
     logging.info(f"Processing onboarding for user ID: {user_id}")
     
     # Fetch fresh user data from Firestore asynchronously
