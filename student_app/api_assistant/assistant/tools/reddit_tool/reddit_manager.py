@@ -244,6 +244,23 @@ Ensure the output is a single, valid JSON object with the specified structure. A
             logger.info(f"OpenAI processing successful, yielding {len(validated_full_summaries)} summaries.")
             # Yield each summary in the desired format
             for full_summary in validated_full_summaries:
+                
+
+                output_dict_nested = {
+                    "reddit": {  # <-- Ajout de la clé "reddit" ici
+                        "comment": full_summary["summary"],
+                        "score": full_summary["score"],
+                        "author": full_summary["author"],
+                        "link": full_summary["link"]
+                    }
+                }
+                # Format the string to be yielded
+                # Le JSON contiendra maintenant {"reddit": {"comment": ...}}
+                yield_string = f"\n<REDDIT>{json.dumps(output_dict_nested)}<REDDIT_END>\n"
+                logger.info(f"Yielding Reddit summary (alternative): {yield_string.strip()}")
+                yield yield_string
+                
+                '''
                 # Create the final dictionary with the desired keys
                 output_dict = {
                     "comment": full_summary["summary"], # Map summary to comment
@@ -251,8 +268,13 @@ Ensure the output is a single, valid JSON object with the specified structure. A
                     "author": full_summary["author"],
                     "link": full_summary["link"]
                 }
+                # Format the string to be yielded
+                yield_string = f"\n<REDDIT>{json.dumps(output_dict)}<REDDIT_END>\n"
+                # Ajout du log avant le yield
+                logger.info(f"Yielding Reddit summary: {yield_string.strip()}") # Log the string being yielded
                 # Yield the formatted string
-                yield f"\n<REDDIT>{json.dumps(output_dict)}<REDDIT_END>\n"
+                yield yield_string
+                '''
                 await asyncio.sleep(0.05) # Small sleep to allow other tasks if needed
         else:
              logger.error(f"Unexpected JSON structure received from OpenAI: {summary_data}")
