@@ -6,6 +6,11 @@ import json
 from functools import wraps
 import logging
 import time
+import openai # Import added for client initialization
+import firebase_admin # Added import
+from firebase_admin import credentials, firestore # Added imports
+import httpx # Added import
+import base64 # Added import
 
 # Logging configuration setup (ensure this runs early)
 logging.basicConfig(
@@ -23,6 +28,34 @@ logger = logging.getLogger(__name__) # Create a logger instance
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+# --- Start: Firebase Initialization ---
+ENVIRONMENT= os.getenv('ENVIRONMENT', 'dev')
+firebase_credentials_paths = {
+    "dev": "firestore_credentials/firebase_credentials_dev.json",
+    "preprod": "firestore_credentials/firebase_credentials_preprod.json",
+    "prod": "firestore_credentials/firebase_credentials_prod.json"
+}
+cred_path = firebase_credentials_paths.get(ENVIRONMENT)
+if not cred_path:
+    # Consider logging the error as well
+    logging.error(f"❌ ERREUR : Chemin Firebase non défini pour l'environnement {ENVIRONMENT}")
+    # Decide how to handle this - raise error, or maybe db will just be None?
+    # For now, let's allow it to proceed but db interactions will fail.
+    db = None 
+else:
+    try:
+        cred = credentials.Certificate(cred_path)
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(cred)
+            logging.info("Firebase Admin SDK initialized in onboarding_sentence.")
+        else:
+            logging.info("Firebase Admin SDK already initialized.")
+        db = firestore.client()
+    except Exception as fb_init_error:
+        logging.exception(f"Failed to initialize Firebase Admin SDK: {fb_init_error}")
+        db = None # Ensure db is None if init fails
+# --- End: Firebase Initialization ---
 
 # --- Start: Recursive Cleaning Function ---
 def clean_nested_data(item):
@@ -48,6 +81,26 @@ def clean_nested_data(item):
     else:
         return item # Keep other types as is
 # --- End: Recursive Cleaning Function ---
+
+# --- Start: Sync Firestore Fetch Helper ---
+def fetch_user_data_sync(user_id: str):
+    if not db:
+        logging.error("Firestore client (db) is not initialized. Cannot fetch user data.")
+        return None
+    try:
+        logging.info(f"Attempting to fetch user data from Firestore for uid: {user_id}")
+        doc_ref = db.collection("users").document(user_id)
+        doc_snapshot = doc_ref.get() # This is synchronous
+        if doc_snapshot.exists:
+            logging.info(f"Successfully fetched user data for uid: {user_id}")
+            return doc_snapshot.to_dict()
+        else:
+            logging.warning(f"Firestore document for uid {user_id} not found.")
+            return None
+    except Exception as e:
+        logging.exception(f"Error fetching user data from Firestore for uid {user_id}: {e}")
+        return None
+# --- End: Sync Firestore Fetch Helper ---
 
 def timing_decorator(func):
     @wraps(func)
@@ -76,7 +129,6 @@ def timing_decorator(func):
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
-
 async def onboarding_sentence(user) -> str:
     """
     Generates an onboarding sentence from complete user data, incorporating
@@ -84,29 +136,41 @@ async def onboarding_sentence(user) -> str:
     Also extracts all image URLs from the Instagram profile (profilePicUrlHD,
     displayUrl, and images from posts) and passes them as additional content.
     """
-    # Safely get profile data using .get() for dictionaries
     logging.info("Starting onboarding_sentence function.")
-    # Log user data safely, handling potential large dicts
-    try:
-        user_log_str = json.dumps(user, indent=2, default=str) # Use default=str for non-serializable items
-        logging.debug(f"Received user data")
-    except Exception as log_err:
-        logging.warning(f"Could not serialize user data for logging: {log_err}")
-        logging.info(f"Received user keys: {list(user.keys()) if isinstance(user, dict) else 'N/A'}")
+    if not isinstance(user, dict) or not user.get("id"):
+        logging.error(f"Invalid user data received. Expected dict with 'uid', got: {type(user)}")
+        yield "|Error: Invalid user data for onboarding.|"
+        return
         
-    university = user.get("university", "unknown university")
-    logging.info(f"Processing onboarding for student at {university}")
+    #user_id = user.get("id")
+    user_id = "CcUsYMEmKlQDEPGhmyaXiauUNRx1"
+    logging.info(f"Processing onboarding for user ID: {user_id}")
+    
+    # Fetch fresh user data from Firestore asynchronously
+    user_data_from_db = await asyncio.to_thread(fetch_user_data_sync, user_id)
+    
+    if user_data_from_db is None:
+        logging.error(f"Failed to fetch user data from Firestore for uid: {user_id}. Cannot proceed.")
+        yield f"|Error: Could not load profile data for user {user_id}.|"
+        return
+        
+    # Log fetched data safely
+    try:
+        user_log_str = json.dumps(user_data_from_db, indent=2, default=str)
+        logging.debug(f"Fetched user data from DB for {user_id}")
+    except Exception as log_err:
+        logging.warning(f"Could not serialize fetched user data for logging: {log_err}")
 
-    # Safely get profile data using .get() with default values
-    linkedin_profile = user.get("linkedin_profile", None)
-    insta_profile = user.get("insta_profile", None)
-    logging.info(f"insta_profile profile: {insta_profile}")
-    username = user.get("name", "the student") 
-    year = user.get("year", "an unknown year") 
-    faculty = user.get("faculty", []) 
-    major = user.get("major", []) 
-    minor = user.get("minor", []) 
-    interests = user.get("interests", []) 
+    # Safely get profile data using .get() from the *fetched data*
+    university = user_data_from_db.get("university", "unknown university")
+    linkedin_profile = user_data_from_db.get("linkedin_profile", None)
+    insta_profile = user_data_from_db.get("insta_profile", None)
+    username = user_data_from_db.get("name", "the student") 
+    year = user_data_from_db.get("year", "an unknown year") 
+    faculty = user_data_from_db.get("faculty", []) 
+    major = user_data_from_db.get("major", []) 
+    minor = user_data_from_db.get("minor", []) 
+    interests = user_data_from_db.get("interests", []) 
 
     # --- Start: Clean LinkedIn Profile --- 
     # cleaned_linkedin_profile = {}
@@ -181,38 +245,43 @@ async def onboarding_sentence(user) -> str:
 
     # Enhanced System Prompt - Focus on persona, tone, format, and analysis instructions
     system_prompt = (
-        f"You are Lucy, an AI advisor for students at {university}. Your persona is the student's closest, most observant, and slightly sarcastic best friend. "
-        f"You understand the culture of {university} intimately. You're witty, insightful, playful, and know how to deliver a lighthearted 'roast' that makes the student smile and reflect. "
-        "Analyze the context provided by the student in their message (academic info, LinkedIn, Instagram - if available). Use emojis appropriately to enhance the friendly, playful tone. "
+        f"You are Lucy, an AI advisor for students at {university}. Your persona is the student's closest, most observant, and witty best friend. " # Slightly softened
+        f"You understand the culture of {university} intimately. You're insightful, playful, and maybe *a little* cheeky, but ultimately supportive. " # Adjusted tone
+        "Analyze the context provided by the student in their message (academic info, LinkedIn, Instagram text summary, and any successfully processed images). Use emojis appropriately to enhance the friendly, playful tone. " # Clarified context
         "Your goal is *not* just to summarize the info, but to synthesize it and offer insightful observations about who the student *really* seems to be – their potential drives, habits, contradictions, and personality, based *only* on the provided context. "
         "**Format Requirements:**\n"
-        "\n- Start *exactly* with: 'Okay, so I did a little \'research\' on you (publicly available stuff only, promise! 😉)... just to get to know the real you. No sharing, this stays between us BFFs.' (Use emojis like 😉 or 👀). This is Paragraph 1.\n"
-        "\n- Paragraph 2 must contain *only* your insightful, playful analysis based on the student context. It must be **extremely short**, only 1 or 2 sentences long. **Explicitly mention** at least one or two specific details from the context (e.g., their major, an interest, something observed from LinkedIn/Insta if available) as the basis for your observation. Example: 'A [Major] major interested in [Interest]? Okay, I see you balancing [Observation related to major] with [Observation related to interest]... very {university} of you!'\n"
-        "\n- Paragraph 3 must concisely (2-3 sentences) explain how you can help *this specific student* now that you know them. Mention help with admin tasks, finding relevant social opportunities (events, clubs, communities at {university}), and encourage them to ask you first before anyone else for any problem. Tailor this slightly based on their profile if possible (e.g., mentioning relevant clubs if interests are listed).\n"
-        "\n- The total response must be *exactly* 3 paragraphs (Intro, Analysis, Value Prop).\n"
+        f"\n- Start *exactly* with: 'Okay, {username}, so I did a little \'research\' on you (publicly available stuff only, promise! 😉)... just to get to know the real you. No sharing, this stays between us BFFs.' (Use emojis like 😉 or 👀). This is Paragraph 1.\n"
+        "\n- Paragraph 2: This is where you show you've been paying attention! \n" # New intro to Para 2 instructions
+        "  1. Start with one sentence that concisely lists *all* the key info you gathered: 'Okay, so based on what you shared, you\'re a {year} student at {university} studying {major/faculty}, interested in [{list interests}], your LinkedIn says [brief note about LinkedIn], and your Instagram shows [brief note about Insta text summary].' (Adapt wording slightly based on what info is actually present. Explicitly mention if images were processed, e.g., 'and I saw the pics you sent.'). \n"
+        "  2. Follow immediately with one sentence stating the *type* of person you think they are based *specifically* on this gathered info (e.g., 'Sounds like you\'re the [adjective] type who [brief description of deduced personality based on specifics like major/interest/post]'). \n"
+        "  3. Finish the paragraph with one *lighthearted* sentence where you paint a funny mental picture of them based *specifically* on their profile details (e.g., 'I\'m picturing you [funny, specific scenario related to their profile, e.g., using an interest or course name]'). Keep this kind and amusing, not a roast. \n"
+        "  *This entire paragraph must be just these 3 linked sentences.* Make sure sentences 2 and 3 directly reference details mentioned in sentence 1 or seen in images!\n"
+        "\n- Paragraph 3 (2-3 sentences): Explain your general role. Frame yourself as like a helpful {university} senior who's always around, knows the ropes (and maybe everyone!), and can help with navigating social life (finding events, clubs, people) and all the administrative headaches. End by strongly encouraging them to ask you *any* question they have first. Example structure: 'Think of me as that {university} senior friend who's always got your back. I know this place inside-out - the people, the parties, the paperwork traps! So whether you need help figuring out your social scene or wrestling with admin stuff, just ask me first. Seriously, anything!'\n"
+        "\n- The total response must be *exactly* 3 paragraphs (Intro, Summary/Personality/Image, Value Prop).\n"
         "\n**Handling Data:**\n"
-        "\n- Base your analysis *strictly* on the context provided in the user message (academic, interests, LinkedIn, Instagram). \n"
-        "\n- If LinkedIn or Instagram info says 'Not provided', *do not mention* the missing data. Simply focus your analysis on the academic info and interests you *do* have.\n"
-        "\n- Similarly, if no Instagram images are attached or available, *do not mention* their absence. Base your visual analysis only on images that *are* present, if any.\n"
+        "\n- Base your observations *strictly* on the context provided in the user message (academic, interests, LinkedIn, Instagram text summary, and any successfully processed images). \n"
+        "\n- If LinkedIn or Instagram info says \'Not provided\', *do not mention* the missing data. Simply focus your summary and observations on the academic info and interests you *do* have.\n"
+        "\n- Similarly, if no Instagram images were successfully downloaded/encoded and added, *do not mention* their absence. Base your visual references only on images that *are* present, if any.\n"
         "\n- Do *not* make broad assumptions or generic statements. Every observation must be directly traceable to the provided profile details.\n"
         "\n- Wherever possible, connect your observations about the student to the specific culture, reputation, or common experiences at {university}. Make it sound like you truly understand what it's like to be a student there. \n"
         "\n- Do *not* invent details if data is missing.\n"
-        "\n**Tone:** Sassy, sarcastic, humorous, relatable, and insightful. Use *simple, direct language* for the humor/sarcasm - avoid complicated analogies. Think witty best friend, not a complex comedian."
+        # Updated Tone guidance
+        "\n**Tone:** Witty, observant, playful, relatable, and insightful, like a supportive best friend who notices things. Use *simple, direct language*. The humor should be light and based on observation, not sarcastic roasting. Think amusing mental picture, not cutting remark." 
     )
 
     # User Message Content - Instructions first, then context
     user_message_text = (
         f"Hey Lucy! I am {username} Okay, act like my closest, most observant friend who really gets the vibe at my school: {university}. "
-        "Based *only* on the context below (and the insta pics if attached), tell me: Who do you think I *really* am? \n"
+        "Based *only* on the context below (and the images I'm providing if any were processed successfully), tell me: Who do you think I *really* am? \n"
         "Not just the facts, but what you *see* between the lines. What kind of student, thinker, friend am I? What drives me? Any funny patterns or contradictions? \n"
         "Make it insightful, thoughtful, a little playful – like a private voice memo. Make me pause, smile, maybe see myself in a new light. \n"
-        "Remember the format: start with the 'stalked you' intro, then 2-3 paragraphs of analysis. Make it funny and use emojis!\n\n"
+        "Remember the format: start with the 'research' intro, then the summary/personality/funny-picture paragraph, then how you can help. Make it fun and use emojis!\n\n" # Updated user instructions slightly
         "---\n"
         "**Here's the context you have about me:**\n"
         f"{academic_info_text}\n"
         f"LinkedIn: {linkedin_info_text}\n"
         f"Instagram: {insta_info_text}\n"
-        f"(Check the attached images for my Instagram posts details, if any were found).\n"
+        f"(Images related to my Instagram posts are attached separately if they were successfully downloaded).\n"
         "---"
     )
 
@@ -250,17 +319,64 @@ async def onboarding_sentence(user) -> str:
         "type": "text",
         "text": user_message_text # Use the newly constructed text
     })
-    # Then add an image part for each image URL.
-    for url in image_urls:
-        user_message_content.append({
-            "type": "image_url",
-            "image_url": {"url": url}
-        })
-    
+
+    # --- Start: Download, Encode, and Add Image URLs as Base64 --- 
+    successfully_added_images = 0
+    total_urls_to_process = len(image_urls)
+    if image_urls:
+        logging.info(f"Attempting to download and encode {total_urls_to_process} image URLs...")
+        async with httpx.AsyncClient() as client:
+            # Create tasks to download images concurrently
+            download_tasks = {url: asyncio.create_task(client.get(url, follow_redirects=True, timeout=10.0)) for url in image_urls}
+            
+            processed_count = 0
+            for url, task in download_tasks.items():
+                processed_count += 1
+                logging.debug(f"Processing image {processed_count}/{total_urls_to_process}: {url}")
+                try:
+                    response = await task # Wait for the download task to complete
+                    response.raise_for_status() # Raise HTTPStatusError for bad responses (4xx or 5xx)
+                    
+                    content_type = response.headers.get('content-type', '').lower()
+                    if 'image' in content_type:
+                        image_bytes = response.content
+                        base64_image = base64.b64encode(image_bytes).decode('utf-8')
+                        # Construct data URI
+                        data_uri = f"data:{content_type};base64,{base64_image}"
+                        
+                        # Append to message content
+                        user_message_content.append({
+                            "type": "image_url",
+                            "image_url": {"url": data_uri} # Send base64 data URI
+                        })
+                        successfully_added_images += 1
+                        logging.debug(f"Successfully downloaded, encoded, and added image from {url} (as {content_type}).")
+                    else:
+                        logging.warning(f"Downloaded content from {url} but content-type '{content_type}' is not image. Skipping.")
+                        
+                except httpx.HTTPStatusError as e:
+                    logging.warning(f"Failed to download image from {url}. Status: {e.response.status_code}. Skipping.")
+                except httpx.RequestError as e:
+                    logging.warning(f"Failed to download image from {url}. Request Error: {type(e).__name__}. Skipping.")
+                except Exception as e:
+                    logging.error(f"Unexpected error processing image URL {url}: {e}")
+                    
+        logging.info(f"Finished processing images. Successfully added {successfully_added_images}/{total_urls_to_process} images as Base64 data.")
+    else:
+         logging.info("No image URLs to process.")
+    # --- End: Download, Encode, and Add Image URLs as Base64 ---
+
+    # --- Start: OpenAI API Call --- 
     try:
-        # Ensure client is initialized correctly within the async function scope if needed, or use a globally defined async client
-        client = AsyncOpenAI() 
-        logging.info("Calling OpenAI chat completions create with stream=True.")
+        # Ensure client is initialized correctly
+        # Ensure OPENAI_API_KEY is available before creating client
+        if not OPENAI_API_KEY:
+            logging.error("OpenAI API key not found. Cannot proceed with API call.")
+            yield "|Error: OpenAI API key not configured.|"
+            return
+            
+        client = AsyncOpenAI()
+        logging.info(f"Calling OpenAI chat completions API for user {user_id} with {successfully_added_images} images.")
         stream = await client.chat.completions.create(
             model="gpt-4o",
             messages=[
