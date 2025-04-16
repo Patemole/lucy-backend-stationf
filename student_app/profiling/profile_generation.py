@@ -263,7 +263,7 @@ def enrich_person_data(first_name: str, last_name: str, school: str, uid: str):
     headers = {
         "accept": "application/json",
         "Content-Type": "application/json",
-        "X-API-Key": PDL_API_KEY
+        "X-API-Key": PDL_API_KEY if PDL_API_KEY else logging.error("❌ ERREUR : PDL_API_KEY n'est pas configurée dans .env")
     }
     
     payload = {

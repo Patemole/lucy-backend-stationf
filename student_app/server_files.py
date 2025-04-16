@@ -3,7 +3,8 @@ import sys
 import os
 import asyncio
 import logging
-from fastapi import APIRouter, FastAPI, HTTPException, UploadFile, File, Form, Request
+from fastapi import APIRouter, FastAPI, HTTPException, UploadFile, File, Form, Request, Response
+import json
 from oauthlib.oauth1 import RequestValidator, SignatureOnlyEndpoint
 from fastapi.responses import RedirectResponse
 import firebase_admin
@@ -19,8 +20,7 @@ from uuid import uuid4
 from dotenv import load_dotenv
 import resend
 
-
-from student_app.profiling.profile_generation import enrich_person_data
+from student_app.profiling.profile_generation import scrape_instagram, scrape_linkedin_profile, enrich_person_data
 
 
 
@@ -161,7 +161,7 @@ class LinkedInScrapingRequest(BaseModel):
     university: str
     user_id: str
 
-@app.post("/files/linkedin_scraping")
+@app.post("/linkedin_scraping_sign_up")
 async def linkedin_scraping_endpoint(payload: LinkedInScrapingRequest):
     print("📥 Requête reçue pour /files/linkedin_scraping")
     print(f"• Prénom        : {payload.first_name}")
@@ -182,6 +182,53 @@ async def linkedin_scraping_endpoint(payload: LinkedInScrapingRequest):
     except Exception as e:
         logging.error(f"Erreur dans linkedin_scraping_endpoint : {str(e)}")
         return {"linkedInFound": False}
+    
+
+
+class InstagramUsernameRequest(BaseModel):
+    username: str
+    user_id: str
+
+@app.post("/instagram_scraping_onboarding")
+async def scrape_linkedin(request: InstagramUsernameRequest):
+    try:
+        logging.info(f"Récupération du username instagram : {request.username}")
+
+        # Scraper les informations LinkedIn
+        instagram_student_info = scrape_instagram(request.username, request.user_id)
+
+        if not instagram_student_info:
+            raise HTTPException(status_code=500, detail="Impossible de récupérer les informations instagram")
+
+        # Retourne les données récupérées sous forme de JSON
+        return Response(content=json.dumps(instagram_student_info), media_type="application/json")
+    except Exception as e:
+        logging.error(f"🚨 Erreur lors du scraping instagram : {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+class LinkedinLinkRequest(BaseModel):
+    url: str
+    user_id: str
+
+@app.post("/linkedin_scraping_onboarding")
+async def scrape_linkedin(request: LinkedinLinkRequest):
+    try:
+        logging.info(f"Récupération de l'URL LinkedIn : {request.url}")
+
+        # Scraper les informations LinkedIn
+        linkedin_student_info = scrape_linkedin_profile(request.url, request.user_id)
+
+        if not linkedin_student_info:
+            raise HTTPException(status_code=500, detail="Impossible de récupérer les informations LinkedIn")
+
+        # Retourne les données récupérées sous forme de JSON
+        return Response(content=json.dumps(linkedin_student_info), media_type="application/json")
+    except Exception as e:
+        logging.error(f"🚨 Erreur lors du scraping LinkedIn : {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
     
 
 

@@ -49,6 +49,8 @@ from student_app.api_assistant.assistant.assistant_manager import initialize_ass
 #from student_app.api_assistant.assistant.config.universities import holyfamily
 from .api_assistant.assistant.config import universities
 
+from student_app.profiling.profile_generation import scrape_instagram, scrape_linkedin_profile
+
 
 # Today's date
 date = datetime.date.today()
@@ -536,24 +538,10 @@ async def get_timing_history_route(timestamp: str):
 
 
 #PERMET DE SCRAPER LINKEDIN ET D ENVOYER LES INFORMATIONS CORRESPONDANTES DANS FIRESTORE AU FRONTEND
-class LinkedinLinkRequest(BaseModel):
-    url: str
-@app.post("/linkedin_scraping")
-async def scrape_linkedin(request: LinkedinLinkRequest):
-    try:
-        logging.info(f"Récupération de l'URL LinkedIn : {request.url}")
 
-        # Scraper les informations LinkedIn
-        linkedin_student_info = scrape_linkedin_profile(api_key_proxycurl, request.url)
 
-        if not linkedin_student_info:
-            raise HTTPException(status_code=500, detail="Impossible de récupérer les informations LinkedIn")
+#PERMET DE SCRAPER LINKEDIN ET D ENVOYER LES INFORMATIONS CORRESPONDANTES DANS FIRESTORE AU FRONTEND
 
-        # Retourne les données récupérées sous forme de JSON
-        return Response(content=json.dumps(linkedin_student_info), media_type="application/json")
-    except Exception as e:
-        logging.error(f"🚨 Erreur lors du scraping LinkedIn : {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 #Outdated
