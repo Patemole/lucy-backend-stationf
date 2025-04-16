@@ -8,6 +8,18 @@ import os
 import firebase_admin
 from firebase_admin import credentials, auth, firestore
 
+# Logging configuration setup (ensure this runs early)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s", # Added logger name
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("profile_generation.log") # Specific log file
+    ]
+)
+logger = logging.getLogger(__name__) # Create a logger instance
+
 # Comment out or remove this line as it's causing the error
 # db = firestore.Client()
 
@@ -44,9 +56,9 @@ cred = credentials.Certificate(cred_path)
 # Initialize Firebase Admin SDK only if it hasn't been initialized yet
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
-    logging.info("Firebase Admin SDK initialized.")
+    logger.info("Firebase Admin SDK initialized.") # Use logger
 else:
-    logging.info("Firebase Admin SDK already initialized.")
+    logger.info("Firebase Admin SDK already initialized.") # Use logger
 
 db = firebase_admin.firestore.client()
 
@@ -80,6 +92,7 @@ def scrape_instagram(username, uid):
     :return: The curated output (dict) or None if an error occurred.
     """
     logger = logging.getLogger(__name__)
+    logger.info(f"Starting scrape_instagram for username: {username}, uid: {uid}")
     
     try:
         # Poll the actor run status until it is finished.
@@ -100,17 +113,21 @@ def scrape_instagram(username, uid):
 
         # Retrieve the dataset items.
         dataset_url = f'https://api.apify.com/v2/datasets/{DATASET_ID}/items?token={APIFY_API_KEY}'
-        logger.info("Fetching dataset items...")
+        logger.info(f"Fetching dataset items from {dataset_url}...")
         response = requests.get(dataset_url)
+        logger.info(f"Apify dataset response status: {response.status_code}")
         data = response.json()
 
         # Filter results by the specified Instagram username.
+        logger.info(f"Filtering dataset for username: {username}")
         results = [item for item in data if item.get('username', '').lower() == username.lower()]
         if not results:
-            logger.error(f"No data found for the username: {username}")
+            logger.warning(f"No data found for the username: {username} in Apify dataset.")
             return None
+        logger.info(f"Found data for {username}.")
 
         profile_data = results[0]
+        logger.info("Curating profile data...")
         curated_profile = {
             'followersCount': profile_data.get('followersCount'),
             'followsCount': profile_data.get('followsCount'),
@@ -121,6 +138,7 @@ def scrape_instagram(username, uid):
             'profilePicUrlHD': profile_data.get('profilePicUrlHD')
         }
 
+        logger.info("Curating post data...")
         # Assume 'latestPosts' is ordered from newest to oldest.
         latest_posts = profile_data.get('latestPosts', [])
         # Filter out posts that are not "Image" or "Sidecar" (skip Videos).
@@ -170,27 +188,31 @@ def scrape_instagram(username, uid):
             'posts': curated_posts
         }
 
-        logger.info("Curated output:")
-        logger.info(curated_output)
+        logger.info(f"Curated Instagram output generated for {username}.")
+        # logger.debug(f"Curated output data: {curated_output}") # Use debug level for potentially large data
 
         # Update Firestore document for the user (using the uid).
+        logger.info(f"Attempting to update Firestore for uid: {uid} with insta_profile.")
         try:
             doc_ref = db.collection("users").document(uid)
             # Check if document exists
+            logger.info(f"Checking existence of document: users/{uid}")
             doc = doc_ref.get()
             if not doc.exists:
-                logger.error(f"Document with uid {uid} does not exist")
+                logger.error(f"Firestore document with uid {uid} does not exist. Cannot update insta_profile.")
                 return None
+            logger.info(f"Document users/{uid} exists. Updating with insta_profile.")
             doc_ref.update({"insta_profile": curated_output})
-            logger.info("Firestore updated with insta_profile successfully.")
+            logger.info(f"Firestore successfully updated for uid: {uid} with insta_profile.")
         except Exception as firestore_error:
-            logger.error(f"Failed to update Firestore: {firestore_error}")
+            logger.error(f"Failed to update Firestore for uid {uid}: {firestore_error}")
             return None
 
+        logger.info(f"scrape_instagram finished successfully for {username}, uid: {uid}.")
         return curated_output
 
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        logger.exception(f"An unexpected error occurred in scrape_instagram for {username}, uid: {uid}: {e}") # Log exception info
         return None
 
 
@@ -200,8 +222,16 @@ def scrape_linkedin_profile(linkedin_url, uid):
     Scrapes a LinkedIn profile via Proxycurl and updates the Firestore document
     (identified by uid) with a new field "linkedin_profile" containing the scraped data.
     """
+    logger = logging.getLogger(__name__)
+    logger.info(f"Starting scrape_linkedin_profile for url: {linkedin_url}, uid: {uid}")
     endpoint = 'https://nubela.co/proxycurl/api/v2/linkedin'
+    
+    if not PROXYCURL_API_KEY:
+        logger.error("❌ ERREUR : PROXYCURL_API_KEY is not configured.")
+        return {}
+        
     try:
+        logger.info(f"Calling Proxycurl endpoint: {endpoint} for url: {linkedin_url}")
         with httpx.Client() as client:
             response = client.get(
                 endpoint,
@@ -210,31 +240,39 @@ def scrape_linkedin_profile(linkedin_url, uid):
                 timeout=10
             )
 
+        logger.info(f"Proxycurl response status: {response.status_code}")
         if response.status_code != 200:
-            logging.error(f'❌ LinkedIn scrape error {response.status_code}: {response.text}')
+            logger.error(f'❌ LinkedIn scrape error {response.status_code}: {response.text}')
             return {}
 
-        logging.info(f'✅ Successfully scraped LinkedIn profile: {linkedin_url}')
+        logger.info(f'✅ Successfully scraped LinkedIn profile: {linkedin_url}')
         result = response.json()
 
         # Update Firestore document for the user with the linkedin_profile field.
+        logger.info(f"Attempting to update Firestore for uid: {uid} with linkedin_profile.")
         try:
             doc_ref = db.collection("users").document(uid)
             # Check if document exists
+            logger.info(f"Checking existence of document: users/{uid}")
             doc = doc_ref.get()
             if not doc.exists:
-                logging.error(f"Document with uid {uid} does not exist")
+                logger.error(f"Firestore document with uid {uid} does not exist. Cannot update linkedin_profile.")
                 return {}
+            logger.info(f"Document users/{uid} exists. Updating with linkedin_profile.")
             doc_ref.update({"linkedin_profile": result})
-            logging.info("Firestore updated with linkedin_profile successfully.")
+            logger.info(f"Firestore successfully updated for uid: {uid} with linkedin_profile.")
         except Exception as e:
-            logging.error(f"Failed to update Firestore: {e}")
+            logger.error(f"Failed to update Firestore for uid {uid}: {e}")
             return {}
 
+        logger.info(f"scrape_linkedin_profile finished successfully for {linkedin_url}, uid: {uid}.")
         return result
 
     except httpx.RequestError as e:
-        logging.error(f'🚨 Request exception while scraping LinkedIn profile: {e}')
+        logger.exception(f'🚨 Request exception while scraping LinkedIn profile: {e}') # Log exception info
+        return {}
+    except Exception as e:
+        logger.exception(f"An unexpected error occurred in scrape_linkedin_profile for {linkedin_url}, uid: {uid}: {e}") # Log exception info
         return {}
 
 @timing_decorator
@@ -258,12 +296,18 @@ def enrich_person_data(first_name: str, last_name: str, school: str, uid: str):
         A tuple: (curated_data, linkedin_found)
         linkedin_found is a boolean indicating whether a LinkedIn URL was found.
     """
+    logger = logging.getLogger(__name__)
+    logger.info(f"Starting enrich_person_data for: {first_name} {last_name}, school: {school}, uid: {uid}")
     url = "https://api.peopledatalabs.com/v5/person/enrich?pretty=false&min_likelihood=2&include_if_matched=false&titlecase=false"
     
+    if not PDL_API_KEY:
+        logger.error("❌ ERREUR : PDL_API_KEY is not configured.")
+        return False # Return False as linkedin_found indication
+        
     headers = {
         "accept": "application/json",
         "Content-Type": "application/json",
-        "X-API-Key": PDL_API_KEY if PDL_API_KEY else logging.error("❌ ERREUR : PDL_API_KEY n'est pas configurée dans .env")
+        "X-API-Key": PDL_API_KEY
     }
     
     payload = {
@@ -272,90 +316,118 @@ def enrich_person_data(first_name: str, last_name: str, school: str, uid: str):
         "school": school
     }
     
-    response = requests.post(url, headers=headers, json=payload)
+    logger.info(f"Calling PDL enrich API: {url}")
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        logger.info(f"PDL API response status: {response.status_code}")
+    except requests.RequestException as req_err:
+        logger.exception(f"🚨 PDL API request failed: {req_err}")
+        return False # Indicate failure/no linkedin found
     
     if response.status_code == 200:
-        json_response = response.json()
-        data = json_response.get("data", {})
-        
-        linkedin_found = bool(data.get("linkedin_url"))
-        
-        curated_data = {
-            "full_name": data.get("full_name"),
-            "sex": data.get("sex"),
-            "linkedin_url": data.get("linkedin_url"),
-            "linkedin_username": data.get("linkedin_username"),
-            "facebook_username": data.get("facebook_username"),
-            "twitter_username": data.get("twitter_username"),
-            "job_title": data.get("job_title"),
-            "job_title_role": data.get("job_title_role"),
-            "job_title_levels": data.get("job_title_levels"),
-            "job_company_name": data.get("job_company_name"),
-            "job_company_location_locality": data.get("job_company_location_locality"),
-            "job_company_location_country": data.get("job_company_location_country"),
-            "location_country": data.get("location_country"),
-            "skills": data.get("skills")
-        }
-        
-        # Process experience: extract only the required fields.
-        experience_list = []
-        for exp in data.get("experience", []):
-            exp_item = {
-                "company_name": exp.get("company", {}).get("name"),
-                "company_location_locality": exp.get("company", {}).get("location", {}).get("locality"),
-                "company_location_country": exp.get("company", {}).get("location", {}).get("country"),
-                "start_date": exp.get("start_date"),
-                "end_date": exp.get("end_date"),
-                "title_name": exp.get("title", {}).get("name")
-            }
-            experience_list.append(exp_item)
-        curated_data["experience"] = experience_list
-        
-        # Process education: extract only the required fields.
-        education_list = []
-        for edu in data.get("education", []):
-            school_obj = edu.get("school", {}) if edu.get("school") else {}
-            edu_item = {
-                "school_name": school_obj.get("name"),
-                "school_type": school_obj.get("type"),
-                "school_location_locality": school_obj.get("location", {}).get("locality"),
-                "degrees": edu.get("degrees"),
-                "majors": edu.get("majors"),
-                "minors": edu.get("minors"),
-                "gpa": edu.get("gpa")
-            }
-            education_list.append(edu_item)
-        curated_data["education"] = education_list
-
+        logger.info("PDL API call successful.")
         try:
-            doc_ref = db.collection("users").document(uid)
-            # Check if document exists
-            doc = doc_ref.get()
-            if not doc.exists:
-                logging.error(f"Document with uid {uid} does not exist")
-                return {}
-            doc_ref.update({"linkedin_profile": curated_data})
-            logging.info("Firestore updated with linkedin_profile successfully.")
+            json_response = response.json()
+            data = json_response.get("data", {})
+            
+            linkedin_url = data.get("linkedin_url")
+            linkedin_found = bool(linkedin_url)
+            logger.info(f"PDL enrichment found LinkedIn URL: {linkedin_found} ({linkedin_url or 'N/A'})")
+            
+            logger.info("Curating PDL data...")
+            curated_data = {
+                "full_name": data.get("full_name"),
+                "sex": data.get("sex"),
+                "linkedin_url": data.get("linkedin_url"),
+                "linkedin_username": data.get("linkedin_username"),
+                "facebook_username": data.get("facebook_username"),
+                "twitter_username": data.get("twitter_username"),
+                "job_title": data.get("job_title"),
+                "job_title_role": data.get("job_title_role"),
+                "job_title_levels": data.get("job_title_levels"),
+                "job_company_name": data.get("job_company_name"),
+                "job_company_location_locality": data.get("job_company_location_locality"),
+                "job_company_location_country": data.get("job_company_location_country"),
+                "location_country": data.get("location_country"),
+                "skills": data.get("skills")
+            }
+            
+            # Process experience: extract only the required fields.
+            experience_list = []
+            for exp in data.get("experience", []):
+                exp_item = {
+                    "company_name": exp.get("company", {}).get("name"),
+                    "company_location_locality": exp.get("company", {}).get("location", {}).get("locality"),
+                    "company_location_country": exp.get("company", {}).get("location", {}).get("country"),
+                    "start_date": exp.get("start_date"),
+                    "end_date": exp.get("end_date"),
+                    "title_name": exp.get("title", {}).get("name")
+                }
+                experience_list.append(exp_item)
+            curated_data["experience"] = experience_list
+            
+            # Process education: extract only the required fields.
+            education_list = []
+            for edu in data.get("education", []):
+                school_obj = edu.get("school", {}) if edu.get("school") else {}
+                edu_item = {
+                    "school_name": school_obj.get("name"),
+                    "school_type": school_obj.get("type"),
+                    "school_location_locality": school_obj.get("location", {}).get("locality"),
+                    "degrees": edu.get("degrees"),
+                    "majors": edu.get("majors"),
+                    "minors": edu.get("minors"),
+                    "gpa": edu.get("gpa")
+                }
+                education_list.append(edu_item)
+            curated_data["education"] = education_list
+            logger.info("PDL data curated.")
+
+            logger.info(f"Attempting to update Firestore for uid: {uid} with PDL linkedin_profile data.")
+            try:
+                doc_ref = db.collection("users").document(uid)
+                # Check if document exists
+                logger.info(f"Checking existence of document: users/{uid}")
+                doc = doc_ref.get()
+                if not doc.exists:
+                    logger.error(f"Firestore document with uid {uid} does not exist. Cannot update linkedin_profile from PDL.")
+                    # Decide if you should still return linkedin_found = True/False here
+                    return linkedin_found # Or maybe False since update failed?
+                logger.info(f"Document users/{uid} exists. Updating with linkedin_profile from PDL.")
+                doc_ref.update({"linkedin_profile": curated_data})
+                logger.info(f"Firestore successfully updated for uid: {uid} with PDL linkedin_profile data.")
+            except Exception as e:
+                logger.error(f"Failed to update Firestore for uid {uid} with PDL data: {e}")
+                # Return linkedin_found status even if Firestore update fails, as enrichment itself worked
+                return linkedin_found
+
+            logger.info(f"enrich_person_data finished successfully for {first_name} {last_name}, uid: {uid}. LinkedIn found: {linkedin_found}")
+            return linkedin_found
         except Exception as e:
-            logging.error(f"Failed to update Firestore: {e}")
-            return {}
-
-        return linkedin_found
+             logger.exception(f"Error processing PDL response or updating Firestore for {first_name} {last_name}, uid: {uid}: {e}")
+             # Decide return value. PDL call was 200, but processing failed. Let's indicate no linkedin found.
+             return False
     else:
-        error_data = {"error": response.status_code, "message": response.text}
-        return error_data, False
-
+        logger.error(f"PDL API call failed. Status: {response.status_code}, Message: {response.text}")
+        return False # Indicate failure/no linkedin found
 
 
 def LLM_profile_generation(username: str, academic_advisor: str, year: str, university: str, faculty: str, major: str, minor: str):
+    logger = logging.getLogger(__name__)
+    logger.info("Starting LLM_profile_generation.")
+    logger.info(f"Input - username: {username}, advisor: {academic_advisor}, year: {year}, university: {university}, faculty: {faculty}, major: {major}, minor: {minor}")
 
-    print("\n")
-    print("\n")
-    print(f"Profiling of the user")
-    print(f"username: {username}, year: {year}, university: {university}, School: {faculty}, major: {major}, minor: {minor}, academic_advisor: {academic_advisor}")
+    # print("\n")
+    # print("\n")
+    # print(f"Profiling of the user")
+    # print(f"username: {username}, year: {year}, university: {university}, School: {faculty}, major: {major}, minor: {minor}, academic_advisor: {academic_advisor}")
 
     try:
         student_profile = f"My name is {username}. I am enrolled at {university} in the {faculty} school. I am majoring in {major} and minoring in {minor}. Currently in my {year} year, I am guided by academic advisor: {academic_advisor}."
+        logger.info("Generated student profile string.")
+        # logger.debug(f"Generated profile: {student_profile}")
         return student_profile
     except Exception as e:
-        print(e)
+        logger.exception(f"Error during LLM_profile_generation: {e}") # Log exception info
+        # print(e)
+        return None # Return None or raise exception on error
