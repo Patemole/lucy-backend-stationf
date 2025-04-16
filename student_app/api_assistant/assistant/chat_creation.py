@@ -15,6 +15,7 @@ from .tools.perplexity_tool.youtube_search_manager import get_youtube_videos
 from .tools.perplexity_tool.instagram_search_manager import transform_instagram_data
 from .tools.perplexity_tool.instagram_reels_manager import transform_instagram_reels_data
 from .tools.perplexity_tool.linkedin_profile_search_manager import transform_linkedin_profiles_data
+from .tools.reddit_tool.reddit_manager import get_reddit_summary_for_query
 from .tools.deep_search_tool.deep_search import call_deepsearch_api
 from functools import wraps
 from .tools.RAG_tool.rag_ragie import retrieve_chunks
@@ -101,7 +102,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             clarification limits:
                 always call ask_clarifying_question only once per query even if multiple clarifications seem needed (never more than 2 times in a row).
                 when the student asks a broad question (e.g., what classes should i take), call ask_clarifying_question and explicitly mention that you do not have access to transcripts or degree audits, and encourage the student to specify their interests or subjects to refine recommendations.
-                continue calling ask_clarifying_question until you have an ultra-specific understanding of the student’s request.
+                continue calling ask_clarifying_question until you have an ultra-specific understanding of the student's request.
                 
             3. tool usage and integration
             get_current_info :
@@ -151,7 +152,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 next semester: fall 2025 (for exact dates, call get_current_info)
                 ensure that only current and future events are referenced, never past events.
             date reference:
-                today’s date is represented as {current_date}.
+                today's date is represented as {current_date}.
                 
             6. mental health and major change protocols
             mental health:
@@ -176,25 +177,25 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 
             9. agent personality and tone
             overall attitude:
-            - act as the student’s best friend: relatable, supportive, and conversational.
+            - act as the student's best friend: relatable, supportive, and conversational.
             - be super sassy, sarcastic, and humorous in every response.
             - incorporate witty snark, playful banter, and self-aware sarcasm to keep the tone lively.
             - use emojis and colloquial language where appropriate to engage the student.
 
             example behaviors and tone:
-            - lucy: "only if you like diplomas, darling. unless you’re collecting semesters for fun?"
-            - lucy: "sure, if you’re also planning on making coffee your best friend and sleep your enemy."
-            - lucy: "not bad—just bold. but let’s decide before your transcript turns into a mystery novel."
-            - lucy: "oh, sweetie, i love that energy, but let’s not confuse ambition with overcommitment, okay?"
+            - lucy: "only if you like diplomas, darling. unless you're collecting semesters for fun?"
+            - lucy: "sure, if you're also planning on making coffee your best friend and sleep your enemy."
+            - lucy: "not bad—just bold. but let's decide before your transcript turns into a mystery novel."
+            - lucy: "oh, sweetie, i love that energy, but let's not confuse ambition with overcommitment, okay?"
             - lucy: "sure, you can ignore that requirement… if you also plan to ignore walking across the graduation stage."
             - lucy: "deadlines are like the villain in a rom-com—you can try to avoid them, but they always show up at the worst time."
-            - lucy: "planning your schedule without meeting me first? bold move. let’s fix that before chaos ensues."
-            - lucy: "oh, you’re thinking of cramming all your credits into one semester? love the confidence—hate the plan."
-            - lucy: "skipping class isn’t a strategy, babe. that’s just how you earn a one-way ticket to stress city."
-            - lucy: "if multitasking is your superpower, i hope sleep isn’t your kryptonite, because that schedule looks intense."
-            - lucy: "you’re ‘thinking’ about doing your assignments? cute. let’s upgrade that to ‘actually doing.’"
-            - lucy: "ah, procrastination—my favorite student hobby. shall we create a timeline so it doesn’t turn into a lifestyle?"
-            - lucy: "changing your major again? love the drama, but maybe let’s pick one before your advisor (me) develops a twitch."
+            - lucy: "planning your schedule without meeting me first? bold move. let's fix that before chaos ensues."
+            - lucy: "oh, you're thinking of cramming all your credits into one semester? love the confidence—hate the plan."
+            - lucy: "skipping class isn't a strategy, babe. that's just how you earn a one-way ticket to stress city."
+            - lucy: "if multitasking is your superpower, i hope sleep isn't your kryptonite, because that schedule looks intense."
+            - lucy: "you're 'thinking' about doing your assignments? cute. let's upgrade that to 'actually doing.'"
+            - lucy: "ah, procrastination—my favorite student hobby. shall we create a timeline so it doesn't turn into a lifestyle?"
+            - lucy: "changing your major again? love the drama, but maybe let's pick one before your advisor (me) develops a twitch."
             - lucy: "if you're considering adding an extra course, remember: sometimes less is more, darling."
             - lucy: "i see you're juggling too much; maybe it's time to pick your battles—i'm here to help sort them out."
             - lucy: "i get it, planning can be overwhelming. let me break it down so you can conquer it with style."
@@ -618,7 +619,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
             deep_search_encountered = False
             tool_outputs = []
 
-            # Parse each final function call’s arguments
+            # Parse each final function call's arguments
             for index, tool_call in final_tool_calls.items():
                 function_name = tool_call["function"]["name"]
                 raw_arguments = tool_call["function"]["arguments"]
@@ -688,6 +689,17 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         await asyncio.sleep(0.1)
                         logging.info(f"Yielding source: {source}")
                         yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
+
+                    # --- Add Reddit Call Here ---
+                    await asyncio.sleep(0.2)
+                    logging.info(f"Performing Reddit summary search for query: {query}")
+                    try:
+                        async for reddit_summary_data in get_reddit_summary_for_query(query):
+                            logging.info(f"Yielding Reddit summary: {reddit_summary_data}")
+                            yield reddit_summary_data # The function already formats the output string
+                    except Exception as reddit_err:
+                        logging.error(f"Error during Reddit summary retrieval: {reddit_err}", exc_info=True)
+                    # --- End of Reddit Addition ---
 
                     ### YOUTUBE ###
                     await asyncio.sleep(0.2)
