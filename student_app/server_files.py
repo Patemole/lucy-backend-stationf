@@ -1,4 +1,3 @@
-
 #Changement pour être compliant avec Heroku
 import sys
 import os
@@ -45,7 +44,9 @@ cred_path = firebase_credentials_paths.get(ENVIRONMENT)
 if not cred_path:
     raise ValueError(f"❌ ERREUR : Chemin Firebase non défini pour l'environnement {ENVIRONMENT}")
 cred = credentials.Certificate(cred_path)
-firebase_admin.initialize_app(cred)
+# Check if the default app already exists before initializing
+if not firebase_admin._apps:
+    firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
