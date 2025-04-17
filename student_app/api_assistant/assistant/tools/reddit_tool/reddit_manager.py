@@ -217,9 +217,9 @@ Example of a SINGLE item in the expected OpenAI output summaries list (based on 
 
 Example of a SINGLE item (invented student comment for empty input, related to query 'best study spot'):
 {{
-  "summary": "Idk about *best*, but my roommate basically lived in Van Pelt last semester and didn't completely lose it, so maybe it's okay? lol", # More anecdotal, less direct answer
+  "summary": "Idk about *best*, but my roommate basically lived in VP last semester and didn't completely lose it, so maybe it's okay? lol", # More anecdotal, less direct answer
   "author": "Maria", # Invented first name
-  "score": 4,       # Invented plausible score
+  "score": 4,       # Invented plausible score between 1 and 10
   "link": "N/A"
 }}
 
