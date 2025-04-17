@@ -176,7 +176,7 @@ def send_feedback_emails():
                 logger.error(f"🚨 Failed to send email to {user_email} ({user_id}): {email_error}")
 
             # --- Add Rate Limiting Delay ---
-            time.sleep(0.6) # Sleep for 600ms to stay below 2 requests/second limit
+            time.sleep(2) # Sleep for 600ms to stay below 2 requests/second limit
             # ------------------------------
 
     except Exception as e:
