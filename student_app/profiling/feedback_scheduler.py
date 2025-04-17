@@ -85,7 +85,7 @@ if not RESEND_API_KEY:
     logger.error("❌ RESEND_API_KEY is not configured in .env")
     sys.exit(1) # Exit if Resend key is missing
 resend.api_key = RESEND_API_KEY
-FROM_EMAIL = "mathieu.perez@my-lucy.com" # Or your preferred sender email
+FROM_EMAIL = "team@updates.my-lucy.com" # Or your preferred sender email
 
 # --- Core Logic ---
 
