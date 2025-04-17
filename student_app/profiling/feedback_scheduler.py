@@ -7,6 +7,7 @@ from firebase_admin import credentials, firestore
 import resend
 from dotenv import load_dotenv
 import json
+import time
 
 # --- Initial Setup ---
 
@@ -84,7 +85,7 @@ if not RESEND_API_KEY:
     logger.error("❌ RESEND_API_KEY is not configured in .env")
     sys.exit(1) # Exit if Resend key is missing
 resend.api_key = RESEND_API_KEY
-FROM_EMAIL = "team@updates.my-lucy.com" # Or your preferred sender email
+FROM_EMAIL = "mathieu.perez@my-lucy.com" # Or your preferred sender email
 
 # --- Core Logic ---
 
@@ -133,7 +134,7 @@ def send_feedback_emails():
             logger.info(f"✅ Found eligible user: {user_email} ({user_id})")
 
             # Compose Email - Updated Content (Less Formal, More Engaging)
-            subject = "Your thoughts on Lucy? (Quick chat? 🙏)"
+            subject = "Your thoughts on Lucy? (from a fellow student)"
             html_body = f"""
             <html>
             <body>
@@ -173,6 +174,10 @@ def send_feedback_emails():
 
             except Exception as email_error:
                 logger.error(f"🚨 Failed to send email to {user_email} ({user_id}): {email_error}")
+
+            # --- Add Rate Limiting Delay ---
+            time.sleep(0.6) # Sleep for 600ms to stay below 2 requests/second limit
+            # ------------------------------
 
     except Exception as e:
         logger.exception(f"🚨 An unexpected error occurred during the feedback email process: {e}")
