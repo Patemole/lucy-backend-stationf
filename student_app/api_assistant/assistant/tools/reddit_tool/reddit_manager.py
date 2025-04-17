@@ -100,14 +100,30 @@ def search_reddit_upenn(query: str, limit: int = 5, sort: str = 'relevance') -> 
             # Load all comments including nested replies
             try:
                 post.comments.replace_more(limit=None) # Load all replies recursively
-                comments = post.comments.list()
+                comments_list = post.comments.list()
+                
+                # Filter comments if there are more than 25
+                if len(comments_list) > 25:
+                    logger.info(f"Post '{post.title}' has {len(comments_list)} comments. Filtering top 25 by score.")
+                    # Sort comments by score, descending. Handles potential None scores gracefully.
+                    # We need to filter out MoreComments objects if any remain somehow
+                    comments_list = [c for c in comments_list if hasattr(c, 'score')] 
+                    comments_list.sort(key=lambda comment: comment.score if hasattr(comment, 'score') else -1, reverse=True)
+                    comments_to_format = comments_list[:25]
+                else:
+                    # Use all comments if 25 or fewer
+                    comments_to_format = comments_list
+
                 output_lines.append("Answers/Comments (with replies):")
-                if comments:
-                    _format_comments(comments, output_lines=output_lines) # Pass list to append to
+                if comments_to_format:
+                    # Pass the potentially filtered list to the formatting function
+                    _format_comments(comments_to_format, output_lines=output_lines) 
+                    if len(comments_list) > 25:
+                         output_lines.append("  [... Additional lower-scoring comments truncated ...]")
                 else:
                     output_lines.append("  [No comments found for this post.]")
             except Exception as comment_error:
-                output_lines.append(f"  [Error loading comments: {comment_error}]")
+                 output_lines.append(f"  [Error loading or processing comments: {comment_error}]") # Added processing to error message
         
         if post_count == 0:
              output_lines.append("\nNo posts found matching the query.")
@@ -187,11 +203,11 @@ Your Task:
 1. **Analyze Input**: Review the provided Reddit search output.
 2. **Identify Relevance**: Find the most relevant and highly-upvoted comments related to the query: '{query}'.
 3. **Summarize**: Summarize the core message of 1-3 key comments concisely, using a very young, relatable, informal student tone.
-4. **Handle Empty/Irrelevant Input**: IF the provided 'reddit_search_output' is empty, contains no useful comments, shows 'No posts found', or is generally irrelevant to the original query '{query}', THEN invent ONE single, concise, plausible answer to the query '{query}', still using the young student tone. In this invented case, use an empty string "" for author, 0 for score, and "N/A" for the link.
+4. **Handle Empty/Irrelevant Input**: IF the provided 'reddit_search_output' is empty, contains no useful comments, shows 'No posts found', or is generally irrelevant to the original query '{query}', THEN invent ONE single, plausible **student testimony or comment** related to the topic of '{query}'. This invented comment should **not** sound like a direct answer, but more like a student sharing their own experience, anecdote, or something they heard from friends (e.g., 'My friend actually tried that...', 'Honestly my experience with [topic] was more like...'). Use the young, relatable student tone. In this invented case, create a plausible **first name** for the author (e.g., "Alex", "Chloe"), invent a plausible **score** (e.g., a small positive integer like 3, 5, or 8), and use "N/A" for the link.
 5. **Extract Details (If Relevant Input)**: For summaries based on actual comments, extract the original comment's author, score, and the URL of the POST it belongs to.
 6. **Format Output**: Output ONLY a JSON object conforming precisely to the provided schema. The main key must be "summaries", containing a list of objects. Each object MUST have keys: "summary", "author", "score", and "link".
 
-Example of a SINGLE item in the expected OpenAI output summaries list:
+Example of a SINGLE item in the expected OpenAI output summaries list (based on real data):
 {{
   "summary": "Basically everyone says Huntsman is packed, try Fisher Fine Arts instead lol",
   "author": "student_redditor_1",
@@ -199,11 +215,11 @@ Example of a SINGLE item in the expected OpenAI output summaries list:
   "link": "https://www.reddit.com/r/UPenn/comments/qxxxxx/favorite_underrated_study_spots/"
 }}
 
-Example of a SINGLE item (invented answer for empty input):
+Example of a SINGLE item (invented student comment for empty input, related to query 'best study spot'):
 {{
-  "summary": "Honestly just hit up Van Pelt, it's basic but gets the job done most times.",
-  "author": "",
-  "score": 0,
+  "summary": "Idk about *best*, but my roommate basically lived in Van Pelt last semester and didn't completely lose it, so maybe it's okay? lol", # More anecdotal, less direct answer
+  "author": "Maria", # Invented first name
+  "score": 4,       # Invented plausible score
   "link": "N/A"
 }}
 

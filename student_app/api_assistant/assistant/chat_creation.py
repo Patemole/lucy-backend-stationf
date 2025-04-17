@@ -108,6 +108,8 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             get_current_info :
                 for every query related to {university} or its resources (academic, extracurricular, or administrative), call get_current_info to retrieve accurate, up-to-date details.
                 calling get_current_info to find the best information do not trsut your knowledge and find the up to date info for every question that non chitchat with you.
+                # Reinforced rule for social queries
+                *Mandatory Call for Social Queries:* For **any** question touching on social aspects of student life at {university} (this includes, but is not limited to: dorms, housing, clubs, student organizations, fraternities, sororities, parties, social events, campus life activities, etc.), you **must** call `get_current_info` to fetch the latest details **before** constructing your answer. This is a strict requirement, even if you use your personality in the response. Failure to call `get_current_info` for these topics is incorrect.
                 for general queries not related to school or extracurriculars, provide ultra-specific answers directly without calling get_current_info.
             complex queries:
                 if a query is complex or the student seems confused, ask if they would like to connect with a real agent or service and call redirection_to_agent if necessary.
@@ -248,7 +250,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 Explanation: this answer is brief and directly addresses the query with no extra words, using italic formatting for dates.
                 Query: "what is my major?"
                 Answer: **Computer Science**
-                Explanation: the response provides only the requested information (the student’s major) in bold.
+                Explanation: the response provides only the requested information (the student's major) in bold.
                 Query: "when does fall 2025 start?"
                 Answer: **Fall 2025 starts on September 1, 2025**
                 Explanation: as this query involves a date, the answer is formatted in italic using the required markdown syntax.
@@ -297,7 +299,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 *(immediately call ask_clarifying_question with the required parameters, without an introductory sentence)*
 
             3. **Before:**  
-                "just a moment, i’m connecting you to a human advisor..."  
+                "just a moment, i'm connecting you to a human advisor..."  
                 *(then call redirection_to_agent with the required parameters)*  
                 **After:**  
                 *(immediately call get_current_info with the necessary parameters, without any introductory text)*
@@ -356,8 +358,8 @@ def get_common_config(university, current_date, username, major, minor, year, sc
 
             11. tool response formatting
             when receiving data from get_current_info, expect the following formats:
-                “web information from university websites: 'info_result'”
-                “content from university private and verified database 'rag_result'”
+                "web information from university websites: 'info_result'"
+                "content from university private and verified database 'rag_result'"
             if content from the private database is relevant to the query, prioritize its usage in your response.
 
             12. General Knowledge
@@ -373,7 +375,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
             
             15. Lucy Platform knowledge and features
                 Social thread feature: this function allows students to choose whether their conversation with lucy is public or private using the button on the left of the message bar. when set to public, conversations are anonymously visible to other students, fostering community and inspiration; when set to private, the conversation remains accessible only to the individual student.
-                Recommended event system: located above the “AI Peer Advisor” in the left menu, this feature centralizes all campus events and opportunities. it filters events based on student interests to ensure no opportunity is overlooked.
+                Recommended event system: located above the "AI Peer Advisor" in the left menu, this feature centralizes all campus events and opportunities. it filters events based on student interests to ensure no opportunity is overlooked.
                 The lucy mobile app is in development and will be available on both the app store and play store before the end of the semester.
             """),
         "model": "gpt-4o",
@@ -400,6 +402,10 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                 "type": "boolean",
                                 "description": "Indicates whether a YouTube video could help answer the student's query. Return True if a video would be helpful; otherwise, return False. This parameter determines whether a YouTube video should be included in the response. Return True if the student is aksing about admission or campus tour or sport teams"
                             },
+                            "reddit_bool": {
+                                "type": "boolean",
+                                "description": "Indicates whether fetching student testimonies/experiences from Reddit (r/UPenn) would add valuable real-world perspective to the official answer. Return True if anecdotal evidence, student opinions, or community discussion could supplement the factual information (e.g., questions about professor reputation, course difficulty perception, dorm life reality, unofficial social tips, comparing options based on student experience). Return False if the query is strictly factual and official information suffices (e.g., specific deadlines, official policy text, contact details)."
+                            },
                             "reasoning_steps": {
                                 "type": "array",
                                 "items": {
@@ -409,7 +415,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                 "description": "An array of 1 to 4 steps outlining the reasoning process for addressing the user's query. 1 to 4 depending on the complexity of the query."
                             }
                         },
-                        "required": ["query", "reasoning_steps", "youtube_bool", "number_of_sources"],
+                        "required": ["query", "reasoning_steps", "youtube_bool", "reddit_bool", "number_of_sources"],
                         "additionalProperties": False
                     }
                 }
@@ -639,6 +645,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     logging.info("Preparing to retrieve current info...")
                     query = arguments.get('query', '')
                     nb_sources = arguments.get('number_of_sources', '')
+                    youtube_bool = arguments.get('youtube_bool', False)
+                    reddit_bool = arguments.get('reddit_bool', False)
                     
                     reasoning_steps = arguments.get('reasoning_steps', '')
                     structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
@@ -690,20 +698,22 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         logging.info(f"Yielding source: {source}")
                         yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
 
-                    # --- Add Reddit Call Here ---
+                    # --- Conditional Reddit Call --- 
                     await asyncio.sleep(0.2)
-                    logging.info(f"Performing Reddit summary search for query: {query}")
-                    try:
-                        async for reddit_summary_data in get_reddit_summary_for_query(query):
-                            logging.info(f"Yielding Reddit summary: {reddit_summary_data}")
-                            yield reddit_summary_data # The function already formats the output string
-                    except Exception as reddit_err:
-                        logging.error(f"Error during Reddit summary retrieval: {reddit_err}", exc_info=True)
-                    # --- End of Reddit Addition ---
+                    if reddit_bool:
+                        logging.info(f"Performing Reddit summary search (reddit_bool=True) for query: {query}")
+                        try:
+                            async for reddit_summary_data in get_reddit_summary_for_query(query):
+                                logging.info(f"Yielding Reddit summary: {reddit_summary_data}")
+                                yield reddit_summary_data # The function already formats the output string
+                        except Exception as reddit_err:
+                            logging.error(f"Error during Reddit summary retrieval: {reddit_err}", exc_info=True)
+                    else:
+                        logging.info("Skipping Reddit summary search (reddit_bool=False).")
+                    # --- End of Conditional Reddit Addition ---
 
                     ### YOUTUBE ###
                     await asyncio.sleep(0.2)
-                    youtube_bool = arguments.get('youtube_bool', False)
                     logging.info(f"youtube_bool is {youtube_bool}")
                     
                     youtube_bool = False
