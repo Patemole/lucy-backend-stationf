@@ -1,3 +1,4 @@
+# Trigger cron index refresh
 name: Daily Feedback Email Scheduler
 
 on:
