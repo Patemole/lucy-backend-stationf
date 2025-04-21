@@ -95,21 +95,42 @@ def scrape_instagram(username, uid):
     logger.info(f"Starting scrape_instagram for username: {username}, uid: {uid}")
     
     try:
-        # Poll the actor run status until it is finished.
+        # Poll the actor run status until it is finished, with a timeout.
         run_url = f'https://api.apify.com/v2/actor-runs/{ACTOR_RUN_ID}?token={APIFY_API_KEY}'
         logger.info("Waiting for actor run to complete...")
+        
+        start_time = time.time() # Record start time for timeout
+        timeout_seconds = 10 # 5 minutes timeout
+        
         while True:
+            # Check for timeout
+            if time.time() - start_time > timeout_seconds:
+                logger.warning(f"Timeout ({timeout_seconds}s) reached waiting for Apify actor run {ACTOR_RUN_ID} to complete for user {username}. Moving on.")
+                return None # Exit function if timeout is reached
+                
             response = requests.get(run_url)
+            # Add basic check for non-200 status codes from the polling request itself
+            if response.status_code != 200:
+                 logger.error(f"Error polling Apify run status ({response.status_code}): {response.text}. Trying again shortly.")
+                 time.sleep(5) # Wait longer if there was an API error
+                 continue
+                 
             run_data = response.json()
             status = run_data.get('data', {}).get('status')
+
             if status == 'SUCCEEDED':
                 logger.info("Run completed successfully.")
                 break
             elif status == 'FAILED':
-                logger.error("Run failed.")
-                return None
-            logger.info("Run is still in progress. Waiting...")
-            time.sleep(10)  # wait for 10 seconds before checking again
+                logger.error(f"Apify actor run {ACTOR_RUN_ID} failed for user {username}.")
+                return None # Exit if run failed
+            elif status in ['ABORTED', 'TIMED-OUT', 'TIMING-OUT', 'ABORTING']:
+                logger.warning(f"Apify actor run {ACTOR_RUN_ID} is in non-successful terminal state: {status} for user {username}. Aborting wait.")
+                return None # Exit for other non-successful terminal states
+            
+            # If still running or in another state, log and wait
+            logger.info(f"Run status is {status}. Waiting...")
+            time.sleep(5)  # Check every 5 seconds instead of 1 to reduce polling frequency
 
         # Retrieve the dataset items.
         dataset_url = f'https://api.apify.com/v2/datasets/{DATASET_ID}/items?token={APIFY_API_KEY}'
@@ -268,6 +289,9 @@ def scrape_linkedin_profile(linkedin_url, uid):
         logger.info(f"scrape_linkedin_profile finished successfully for {linkedin_url}, uid: {uid}.")
         return result
 
+    except httpx.TimeoutException:
+        logger.error(f'🚨 Timeout exception while scraping LinkedIn profile: {linkedin_url}')
+        return {}
     except httpx.RequestError as e:
         logger.exception(f'🚨 Request exception while scraping LinkedIn profile: {e}') # Log exception info
         return {}
@@ -318,8 +342,16 @@ def enrich_person_data(first_name: str, last_name: str, school: str, uid: str):
     
     logger.info(f"Calling PDL enrich API: {url}")
     try:
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, 
+            headers=headers, 
+            json=payload, 
+            timeout=10 # Added 30 second timeout
+        )
         logger.info(f"PDL API response status: {response.status_code}")
+    except requests.exceptions.Timeout:
+        logger.error(f"🚨 Timeout exception while calling PDL API for {first_name} {last_name}")
+        return False # Indicate failure/no linkedin found
     except requests.RequestException as req_err:
         logger.exception(f"🚨 PDL API request failed: {req_err}")
         return False # Indicate failure/no linkedin found
