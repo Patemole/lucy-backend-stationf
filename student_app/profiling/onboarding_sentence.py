@@ -95,7 +95,7 @@ def fetch_user_data_sync(user_id: str):
             logging.info(f"Successfully fetched user data for uid: {user_id}")
             return doc_snapshot.to_dict()
         else:
-            logging.warning(f"Firestore document for uid {user_id} not found.")
+            logging.warning(f"Firestore document for uid {user_id} nothing found.")
             return None
     except Exception as e:
         logging.exception(f"Error fetching user data from Firestore for uid {user_id}: {e}")
