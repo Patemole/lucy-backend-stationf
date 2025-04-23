@@ -19,7 +19,9 @@ from datetime import datetime
 from uuid import uuid4
 from dotenv import load_dotenv
 import resend
-
+from pydantic import BaseModel, HttpUrl
+import httpx
+from fastapi import FastAPI, HTTPException, Request, Response
 from student_app.profiling.profile_generation import scrape_instagram, scrape_linkedin_profile, enrich_person_data
 
 
@@ -330,6 +332,66 @@ async def lti_launch(request: Request):
     except Exception as e:
         logging.exception(f"Erreur interne lors du traitement LTI: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+class ImageUrlPayload(BaseModel):
+    imageUrl: HttpUrl # Valide automatiquement que c'est une URL HTTP(S)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+@app.post("/proxy-image",
+          # Spécifier le type de réponse pour la documentation OpenAPI
+          responses={
+              200: {
+                  "content": {"image/*": {}},
+                  "description": "Image data streamed successfully.",
+              },
+              400: {"description": "Invalid request body or URL"},
+              404: {"description": "Image not found at the provided URL"},
+              500: {"description": "Internal server error or failed to fetch image"},
+          })
+async def proxy_image_download(payload: ImageUrlPayload):
+    """
+    Downloads an image from the provided URL and streams it back.
+    Acts as a proxy to bypass CORS issues in the frontend.
+    """
+    image_url = str(payload.imageUrl) # Convertir HttpUrl en string pour httpx
+    logger.info(f"Received request to proxy image from: {image_url}")
+    # Utiliser un client httpx asynchrone
+    async with httpx.AsyncClient() as client:
+        try:
+            # Faire la requête GET vers l'URL externe
+            response = await client.get(image_url, follow_redirects=True, timeout=15.0) # Ajout timeout
+            # Vérifier si la requête a réussi
+            response.raise_for_status() # Lève une exception pour les codes 4xx/5xx
+            # Vérifier le type de contenu (optionnel mais recommandé)
+            content_type = response.headers.get("content-type")
+            if not content_type or not content_type.startswith("image/"):
+                 logger.warning(f"URL {image_url} did not return an image. Content-Type: {content_type}")
+                 # On peut soit rejeter, soit tenter quand même
+                 # raise HTTPException(status_code=400, detail=f"URL did not return an image. Content-Type: {content_type}")
+                 # Pour l'instant, on essaie quand même de renvoyer, le front gèrera
+            # Renvoyer le contenu de l'image directement
+            # FastAPI gère intelligemment le streaming pour les grands fichiers
+            # On récupère le contenu brut (bytes)
+            image_bytes = await response.aread()
+            logger.info(f"Successfully fetched image from {image_url}. Size: {len(image_bytes)} bytes. Content-Type: {content_type}")
+            # Renvoyer une réponse avec les bytes et le bon Content-Type
+            return Response(content=image_bytes, media_type=content_type)
+        except httpx.HTTPStatusError as e:
+             logger.error(f"HTTP error fetching {image_url}: {e.response.status_code} - {e.response.text}")
+             # Renvoyer l'erreur HTTP d'origine si possible, ou une erreur générique
+             raise HTTPException(status_code=e.response.status_code, detail=f"Failed to fetch image from source: Status {e.response.status_code}")
+        except httpx.RequestError as e:
+            # Erreurs réseau, timeout, etc.
+            logger.error(f"Network error fetching {image_url}: {e}")
+            raise HTTPException(status_code=500, detail=f"Network error while trying to fetch image: {e}")
+        except Exception as e:
+            # Autres erreurs inattendues
+            logger.exception(f"Unexpected error processing proxy request for {image_url}") # Log l'exception complète
+            raise HTTPException(status_code=500, detail="Internal server error processing image proxy request.")
+
 
 
 def create_app():
