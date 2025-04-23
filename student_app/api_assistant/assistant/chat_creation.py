@@ -648,22 +648,23 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     youtube_bool = arguments.get('youtube_bool', False)
                     reddit_bool = arguments.get('reddit_bool', False)
                     
+                    # Yield reasoning steps first
                     reasoning_steps = arguments.get('reasoning_steps', '')
                     structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
                     yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
                     logging.info(f"Yielded reasoning steps for query: {query}")
                     
+                    # --- Start Primary Info Tasks --- 
                     info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
-                    logging.info(f"Created async task for get_up_to_date_info with nb_sources: {nb_sources}")
                     rag_task = asyncio.create_task(search_top_pages(query, university))
-                    logging.info("Created async task for retrieve_chunks")
-
+                    
+                    # --- Process and Yield Web Info Results First --- 
                     output = await info_task
                     logging.info(f"Received info_task output: {output}")
                     info_result = ";".join([f"{result.get('url')}:{result.get('content')}" for result in output])
                     logging.info(f"Retrieved information: {info_result}")
 
-                    ### CONFIDENCE SCORE ###
+                    # --- Yield Confidence Score --- 
                     confidence_score = output[0].get("score") if output else None
                     if confidence_score is not None:
                         confidence_score = round(confidence_score * 100)
@@ -673,14 +674,12 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         None
                     
                     logging.info(f"Confidence score computed: {confidence_score} for input: {input_message}")                
-                    # Convert confidence_score to string and yield it in the desired format
-                    if confidence_score is not None:  # Ensure the score exists
+                    if confidence_score is not None: 
                         structured_confidence = {"confidenceScore": str(confidence_score)}
                         yield f"\n<CONFIDENCE>{json.dumps({'accuracy_score': structured_confidence})}<CONFIDENCE_END>\n"
                         logging.info(f"Yielded confidence score: {structured_confidence}")
 
-                    ### SOURCES ###
-                    logging.info(f"Retrieving sources for: {input_message}")
+                    # --- Yield Sources --- 
                     sources = [{"name": result.get("title"), "url": result.get("url")} for result in output]
                     if sources:
                         logging.info(f"Sources: {sources}")
@@ -694,60 +693,129 @@ async def handle_requires_action(client, university, username, major, minor, yea
 
                     await asyncio.sleep(0.2)
                     for source in sources_list:
-                        await asyncio.sleep(0.1)
-                        logging.info(f"Yielding source: {source}")
-                        yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
-
-                    # --- Conditional Reddit Call --- 
-                    await asyncio.sleep(0.2)
-                    if reddit_bool:
-                        logging.info(f"Performing Reddit summary search (reddit_bool=True) for query: {query}")
-                        try:
-                            async for reddit_summary_data in get_reddit_summary_for_query(query):
-                                logging.info(f"Yielding Reddit summary: {reddit_summary_data}")
-                                yield reddit_summary_data # The function already formats the output string
-                        except Exception as reddit_err:
-                            logging.error(f"Error during Reddit summary retrieval: {reddit_err}", exc_info=True)
-                    else:
-                        logging.info("Skipping Reddit summary search (reddit_bool=False).")
-                    # --- End of Conditional Reddit Addition ---
-
-                    ### YOUTUBE ###
-                    await asyncio.sleep(0.2)
-                    logging.info(f"youtube_bool is {youtube_bool}")
-                    
-                    youtube_bool = False
-                    if youtube_bool:
-                        youtube_query = query + " " + university 
-                        logging.info(f"Performing YouTube video search with: {youtube_query}")
-
-                        result_youtube_data = await get_youtube_videos(youtube_query, input_message)
-                        logging.info(f"Youtube search result: {result_youtube_data}")
-
-                        if result_youtube_data["videos"]:
-                            logging.info("Yielding standard YouTube videos")
-                            yield f"\n<YOUTUBE>{json.dumps({'youtube': result_youtube_data['videos']})}<YOUTUBE_END>\n"
-
-                        if result_youtube_data["shorts"]:
-                            logging.info("Yielding YouTube shorts as Instagram reels")
-                            yield f"\n<INSTA>{json.dumps({'insta': result_youtube_data['shorts']})}<INSTA_END>\n"
-
-                    rag_result = await rag_task
-                    """
-                    logging.info(f"RAG result: {rag}")
-                    rag_result = " ".join([chunk["text"] for chunk in rag["retrieved_chunks"]]) if rag["status"] == "success" else ""
+                         await asyncio.sleep(0.1)
+                         logging.info(f"Yielding source: {source}")
+                         yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
+                         
+                    # --- Get RAG Result --- 
+                    rag_result_data = await rag_task # Wait for RAG data
+                    #rag_result = " ".join([chunk["text"] for chunk in rag_result_data.get("retrieved_chunks", [])]) if rag_result_data.get("status") == "success" else ""
+                    rag_result = rag_result_data
                     logging.info(f"Aggregated RAG data: {rag_result}")
-                    """
 
+                    # --- Construct MAIN Content and Append Tool Output --- 
+                    # Note: Content does NOT include Reddit/Youtube which are yielded separately
                     content = f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result}"
-                    logging.info(f"Web information from university websites: {info_result}")
-                    logging.info(f"Content from university private and verified database: {rag_result}")
-
+                    logging.info(f"Constructed main content for tool output.")
                     tool_outputs.append({
                         "role": "function",
                         "name": function_name,
                         "content": json.dumps(content)
                     })
+                    logging.info(f"Appended primary tool output for {function_name}")
+                    # ----------------------------------------------------------
+
+                    # Prepare background queue & tasks for Reddit and YouTube so we don't block the rest of the flow
+                    reddit_queue: asyncio.Queue[str] | None = None
+                    reddit_task: asyncio.Task | None = None
+                    youtube_queue: asyncio.Queue[str] | None = None
+                    youtube_task: asyncio.Task | None = None
+
+                    # --- BACKGROUND Reddit fetch ---
+                    if reddit_bool:
+                        logging.info("Launching Reddit summary fetch in background (non‑blocking)…")
+                        reddit_queue = asyncio.Queue()
+
+                        async def _fetch_reddit_to_queue(q: asyncio.Queue[str]):
+                            try:
+                                async for rs in get_reddit_summary_for_query(query):
+                                    await q.put(rs)
+                            except Exception as bg_err:
+                                logging.error(f"Background Reddit task error: {bg_err}")
+                            finally:
+                                await q.put(None)  # Sentinel to mark completion
+
+                        reddit_task = asyncio.create_task(_fetch_reddit_to_queue(reddit_queue))
+                    else:
+                        logging.info("Reddit fetch not requested (reddit_bool=False)")
+
+                    # --- BACKGROUND YouTube fetch ---
+                    if youtube_bool:
+                        logging.info("Launching YouTube search in background (non‑blocking)…")
+                        youtube_queue = asyncio.Queue()
+
+                        async def _fetch_youtube_to_queue(q: asyncio.Queue[str]):
+                            try:
+                                youtube_query = query + " " + university
+                                yt_data = await get_youtube_videos(youtube_query, input_message)
+                                if yt_data.get("videos"):
+                                    await q.put(f"\n<YOUTUBE>{json.dumps({'youtube': yt_data['videos']})}<YOUTUBE_END>\n")
+                                if yt_data.get("shorts"):
+                                    await q.put(f"\n<INSTA>{json.dumps({'insta': yt_data['shorts']})}<INSTA_END>\n")
+                            except Exception as yt_err:
+                                logging.error(f"Background YouTube task error: {yt_err}")
+                            finally:
+                                await q.put(None)  # Sentinel
+
+                        youtube_task = asyncio.create_task(_fetch_youtube_to_queue(youtube_queue))
+                    else:
+                        logging.info("YouTube fetch not requested (youtube_bool=False)")
+
+                    # ----------------------  FINAL LLM RESPONSE  ----------------------
+                    if not deep_search_encountered:
+                        logging.info("Appending tool results and requesting final LLM synthesis…")
+                        messages.extend(tool_outputs)
+                        final_stream = await client.chat.completions.create(
+                            model=config["model"],
+                            messages=messages,
+                            stream=True
+                        )
+
+                        # Stream chunks from LLM while intermittently draining Reddit / YouTube queues
+                        async for final_chunk in final_stream:
+                            delta = final_chunk.choices[0].delta
+                            if delta and delta.content:
+                                yield delta.content + "|"
+
+                            # Drain any ready Reddit items
+                            if reddit_queue:
+                                while not reddit_queue.empty():
+                                    item = await reddit_queue.get()
+                                    if item is None:  # sentinel means task finished
+                                        reddit_queue = None
+                                        break
+                                    yield item
+
+                            # Drain any ready YouTube items
+                            if youtube_queue:
+                                while not youtube_queue.empty():
+                                    item = await youtube_queue.get()
+                                    if item is None:
+                                        youtube_queue = None
+                                        break
+                                    yield item
+
+                        # After LLM stream completes, wait for background tasks (short timeout) and flush remaining items
+                        async def _flush_queue(q: asyncio.Queue | None):
+                            if not q:
+                                return
+                            try:
+                                while True:
+                                    item = await asyncio.wait_for(q.get(), timeout=0.1)
+                                    if item is None:
+                                        break
+                                    yield item
+                            except asyncio.TimeoutError:
+                                pass
+
+                        if reddit_task:
+                            await reddit_task
+                            async for leftover in _flush_queue(reddit_queue):
+                                yield leftover
+                        if youtube_task:
+                            await youtube_task
+                            async for leftover in _flush_queue(youtube_queue):
+                                yield leftover
 
                 elif function_name == "ask_clarifying_question":
                     logging.info("Handling ask_clarifying_question")
