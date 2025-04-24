@@ -657,7 +657,7 @@ async def proxy_image_download(payload: ImageUrlPayload):
 
 
 # TRAITEMENT D'UN MESSAGE ÉLÈVE - Rajouter ici la fonction pour déterminer la route à choisir 
-@app.post("/send_message_socratic_langgraph", methods=["OPTIONS"])
+@app.api.route("/send_message_socratic_langgraph", methods=["OPTIONS"])
 async def chat(request: Request, response: Response, input_query: InputQuery) -> StreamingResponse:
     chat_id = input_query.chat_id
     course_id = input_query.course_id
