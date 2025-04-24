@@ -409,6 +409,67 @@ async def classify_query(question: str) -> dict:
 
 
 # ────────────── Authentification and Onboarding Endpoints ──────────────------------------------------------------
+@app.api_route("/send-email", methods=["OPTIONS"])
+async def handle_send_email_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/linkedin_scraping_sign_up", methods=["OPTIONS"])
+async def handle_linkedin_scraping_sign_up_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/instagram_scraping_onboarding", methods=["OPTIONS"])
+async def handle_instagram_scraping_onboarding_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/linkedin_scraping_onboarding", methods=["OPTIONS"])
+async def handle_linkedin_scraping_onboarding_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/lti/launch", methods=["OPTIONS"])
+async def handle_lti_launch_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/proxy-image", methods=["OPTIONS"])
+async def handle_proxy_image_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/send_message_socratic_langgraph", methods=["OPTIONS"])
+async def handle_send_message_socratic_langgraph_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/get_chat_history/{chat_id}", methods=["OPTIONS"])
+async def handle_get_chat_history_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/delete_chat_history/{chat_id}", methods=["OPTIONS"])
+async def handle_delete_chat_history_preflight(chat_id: str):
+    return Response(status_code=200)
+
+@app.api_route("/first_lucy_message_onboarding", methods=["OPTIONS"])
+async def handle_first_lucy_message_onboarding_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/get_calendar_events", methods=["OPTIONS"])
+async def handle_get_calendar_events_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/save_feedback", methods=["OPTIONS"])
+async def handle_save_feedback_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/save_ai_message", methods=["OPTIONS"])
+async def handle_save_ai_message_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/student_profile", methods=["OPTIONS"])
+async def handle_student_profile_preflight():
+    return Response(status_code=200)
+
+
+@app.get("/health-check")
+async def health_check():
+    return {"status": "ok"}
+
 
 
 @app.post("/send-email")
@@ -653,11 +714,11 @@ async def proxy_image_download(payload: ImageUrlPayload):
             # Autres erreurs inattendues
             logger.exception(f"Unexpected error processing proxy request for {image_url}") # Log l'exception complète
             raise HTTPException(status_code=500, detail="Internal server error processing image proxy request.")
-
+        
 
 
 # TRAITEMENT D'UN MESSAGE ÉLÈVE - Rajouter ici la fonction pour déterminer la route à choisir 
-@app.api.route("/send_message_socratic_langgraph", methods=["OPTIONS"])
+@app.post("/send_message_socratic_langgraph")
 async def chat(request: Request, response: Response, input_query: InputQuery) -> StreamingResponse:
     chat_id = input_query.chat_id
     course_id = input_query.course_id
@@ -820,6 +881,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
 
 
+
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
 @app.get("/get_chat_history/{chat_id}")
 async def get_chat_history_route(chat_id: str):
@@ -916,8 +978,6 @@ async def save_ai_message(ai_message: InputQueryAI):
     #number_of_question_per_chat_id = await count_student_questions(chat_history)
     #number_of_question_per_chat_id = number_of_question_per_chat_id + 1
 
-    
-
     try:
         message_id = await store_message_async(chat_id, username=username, course_id=course_id, message_body=output_message, step_metadata=step_metadata, sources=sources, confidence_score=confidence_score)
         print(f"Stored message with ID: {message_id}")
@@ -957,69 +1017,6 @@ async def create_student_profile(profile: StudentProfile):
     except Exception as e:
         logging.error(f"Error creating student profile: {str(e)}")
         raise HTTPException(status_code=500, detail="Error creating student profile")
-
-
-
-# Function to split text into chunks of 1-3 words, preserving formatting
-def split_preserving_formatting(text):
-    chunks = []
-    lines = text.splitlines()
-
-    for line in lines:
-        if line.startswith("-"):
-            bullet_content = line[1:].strip()
-            words = bullet_content.split()
-            i = 0
-            while i < len(words):
-                chunk_size = min(3, len(words) - i)
-                chunks.append("- " + ' '.join(words[i:i + chunk_size]) if i == 0 else ' '.join(words[i:i + chunk_size]))
-                i += chunk_size
-        else:
-            words = line.split()
-            i = 0
-            while i < len(words):
-                chunk_size = min(3, len(words) - i)
-                chunks.append(' '.join(words[i:i + chunk_size]))
-                i += chunk_size
-        chunks.append("\n")
-    return chunks
-
-@app.post("/send_message_fake_demo")
-async def chat(request: Request, input_query: Dict) -> StreamingResponse:
-    # Method for assistant API call 
-    
-    input_message = input_query.get("message")
-    if not input_message:
-        raise HTTPException(status_code=400, detail="Message is required.")
-
-    
-    # Return the response as JSON
-    input_message = input_query.get("message")
-    print("this is the input message")
-    print(input_message)
-
-    await asyncio.sleep(2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
