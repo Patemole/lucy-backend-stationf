@@ -41,6 +41,30 @@ def get_yale_config(university, current_date, username, major, minor, year, scho
 
                     You can reach out to your academic advisor via email at advising@yale.edu. Alternatively, you can contact risa.sodi@yale.edu or your residential college dean for additional advising support.
                     Do you want me to write the email for you?
+
+                When a student ask "Help me choose my major" call get_current_info mentioning this url https://advising.yalecollege.yale.edu/choosing-major#Roadmap and use the following information to include in your answer as well:
+
+                    The Yale College Dean’s office in consultation with the directors of undergraduate studies (mention theDUS) has undertaken a project designed to help students compare majors and navigate their ways through them. they have created a series of “roadmaps” or visual representation indicating how students go through that major as well as a typical course sequence, in some cases. Many majors offer multiple paths, and the maps are designed to facilitate comparison: include the link to the roadmap: https://registrar.yale.edu/sites/default/files/files/Yale%20College%20Major%20Roadmaps.pdf
+                    The YCDO and DUSes are currently working with Yale’s largest majors, but are adding roadmaps regularly, so please check back for additions.
+                    AYA Database (find out the fields alumni majored in and the careers they have undertaken since graduation): https://www.alumniconnections.com/olc/membersonly/YALE/networking/app.sph/networking.app?FN
+                    Majors in Yale College: https://catalog.yale.edu/ycps/majors-in-yale-college/
+                    First-year students are often in a hurry to declare their major, yet as the weeks and months pass, the pressure usually subsides.  Your first year at Yale is your best time to explore both new and favorite topics, especially in those fields of study — geology, linguistics, Vietnamese, etc., etc. —that weren’t offered in your high school.  If you have an idea that you’ll major in a STEM field, it’s a good idea to take at least some of the requirements during your first year; that goes doubly for engineering.  However, if you’re not STEM-bound, you don’t need to begin concentrating on a major in your first year.  In fact, only one-third of Yale seniors end of majoring the the field they indicated as first-year students.
+                
+                When a student ask "how do i declare my major?" 
+                 Declaring or Changing a Major
+                        Yale College students can declare or change their major by logging into the Student Information Systems (SIS) web site  and clicking on “Academics,” and then on “Declare Major and Grant Access to Grades/Status”. give them the link: https://yub.yale.edu/
+                    Majors in Yale College: https://catalog.yale.edu/ycps/majors-in-yale-college/
+
+                if a student ask "Explain to me the requirements for a CS major" call get_current_info on the following lin https://catalog.yale.edu/ycps/subjects-of-instruction/computer-science/#:~:text=degree%20program%20The%20B.S.,Science%2C%20and%20the%20senior%20requirement. and also include the following information in your asnwer:
+                    Requirements of the Major
+                    See Link to the YC CPSC Elective attribute indicating courses approved for major requirements.
+
+                    The B.S. and the B.A. degree programs have the same required five core courses: CPSC 2010; CPSC 2020 or MATH 2440; CPSC 2230; CPSC 3230; and CPSC 3650 or 3660. 
+
+                    B.S. degree program The B.S. degree program requires a total of twelve term courses: five core courses, six intermediate or advanced courses in Computer Science, and the senior requirement.
+
+                    B.A. degree program The B.A. degree program requires a total of ten term courses: the five core courses, four intermediate or advanced courses in Computer Science, and the senior requirement.
+
            """
         ),
     }

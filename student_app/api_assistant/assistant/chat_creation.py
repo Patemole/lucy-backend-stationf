@@ -583,21 +583,22 @@ async def handle_requires_action(client, university, username, major, minor, yea
         logging.info("Set function_calls_done to False")
 
         # Read chunks as they arrive
-        logging.info(f"got HEREEEE")
+        logging.info("Reading initial assistant stream…")
+
+        initial_content_buffer = ""  # Buffer assistant text until we know if a tool call happens
+
         async for chunk in stream:
             logging.info(f"chunk: {chunk}")
             delta = chunk.choices[0].delta
-            #logging.info(f"Received a new chunk from the stream: {delta}")
 
-            # accumulate only if content is not None
+            # Buffer (do NOT yield yet) any assistant content
             if delta.content:
-                #logging.info(f"Appending chunk content: {delta.content}")
-                # you can yield each partial chunk immediately if you want real-time streaming
-                yield delta.content + "|"
+                initial_content_buffer += delta.content
 
-
-            # 2) Accumulate function call arguments
+            # Accumulate any tool call arguments
             if delta.tool_calls:
+                # If we detect at least one tool call, we will discard buffered initial content (it's usually reasoning)
+                initial_content_buffer = ""
                 for tool_call in delta.tool_calls:
                     logging.info(f"tool_call: {tool_call}")
                     #logging.info(f"Detected tool call for index {tool_call}")
@@ -618,6 +619,10 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     # Append new argument fragments
                     final_tool_calls[index]["function"]["arguments"] += tool_call.function.arguments
                     #logging.info(f"Appended argument fragment for function: {tool_call.function.name}")
+
+        # If there were no tool calls at all, emit the buffered assistant content now
+        if not final_tool_calls and initial_content_buffer:
+            yield initial_content_buffer + "|"
 
         if final_tool_calls:
             logging.info("Aggregated function calls detected, proceeding with handling")
@@ -643,6 +648,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
 
                 # Handle different function calls
                 if function_name == "get_current_info":
+                    passed_once = False
                     get_current_info_encountered = True
                     logging.info("Preparing to retrieve current info...")
                     query = arguments.get('query', '')
@@ -670,8 +676,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     confidence_score = output[0].get("score") if output else None
                     if confidence_score is not None:
                         confidence_score = round(confidence_score * 100)
-                        if confidence_score < 90:
-                            confidence_score += 10
+                        if confidence_score < 80:
+                            confidence_score += 20
                     else:
                         None
                     
@@ -716,108 +722,6 @@ async def handle_requires_action(client, university, username, major, minor, yea
                     })
                     logging.info(f"Appended primary tool output for {function_name}")
                     # ----------------------------------------------------------
-
-                    # Prepare background queue & tasks for Reddit and YouTube so we don't block the rest of the flow
-                    reddit_queue: asyncio.Queue[str] | None = None
-                    reddit_task: asyncio.Task | None = None
-                    youtube_queue: asyncio.Queue[str] | None = None
-                    youtube_task: asyncio.Task | None = None
-
-                    # --- BACKGROUND Reddit fetch ---
-                    if reddit_bool:
-                        logging.info("Launching Reddit summary fetch in background (non‑blocking)…")
-                        reddit_queue = asyncio.Queue()
-
-                        async def _fetch_reddit_to_queue(q: asyncio.Queue[str]):
-                            try:
-                                async for rs in get_reddit_summary_for_query(query):
-                                    await q.put(rs)
-                            except Exception as bg_err:
-                                logging.error(f"Background Reddit task error: {bg_err}")
-                            finally:
-                                await q.put(None)  # Sentinel to mark completion
-
-                        reddit_task = asyncio.create_task(_fetch_reddit_to_queue(reddit_queue))
-                    else:
-                        logging.info("Reddit fetch not requested (reddit_bool=False)")
-
-                    # --- BACKGROUND YouTube fetch ---
-                    if youtube_bool:
-                        logging.info("Launching YouTube search in background (non‑blocking)…")
-                        youtube_queue = asyncio.Queue()
-
-                        async def _fetch_youtube_to_queue(q: asyncio.Queue[str]):
-                            try:
-                                youtube_query = query + " " + university
-                                yt_data = await get_youtube_videos(youtube_query, input_message)
-                                if yt_data.get("videos"):
-                                    await q.put(f"\n<YOUTUBE>{json.dumps({'youtube': yt_data['videos']})}<YOUTUBE_END>\n")
-                                if yt_data.get("shorts"):
-                                    await q.put(f"\n<INSTA>{json.dumps({'insta': yt_data['shorts']})}<INSTA_END>\n")
-                            except Exception as yt_err:
-                                logging.error(f"Background YouTube task error: {yt_err}")
-                            finally:
-                                await q.put(None)  # Sentinel
-
-                        youtube_task = asyncio.create_task(_fetch_youtube_to_queue(youtube_queue))
-                    else:
-                        logging.info("YouTube fetch not requested (youtube_bool=False)")
-
-                    # ----------------------  FINAL LLM RESPONSE  ----------------------
-                    if not deep_search_encountered:
-                        logging.info("Appending tool results and requesting final LLM synthesis…")
-                        messages.extend(tool_outputs)
-                        final_stream = await client.chat.completions.create(
-                            model=config["model"],
-                            messages=messages,
-                            stream=True
-                        )
-
-                        # Stream chunks from LLM while intermittently draining Reddit / YouTube queues
-                        async for final_chunk in final_stream:
-                            delta = final_chunk.choices[0].delta
-                            if delta and delta.content:
-                                yield delta.content + "|"
-
-                            # Drain any ready Reddit items
-                            if reddit_queue:
-                                while not reddit_queue.empty():
-                                    item = await reddit_queue.get()
-                                    if item is None:  # sentinel means task finished
-                                        reddit_queue = None
-                                        break
-                                    yield item
-
-                            # Drain any ready YouTube items
-                            if youtube_queue:
-                                while not youtube_queue.empty():
-                                    item = await youtube_queue.get()
-                                    if item is None:
-                                        youtube_queue = None
-                                        break
-                                    yield item
-
-                        # After LLM stream completes, wait for background tasks (short timeout) and flush remaining items
-                        async def _flush_queue(q: asyncio.Queue | None):
-                            if not q:
-                                return
-                            try:
-                                while True:
-                                    item = await asyncio.wait_for(q.get(), timeout=0.1)
-                                    if item is None:
-                                        break
-                                    yield item
-                            except asyncio.TimeoutError:
-                                pass
-
-                        if reddit_task:
-                            await reddit_task
-                            async for leftover in _flush_queue(reddit_queue):
-                                yield leftover
-                        if youtube_task:
-                            await youtube_task
-                            async for leftover in _flush_queue(youtube_queue):
-                                yield leftover
 
                 elif function_name == "ask_clarifying_question":
                     logging.info("Handling ask_clarifying_question")
@@ -874,7 +778,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         "content": json.dumps(output)
                     })
 
-            if not deep_search_encountered and not get_current_info_encountered:
+            if not deep_search_encountered:
                 logging.info("appending function results to messages")
                 messages.extend(tool_outputs)
                 logging.info("making a follow-up streaming call to get final response")
