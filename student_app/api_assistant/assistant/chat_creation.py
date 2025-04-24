@@ -32,7 +32,7 @@ import json
 import logging
 import requests
 
-from .config.universities import upenn, drexel, ccp, berkeley
+from .config.universities import upenn, drexel, ccp, berkeley, yale
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -623,6 +623,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
             logging.info("Aggregated function calls detected, proceeding with handling")
             function_calls_done = True
             deep_search_encountered = False
+            get_current_info_encountered = False
             tool_outputs = []
 
             # Parse each final function call's arguments
@@ -642,6 +643,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
 
                 # Handle different function calls
                 if function_name == "get_current_info":
+                    get_current_info_encountered = True
                     logging.info("Preparing to retrieve current info...")
                     query = arguments.get('query', '')
                     nb_sources = arguments.get('number_of_sources', '')
@@ -872,7 +874,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         "content": json.dumps(output)
                     })
 
-            if not deep_search_encountered:
+            if not deep_search_encountered and not get_current_info_encountered:
                 logging.info("appending function results to messages")
                 messages.extend(tool_outputs)
                 logging.info("making a follow-up streaming call to get final response")
