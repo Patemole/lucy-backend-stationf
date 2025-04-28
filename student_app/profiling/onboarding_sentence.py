@@ -296,7 +296,7 @@ async def onboarding_sentence(user) -> str:
         " **Your LinkedIn got me stuck on that NPR internship** (very on-brand), and your Instagram made me laugh—you're part tech geek, part deep thinker, part sidewalk philosopher.\n"
         " **You are the NYU student: the artsy observer who turns everyday life into something worth sharing.**\n"
         " **I'm picturing you in the back of a café, editing your latest episode while the city hums outside 🎧📸.**\n"
-        "**Think of me as that NYU senior** who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
+        "**Think of me as that NYU senior who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
         "**✅ example 2: Penn – Fintech & Hustle**\n"
         " Okay, Jason, so I did a little 'research' on you (publicly available stuff only, promise! 😉)... and **wow, I've got so much to say!**\n"
         "**Bold:^^Your profile's a masterclass in drive^^**—I could feel the hustle through the screen.\n"
@@ -304,7 +304,7 @@ async def onboarding_sentence(user) -> str:
         " **Your LinkedIn had me zooming into that Goldman Sachs line**, and your Instagram cracked me up—half marathon, half rooftop party.\n"
         " **You are the Penn student: the tactician type who's two steps ahead, in sneakers or a blazer.**\n"
         " **I'm picturing you closing a deal while tying your running shoes on Locust Walk 🏃💼.**\n"
-        "**Think of me as that Penn senior** who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
+        "**Think of me as that Penn senior who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
         "**✅ example 3: UCLA – Thoughtful & Impact-Driven**\n"
         " Okay, Maya, so I did a little 'research' on you (publicly available stuff only, promise! 😉)... and **wow, I've got so much to say!**\n"
         "**Bold:^^Your profile feels like a journal entry^^**—honest, calm, and intentional.\n"
@@ -312,7 +312,7 @@ async def onboarding_sentence(user) -> str:
         " **Your LinkedIn says you're helping at a youth helpline** (respect!), and your Instagram made me pause—sunsets, handwritten thoughts, soft moments.\n"
         " **You are the UCLA student: the steady force who leads with empathy and quiet confidence.**\n"
         " **I'm picturing you with headphones in, journaling under a tree while the world rushes past 🌳📝.**\n"
-        "**Think of me as that UCLA senior** who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
+        "**Think of me as that UCLA senior who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
         "**✅ example 4: Columbia – Brainy & Chill**\n"
         " Okay, Alex, so I did a little 'research' on you (publicly available stuff only, promise! 😉)... and **wow, I've got so much to say!**\n"
         "**Bold:^^Your profile gave me coder-genius-meets-bagel-energy^^** and I'm obsessed.\n"
@@ -320,7 +320,7 @@ async def onboarding_sentence(user) -> str:
         " **Your LinkedIn shows AI research** (big brain!), and your Instagram made me grin—game screenshots, late-night memes, and club photos.\n"
         " **You are the Columbia student: the lowkey genius who's building stuff while making it all look easy.**\n"
         " **I'm picturing you debugging at 2am with a sesame bagel and five tabs open 🍩💻.**\n"
-        "**Think of me as that Columbia senior** who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
+        "**Think of me as that Columbia senior who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
         "**✅ example 5: Stanford – Bold & Visionary**\n"
         " Okay, Lila, so I did a little 'research' on you (publicly available stuff only, promise! 😉)... and **wow, I've got so much to say!**\n"
         "**Bold:^^Your profile gave me full founder energy^^**—I felt like I was scrolling through a pitch deck with personality.\n"
@@ -328,7 +328,7 @@ async def onboarding_sentence(user) -> str:
         " **Your LinkedIn flexed a YC-backed edtech role** (huge), and your Instagram? Neon vibes and motion blur—pure creative chaos.\n"
         " **You are the Stanford student: the fearless innovator who makes tech feel like art.**\n"
         " **I'm picturing you dancing through a hackathon in glittery sneakers with 10 tabs open ✨👟.**\n"
-        "**Think of me as that Stanford senior** who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
+        "**Think of me as that Stanford senior who's been around the block—I know the people, the vibes, and the admin traps. **If you ever need a shortcut or just someone who gets it, I'm here. Ask me anything.**\n\n"
         "**IMPORTANT FINAL INSTRUCTIONS:**\n"
         "- **Follow the 3-paragraph structure strictly.**\n"
         "- **Use the exact starting phrases** specified for Paragraph 1 and the personality sentence in Paragraph 2.\n"
@@ -365,11 +365,11 @@ async def onboarding_sentence(user) -> str:
     # Extract all image URLs from insta_profile (but not the taggedUsers' images).
     image_urls = []
     if insta_profile: # Check if insta_profile exists
-    # Add the profile picture from insta_profile.
+        # Add the profile picture from insta_profile.
         profile_section = insta_profile.get("profile", {})
-    if profile_section.get("profilePicUrlHD"):
-        image_urls.append(profile_section["profilePicUrlHD"])
-    # Loop over posts and add displayUrl and each image in images.
+        if profile_section.get("profilePicUrlHD"):
+            image_urls.append(profile_section["profilePicUrlHD"])
+        # Loop over posts and add displayUrl and each image in images.
         for post in insta_profile.get("posts", []):
             if post.get("displayUrl"):
                 image_urls.append(post["displayUrl"])
@@ -421,14 +421,11 @@ async def onboarding_sentence(user) -> str:
                             "type": "image_url",
                             "image_url": {"url": data_uri} # Send base64 data URI
                         })
-                        # Correct indentation for these lines:
                         successfully_added_images += 1
                         logging.debug(f"Successfully downloaded, encoded, and added image from {url} (as {content_type}).")
                     else:
-                        # Correct indentation for this block:
                         logging.warning(f"Downloaded content from {url} but content-type '{content_type}' is not image. Skipping.")
                         
-                # Correct alignment for except blocks:
                 except httpx.HTTPStatusError as e:
                     logging.warning(f"Failed to download image from {url}. Status: {e.response.status_code}. Skipping.")
                 except httpx.RequestError as e:
