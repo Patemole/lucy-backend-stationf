@@ -371,10 +371,10 @@ async def onboarding_sentence(user) -> str:
         image_urls.append(profile_section["profilePicUrlHD"])
     # Loop over posts and add displayUrl and each image in images.
         for post in insta_profile.get("posts", []):
-        if post.get("displayUrl"):
-            image_urls.append(post["displayUrl"])
-        if post.get("images"):
-            image_urls.extend(post["images"])
+            if post.get("displayUrl"):
+                image_urls.append(post["displayUrl"])
+            if post.get("images"):
+                image_urls.extend(post["images"])
     # Remove duplicates while preserving order.
     image_urls = list(dict.fromkeys(image_urls))
     
@@ -417,15 +417,18 @@ async def onboarding_sentence(user) -> str:
                         data_uri = f"data:{content_type};base64,{base64_image}"
                         
                         # Append to message content
-        user_message_content.append({
-            "type": "image_url",
+                        user_message_content.append({
+                            "type": "image_url",
                             "image_url": {"url": data_uri} # Send base64 data URI
                         })
+                        # Correct indentation for these lines:
                         successfully_added_images += 1
                         logging.debug(f"Successfully downloaded, encoded, and added image from {url} (as {content_type}).")
                     else:
+                        # Correct indentation for this block:
                         logging.warning(f"Downloaded content from {url} but content-type '{content_type}' is not image. Skipping.")
                         
+                # Correct alignment for except blocks:
                 except httpx.HTTPStatusError as e:
                     logging.warning(f"Failed to download image from {url}. Status: {e.response.status_code}. Skipping.")
                 except httpx.RequestError as e:
