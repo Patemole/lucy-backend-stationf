@@ -50,6 +50,8 @@ from student_app.api_assistant.assistant.assistant_manager import initialize_ass
 from .api_assistant.assistant.config import universities
 
 from student_app.profiling.profile_generation import scrape_instagram, scrape_linkedin_profile
+from functools import wraps
+import asyncio
 
 
 # Today's date
@@ -59,9 +61,6 @@ import threading
 import queue
 from functools import wraps
 from fastapi import BackgroundTasks
-
-
-
 
 
 
@@ -94,27 +93,7 @@ api_key_proxycurl = os.getenv("PROXYCURL_API_KEY")
 
 
 # FastAPI app configuration
-app = FastAPI(
-    title="Chat Service",
-    version="0.0.1"
-)
-
-'''
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
-    #allow_credentials=True,
-    #allow_methods=["*"],
-    #allow_headers=["*"],
-)
-'''
-
-import time
-from functools import wraps
-import asyncio
+chat_app = FastAPI(title="Chat Service", version="0.0.1")
 
 client = AsyncOpenAI()
 
@@ -346,7 +325,7 @@ async def classify_query(question: str) -> dict:
 
 
 # TRAITEMENT D'UN MESSAGE ÉLÈVE - Rajouter ici la fonction pour déterminer la route à choisir 
-@app.post("/send_message_socratic_langgraph")
+@chat_app.post("/send_message_socratic_langgraph")
 async def chat(request: Request, response: Response, input_query: InputQuery) -> StreamingResponse:
     chat_id = input_query.chat_id
     course_id = input_query.course_id
@@ -510,14 +489,14 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
-@app.get("/get_chat_history/{chat_id}")
+@chat_app.get("/get_chat_history/{chat_id}")
 async def get_chat_history_route(chat_id: str):
     return await get_chat_history(chat_id)
 
 
 
 # SUPPRIMER L'HISTORIQUE DE CHAT CHAQUE CHARGEMENT DE LA PAGE - TO BE DEPRECIATED
-@app.post("/delete_chat_history/{chat_id}")
+@chat_app.post("/delete_chat_history/{chat_id}")
 async def delete_chat_history_route(chat_id: str):
     try:
         await delete_all_items_and_adding_first_message(chat_id)
@@ -529,7 +508,7 @@ async def delete_chat_history_route(chat_id: str):
 
 
 # RÉCUPÉRATION DE L'HISTORIQUE DE CHAT (pour les conversations plus tard)
-@app.get("/get_all_history/{timestamp}")
+@chat_app.get("/get_all_history/{timestamp}")
 async def get_timing_history_route(timestamp: str):
     return await get_timing_history(timestamp)
 
@@ -543,7 +522,7 @@ async def get_timing_history_route(timestamp: str):
 
 
 #Outdated
-@app.post("/first_lucy_message_onboarding")
+@chat_app.post("/first_lucy_message_onboarding")
 async def onboarding_message(profile: StudentProfile, linkedin_data: dict = {}):
     try:
         onboarding_text = await onboarding_sentence(profile, linkedin_data)
@@ -586,7 +565,7 @@ async def get_calendar_events(profile: StudentProfile):
     
 
 
-@app.post("/get_calendar_events")
+@chat_app.post("/get_calendar_events")
 async def get_calendar_events(profile: StudentProfile = Body(...)):
     try:
         print(f"profile: {profile}")
@@ -601,7 +580,7 @@ async def get_calendar_events(profile: StudentProfile = Body(...)):
 
 
 
-@app.post("/save_feedback")
+@chat_app.post("/save_feedback")
 async def save_feedback_without_popup(request: Request):
     try:
         request_data = await request.json()
@@ -626,7 +605,7 @@ async def save_feedback_without_popup(request: Request):
 
 # NOUVEL ENDPOINT POUR SAUVEGARDER LE MESSAGE AI
 @timing_decorator
-@app.post("/save_ai_message")
+@chat_app.post("/save_ai_message")
 async def save_ai_message(ai_message: InputQueryAI):
     chat_id = ai_message.chatSessionId
     course_id = ai_message.courseId
@@ -673,7 +652,7 @@ async def save_ai_message(ai_message: InputQueryAI):
 
 
 #Endpoint for generate a student profile based on onboarding informations
-@app.post("/student_profile")
+@chat_app.post("/student_profile")
 async def create_student_profile(profile: StudentProfile):
     academic_advisor = profile.academic_advisor
     faculty = profile.faculty
@@ -730,7 +709,7 @@ def split_preserving_formatting(text):
         chunks.append("\n")
     return chunks
 
-@app.post("/send_message_fake_demo")
+@chat_app.post("/send_message_fake_demo")
 async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     # Method for assistant API call 
     
@@ -2158,7 +2137,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
 
 def create_app():
-    return app
+    return chat_app
 
 if __name__ == "__main__":
     import uvicorn
