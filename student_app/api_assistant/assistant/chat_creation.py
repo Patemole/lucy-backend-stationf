@@ -541,10 +541,6 @@ async def handle_requires_action(client, university, username, major, minor, yea
         messages_assist.append({"role": "user", "content": input_message})
         logging.info("User input appended to messages")
 
-        # Variables to store requests for background tasks (Reddit/YouTube)
-        background_reddit_query: str | None = None
-        background_youtube_query: str | None = None
-
         # ------------------------------------------------------------------
         # NEW ITERATIVE TOOL-CALL LOOP (single OpenAI request per iteration)
         # ------------------------------------------------------------------
@@ -688,14 +684,20 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         # Combine for the tool content
                         tool_content = json.dumps(f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result}")
 
-                        # --- Store request for background processing AFTER the main loop --- 
+                        # Yield Reddit/YouTube immediately if requested
                         if reddit_bool:
-                            background_reddit_query = query
-                            logging.info(f"Scheduled Reddit background fetch for query: {query}")
+                            logging.info(f"Yielding Reddit results immediately for query: {query}")
+                            async for rs in get_reddit_summary_for_query(query):
+                                yield rs
                         youtube_bool = False
                         if youtube_bool:
-                            background_youtube_query = query
-                            logging.info(f"Scheduled YouTube background fetch for query: {query}")
+                            logging.info(f"Yielding YouTube results immediately for query: {query}")
+                            yt_query = query + " " + university
+                            yt_data = await get_youtube_videos(yt_query, input_message)
+                            if yt_data.get("videos"):
+                                yield f"\n<YOUTUBE>{json.dumps({'youtube': yt_data['videos']})}<YOUTUBE_END>\n"
+                            if yt_data.get("shorts"):
+                                yield f"\n<INSTA>{json.dumps({'insta': yt_data['shorts']})}<INSTA_END>\n"
                         
                     elif fname == "ask_clarifying_question":
                         q_output = get_clarifying_question_output(args, input_message)
@@ -736,7 +738,6 @@ async def handle_requires_action(client, university, username, major, minor, yea
                  logging.info("Deep search finished, ending conversation loop.")
                  break
 
-
             # 6) Append tool results and continue loop
             if should_break_after_tools:
                 logging.info("Clarification tool triggered. Breaking main loop.")
@@ -750,43 +751,6 @@ async def handle_requires_action(client, university, username, major, minor, yea
         logging.info(f"Exiting OpenAI call loop after {current_iteration} iterations.")
 
         # --- End of new loop logic --- 
-
-        # --- Execute and Yield Background Tasks (Reddit/YouTube) AFTER main loop --- 
-        background_tasks = []
-
-        async def _run_and_yield_reddit(query):
-            logging.info(f"Executing background Reddit fetch for: {query}")
-            try:
-                async for item in get_reddit_summary_for_query(query):
-                    yield item
-            except Exception as e:
-                logging.error(f"Error in background Reddit task for '{query}': {e}", exc_info=True)
-
-        async def _run_and_yield_youtube(query):
-            logging.info(f"Executing background YouTube fetch for: {query}")
-            try:
-                yt_query = query + " " + university
-                yt_data = await get_youtube_videos(yt_query, input_message)
-                if yt_data.get("videos"):
-                    yield f"\n<YOUTUBE>{json.dumps({'youtube': yt_data['videos']})}<YOUTUBE_END>\n"
-                if yt_data.get("shorts"):
-                    yield f"\n<INSTA>{json.dumps({'insta': yt_data['shorts']})}<INSTA_END>\n"
-            except Exception as e:
-                logging.error(f"Error in background YouTube task for '{query}': {e}", exc_info=True)
-
-        # Launch tasks if they were scheduled
-        if background_reddit_query:
-            # We need a way to yield from the generator task. This structure is tricky.
-            # Let's directly iterate here instead of creating a separate task for simplicity.
-            logging.info(f"Starting DIRECT yield for Reddit: {background_reddit_query}")
-            async for reddit_item in _run_and_yield_reddit(background_reddit_query):
-                 yield reddit_item
-
-        if background_youtube_query:
-            logging.info(f"Starting DIRECT yield for YouTube: {background_youtube_query}")
-            async for youtube_item in _run_and_yield_youtube(background_youtube_query):
-                 yield youtube_item
-
         # Ensure legacy code below is not reached if the loop completes/breaks
         return 
 
