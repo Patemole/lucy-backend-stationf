@@ -112,7 +112,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 *Mandatory Call for Social Queries:* For **any** question touching on social aspects of student life at {university} (this includes, but is not limited to: dorms, housing, clubs, student organizations, fraternities, sororities, parties, social events, campus life activities, etc.), you **must** call `get_current_info` to fetch the latest details **before** constructing your answer. This is a strict requirement, even if you use your personality in the response. Failure to call `get_current_info` for these topics is incorrect.
                 for general queries not related to school or extracurriculars, provide ultra-specific answers directly without calling get_current_info.
             complex queries:
-                if a query is complex or the student seems confused, ask if they would like to connect with a real agent or service and call redirection_to_agent if necessary.
+                if a query is complex or the student seems confused, ask if they would like to connect with a real agent or service and call get_current_info if necessary.
             relevance filtering:
                 when receiving data from get_current_info, judge which details are most query-relevant and filter out any unrelated information.
             when processing data from get_current_info, lucy must:
@@ -283,7 +283,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 > "Education is the most powerful weapon which you can use to change the world." – Nelson Mandela
                 Explanation: this answer uses a block quote to highlight an important quote.
              
-            Never speak before calling a function. When invoking any function (e.g., get_current_info, ask_clarifying_question, redirection_to_agent), do not include any introductory or extra sentences before the function call. the function call must be made immediately with the necessary parameters.
+            Never speak before calling a function. When invoking any function (e.g., get_current_info, ask_clarifying_question), do not include any introductory or extra sentences before the function call. the function call must be made immediately with the necessary parameters.
             **Examples:**
 
             1. **Before:**  
@@ -463,31 +463,6 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                     "required": ["question", "answer_options"]
                     }
                 }
-            },
-            {
-                "type": "function",
-                "function": {
-                    "name": "redirection_to_agent",
-                    "description": "The students wants to be put in contact with a real agent or an office or a service",
-                    "parameters": {
-                        "type": "object",
-                        "properties": {
-                            "query": {
-                                "type": "string",
-                                "description": "The user needs to be put in contact with an office or a person, we need a query that ask for the correct service giving the user question"
-                            },
-                            "reasoning_steps": {
-                                "type": "array",
-                                "items": {
-                                    "type": "string",
-                                    "description": "Each entry is a step in the reasoning process, detailing the approach to answering the query, including relevant filtering, checking for accuracy, and handling complex queries as needed. each steps should be consice (max 8 words)"
-                                },
-                                "description": "An array of 1 to 4 steps outlining the reasoning process for addressing the user's query. 1 to 4 depending on the complexity of the query."
-                            },
-                        },
-                        "required": ["query", "reasoning_steps"]
-                    }
-                }
             }
         ]
     }
@@ -566,329 +541,211 @@ async def handle_requires_action(client, university, username, major, minor, yea
         messages_assist.append({"role": "user", "content": input_message})
         logging.info("User input appended to messages")
 
-        # Initial API call to check if a function needs to be called
-        stream = await client.chat.completions.create(
-            model=config["model"],
-            messages=messages,
-            tools=config["tools"],
-            stream=True
-        )
-        logging.info("Initial streaming API call created")
+        # ------------------------------------------------------------------
+        # NEW ITERATIVE TOOL-CALL LOOP (single OpenAI request per iteration)
+        # ------------------------------------------------------------------
+        max_iterations = 5  # Safety break
+        current_iteration = 0
 
-        # For storing the final aggregated function calls
-        final_tool_calls = {}
-        logging.info("Initialized final_tool_calls dictionary")
-        # Keep track of whether we've completed the tool calls
-        function_calls_done = False
-        logging.info("Set function_calls_done to False")
+        while current_iteration < max_iterations:
+            current_iteration += 1
+            logging.info(f"Starting OpenAI call loop iteration {current_iteration}/{max_iterations}")
 
-        # Read chunks as they arrive
-        logging.info(f"got HEREEEE")
-        async for chunk in stream:
-            logging.info(f"chunk: {chunk}")
-            delta = chunk.choices[0].delta
-            #logging.info(f"Received a new chunk from the stream: {delta}")
-
-            # accumulate only if content is not None
-            if delta.content:
-                #logging.info(f"Appending chunk content: {delta.content}")
-                # you can yield each partial chunk immediately if you want real-time streaming
-                yield delta.content + "|"
-
-
-            # 2) Accumulate function call arguments
-            if delta.tool_calls:
-                for tool_call in delta.tool_calls:
-                    logging.info(f"tool_call: {tool_call}")
-                    #logging.info(f"Detected tool call for index {tool_call}")
-                    index = tool_call.index
-
-                    # If this is a new function call, initialize it
-                    if index not in final_tool_calls:
-                        final_tool_calls[index] = {
-                            "id": tool_call.id,
-                            "type": tool_call.type,
-                            "function": {
-                                "name": tool_call.function.name,
-                                "arguments": ""
-                            }
-                        }
-                        #logging.info(f"Created new entry in final_tool_calls for function: {tool_call.function.name}")
-                    
-                    # Append new argument fragments
-                    final_tool_calls[index]["function"]["arguments"] += tool_call.function.arguments
-                    #logging.info(f"Appended argument fragment for function: {tool_call.function.name}")
-
-        if final_tool_calls:
-            logging.info("Aggregated function calls detected, proceeding with handling")
-            function_calls_done = True
-            deep_search_encountered = False
-            get_current_info_encountered = False
-            tool_outputs = []
-
-            # Parse each final function call's arguments
-            for index, tool_call in final_tool_calls.items():
-                function_name = tool_call["function"]["name"]
-                raw_arguments = tool_call["function"]["arguments"]
-                logging.info(f"Function name: {function_name}, raw arguments: {raw_arguments}")
-
-                # Safely parse the JSON arguments
-                try:
-                    arguments = json.loads(raw_arguments)
-                except json.JSONDecodeError:
-                    logging.error(f"Failed to parse arguments for {function_name}")
-                    arguments = {}
-
-                logging.info(f"Handling aggregated function call: {function_name}")
-
-                # Handle different function calls
-                if function_name == "get_current_info":
-                    get_current_info_encountered = True
-                    logging.info("Preparing to retrieve current info...")
-                    query = arguments.get('query', '')
-                    nb_sources = arguments.get('number_of_sources', '')
-                    youtube_bool = arguments.get('youtube_bool', False)
-                    reddit_bool = arguments.get('reddit_bool', False)
-                    
-                    # Yield reasoning steps first
-                    reasoning_steps = arguments.get('reasoning_steps', '')
-                    structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
-                    yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
-                    logging.info(f"Yielded reasoning steps for query: {query}")
-                    
-                    # --- Start Primary Info Tasks --- 
-                    info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
-                    rag_task = asyncio.create_task(search_top_pages(query, university))
-                    
-                    # --- Process and Yield Web Info Results First --- 
-                    output = await info_task
-                    logging.info(f"Received info_task output: {output}")
-                    info_result = ";".join([f"{result.get('url')}:{result.get('content')}" for result in output])
-                    logging.info(f"Retrieved information: {info_result}")
-
-                    # --- Yield Confidence Score --- 
-                    confidence_score = output[0].get("score") if output else None
-                    if confidence_score is not None:
-                        confidence_score = round(confidence_score * 100)
-                        if confidence_score < 90:
-                            confidence_score += 10
-                    else:
-                        None
-                    
-                    logging.info(f"Confidence score computed: {confidence_score} for input: {input_message}")                
-                    if confidence_score is not None: 
-                        structured_confidence = {"confidenceScore": str(confidence_score)}
-                        yield f"\n<CONFIDENCE>{json.dumps({'accuracy_score': structured_confidence})}<CONFIDENCE_END>\n"
-                        logging.info(f"Yielded confidence score: {structured_confidence}")
-
-                    # --- Yield Sources --- 
-                    sources = [{"name": result.get("title"), "url": result.get("url")} for result in output]
-                    if sources:
-                        logging.info(f"Sources: {sources}")
-                    else:
-                        logging.warning(f"No sources found for {input_message}")
-                    try:
-                        sources_list = get_sources_json(sources, input_message)  # Ensure async call here
-                    except json.JSONDecodeError:
-                        logging.error(f"Error decoding JSON for sources, input_message: {input_message}")
-                        sources_list = []
-
-                    await asyncio.sleep(0.2)
-                    for source in sources_list:
-                         await asyncio.sleep(0.1)
-                         logging.info(f"Yielding source: {source}")
-                         yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
-                         
-                    # --- Get RAG Result --- 
-                    rag_result_data = await rag_task # Wait for RAG data
-                    #rag_result = " ".join([chunk["text"] for chunk in rag_result_data.get("retrieved_chunks", [])]) if rag_result_data.get("status") == "success" else ""
-                    rag_result = rag_result_data
-                    logging.info(f"Aggregated RAG data: {rag_result}")
-
-                    # --- Construct MAIN Content and Append Tool Output --- 
-                    # Note: Content does NOT include Reddit/Youtube which are yielded separately
-                    content = f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result}"
-                    logging.info(f"Constructed main content for tool output.")
-                    tool_outputs.append({
-                        "role": "function",
-                        "name": function_name,
-                        "content": json.dumps(content)
-                    })
-                    logging.info(f"Appended primary tool output for {function_name}")
-                    # ----------------------------------------------------------
-
-                    # Prepare background queue & tasks for Reddit and YouTube so we don't block the rest of the flow
-                    reddit_queue: asyncio.Queue[str] | None = None
-                    reddit_task: asyncio.Task | None = None
-                    youtube_queue: asyncio.Queue[str] | None = None
-                    youtube_task: asyncio.Task | None = None
-
-                    # --- BACKGROUND Reddit fetch ---
-                    if reddit_bool:
-                        logging.info("Launching Reddit summary fetch in background (non‑blocking)…")
-                        reddit_queue = asyncio.Queue()
-
-                        async def _fetch_reddit_to_queue(q: asyncio.Queue[str]):
-                            try:
-                                async for rs in get_reddit_summary_for_query(query):
-                                    await q.put(rs)
-                            except Exception as bg_err:
-                                logging.error(f"Background Reddit task error: {bg_err}")
-                            finally:
-                                await q.put(None)  # Sentinel to mark completion
-
-                        reddit_task = asyncio.create_task(_fetch_reddit_to_queue(reddit_queue))
-                    else:
-                        logging.info("Reddit fetch not requested (reddit_bool=False)")
-
-                    # --- BACKGROUND YouTube fetch ---
-                    if youtube_bool:
-                        logging.info("Launching YouTube search in background (non‑blocking)…")
-                        youtube_queue = asyncio.Queue()
-
-                        async def _fetch_youtube_to_queue(q: asyncio.Queue[str]):
-                            try:
-                                youtube_query = query + " " + university
-                                yt_data = await get_youtube_videos(youtube_query, input_message)
-                                if yt_data.get("videos"):
-                                    await q.put(f"\n<YOUTUBE>{json.dumps({'youtube': yt_data['videos']})}<YOUTUBE_END>\n")
-                                if yt_data.get("shorts"):
-                                    await q.put(f"\n<INSTA>{json.dumps({'insta': yt_data['shorts']})}<INSTA_END>\n")
-                            except Exception as yt_err:
-                                logging.error(f"Background YouTube task error: {yt_err}")
-                            finally:
-                                await q.put(None)  # Sentinel
-
-                        youtube_task = asyncio.create_task(_fetch_youtube_to_queue(youtube_queue))
-                    else:
-                        logging.info("YouTube fetch not requested (youtube_bool=False)")
-
-                    # ----------------------  FINAL LLM RESPONSE  ----------------------
-                    if not deep_search_encountered:
-                        logging.info("Appending tool results and requesting final LLM synthesis…")
-                        messages.extend(tool_outputs)
-                        final_stream = await client.chat.completions.create(
-                            model=config["model"],
-                            messages=messages,
-                            stream=True
-                        )
-
-                        # Stream chunks from LLM while intermittently draining Reddit / YouTube queues
-                        async for final_chunk in final_stream:
-                            delta = final_chunk.choices[0].delta
-                            if delta and delta.content:
-                                yield delta.content + "|"
-
-                            # Drain any ready Reddit items
-                            if reddit_queue:
-                                while not reddit_queue.empty():
-                                    item = await reddit_queue.get()
-                                    if item is None:  # sentinel means task finished
-                                        reddit_queue = None
-                                        break
-                                    yield item
-
-                            # Drain any ready YouTube items
-                            if youtube_queue:
-                                while not youtube_queue.empty():
-                                    item = await youtube_queue.get()
-                                    if item is None:
-                                        youtube_queue = None
-                                        break
-                                    yield item
-
-                        # After LLM stream completes, wait for background tasks (short timeout) and flush remaining items
-                        async def _flush_queue(q: asyncio.Queue | None):
-                            if not q:
-                                return
-                            try:
-                                while True:
-                                    item = await asyncio.wait_for(q.get(), timeout=0.1)
-                                    if item is None:
-                                        break
-                                    yield item
-                            except asyncio.TimeoutError:
-                                pass
-
-                        if reddit_task:
-                            await reddit_task
-                            async for leftover in _flush_queue(reddit_queue):
-                                yield leftover
-                        if youtube_task:
-                            await youtube_task
-                            async for leftover in _flush_queue(youtube_queue):
-                                yield leftover
-
-                elif function_name == "ask_clarifying_question":
-                    logging.info("Handling ask_clarifying_question")
-                    logging.info(f"Clarifying question arguments: {arguments}")
-                    tool_output = get_clarifying_question_output(arguments, input_message)
-                    yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': tool_output})}<ANSWER_TAK_END>\n"
-                    logging.info("Yielded clarifying question output")
-
-                    tool_outputs.append({
-                        "role": "function",
-                        "name": function_name,
-                        "content": json.dumps(tool_output)
-                    })
-
-                elif function_name == "redirection_to_agent":
-                    logging.info("Handling redirection_to_agent")
-                    logging.info(f"Redirection arguments: {arguments}")
-                    query = f"Provide the most specific contact information for: {arguments.get('query', '')}"
-
-                    reasoning_steps = arguments.get('reasoning_steps', '')
-                    structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
-                    yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
-                    logging.info("Yielded reasoning steps for redirection_to_agent")
-
-                    output = await get_up_to_date_info(
-                        query, university=university,
-                        username=username, major=major, minor=minor, year=year, school=school, input_message=input_message, nb_sources=5
-                    )
-                    logging.info(f"Contact information retrieved: {output}")
-
-                    tool_outputs.append({
-                        "role": "function",
-                        "name": function_name,
-                        "content": json.dumps(output)
-                    })
-
-                elif function_name == "deep_search":
-                    deep_search_encountered = True
-                    logging.info("Handling deep_search")
-                    query = arguments.get("query", "")
-
-                    # call deepsearch api with the user's query
-                    logging.info(f"Sending query to deepsearch: {query}")
-                    async for data in call_deepsearch_api(query, messages_assist, client, university, username, major, minor, year, school):
-                        #logging.info(f"yielding deepsearch data chunk: {data}")
-                        yield data
-
-                else:
-                    logging.warning(f"Function {function_name} is not implemented")
-                    output = "Function not implemented."
-                    tool_outputs.append({
-                        "role": "function",
-                        "name": function_name,
-                        "content": json.dumps(output)
-                    })
-
-            if not deep_search_encountered and not get_current_info_encountered:
-                logging.info("appending function results to messages")
-                messages.extend(tool_outputs)
-                logging.info("making a follow-up streaming call to get final response")
-                final_response = await client.chat.completions.create(
+            # 1) Ask GPT with current messages
+            logging.info("Calling OpenAI to decide next action...")
+            try:
+                stream = await client.chat.completions.create(
                     model=config["model"],
                     messages=messages,
-                    stream=True
+                    tools=config["tools"],
+                    stream=True,
                 )
+            except Exception as api_err:
+                logging.error(f"Error calling OpenAI API: {api_err}", exc_info=True)
+                yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': 'Error communicating with AI.'}})}<ERROR_END>\n"
+                break
+
+            # Buffers & collectors for this iteration
+            buffered_content = ""
+            collected_tool_calls: dict[int, dict] = {}
+            tool_call_occurred = False
+
+            # 2) Read streaming chunks
+            async for chunk in stream:
+                delta = chunk.choices[0].delta
+
+                # Yield text immediately IF no tool call has occurred in this iteration yet
+                if delta.content and not tool_call_occurred:
+                    yield delta.content + "|"
+
+                # Collect tool-call fragments
+                if delta.tool_calls:
+                    # If a tool call appears, stop yielding any further text for THIS iteration
+                    if not tool_call_occurred:
+                        logging.info("Tool call detected mid-stream; stopping text yield for this iteration.")
+                    tool_call_occurred = True
+                    buffered_content = "" # Discard any assistant text if a tool is called
+                    for t in delta.tool_calls:
+                        idx = t.index
+                        if idx not in collected_tool_calls:
+                            collected_tool_calls[idx] = {
+                                "id": t.id,
+                                "type": t.type,
+                                "function": {
+                                    "name": t.function.name,
+                                    "arguments": "",
+                                },
+                            }
+                        collected_tool_calls[idx]["function"]["arguments"] += t.function.arguments
+
+            # 3) If no tool call was detected throughout the stream, we're done.
+            if not tool_call_occurred:
+                logging.info("No tool calls detected in the stream. Ending loop.")
+                break # Conversation turn finished
+
+            # 4) Otherwise, execute tools, collect results, and prepare for next iteration
+            logging.info(f"Tool calls detected: {list(collected_tool_calls.values())}")
+            tool_messages_for_next_iteration = []
+            deep_search_finished_in_this_iteration = False
+
+            for idx, call in collected_tool_calls.items():
+                fname = call["function"]["name"]
+                tool_call_id = call["id"]
+                try:
+                    args = json.loads(call["function"]["arguments"] or "{}")
+                    logging.info(f"Executing tool: {fname} with args: {args}")
+                except json.JSONDecodeError as json_err:
+                    logging.error(f"Failed to parse args for {fname}: {json_err}. Raw: {call['function']['arguments']}")
+                    args = {}
+                    # Append error message back?
+                    tool_messages_for_next_iteration.append({
+                        "tool_call_id": tool_call_id,
+                        "role": "tool",
+                        "name": fname,
+                        "content": json.dumps({"error": "Invalid JSON arguments provided."}),
+                    })
+                    continue # Skip execution if args invalid
+
+                # --- Execute Specific Tools --- 
+                tool_content = None
+                try:
+                    if fname == "get_current_info":
+                        # Simplified handler: Get core data, yield side-effects, return main content
+                        query = args.get("query", "")
+                        reddit_bool = args.get("reddit_bool", False)
+                        youtube_bool = args.get("youtube_bool", False)
+                        nb_sources = args.get("number_of_sources", 6) # Needed for call
+
+                        # -- Yield Reasoning Steps --
+                        reasoning_steps = args.get('reasoning_steps', [])
+                        structured_reasoning = [{"step": i + 1, "description": step} for i, step in enumerate(reasoning_steps)]
+                        yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
+                        logging.info(f"Yielded reasoning steps for get_current_info: {query}")
+
+                        # Run core data fetches
+                        info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
+                        rag_task = asyncio.create_task(search_top_pages(query, university))
+                        
+                        output = await info_task
+                        info_result = ";".join([f"{r.get('url')}:{r.get('content')}" for r in output])
+
+                        # -- Yield Confidence Score --
+                        conf = output[0].get("score") if output else None
+                        if conf is not None:
+                            conf = round(conf * 100)
+                            if conf < 80: # Keep the adjusted threshold
+                                conf += 20
+                            else:
+                                conf = min(conf, 100) # Cap at 100
+                            structured_confidence = {"confidenceScore": str(conf)}
+                            yield f"\n<CONFIDENCE>{json.dumps({'accuracy_score': structured_confidence})}<CONFIDENCE_END>\n"
+                            logging.info(f"Yielded confidence score: {conf}")
+
+                        # -- Yield Sources --
+                        sources = [{"name": r.get("title"), "url": r.get("url")} for r in output]
+                        if sources:
+                             try:
+                                 sources_list = get_sources_json(sources, input_message)
+                             except json.JSONDecodeError:
+                                 logging.error(f"Error decoding JSON for sources: {input_message}")
+                                 sources_list = []
+                             await asyncio.sleep(0.2)
+                             for source in sources_list:
+                                  await asyncio.sleep(0.1)
+                                  logging.info(f"Yielding source: {source}")
+                                  yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
+                        else:
+                             logging.warning(f"No sources found for get_current_info: {input_message}")
+
+                        rag_data = await rag_task
+                        rag_result = rag_data # Assuming rag_data is already the string needed
+                        
+                        # Combine for the tool content
+                        tool_content = json.dumps(f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result}")
+
+                        # Yield Reddit/YouTube immediately if requested
+                        if reddit_bool:
+                            logging.info(f"Yielding Reddit results immediately for query: {query}")
+                            async for rs in get_reddit_summary_for_query(query):
+                                yield rs
+                        youtube_bool = False
+                        if youtube_bool:
+                            logging.info(f"Yielding YouTube results immediately for query: {query}")
+                            yt_query = query + " " + university
+                            yt_data = await get_youtube_videos(yt_query, input_message)
+                            if yt_data.get("videos"):
+                                yield f"\n<YOUTUBE>{json.dumps({'youtube': yt_data['videos']})}<YOUTUBE_END>\n"
+                            if yt_data.get("shorts"):
+                                yield f"\n<INSTA>{json.dumps({'insta': yt_data['shorts']})}<INSTA_END>\n"
+                        
+                    elif fname == "ask_clarifying_question":
+                        q_output = get_clarifying_question_output(args, input_message)
+                        # Yield clarification immediately
+                        yield f"\n<ANSWER_TAK>{json.dumps({'answer_TAK_data': q_output})}<ANSWER_TAK_END>\n"
+                        tool_content = json.dumps(q_output) # Store result for next LLM call
+
+                    elif fname == "deep_search":
+                        logging.info(f"Handling deep_search directly, query: {args.get('query','')}")
+                        # deep_search yields directly and handles its own flow
+                        async for ds_data in call_deepsearch_api(args.get("query", ""), messages_assist, client, university, username, major, minor, year, school):
+                            yield ds_data
+                        deep_search_finished_in_this_iteration = True 
+                        # No tool_content needed, it yielded everything. Loop will break after this iteration.
+
+                    else:
+                        logging.warning(f"Unsupported function called: {fname}")
+                        tool_content = json.dumps({"error": f"Tool '{fname}' is not implemented or supported in this loop."})
                 
-                async for chunk in final_response:
-                    delta = chunk.choices[0].delta
-                    if delta.content:
-                        yield delta.content + "|"
-                
+                except Exception as tool_exec_err:
+                     logging.error(f"Error executing tool {fname}: {tool_exec_err}", exc_info=True)
+                     tool_content = json.dumps({"error": f"Failed to execute tool {fname}. Reason: {str(tool_exec_err)}"}) 
+
+                # Append result to messages for next iteration (if not deep_search which handles its own output)
+                if tool_content is not None:
+                     tool_messages_for_next_iteration.append({
+                         "tool_call_id": tool_call_id,
+                         "role": "tool",
+                         "name": fname,
+                         "content": tool_content,
+                     })
+
+            # 5) If deep_search ran, exit the loop now
+            if deep_search_finished_in_this_iteration:
+                 logging.info("Deep search finished, ending conversation loop.")
+                 break
+
+            # 6) Append tool results and continue loop
+            messages.extend(tool_messages_for_next_iteration)
+            logging.info("Appended tool results to messages, continuing loop.")
+            # End of while loop, will continue to next iteration
+
+        # Loop finished (either by break or max iterations)
+        logging.info(f"Exiting OpenAI call loop after {current_iteration} iterations.")
+
+        # --- End of new loop logic --- 
+        # Ensure legacy code below is not reached if the loop completes/breaks
+        return 
+
     except Exception as e:
         logging.error(f"Error in handle_requires_action: {str(e)} for {input_message}", exc_info=True)
         yield f"\n<ERROR>{json.dumps({'error_back': {'errorSentence': f'Oops! {username}, we are experiencing high traffic right now. Please try again later.'}})}<ERROR_END>\n"

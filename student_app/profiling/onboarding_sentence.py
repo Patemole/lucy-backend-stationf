@@ -365,16 +365,16 @@ async def onboarding_sentence(user) -> str:
     # Extract all image URLs from insta_profile (but not the taggedUsers' images).
     image_urls = []
     if insta_profile: # Check if insta_profile exists
-        # Add the profile picture from insta_profile.
+    # Add the profile picture from insta_profile.
         profile_section = insta_profile.get("profile", {})
-        if profile_section.get("profilePicUrlHD"):
-            image_urls.append(profile_section["profilePicUrlHD"])
-        # Loop over posts and add displayUrl and each image in images.
+    if profile_section.get("profilePicUrlHD"):
+        image_urls.append(profile_section["profilePicUrlHD"])
+    # Loop over posts and add displayUrl and each image in images.
         for post in insta_profile.get("posts", []):
-            if post.get("displayUrl"):
-                image_urls.append(post["displayUrl"])
-            if post.get("images"):
-                image_urls.extend(post["images"])
+        if post.get("displayUrl"):
+            image_urls.append(post["displayUrl"])
+        if post.get("images"):
+            image_urls.extend(post["images"])
     # Remove duplicates while preserving order.
     image_urls = list(dict.fromkeys(image_urls))
     
@@ -417,8 +417,8 @@ async def onboarding_sentence(user) -> str:
                         data_uri = f"data:{content_type};base64,{base64_image}"
                         
                         # Append to message content
-                        user_message_content.append({
-                            "type": "image_url",
+        user_message_content.append({
+            "type": "image_url",
                             "image_url": {"url": data_uri} # Send base64 data URI
                         })
                         successfully_added_images += 1
