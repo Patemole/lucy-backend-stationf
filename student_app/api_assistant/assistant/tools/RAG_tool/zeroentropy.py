@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import asyncio
 from functools import wraps
 import time
+import httpx
 
 
 
@@ -39,35 +40,112 @@ api_key = os.getenv("ZEROENTROPY_API_KEY")
 zclient = ZeroEntropy(api_key=api_key)
 
 
+async def fetch_document_metadata(path: str, collection_name: str, api_key: str):
+    """Fetches metadata for a specific document using its path."""
+    url = "https://api.zeroentropy.dev/v1/documents/get-document-info"
+    payload = {
+        "collection_name": collection_name,
+        "path": path,
+        "include_content": False
+    }
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(url, json=payload, headers=headers)
+            response.raise_for_status() # Raise an exception for bad status codes
+            data = response.json()
+            # Extract metadata, handle potential missing keys gracefully
+            metadata = data.get('document', {}).get('metadata', {})
+            if metadata:
+                logging.debug(f"Successfully fetched metadata for path: {path}")
+                return metadata
+            else:
+                logging.warning(f"No metadata found in response for path: {path}")
+                return {}
+    except httpx.HTTPStatusError as e:
+        logging.error(f"HTTP error fetching metadata for {path}: {e.response.status_code} - {e.response.text}")
+        return {}
+    except httpx.RequestError as e:
+        logging.error(f"Request error fetching metadata for {path}: {e}")
+        return {}
+    except Exception as e:
+        logging.error(f"Unexpected error fetching metadata for {path}: {e}")
+        return {}
+
+
 @timing_decorator
 async def search_top_pages(query: str, collection_name: str, size: int = 5):
     """
-    search for documents matching a query and return the top pages.
+    Search for documents matching a query, retrieve top snippets, fetch their metadata,
+    and return combined information.
 
     :param query: the search query string.
     :param collection_name: the name of the collection to search.
     :param size: the maximum number of top results to return.
-    :return: a list of search results.
+    :return: a list of dictionaries, each containing 'content' and 'metadata'.
     """
-    try:
+    if not api_key:
+        logging.error("ZeroEntropy API key not found. Cannot perform search.")
+        return []
 
-        # perform the search using the zeroentropy documents.search endpoint
+    try:
+        # 1. Perform the top snippets search
+        logging.info(f"Searching top snippets for query: '{query}' in collection '{collection_name}'")
         response = zclient.queries.top_snippets(
             collection_name=collection_name,
             query=query,
             k=size,
-            precise_responses=True
+            precise_responses=True # Keep precise responses
         )
-        # assuming the response contains a 'documents' attribute with the results
-        results = response.results
-        logging.info(f"found {len(results)} results for query: '{query}'")
-        aggregated_content = ""
-        for doc in results:
-            logging.info(f"content: {doc.content}")
-            # assuming each document has metadata with a title and a score property
-            aggregated_content += doc.content + "\n"
-        return aggregated_content
+        snippet_results = response.results
+        logging.info(f"Found {len(snippet_results)} snippets for query: '{query}'")
+
+        if not snippet_results:
+            return []
+
+        # 2. Extract paths and fetch metadata concurrently
+        paths_to_fetch = list(set([result.path for result in snippet_results if hasattr(result, 'path')]))
+        if not paths_to_fetch:
+            logging.warning("No paths found in snippet results to fetch metadata.")
+            # Optionally return snippets without metadata here if desired
+            # For now, we proceed assuming metadata is needed for sources
+            return []
+
+        logging.info(f"Fetching metadata for {len(paths_to_fetch)} unique paths.")
+        metadata_tasks = [fetch_document_metadata(path, collection_name, api_key) for path in paths_to_fetch]
+        fetched_metadata_list = await asyncio.gather(*metadata_tasks)
+
+        # Create a mapping from path to its fetched metadata
+        metadata_map = {path: metadata for path, metadata in zip(paths_to_fetch, fetched_metadata_list) if metadata}
+        logging.info(f"Successfully fetched metadata for {len(metadata_map)} paths.")
+
+        # 3. Combine snippet content with fetched metadata
+        combined_results = []
+        for snippet in snippet_results:
+            if hasattr(snippet, 'path') and snippet.path in metadata_map:
+                combined_results.append({
+                    'content': snippet.content if hasattr(snippet, 'content') else '',
+                    'metadata': metadata_map[snippet.path]
+                })
+            else:
+                # Handle snippets whose metadata couldn't be fetched or had no path
+                logging.warning(f"Could not find/fetch metadata for snippet with path: {getattr(snippet, 'path', 'N/A')}. Including content only.")
+                # Decide whether to include snippets without metadata
+                # Option 1: Include with empty metadata
+                # combined_results.append({
+                #     'content': snippet.content if hasattr(snippet, 'content') else '',
+                #     'metadata': {}
+                # })
+                # Option 2: Skip (current implementation based on chat_creation needing metadata for sources)
+                continue
+
+        logging.info(f"Returning {len(combined_results)} combined results.")
+        return combined_results
+
     except Exception as e:
-        logging.error(f"error during search: {e}")
+        logging.exception(f"Error during search_top_pages: {e}") # Use exception for stack trace
         return []
 

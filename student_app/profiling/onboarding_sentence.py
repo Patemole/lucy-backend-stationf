@@ -131,29 +131,43 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 async def onboarding_sentence(user) -> str:
     """
-    Generates an onboarding sentence from complete user data, incorporating
-    both the LinkedIn and Instagram profiles along with other user details.
-    Also extracts all image URLs from the Instagram profile (profilePicUrlHD,
-    displayUrl, and images from posts) and passes them as additional content.
+    Generates an onboarding sentence. For Kedge university, it provides a fixed
+    French message. For others, it generates a personalized sentence from
+    complete user data, incorporating LinkedIn/Instagram profiles and images.
     """
     logging.info("Starting onboarding_sentence function.")
     if not isinstance(user, dict) or not user.get("id"):
         logging.error(f"Invalid user data received. Expected dict with 'uid', got: {type(user)}")
         yield "|Error: Invalid user data for onboarding.|"
         return
-        
+
     user_id = user.get("id")
     logging.info(f"Processing onboarding for user ID: {user_id}")
-    
+
     # Fetch fresh user data from Firestore asynchronously
+    # This is needed even for Kedge to check the university field.
     user_data_from_db = await asyncio.to_thread(fetch_user_data_sync, user_id)
-    
+
     if user_data_from_db is None:
         logging.error(f"Failed to fetch user data from Firestore for uid: {user_id}. Cannot proceed.")
         yield f"|Error: Could not load profile data for user {user_id}.|"
         return
-        
-    # Log fetched data safely
+
+    # Safely get university name
+    university = user_data_from_db.get("university", "").lower() # Use lower for case-insensitive check
+
+    # --- Kedge Specific Handling ---
+    if university == "kedge":
+        logging.info(f"Kedge university detected for user {user_id}. Returning fixed French message.")
+        kedge_message = "Je suis ton conseiller AI pour Kedge. Je suis disponible 24h/24 et 7j/7 pour t'aider dans toutes tes tâches administratives et autres reliées à ta vie à Kedge, incluant ton alternance. N'hésite pas à me contacter !"
+        yield kedge_message + "|"
+        return # Exit early for Kedge users
+    # --- End Kedge Specific Handling ---
+
+    # --- Start: Original Logic for Non-Kedge Universities ---
+    logging.info(f"University is '{university}' (not Kedge). Proceeding with personalized onboarding for user {user_id}.")
+
+    # Log fetched data safely (only for non-Kedge)
     try:
         user_log_str = json.dumps(user_data_from_db, indent=2, default=str)
         logging.debug(f"Fetched user data from DB for {user_id}")

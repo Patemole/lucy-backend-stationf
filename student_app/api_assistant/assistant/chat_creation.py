@@ -32,7 +32,7 @@ import json
 import logging
 import requests
 
-from .config.universities import upenn, drexel, ccp, berkeley, yale
+from .config.universities import upenn, drexel, ccp, berkeley, yale, kedge
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -635,7 +635,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         query = args.get("query", "")
                         reddit_bool = args.get("reddit_bool", False)
                         youtube_bool = args.get("youtube_bool", False)
-                        nb_sources = args.get("number_of_sources", 6) # Needed for call
+                        nb_sources = args.get("number_of_sources", 6)
 
                         # -- Yield Reasoning Steps --
                         reasoning_steps = args.get('reasoning_steps', [])
@@ -643,54 +643,137 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         yield f"\n<REASONING_STEPS>{json.dumps({'reasoning_steps': structured_reasoning})}<REASONING_STEPS_END>\n"
                         logging.info(f"Yielded reasoning steps for get_current_info: {query}")
 
-                        # Run core data fetches
-                        info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
                         rag_task = asyncio.create_task(search_top_pages(query, university))
-                        
-                        output = await info_task
-                        info_result = ";".join([f"{r.get('url')}:{r.get('content')}" for r in output])
 
-                        # -- Yield Confidence Score --
-                        conf = output[0].get("score") if output else None
-                        if conf is not None:
-                            conf = round(conf * 100)
-                            if conf < 80: # Keep the adjusted threshold
-                                conf += 20
+                        if university.lower() == "kedge":
+                            logging.info(f"Kedge university detected. Using RAG-only search for query: {query}")
+                            rag_data = await rag_task # rag_data is now a list of result objects
+                            print(f"rag_data: {rag_data}")
+                            # Assuming rag_data is a list of objects like: {content: '...', metadata: {'filename': '...', 'file_url': '...'}}
+                            rag_result_content = ""
+                            sources_list = []
+                            if isinstance(rag_data, list):
+                                # Use dictionary access item['key'] or item.get('key')
+                                rag_result_content = "\n".join([item.get('content', '') for item in rag_data]) # Use .get for safety
+                                sources_list = [
+                                    {
+                                        "answer_document": {
+                                            "document_id": "4", # Fixed value as per original logic's example
+                                            # Use dictionary access for metadata
+                                            "link": item['metadata'].get('file_url', '') if 'metadata' in item else '',
+                                            "document_name": item['metadata'].get('filename', '') if 'metadata' in item else '',
+                                            "source_type": "course_resource" # Fixed value
+                                        }
+                                    # Check dictionary keys
+                                    } for item in rag_data if isinstance(item, dict) and 'metadata' in item and item['metadata'].get('file_url') and item['metadata'].get('filename')
+                                ]
+                            # Removed fallback for string rag_data as it should now always be a list
+                            # elif isinstance(rag_data, str):
+                            #    ...
                             else:
-                                conf = min(conf, 100) # Cap at 100
-                            structured_confidence = {"confidenceScore": str(conf)}
-                            yield f"\n<CONFIDENCE>{json.dumps({'accuracy_score': structured_confidence})}<CONFIDENCE_END>\n"
-                            logging.info(f"Yielded confidence score: {conf}")
+                                logging.warning(f"Unexpected RAG data type or format: {type(rag_data)}. Cannot process for Kedge sources.")
 
-                        # -- Yield Sources --
-                        sources = [{"name": r.get("title"), "url": r.get("url")} for r in output]
-                        if sources:
-                             try:
-                                 sources_list = get_sources_json(sources, input_message)
-                             except json.JSONDecodeError:
-                                 logging.error(f"Error decoding JSON for sources: {input_message}")
-                                 sources_list = []
-                             await asyncio.sleep(0.2)
-                             for source in sources_list:
-                                  await asyncio.sleep(0.1)
-                                  logging.info(f"Yielding source: {source}")
-                                  yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
-                        else:
-                             logging.warning(f"No sources found for get_current_info: {input_message}")
 
-                        rag_data = await rag_task
-                        rag_result = rag_data # Assuming rag_data is already the string needed
-                        
-                        # Combine for the tool content
-                        tool_content = json.dumps(f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result}")
+                            # Yield Sources (Kedge specific format)
+                            if sources_list:
+                                logging.info(f"Yielding {len(sources_list)} sources from RAG for Kedge.")
+                                await asyncio.sleep(0.2) # Maintain similar timing
+                                for source_item in sources_list:
+                                    await asyncio.sleep(0.1)
+                                    logging.info(f"Yielding Kedge source: {source_item}")
+                                    yield f"\n<JSON_DOCUMENT_START>{json.dumps(source_item)}<JSON_DOCUMENT_END>\n"
+                            else:
+                                logging.warning(f"No sources generated from RAG for Kedge query: {input_message}")
 
-                        # Yield Reddit/YouTube immediately if requested
+                            # Tool content (Kedge specific - only RAG)
+                            tool_content = json.dumps(f"Content from university private and verified database: {rag_result_content}")
+
+                        else: # Original logic for non-Kedge universities
+                            logging.info(f"Non-Kedge university ({university}). Using web search + RAG for query: {query}")
+                            # Run core data fetches
+                            info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
+
+                            # Run RAG task concurrently
+                            rag_data = await rag_task # rag_data is now a list of result objects
+
+                            # Process web search results
+                            output = await info_task
+                            info_result = ";".join([f"{r.get('url')}:{r.get('content')}" for r in output])
+
+                            # -- Yield Confidence Score --
+                            conf = output[0].get("score") if output else None
+                            if conf is not None:
+                                conf = round(conf * 100)
+                                if conf < 80: # Keep the adjusted threshold
+                                    conf += 20
+                                else:
+                                    conf = min(conf, 100) # Cap at 100
+                                structured_confidence = {"confidenceScore": str(conf)}
+                                yield f"\n<CONFIDENCE>{json.dumps({'accuracy_score': structured_confidence})}<CONFIDENCE_END>\n"
+                                logging.info(f"Yielded confidence score: {conf}")
+
+                            # -- Prepare Web Sources --
+                            sources_list = [] # Initialize sources list
+                            web_sources = [{"name": r.get("title"), "url": r.get("url")} for r in output]
+                            if web_sources:
+                                 try:
+                                     # Use get_sources_json ONLY for web sources
+                                     sources_list = get_sources_json(web_sources, input_message)
+                                 except json.JSONDecodeError:
+                                     logging.error(f"Error decoding JSON for web sources: {input_message}")
+                                     # sources_list remains empty
+                            else:
+                                 logging.warning(f"No web sources found for get_current_info: {input_message}")
+
+                            # -- Prepare RAG Sources --
+                            rag_result_content = "" # For the final tool content
+                            rag_sources_list = []
+                            if isinstance(rag_data, list):
+                                # Use dictionary access item.get('key')
+                                rag_result_content = "\n".join([item.get('content', '') for item in rag_data]) # Use .get for safety
+                                rag_sources_list = [
+                                    {
+                                        "answer_document": {
+                                            "document_id": "4", # Consistent ID for now
+                                            # Use dictionary access for metadata
+                                            "link": item['metadata'].get('file_url', '') if 'metadata' in item else '',
+                                            # Use filename or title as fallback
+                                            "document_name": (item['metadata'].get('filename') or item['metadata'].get('title', '')) if 'metadata' in item else '',
+                                            "source_type": "course_resource" # Consistent type
+                                        }
+                                    # Check dictionary keys
+                                    } for item in rag_data if isinstance(item, dict) and 'metadata' in item and item['metadata'].get('file_url') and (item['metadata'].get('filename') or item['metadata'].get('title'))
+                                ]
+                                if rag_sources_list:
+                                     logging.info(f"Prepared {len(rag_sources_list)} sources from RAG.")
+                                     # Append RAG sources to the web sources
+                                     sources_list.extend(rag_sources_list)
+                                else:
+                                     logging.info("No suitable sources found in RAG results.")
+                            else:
+                                logging.warning(f"Unexpected RAG data type or format: {type(rag_data)}. Cannot process for non-Kedge sources.")
+
+                            # -- Yield Combined Sources --
+                            if sources_list: # Now contains both web and RAG sources
+                                 logging.info(f"Yielding {len(sources_list)} combined sources.")
+                                 await asyncio.sleep(0.2)
+                                 for source in sources_list:
+                                      await asyncio.sleep(0.1)
+                                      logging.info(f"Yielding source: {source}")
+                                      yield f"\n<JSON_DOCUMENT_START>{json.dumps(source)}<JSON_DOCUMENT_END>\n"
+                            else:
+                                 logging.warning(f"No sources (web or RAG) to yield for query: {input_message}")
+
+                            # Combine for the tool content (using info_result from web and rag_result_content from RAG)
+                            tool_content = json.dumps(f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result_content}")
+
+                        # Yield Reddit/YouTube immediately if requested (Common logic moved outside the if/else)
                         if reddit_bool:
                             logging.info(f"Yielding Reddit results immediately for query: {query}")
                             async for rs in get_reddit_summary_for_query(query):
                                 yield rs
-                        youtube_bool = False
-                        if youtube_bool:
+                        youtube_bool = False # Ensure youtube_bool is explicitly False as per original code before this block
+                        if youtube_bool: # This block will likely not run unless the False override is changed
                             logging.info(f"Yielding YouTube results immediately for query: {query}")
                             yt_query = query + " " + university
                             yt_data = await get_youtube_videos(yt_query, input_message)
@@ -698,7 +781,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                                 yield f"\n<YOUTUBE>{json.dumps({'youtube': yt_data['videos']})}<YOUTUBE_END>\n"
                             if yt_data.get("shorts"):
                                 yield f"\n<INSTA>{json.dumps({'insta': yt_data['shorts']})}<INSTA_END>\n"
-                        
+
                     elif fname == "ask_clarifying_question":
                         q_output = get_clarifying_question_output(args, input_message)
                         # Yield clarification immediately
