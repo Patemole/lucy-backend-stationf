@@ -7,6 +7,7 @@ import asyncio
 from functools import wraps
 import time
 import httpx
+import urllib.parse
 
 
 
@@ -126,9 +127,34 @@ async def search_top_pages(query: str, collection_name: str, size: int = 5):
         combined_results = []
         for snippet in snippet_results:
             if hasattr(snippet, 'path') and snippet.path in metadata_map:
+                # Get the metadata for this snippet's path
+                metadata = metadata_map[snippet.path]
+
+                # URL-encode the file_url if it exists
+                raw_file_url = metadata.get('file_url')
+                encoded_file_url = raw_file_url # Default to raw if encoding fails or not needed
+                if raw_file_url:
+                    try:
+                        # Parse the URL
+                        parsed_url = urllib.parse.urlparse(raw_file_url)
+                        # Decode path first in case it's partially encoded, then encode using quote_plus
+                        decoded_path = urllib.parse.unquote(parsed_url.path)
+                        encoded_path = urllib.parse.quote_plus(decoded_path)
+                        # Reconstruct the URL with the encoded path
+                        encoded_url_parts = parsed_url._replace(path=encoded_path)
+                        encoded_file_url = urllib.parse.urlunparse(encoded_url_parts)
+                        logging.debug(f"Encoded URL for path {snippet.path}: {encoded_file_url}")
+                    except Exception as url_err:
+                        logging.warning(f"Could not parse/encode file_url '{raw_file_url}': {url_err}. Using raw URL.")
+                        encoded_file_url = raw_file_url # Fallback to raw
+
+                # Create a new metadata dictionary with the potentially encoded URL
+                updated_metadata = metadata.copy()
+                updated_metadata['file_url'] = encoded_file_url # Store the encoded URL
+
                 combined_results.append({
                     'content': snippet.content if hasattr(snippet, 'content') else '',
-                    'metadata': metadata_map[snippet.path]
+                    'metadata': updated_metadata # Use the metadata with the encoded URL
                 })
             else:
                 # Handle snippets whose metadata couldn't be fetched or had no path
