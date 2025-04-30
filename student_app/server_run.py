@@ -96,6 +96,16 @@ import queue
 from functools import wraps
 from fastapi import BackgroundTasks
 
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, ValidationError, EmailStr
+from dotenv import load_dotenv
+from botocore.exceptions import ClientError
+import uvicorn
+from student_app.database.dynamo_db.feedback import store_feedback_async
+from student_app.database.dynamo_db.academic_advisor_email import store_academic_advisor_email_async
+from typing import Optional
+
 
 
 # ────────────── Config logging ──────────────
@@ -192,6 +202,30 @@ class LTIRequestValidator(RequestValidator):
         return client_key in LTI_CONSUMER_KEYS.values()
 
 
+class FeedbackWrongAnswerModel(BaseModel):
+    userId: str
+    chatId: str
+    aiMessageContent: str
+    humanMessageContent: str
+    feedback: str
+    relevance: Optional[int] = None
+    accuracy: Optional[int] = None
+    format: Optional[int] = None
+    sources: Optional[int] = None
+    overall_satisfaction: Optional[int] = None
+
+    
+class GeneralFeedbackModel(BaseModel):
+    userId: str
+    feedback: str
+    courseId: str
+
+
+class AcademicAdvisorEmailModel(BaseModel):
+    email: EmailStr
+    uid: str
+
+
 #----------------Initialisation for endpoints--------------------------------------------------------------------------
 
 # Environment variables
@@ -201,6 +235,7 @@ load_dotenv()
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = os.getenv('AWS_REGION')
+
 
 # OpenAI
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -465,10 +500,99 @@ async def handle_save_ai_message_preflight():
 async def handle_student_profile_preflight():
     return Response(status_code=200)
 
+@app.api_route("/wrong_answer", methods=["OPTIONS"])
+async def handle_wrong_answer_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/feedback_answer", methods=["OPTIONS"])
+async def handle_feedback_answer_preflight():
+    return Response(status_code=200)
+
+@app.api_route("/academic_advisor/email", methods=["OPTIONS"])
+async def handle_academic_advisor_email_preflight():
+    return Response(status_code=200)
+
+
 
 @app.get("/health-check")
 async def health_check():
     return {"status": "ok"}
+
+
+
+
+@app.post("/wrong_answer")
+async def submit_feedback_wrong_answer(feedback: FeedbackWrongAnswerModel):
+    try:
+      
+        await store_feedback_async(
+            uid=feedback.userId, 
+            feedback=feedback.feedback,
+            chat_id=feedback.chatId, 
+            ai_message=feedback.aiMessageContent,
+            human_message=feedback.humanMessageContent,
+            
+            relevance=feedback.relevance,
+            accuracy=feedback.accuracy,
+            format=feedback.format,
+            sources=feedback.sources,
+            overall_satisfaction=feedback.overall_satisfaction
+            )
+        
+
+        return {"message": "Feedback on wrong answer received successfully"}
+    
+    except ValidationError as e:
+        logging.error(f"Validation error: {e.json()}")
+        raise HTTPException(status_code=422, detail=e.errors())
+    
+    except ClientError as e:
+        error_code = e.response['Error']['Code']
+        error_message = e.response['Error']['Message']
+        logging.error(f"Error inserting message into feedback database: {error_code} - {error_message}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+
+
+
+@app.post("/feedback_answer")
+async def submit_feedback_answer(feedback: GeneralFeedbackModel):
+    try:
+        #logging.info(f"User: {feedback.userId}")
+        #logging.info(f"Page {feedback.courseId}")
+        #logging.info(f"Feedback: {feedback.feedback}")
+        
+        await store_feedback_async(feedback.userId,feedback.feedback,feedback.courseId)
+        return {"message": "General feedback received successfully"}
+    
+
+    except ValidationError as e:
+        logging.error(f"Validation error: {e.json()}")
+        raise HTTPException(status_code=422, detail=e.errors())
+    
+    except ClientError as e:
+        error_code = e.response['Error']['Code']
+        error_message = e.response['Error']['Message']
+        logging.error(f"Error inserting message into feedback database: {error_code} - {error_message}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+
+
+@app.post("/academic_advisor/email")
+async def submit_academic_advisor_email(data: AcademicAdvisorEmailModel):
+    try:
+        # Here, integrate the logic to process the academic advisor's email and uid
+        logging.info(f"Academic advisor email received: {data.email}")
+        logging.info(f"User ID received: {data.uid}")
+
+        await store_academic_advisor_email_async(data.uid, data.email)
+        return {"message": "Academic advisor email received successfully"}
+    
+    except ValidationError as e:
+        logging.error(f"Validation error: {e.json()}")
+        raise HTTPException(status_code=422, detail=e.errors())
 
 
 
