@@ -42,7 +42,7 @@ zclient = ZeroEntropy(api_key=api_key)
 
 
 async def fetch_document_metadata(path: str, collection_name: str, api_key: str):
-    """Fetches metadata for a specific document using its path."""
+    """Fetches the full document info object for a specific document using its path."""
     url = "https://api.zeroentropy.dev/v1/documents/get-document-info"
     payload = {
         "collection_name": collection_name,
@@ -58,13 +58,13 @@ async def fetch_document_metadata(path: str, collection_name: str, api_key: str)
             response = await client.post(url, json=payload, headers=headers)
             response.raise_for_status() # Raise an exception for bad status codes
             data = response.json()
-            # Extract metadata, handle potential missing keys gracefully
-            metadata = data.get('document', {}).get('metadata', {})
-            if metadata:
-                logging.debug(f"Successfully fetched metadata for path: {path}")
-                return metadata
+            # Extract the entire document object
+            document_info = data.get('document', {})
+            if document_info:
+                logging.debug(f"Successfully fetched document info for path: {path}")
+                return document_info # Return the whole document object
             else:
-                logging.warning(f"No metadata found in response for path: {path}")
+                logging.warning(f"No document info found in response for path: {path}")
                 return {}
     except httpx.HTTPStatusError as e:
         logging.error(f"HTTP error fetching metadata for {path}: {e.response.status_code} - {e.response.text}")
@@ -127,34 +127,41 @@ async def search_top_pages(query: str, collection_name: str, size: int = 5):
         combined_results = []
         for snippet in snippet_results:
             if hasattr(snippet, 'path') and snippet.path in metadata_map:
-                # Get the metadata for this snippet's path
-                metadata = metadata_map[snippet.path]
+                # Get the full document info object for this snippet's path
+                document_info = metadata_map[snippet.path]
+                original_metadata = document_info.get('metadata', {}) # Get nested metadata
 
-                # URL-encode the file_url if it exists
-                raw_file_url = metadata.get('file_url')
-                encoded_file_url = raw_file_url # Default to raw if encoding fails or not needed
+                # Get the top-level file_url (ZeroEntropy API URL)
+                raw_file_url = document_info.get('file_url')
+                encoded_file_url = raw_file_url # Default
+
+                # URL-encode the ZeroEntropy file_url if it exists
                 if raw_file_url:
                     try:
-                        # Parse the URL
                         parsed_url = urllib.parse.urlparse(raw_file_url)
-                        # Decode path first in case it's partially encoded, then encode using quote_plus
-                        decoded_path = urllib.parse.unquote(parsed_url.path)
-                        encoded_path = urllib.parse.quote_plus(decoded_path)
-                        # Reconstruct the URL with the encoded path
-                        encoded_url_parts = parsed_url._replace(path=encoded_path)
+                        # Encode path + query string safely
+                        encoded_path = urllib.parse.quote(parsed_url.path, safe='/')
+                        encoded_query = urllib.parse.quote(parsed_url.query, safe='=&?')
+                        encoded_url_parts = parsed_url._replace(path=encoded_path, query=encoded_query)
                         encoded_file_url = urllib.parse.urlunparse(encoded_url_parts)
-                        logging.debug(f"Encoded URL for path {snippet.path}: {encoded_file_url}")
+                        logging.debug(f"Using encoded ZeroEntropy URL for path {snippet.path}: {encoded_file_url}")
                     except Exception as url_err:
-                        logging.warning(f"Could not parse/encode file_url '{raw_file_url}': {url_err}. Using raw URL.")
-                        encoded_file_url = raw_file_url # Fallback to raw
+                        logging.warning(f"Could not parse/encode ZeroEntropy file_url '{raw_file_url}': {url_err}. Using raw URL.")
+                        encoded_file_url = raw_file_url # Fallback
 
-                # Create a new metadata dictionary with the potentially encoded URL
-                updated_metadata = metadata.copy()
-                updated_metadata['file_url'] = encoded_file_url # Store the encoded URL
+                # Create the final metadata dictionary for the result
+                # Using the (encoded) ZeroEntropy URL as 'file_url'
+                # and filename/title from the nested metadata
+                final_metadata = {
+                    'file_url': encoded_file_url if encoded_file_url else '', # Use the encoded ZE URL
+                    'filename': original_metadata.get('filename', ''),
+                    'title': original_metadata.get('title', '')
+                    # Add other fields from original_metadata if needed elsewhere
+                }
 
                 combined_results.append({
                     'content': snippet.content if hasattr(snippet, 'content') else '',
-                    'metadata': updated_metadata # Use the metadata with the encoded URL
+                    'metadata': final_metadata # Use the specifically constructed metadata
                 })
             else:
                 # Handle snippets whose metadata couldn't be fetched or had no path
