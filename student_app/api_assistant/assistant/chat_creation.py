@@ -334,6 +334,8 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 **If an event is mentioned:**  
                 "Want me to register you for the event?"
 
+            **Important Language Note for Follow-ups:** All follow-up sentences described here must also be rendered in the same language as the user's query, consistent with instruction 14.
+
             every time lucy includes a contact or an email address in her response, she must add a concise follow-up sentence on a new line asking if the student wants Lucy to write the email for him/her
             - **For email addresses:**  
                 - The follow-up sentence should be: "do you want me to write the email for you?"
@@ -371,7 +373,7 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                 ensure that any response involving classes provides this level of detail for clarity and precision.
             
             14. Non-english queries
-                If a question is not in english answer it completely in the user languages. 
+                If a user's query is not in English, you must respond entirely in the language of that query. This includes all parts of your response: your main answer, any clarifications, examples, and all predefined follow-up sentences (e.g., "Do you want me to write the email for you?"). For example, if the query is in French, your entire response, including follow-ups, must be in French. If in Spanish, then entirely in Spanish, and so on for any language.
             
             15. Lucy Platform knowledge and features
                 Social thread feature: this function allows students to choose whether their conversation with lucy is public or private using the button on the left of the message bar. when set to public, conversations are anonymously visible to other students, fostering community and inspiration; when set to private, the conversation remains accessible only to the individual student.
@@ -410,9 +412,9 @@ def get_common_config(university, current_date, username, major, minor, year, sc
                                 "type": "array",
                                 "items": {
                                     "type": "string",
-                                    "description": "Each entry is a step in the reasoning process, detailing the approach to answering the query, including relevant filtering, checking for accuracy, and handling complex queries as needed. each steps should be consice (max 8 words)"
+                                    "description": "Each entry is a step in the reasoning process, detailing the approach to answering the query, including relevant filtering, checking for accuracy, and handling complex queries as needed. each steps should be consice (max 8 words), the reasoning steps should be in the same language as the query, so english if english and french is french like if the user query is in french or like the school is kedge"
                                 },
-                                "description": "An array of 1 to 4 steps outlining the reasoning process for addressing the user's query. 1 to 4 depending on the complexity of the query."
+                                "description": "An array of 1 to 4 steps outlining the reasoning process for addressing the user's query. 1 to 4 depending on the complexity of the query. and the language of the query"
                             }
                         },
                         "required": ["query", "reasoning_steps", "youtube_bool", "reddit_bool", "number_of_sources"],
@@ -649,6 +651,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
 
                         # Await results
                         rag_data = await rag_task
+                        logging.info(f"RAG data: {rag_data}")
+
                         output = await info_task
 
                         # Process web search results (common to all)
@@ -686,7 +690,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                             logging.warning(f"Unexpected RAG data type or format: {type(rag_data)}. Cannot process sources.")
 
                         # Combine sources
-                        sources_list = web_sources_list + rag_sources_list
+                        sources_list = rag_sources_list + web_sources_list
 
                         # Yield Confidence Score (if not Kedge, as Kedge doesn't use Tavily's score)
                         if university.lower() != "kedge":
@@ -713,10 +717,10 @@ async def handle_requires_action(client, university, username, major, minor, yea
                              logging.warning(f"No sources (web or RAG) to yield for query: {input_message}")
 
                         # Combine for the tool content (common format)
-                        tool_content = json.dumps(f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_result_content}")
+                        tool_content = json.dumps(f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_data}")
 
-                        # Yield Reddit/YouTube immediately if requested (common logic)
-                        if reddit_bool:
+                        # Yield Reddit/YouTube immediately if requested (common logic) when not kedge
+                        if reddit_bool and university.lower() != "kedge":
                             logging.info(f"Yielding Reddit results immediately for query: {query}")
                             async for rs in get_reddit_summary_for_query(query):
                                 yield rs
