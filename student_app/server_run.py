@@ -883,9 +883,9 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
     year = input_query.year
     school = input_query.faculty
     is_first_message = input_query.is_first_message
-
     user = input_query.user #All user informations are now here
     is_onboarding_message = input_query.isOnboardingMessage #To know if Lucy already send an onboarding message to the user
+    ambassador_referral = input_query.ambassador_referral # Récupérer le nouveau champ
 
     logging.info("this is the boolean value of is first message")
     logging.info(is_first_message)
@@ -918,7 +918,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
 
                 async def background_store_message():
                     try:
-                        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message)
+                        await store_message_async(chat_id, username=username, course_id=course_id, message_body=input_message, ambassador_referral=ambassador_referral)
                         logging.info(f"Input message stored successfully in background for {input_message}")
                     except Exception as e:
                         logging.error(f"Error while storing the input message in background: {str(e)} for {input_message}")
