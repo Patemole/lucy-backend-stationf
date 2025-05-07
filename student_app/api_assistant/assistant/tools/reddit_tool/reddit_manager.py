@@ -235,7 +235,7 @@ Ensure the output is a single, valid JSON object with the specified structure. A
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": reddit_search_output} 
             ],
-            temperature=0.7,
+            temperature=1.0,
             response_format={
                 "type": "json_schema",
                 "json_schema": {
