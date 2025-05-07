@@ -17,6 +17,7 @@ class InputQuery(BaseModel):
     is_first_message: bool
     user: dict
     isOnboardingMessage: bool
+    ambassador_referral: Optional[str] = None
 
 
 class InputQueryAI(BaseModel):

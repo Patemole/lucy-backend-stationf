@@ -150,7 +150,8 @@ async def store_message_async(
         documents: List[Dict[str, Any]] = [],
         step_metadata: Optional[str] = None,
         sources: Optional[List[Dict[str, Any]]] = None,  # 👈 nouveau paramètre
-        confidence_score: Optional[float] = None  # 👈 nouveau paramètre
+        confidence_score: Optional[float] = None,  # 👈 nouveau paramètre
+        ambassador_referral: Optional[str] = None # Nouveau champ optionnel
         ):
     
 
@@ -182,6 +183,9 @@ async def store_message_async(
 
         if confidence_score is not None:
             args['confidence_score'] = Decimal(str(confidence_score))  # DynamoDB requiert Decimal pour les floats
+
+        if ambassador_referral is not None: # Condition pour ajouter le champ
+            args['ambassador_referral'] = ambassador_referral
 
         table.put_item(Item=args)
         print(f"Message stored successfully with message_id: {args['message_id']}")
