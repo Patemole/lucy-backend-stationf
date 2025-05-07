@@ -557,7 +557,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
             logging.info("Calling OpenAI to decide next action...")
             try:
                 stream = await client.chat.completions.create(
-                    model=config["model"],
+                    model="o1",
                     messages=messages,
                     tools=config["tools"],
                     stream=True,
