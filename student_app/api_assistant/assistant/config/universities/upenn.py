@@ -87,11 +87,11 @@ Penn has a well-earned reputation for “work hard, play hard.” Academics are 
 Greek Life: Fraternities and Sororities
 Greek life is a major part of the social fabric at Penn (about 25–30% of students join fraternities or sororities). While it’s completely possible to have an active social life without going Greek, the influence of the Greek scene is strong – fraternity parties and events are often the big ticket on weekends.
 Fraternities: Penn has a mix of on-campus (official) fraternities and off-campus (unofficial or “underground”) fraternities. The on-campus frats are governed by the Interfraternity Council (IFC) and have houses mostly along Spruce Street and Walnut Street, often referred to by their house nicknames rather than Greek letters. There’s also a tradition of some elite off-campus frats that aren’t recognized by the university but are deeply embedded in the social scene.
-Who are the “top frats”? This can be subjective, but certain names repeatedly come up. Phi Kappa Psi, commonly known as “Castle” (because their Spruce Street house looks like a castle), is often at the top. Castle throws headline parties – for example, annual events like “Frost” (a winter-themed party) or “MG” (rumored to stand for “Mask and Wig Gala” or similar) are major social happenings, and Castle is known for weekly traditions like “Friday Beers” where tons of students pack their courtyard​
+Who are the “top frats”? This can be subjective, but certain names repeatedly come up.  “Castle” (because their Spruce Street house looks like a castle), is often at the top. Castle throws headline parties – for example, annual events like “Frost” (a winter-themed party) or “MG” (rumored to stand for “Magic Garden” or similar) are major social happenings
 greekrank.com
 . Theos is another top group – interestingly, Theos doesn’t have official university recognition or a public house, but it operates like an exclusive fraternity (drawing wealthy, social, sometimes East Coast prep school types). Theos has slipped slightly in recent years in perceived dominance (one commentary said they “slipped slightly due to poor rushing”) but is still considered top-tier​
 greekrank.com
-. Alongside these, there’s Phi Delta Theta (nicknamed “The Hall”), Zeta Psi (“Zete”), and Delta Kappa Epsilon (“Delt”, sometimes confused with “Delta Sig” but in Penn lingo Delt means DKE). These all compete for the best pledge classes and throw big parties or “darties” (day parties). For instance, “Hall” (Phi Delt) is making a case for top after an incredible rush; they’re famous for the Hall Darty (day party)​
+. Alongside these, there’s Phi Delta Theta, “The Hall”, “Zete”, and Delta Kappa Epsilon (“Delt”, sometimes confused with “Delta Sig” but in Penn lingo Delt means DKE). These all compete for the best pledge classes and throw big parties or “darties” (day parties). For instance, “Hall” (Phi Delt) is making a case for top after an incredible rush; they’re famous for the Hall Darty (day party)​
 greekrank.com
 . Zete is known for having a strong presence of international students and allegedly stole some prestige by rushing people who might have gone Castle​
 greekrank.com
@@ -110,24 +110,18 @@ talk.collegeconfidential.com
 talk.collegeconfidential.com
 . Sammy is another predominantly Jewish house, mid-tier in social scene​
 greekrank.com
-. Phi Gamma Delta is called FIJI – they had been rising in popularity recently (one source said FIJI was a “surprise riser,” though still figuring out how to throw great parties)​
+. FIJI – they had been rising in popularity recently (one source said FIJI was a “surprise riser,” though still figuring out how to throw great parties)​
 greekrank.com
 .
 Frat reputations in brief: It’s a spectrum. For example, Castle and Zete are seen as international, wealthy, and exclusive (Castlers often have a reputation for being very wealthy and cosmopolitan)​
 talk.collegeconfidential.com
 . Theos is often described as “mostly rich Jews/WASPy kids from top private schools, very fratty”​
 talk.collegeconfidential.com
-. Phi Delt (The Hall) and Kappa Sig are known for having many athletes and a preppy vibe (including Southern prep in Phi Delt’s case)​
+. Phi Delt and The Hall are known for having many athletes and a preppy vibe (including Southern prep in Phi Delt’s case)​
 talk.collegeconfidential.com
-​
-talk.collegeconfidential.com
-. Oz is an off-campus group historically infamous for intense pledging; it used to be top-tier but in recent rankings it was actually placed at the bottom (perhaps due to being sanctioned or falling out of favor)​
 greekrank.com
 . Apes and ZBT cater to the social, often Northeast crowd (with a strong Jewish presence in both). DKE and ATO are smaller frats almost entirely made up of athletes (football, wrestling)​
-talk.collegeconfidential.com
-. And then there are alternative frats like Pi Lambda Phi (Pi Lam), which is co-ed and very progressive/arts-oriented (their vibe is “very alternative, very open-minded”​
-talk.collegeconfidential.com
- – not your typical frat at all). In summary, Penn’s frat scene ranges from hard-partying “Bros” to geeky or artsy frats, and from mainstream to culturally specific.
+talk.collegeconfidential.comIn summary, Penn’s frat scene ranges from hard-partying “Bros” to geeky or artsy frats, and from mainstream to culturally specific.
 Social influence: The top frats (Castle, Theos, Hall, Zete, Apes, Owls, etc.) have a lot of social capital. They often mix with top sororities and host the biggest parties. Being in those can feel like being part of an “in-crowd,” though they’re not the only path to a social life. These groups also tend to have a pipeline to junior and senior societies and even post-grad networking (Penn’s notorious “network” starts early). That said, Penn is large enough that if one isn’t part of Greek life, there are still many open parties and events to attend – especially during times like NSO and Spring Fling when events are more inclusive.
 Sororities: On the sorority side, Penn has a mix of traditional Panhellenic sororities and a couple of local sororities. Formal sorority recruitment happens in January for freshmen (deferred rush), and it’s a big process with rounds of meet-and-greets and mutual selection. There are eight Panhel sororities: Alpha Chi Omega (AXO), Alpha Phi (A Phi), Chi Omega (Chi O), Delta Delta Delta (Tri Delt), Sigma Delta Tau (SDT), Sigma Kappa, Zeta Tau Alpha (ZTA), and Kappa Alpha Theta (Theta). However, note that AXO’s chapter was closed years back; some of its members formed an independent sorority called OAX (pronounced “Oaks”). Additionally, there is Tabard, which is a longstanding independent women’s society (not affiliated with Panhel, but essentially a sorority). Here’s how the sorority scene breaks down:
 Theta (Kappa Alpha Theta): Generally regarded as a top sorority. Theta at Penn is known for a mix of “social, smart, and stylish” women, often with a lot of city and international students. One commenter said each year Theta is consistently top and nothing remarkable changes – “still Theta”​
