@@ -138,6 +138,7 @@ app.add_middleware(
         "https://preprod.harvard.my-lucy.com", # Ajouter pour la pré-prod Harvard (exemple)
         "https://preprod.cornell.my-lucy.com", # Ajouter pour la pré-prod Cornell (exemple)
         "https://preprod.columbia.my-lucy.com", # Ajouter pour la pré-prod Columbia (exemple)
+        "https://my-lucy.com", # Ajouter pour la pré-prod Columbia (exemple)
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],

@@ -27,9 +27,9 @@ dynamodb = boto3.resource(
 )
 
 # Référence à la table 
-#table = dynamodb.Table("test-event-HFU") 
+table = dynamodb.Table("test-event-HFU") 
 #table = dynamodb.Table("prod_preprod_feedback")
-table = dynamodb.Table("prod_prod_feedback")
+#table = dynamodb.Table("prod_prod_feedback")
 
 # Définir le décorateur
 def timing_decorator(func):
