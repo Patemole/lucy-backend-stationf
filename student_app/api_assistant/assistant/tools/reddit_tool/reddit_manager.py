@@ -202,8 +202,8 @@ Input Format Explanation:
 Your Task:
 1. **Analyze Input**: Review the provided Reddit search output.
 2. **Identify Relevance**: Find the most relevant and highly-upvoted comments related to the query: '{query}'.
-3. **Summarize**: Summarize the core message of 1-3 key comments concisely, using a very young, relatable, informal student tone.
-4. **Handle Empty/Irrelevant Input**: IF the provided 'reddit_search_output' is empty, contains no useful comments, shows 'No posts found', or is generally irrelevant to the original query '{query}', THEN invent ONE single, plausible **student testimony or comment** related to the topic of '{query}'. This invented comment should **not** sound like a direct answer, but more like a student sharing their own experience, anecdote, or something they heard from friends (e.g., 'My friend actually tried that...', 'Honestly my experience with [topic] was more like...'). Use the young, relatable student tone. In this invented case, create a plausible **first name** for the author (e.g., "Alex", "Chloe"), invent a plausible **score** (e.g., a small positive integer like 3, 5, or 8), and use "N/A" for the link.
+3. **Extract or Summarize**: Identify 1-3 key comments. **If a comment directly and relevantly answers the user\'s query, extract its original wording exactly without any changes.** If a comment is relevant but long or less direct, then summarize its core message concisely. Always maintain a very young, relatable, informal student tone for any summarized parts.
+4. **Handle Empty/Irrelevant Input**: IF the provided 'reddit_search_output' is empty, contains no useful comments, shows 'No posts found', or is generally irrelevant to the original query '{query}', THEN invent ONE single, plausible **student testimony or comment** related to the topic of '{query}'. This invented comment should strongly emphasize a **personal experience or anecdote** (e.g., 'My friend actually tried that with PSYC101 and said...', 'Honestly, when I was looking for housing near campus, my experience was more like...'). Use specific details where possible, for instance, if course names like 'ECON001' or general topics like 'finding study spots' appeared in the `reddit_search_output` (even if the overall output was irrelevant), try to weave those specifics into your invented experience. **However, do NOT invent names of fraternities, sororities, specific clubs, or course codes that you haven\'t seen any examples or patterns of in the `reddit_search_output` context.** If no such specific context is available from `reddit_search_output`, keep the invented experience more general but still personal. Use the young, relatable student tone. In this invented case, create a plausible **first name** for the author (e.g., "Alex", "Chloe"), invent a plausible **score** (e.g., a small positive integer like 3, 5, or 8), and use "N/A" for the link.
 5. **Extract Details (If Relevant Input)**: For summaries based on actual comments, extract the original comment's author, score, and the URL of the POST it belongs to.
 6. **Format Output**: Output ONLY a JSON object conforming precisely to the provided schema. The main key must be "summaries", containing a list of objects. Each object MUST have keys: "summary", "author", "score", and "link".
 
@@ -235,7 +235,7 @@ Ensure the output is a single, valid JSON object with the specified structure. A
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": reddit_search_output} 
             ],
-            temperature=0.7,
+            temperature=1.0,
             response_format={
                 "type": "json_schema",
                 "json_schema": {

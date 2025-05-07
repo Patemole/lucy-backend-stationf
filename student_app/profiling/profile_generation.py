@@ -92,6 +92,13 @@ def scrape_instagram(username, uid):
     :return: The curated output (dict) or None if an error occurred.
     """
     logger = logging.getLogger(__name__)
+    
+    # Check if username starts with '@' and remove it
+    if username.startswith('@'):
+        original_username = username
+        username = username[1:]
+        logger.info(f"Removed '@' from input username '{original_username}'. Using '{username}' for scraping.")
+    
     logger.info(f"Starting scrape_instagram for username: {username}, uid: {uid}")
     
     try:

@@ -93,14 +93,27 @@ async def search_top_pages(query: str, collection_name: str, size: int = 5):
         return []
 
     try:
-        # 1. Perform the top snippets search
-        logging.info(f"Searching top snippets for query: '{query}' in collection '{collection_name}'")
-        response = zclient.queries.top_snippets(
-            collection_name=collection_name,
-            query=query,
-            k=size,
-            precise_responses=True # Keep precise responses
-        )
+        if collection_name.lower() == "kedge":
+            # 1. Perform the top snippets search
+            logging.info(f"Searching top pages for query: '{query}' in collection '{collection_name}'")
+            response = zclient.queries.top_pages(
+                collection_name=collection_name,
+                query=query,
+                k=size,
+                include_content=True
+            )
+        else:
+            # 1. Perform the top snippets search
+            logging.info(f"Searching top snippets for query: '{query}' in collection '{collection_name}'")
+            response = zclient.queries.top_snippets(
+                collection_name=collection_name,
+                query=query,
+                k=size,
+                precise_responses=True # Keep precise responses
+            )
+
+
+        
         snippet_results = response.results
         logging.info(f"Found {len(snippet_results)} snippets for query: '{query}'")
 

@@ -259,19 +259,55 @@ async def onboarding_sentence(student_profile: StudentProfile, linkedin_data) ->
 
 
 @timing_decorator
-async def classify_query(question: str) -> dict:
+async def classify_query(question: str, university: str) -> dict:
     """
     Classifies a student's question into predefined categories and generates a conversation title.
     Returns a dictionary with 'category' and 'conversation_title'.
     """
+    logging.info(f"this is the university: {university}")
 
-    # Define the JSON schema for the expected response
+
+    is_kedge = university.lower() == "kedge"
+
+    if is_kedge:
+        categories_enum = ["Aides financières", "événements", "politiques", "logement", "cours", "discussions"]
+        category_example = "l'une parmi : Aides financières, événements, politiques, logement, cours, discussions"
+        system_content = (
+            "Vous êtes un classificateur. Catégorisez la question de l'utilisateur dans l'une de ces catégories : "
+            "Identifiez d'abord la langue de la question de l'utilisateur, puis catégorisez la question dans l'une de ces catégories : "
+            "Aides financières, événements, politiques, logement, cours, ou discussions. "
+            "Ne mettez discussions que lorsque cela n'a aucun rapport avec l'université exemple : salut, comment ça va, que peux-tu faire etc... lorsque l'étudiant ne demande pas d'informations mais veut juste te parler sinon choisissez une autre catégorie. "
+            "Générez également un titre de conversation court de style clickbait. "
+            "La catégorie et le titre de la conversation doivent être dans la langue de la question de l'utilisateur. Assurez-vous de traduire en conséquence avant de retourner la réponse. "
+            "si la question de l'utilisateur est en anglais, la catégorie (Financial Aids, Events, Policies, Housing, Courses, Chitchat) et le titre de la conversation doivent être en anglais, si la question de l'utilisateur est en français, la catégorie (Aides financières, événements, politiques, logement, cours, discussions) et le titre de la conversation doivent être en français. "
+            "{\n"
+            f'  "category": "{category_example}",\n'
+            '  "conversation_title": "un titre court de style clickbait"\n'
+            "}\n\n"
+        )
+    else:
+        categories_enum = ["Financial Aids", "Events", "Policies", "Housing", "Courses", "Chitchat"]
+        category_example = "one of: Financial Aids, Events, Policies, Housing, Courses, Chitchat"
+        system_content = (
+            "You are a classifier. Categorize the user's question into one of these categories: "
+            "First identify the language of the user question, then categorize the question into one of these categories: "
+            "Financial Aids, Events, Policies, Housing, Courses, or Chitchat. "
+            "Only put Chitchat only when it is not related at all with university example: hi, how are you, what can you do etc... when the student is not asking for info but just want to talks to you otherwise choose another category"
+            "Also, generate a short conversation title using a clickbait style. "
+            "Both category and conversation title should be in the language of the user question. Make sure to translate accordingly before returning the response. "
+            "if the user question is in english, the category (Financial Aids, Events, Policies, Housing, Courses, Chitchat) and conversation title should be in english, if the user question is in french, the category (Aides financières, événements, politiques, logement, cours, discussions) and conversation title should be in french. "
+            "{\n"
+            f'  "category": "{category_example}",\n'
+            '  "conversation_title": "a short clickbait-style title"\n'
+            "}\n\n"
+        )
+
     response_schema = {
         "type": "object",
         "properties": {
             "category": {
                 "type": "string",
-                "enum": ["Financial Aids", "Events", "Policies", "Housing", "Courses", "Chitchat",]
+                "enum": categories_enum
             },
             "conversation_title": {
                 "type": "string"
@@ -288,14 +324,7 @@ async def classify_query(question: str) -> dict:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a classifier. Categorize the user's question into one of these categories: "
-                               "Financial Aids, Events, Policies, Housing, Courses, or Chitchat. "
-                               "Only put Chitchat only when it is not related at all with university example: hi, how are you, what can you do etc... when the student is not asking for info but just want to talks to you otherwise choose another category"
-                               "Also, generate a short conversation title using a clickbait style. "
-                               "{\n"
-                               '  "category": "one of: Financial Aids, Events, Policies, Housing, Courses, Chitchat",\n'
-                               '  "conversation_title": "a short clickbait-style title"\n'
-                               "}\n\n"
+                    "content": system_content
                 },
                 {"role": "user", "content": f"Question: {question}"}
             ],
@@ -307,8 +336,8 @@ async def classify_query(question: str) -> dict:
                     "schema": response_schema
                 }
             },
-            max_tokens=100,
-            temperature=1.0
+            max_tokens=50,
+            temperature=1.7
         )
 
         # Extract and return the structured response
@@ -399,7 +428,8 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             
                 if is_first_message:
                     print("first message task creating")
-                    classification_task = asyncio.create_task(classify_query(input_message))
+                    logging.info(f"this is the university: {university}")
+                    classification_task = asyncio.create_task(classify_query(input_message, university))
                     print(f"first message task created")
                     print("awaiting task")
                     classification_title_result = await classification_task
@@ -884,50 +914,50 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     # Known responses with line breaks and bullet points
     '''
     known_responses: Dict[str, str] = {
-        "Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
-        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let’s get started.""",
+        "Hey Lucy let's plan my classes": """Hi Mathieu! Welcome back. I'm here to help you choose your courses for next semester. Let's get started.""",
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let's get started.""",
         "Show me some statistics": """Here are some enrollment statistics for your courses:""",  # Placeholder response for the chart
         "What are the current student performance metrics?": """Here are the current student performance metrics:""",
         "4": """Great! And how many of those classes have you already decided on?""",
-        "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
-        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
-        "Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
+        "I've already decided to take cis2400, cis1210, and ese3060": """Got it. So we're looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
+        "I want a tech elective that explore any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You're interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don't want a project-based course.\n- Class size isn't a concern, and you're open to any instructor.\n\nDoes that all sound correct?""",
+        "Yes": """Awesome! I'll search for the best available options based on these criteria.""",
         "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020 please find below details on Dr. Hammish Office Hours:""",
-        "Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
-        "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
+        "Now validate and register my choices": """Done! You're now set for CIS 5020 - Advanced Topics in AI. You've got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for work required of the classes your are taking but you will validate a lot of degree requirements.\nGo on and register for your classes on PATH@PENN:""",
+        "That's all I need for now. Thanks, Lucy!": """You're welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
     }
     '''
 
     known_responses: Dict[str, str] = {
-    "Hey Lucy let’s plan my classes": """Hi Mathieu! Welcome back. I’m here to help you choose your courses for next semester. Let’s get started.""",
-    "I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let’s get started.""",
+    "Hey Lucy let's plan my classes": """Hi Mathieu! Welcome back. I'm here to help you choose your courses for next semester. Let's get started.""",
+    "I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based class": """Hi Mathieu! Welcome back. Let's get started.""",
     "Show me some statistics": """Here are some enrollment statistics for your courses:\n\n- **CIS 2400**: **120 students enrolled**\n- **CIS 5020**: **85 students enrolled**\n- **CIS 1210**: **200 students enrolled**\n- **ESE 3060**: **60 students enrolled**\n\nThe most popular course this semester is **CIS 1210** with **200 students**, indicating strong interest in foundational topics.""",
     "Compare course enrollment trends": """Here is a comparison of course enrollment statistics between 2022 and 2023:\n\n- **CIS 2400**: 2022 - **120 students**, 2023 - **130 students** (Increase of 8.3%)\n- **CIS 5020**: 2022 - **85 students**, 2023 - **90 students** (Increase of 5.9%)\n- **CIS 1210**: 2022 - **200 students**, 2023 - **210 students** (Increase of 5.0%)\n- **ESE 3060**: 2022 - **60 students**, 2023 - **65 students** (Increase of 8.3%)\n\nThe data shows a consistent increase in enrollment across all courses from 2022 to 2023. **CIS 1210** remains the most popular course with the highest number of enrollments, indicating sustained strong interest in this foundational subject.""",
     "What are the current student performance metrics?": """Here are the current student performance metrics:\n\n- **40%** of students are performing at an **Excellent** level.\n- **35%** are rated as **Good**.\n- **15%** are in the **Average** category.\n- **10%** fall below average.\n\n**Actionable Insight**: A significant portion of students (40%) are excelling, showing strong academic engagement across core subjects.""",
     "What is the distribution of student majors?": """The distribution of majors among students is as follows:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: The largest proportion of students, **30%**, are majoring in Business, suggesting a trend towards business-related fields.""",
-    "How has the enrollment trend changed over the years?": """Here’s a look at the enrollment trends over the past years:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\nEnrollment has steadily increased, with a **22% rise since 2018** and a particularly strong recovery after 2020.""",
-    "What is the retention rate by department?": """Here’s the retention rate by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Insight**: The highest retention rate is in **Humanities** at **90%**, while **Sciences** show the lowest at **72%**. Focus on targeted retention programs in Sciences could improve these numbers.""",
-    "What is the department budget allocation?": """Here’s the current budget allocation by department:\n\n- **Computer Science**: **80%** utilized\n- **Engineering**: **95%** utilized\n- **Business**: **60%** utilized\n- **Humanities**: **70%** utilized\n- **Sciences**: **85%** utilized\n\n**Actionable Insight**: Engineering has the highest budget utilization at **95%**, while Business has unutilized funds. Allocating funds more effectively could improve resource availability in areas with higher utilization.""",
-    "What is the enrollment trend over years?": """Here’s the enrollment trend by year:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\n**Trend**: Enrollment shows consistent growth, especially after the recovery period in 2020, with a **22% increase since 2018**.""",
-    "Show the graduation rates by department": """Here’s a breakdown of graduation rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\nThe **Humanities** department has the highest graduation rate at **90%**, while **Sciences** have the lowest at **72%**.""",
-    "How is the GPA distribution across different years?": """Here’s the GPA trend over recent years:\n\n- **2018**: Average GPA of **3.2**\n- **2019**: Average GPA of **3.3**\n- **2020**: Average GPA of **3.25**\n- **2021**: Average GPA of **3.35**\n- **2022**: Average GPA of **3.4**\n\nGPAs have shown a **gradual increase** over the years, with students consistently improving performance.""",
+    "How has the enrollment trend changed over the years?": """Here's a look at the enrollment trends over the past years:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\nEnrollment has steadily increased, with a **22% rise since 2018** and a particularly strong recovery after 2020.""",
+    "What is the retention rate by department?": """Here's the retention rate by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Insight**: The highest retention rate is in **Humanities** at **90%**, while **Sciences** show the lowest at **72%**. Focus on targeted retention programs in Sciences could improve these numbers.""",
+    "What is the department budget allocation?": """Here's the current budget allocation by department:\n\n- **Computer Science**: **80%** utilized\n- **Engineering**: **95%** utilized\n- **Business**: **60%** utilized\n- **Humanities**: **70%** utilized\n- **Sciences**: **85%** utilized\n\n**Actionable Insight**: Engineering has the highest budget utilization at **95%**, while Business has unutilized funds. Allocating funds more effectively could improve resource availability in areas with higher utilization.""",
+    "What is the enrollment trend over years?": """Here's the enrollment trend by year:\n\n- **2018**: **1,800 students**\n- **2019**: **1,900 students**\n- **2020**: **1,750 students**\n- **2021**: **2,100 students**\n- **2022**: **2,200 students**\n\n**Trend**: Enrollment shows consistent growth, especially after the recovery period in 2020, with a **22% increase since 2018**.""",
+    "Show the graduation rates by department": """Here's a breakdown of graduation rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\nThe **Humanities** department has the highest graduation rate at **90%**, while **Sciences** have the lowest at **72%**.""",
+    "How is the GPA distribution across different years?": """Here's the GPA trend over recent years:\n\n- **2018**: Average GPA of **3.2**\n- **2019**: Average GPA of **3.3**\n- **2020**: Average GPA of **3.25**\n- **2021**: Average GPA of **3.35**\n- **2022**: Average GPA of **3.4**\n\nGPAs have shown a **gradual increase** over the years, with students consistently improving performance.""",
     "What are the monthly expenses in different departments?": """Monthly expenses across departments are as follows:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\nThe **Engineering** department has the highest expenses at **$75,000 per month**.""",
-    "Show the scholarship allocation by student category": """Here’s how scholarships are allocated:\n\n- **Merit-based**: **55%**\n- **Need-based**: **30%**\n- **Athletic**: **10%**\n- **Diversity**: **5%**\n\n**Merit-based scholarships** form the largest category, comprising **55%** of the total scholarship allocation.""",
-    "What is the distribution of majors?": """Here’s the breakdown of majors across students:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: Business leads as the most popular major with **30%** of students.""",
+    "Show the scholarship allocation by student category": """Here's how scholarships are allocated:\n\n- **Merit-based**: **55%**\n- **Need-based**: **30%**\n- **Athletic**: **10%**\n- **Diversity**: **5%**\n\n**Merit-based scholarships** form the largest category, comprising **55%** of the total scholarship allocation.""",
+    "What is the distribution of majors?": """Here's the breakdown of majors across students:\n\n- **Computer Science**: **25%**\n- **Engineering**: **20%**\n- **Business**: **30%**\n- **Humanities**: **15%**\n- **Sciences**: **10%**\n\n**Insight**: Business leads as the most popular major with **30%** of students.""",
     "What is the student retention rate by department?": """Here are the student retention rates by department:\n\n- **Computer Science**: **88%**\n- **Engineering**: **76%**\n- **Business**: **84%**\n- **Humanities**: **90%**\n- **Sciences**: **72%**\n\n**Actionable Insight**: Retention is lowest in the Sciences department at **72%**. Focused support for science students could boost these rates.""",
-    "What are the student scores by course?": """Here’s the distribution of average scores by course:\n\n- **CIS 2400**: **85%**\n- **CIS 5020**: **90%**\n- **CIS 1210**: **78%**\n- **ESE 3060**: **82%**\n\n**Insight**: CIS 5020 shows the highest average score, indicating strong student performance in this advanced course.""",
-    "What is the distribution of scores by course?": """Here’s the score distribution by course:\n\n- **CIS 2400**: Range [65, 75, 80, 85, 95]\n- **CIS 5020**: Range [70, 80, 85, 90, 100]\n- **CIS 1210**: Range [60, 70, 75, 78, 85]\n- **ESE 3060**: Range [50, 65, 72, 80, 90]\n\n**Actionable Insight**: CIS 5020 has a higher top range, showcasing challenging assessments and high achievers.""",
-    "Show the monthly expenses by department": """Here’s a breakdown of monthly expenses by department:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\n**Insight**: Engineering has the highest expense, suggesting substantial investments in lab resources and equipment.""",
-    "What is the impact of extra-curricular activities on grades?": """Here’s the impact of extra-curricular hours on GPA:\n\n- **Student A**: 5 hours - **GPA 3.5**\n- **Student B**: 10 hours - **GPA 3.2**\n- **Student C**: 15 hours - **GPA 3.7**\n- **Student D**: 20 hours - **GPA 3.0**\n\n**Insight**: Moderate participation (10-15 hours) correlates with higher GPAs, balancing activities with academics effectively.""",
-    "How does faculty feedback vary by department?": """Here’s how faculty feedback varies:\n\n- **Computer Science**: **+15** points\n- **Engineering**: **-5** points\n- **Business**: **+10** points\n- **Humanities**: **+8** points\n- **Sciences**: **-3** points\n\n**Insight**: Engineering shows a slight negative trend, while Business has highly positive feedback, reflecting effective instructional practices as you can see on graph 4.""",
+    "What are the student scores by course?": """Here's the distribution of average scores by course:\n\n- **CIS 2400**: **85%**\n- **CIS 5020**: **90%**\n- **CIS 1210**: **78%**\n- **ESE 3060**: **82%**\n\n**Insight**: CIS 5020 shows the highest average score, indicating strong student performance in this advanced course.""",
+    "What is the distribution of scores by course?": """Here's the score distribution by course:\n\n- **CIS 2400**: Range [65, 75, 80, 85, 95]\n- **CIS 5020**: Range [70, 80, 85, 90, 100]\n- **CIS 1210**: Range [60, 70, 75, 78, 85]\n- **ESE 3060**: Range [50, 65, 72, 80, 90]\n\n**Actionable Insight**: CIS 5020 has a higher top range, showcasing challenging assessments and high achievers.""",
+    "Show the monthly expenses by department": """Here's a breakdown of monthly expenses by department:\n\n- **Computer Science**: **$50,000**\n- **Engineering**: **$75,000**\n- **Business**: **$40,000**\n- **Humanities**: **$30,000**\n- **Sciences**: **$60,000**\n\n**Insight**: Engineering has the highest expense, suggesting substantial investments in lab resources and equipment.""",
+    "What is the impact of extra-curricular activities on grades?": """Here's the impact of extra-curricular hours on GPA:\n\n- **Student A**: 5 hours - **GPA 3.5**\n- **Student B**: 10 hours - **GPA 3.2**\n- **Student C**: 15 hours - **GPA 3.7**\n- **Student D**: 20 hours - **GPA 3.0**\n\n**Insight**: Moderate participation (10-15 hours) correlates with higher GPAs, balancing activities with academics effectively.""",
+    "How does faculty feedback vary by department?": """Here's how faculty feedback varies:\n\n- **Computer Science**: **+15** points\n- **Engineering**: **-5** points\n- **Business**: **+10** points\n- **Humanities**: **+8** points\n- **Sciences**: **-3** points\n\n**Insight**: Engineering shows a slight negative trend, while Business has highly positive feedback, reflecting effective instructional practices as you can see on graph 4.""",
     "What are the current retention rates?": """Here are the student retention rates by year:\n\n- **2019**: **85%**\n- **2020**: **87%**\n- **2021**: **82%**\n- **2022**: **90%**\n\nRetention rates reached a high of **90%** in 2022, reflecting improved support and engagement initiatives.""",
     "4": """Great! And how many of those classes have you already decided on?""",
-    "I’ve already decided to take cis2400, cis1210, and ese3060": """Got it. So we’re looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
-    "I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You’re interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don’t want a project-based course.\n- Class size isn’t a concern, and you’re open to any instructor.\n\nDoes that all sound correct?""",
-    "Yes": """Awesome! I’ll search for the best available options based on these criteria.""",
+    "I've already decided to take cis2400, cis1210, and ese3060": """Got it. So we're looking for one more class to complete your schedule. What type of class are you looking for? \n- What requirement do you want to fulfill?\n- Do you have any preferences regarding class size?\n- Are there specific days or times that work best for you?\n- What type of assignments do you prefer? \n\n List me any details that you would like""",
+    "I want a tech elective that explores any AI topic, I don't want classes on Friday, and I don't want a project-based": """Great, that gives me plenty of flexibility in finding the best course for you.\n\nJust to summarize:\n- You need one more technical elective.\n- You're interested in AI.\n- You prefer classes with no classes on Fridays.\n- You don't want a project-based course.\n- Class size isn't a concern, and you're open to any instructor.\n\nDoes that all sound correct?""",
+    "Yes": """Awesome! I'll search for the best available options based on these criteria.""",
     "CIS 5020 is good, can you tell me when and where are M.Hammish OH": """Great choice! CIS 5020, please find below details on Dr. Hammish's Office Hours:""",
-    "Now validate and register my choices": """Done! You’re now set for CIS 5020 - Advanced Topics in AI. You’ve got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for workload, but you will complete several degree requirements.\n\nYou can register for your classes on PATH@PENN:""",
-    "That’s all I need for now. Thanks, Lucy!": """You’re welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
+    "Now validate and register my choices": """Done! You're now set for CIS 5020 - Advanced Topics in AI. You've got all your courses lined up for next semester:\n- **CIS 2400** on Monday and Wednesday from 3:00 PM to 5:00 PM.\n- **CIS 5020** on Monday and Wednesday from 10:00 AM to 11:30 AM.\n- **CIS 1210** on Tuesday and Thursday from 11:00 AM to 1:00 PM.\n- **ESE 3060** Lectures on Tuesday from 5:00 PM to 7:00 PM.\n\nThis semester will be a lot of work rated **9/10** for difficulty and **8/10** for workload, but you will complete several degree requirements.\n\nYou can register for your classes on PATH@PENN:""",
+    "That's all I need for now. Thanks, Lucy!": """You're welcome, Mathieu! Good luck with your upcoming semester. If you need anything else, just reach out. Have a great day!""",
     "Most common types of questions asked to Lucy across different categories?":"""**Overall Insight**: The Enrollment Assistant is seeing increased engagement in **Financial Aid (+150 questions)** and **Career Services (+100)**, highlighting these as high-importance areas. **Academic Advising** also rose by **+80 questions**, while **Program Information** and **Admission Process** inquiries stabilized or slightly decreased (**-50** and **-20**, respectively). Average question complexity remains highest in **Career Services (8.0)** and **Financial Aid (7.5)**, indicating detailed student needs in these areas. Expanding support here will likely enhance overall student satisfaction and success.""",
     "What is the average financial aid package": """Hey there! 😊 The average financial aid package at UPenn for the 2023-2024 academic year is **$66,222**. This package is more than the cost of tuition and includes grants and work-study funding. UPenn is committed to meeting 100% of demonstrated financial need for its students.\nWould you like me to check any specific details about financial aid eligibility or application processes? 💸""",
     "My parents earn $120k; how much aid could I expect?": """Hey! 😊 To give you the most accurate information about how much financial aid you might expect with a family income of $120k, I'll need to check the latest details from UPenn's financial aid office. Let me do that for you right now! 🕵️‍♂️\nI'll get back to you in a moment.\nHere's what you can expect regarding financial aid at UPenn with a family income of $120,000:\n**Financial Aid Overview**\n**Need-Blind Admissions:** UPenn is need-blind for domestic students, meaning your financial need won't affect your admission decision.\n**Expected Family Contribution (EFC):** For a family earning $120,000, the EFC might be significant, potentially ranging from $30,000 to $40,000 per year. This depends on other financial factors like savings and assets.\n**Financial Aid Package**\n**Grant Aid and Work-Study**: You might receive around $45,000 in grant aid per year, though this can vary based on your specific financial situation.\n**No Loans:** UPenn does not include loans in the financial aid packages for students with demonstrated need.\nTools for Estimation\n**Net Price Calculator:** You can use UPenn's Net Price Calculator or the MyIntuition tool for a more personalized estimate.\nIf you have any specific questions or need help with the financial aid application process, feel free to ask! Would you like me to check anything else related to financial aid? 💸""",
@@ -937,7 +967,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     # Dictionary to associate specific documents with certain questions/responses
     document_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+        "I've already decided to take cis2400, cis1210, and ese3060": [
             {
                 "answer_document": {
                     "document_id": "1",
@@ -1007,7 +1037,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     # Related questions for each response
     related_questions: Dict[str, List[str]] = {
-        "That’s all I need for now. Thanks, Lucy!": [
+        "That's all I need for now. Thanks, Lucy!": [
             "What are the most popular AI courses?",
             "Can I combine AI with another elective?",
             "Is there a beginner AI course available?"
@@ -1045,9 +1075,9 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
 
     answer_reddit_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+        "I've already decided to take cis2400, cis1210, and ese3060": [
             {
-                    "comment": "UPenn is amazing but intense! Make sure to balance academics with social life—it’s easy to get swept up in the pace. Use campus resources like the Weingarten Learning Center for academic support and CAPS for mental health. And don’t underestimate the power of a solid group of friends who get what you’re going through!",
+                    "comment": "UPenn is amazing but intense! Make sure to balance academics with social life—it's easy to get swept up in the pace. Use campus resources like the Weingarten Learning Center for academic support and CAPS for mental health. And don't underestimate the power of a solid group of friends who get what you're going through!",
                     "score": "1.1k",
             }
         ]
@@ -1056,7 +1086,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     '''
     answer_instagram_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+        "I've already decided to take cis2400, cis1210, and ese3060": [
             {
                     "title": "What is the BEST things about Upenn?",
                     "nbr_view": "15k",
@@ -1069,7 +1099,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
 
     answer_instagram_club_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+        "I've already decided to take cis2400, cis1210, and ese3060": [
             {
                     "username": "@penngleeclub",
                     "title": "Penn Glee Club",
@@ -1082,7 +1112,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
     }
 
     answer_linkedin_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+        "I've already decided to take cis2400, cis1210, and ese3060": [
             {
                     "name": "Peter Mellark",
                     "picture": "http://localhost:5001/static/academic_advisor/picture_linkedin2.png",
@@ -1095,7 +1125,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     
     answer_youtube_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+        "I've already decided to take cis2400, cis1210, and ese3060": [
             {
                     "title": "A day in the life at UPenn",
                     "link": "https://www.youtube.com/watch?v=o2f-4h03XfY",
@@ -1114,9 +1144,9 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
 
     answer_quora_associations: Dict[str, List[Dict]] = {
-        "I’ve already decided to take cis2400, cis1210, and ese3060": [
+        "I've already decided to take cis2400, cis1210, and ese3060": [
             {
-                    "comment": "To get the most out of UPenn, dive into every opportunity—join clubs, go to events, and push yourself to explore new things. The relationships you build, from classmates to alumni, have a lasting impact. Take advantage of everything UPenn and Philly have to offer—it’s all part of the journey!",
+                    "comment": "To get the most out of UPenn, dive into every opportunity—join clubs, go to events, and push yourself to explore new things. The relationships you build, from classmates to alumni, have a lasting impact. Take advantage of everything UPenn and Philly have to offer—it's all part of the journey!",
                     "score": "5.2k",
             }
         ]
@@ -1126,7 +1156,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
     # Dictionary for answer_TAK associated with specific input messages
     answer_TAK_associations: Dict[str, List[Dict]] = {
-        "Hey Lucy let’s plan my classes": [
+        "Hey Lucy let's plan my classes": [
             {
                 "document_id": "4",
                 "question": "How many classes are you planning to take next semester?",
@@ -2041,7 +2071,7 @@ async def chat(request: Request, input_query: Dict) -> StreamingResponse:
 
 
             # Send final response after waiting
-            final_response = """Thanks for your patience, Mathieu! I’ve found three courses that match your criteria for a technical elective in AI, I have taken 5XX level classes given you are a senior and have validated already three 4XX tech electives. Here they are:\n\n **Option 1: CIS 5190 - Applied Machine Learning**\n- *Description:* The course introduces fundamental concepts and algorithms that enable computers to learn from experience, with an emphasis on practical application to real problems. It covers supervised learning (decision trees, logistic regression, support vector machines, neural networks, and deep learning), unsupervised learning (clustering, dimensionality reduction), and reinforcement learning.\n- *Schedule:* Monday and Wednesday, 10:00 AM - 11:30 AM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Emily Zhang\n- *Class Size:* Medium (30-40 students)\nI know that you are minoring in data science so this course might interest you:\n\n### **Option 2: CIS 5220 - Deep Learning for Data Science**\n- *Description:* This course provides a comprehensive introduction to machine learning techniques specifically tailored for visual data. The class includes a series of hands-on projects where students develop models for tasks such as image classification, object detection, and video analysis.\n- *Schedule:* Monday and Wednesday, 2:00 PM - 3:30 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Michael Rivera\n- *Class Size:* Small (20-25 students)\n\n **Option 3: CIS 5200 - Machine Learning**\n- *Description:* This course intends to provide a thorough modern introduction to the field of machine learning. It is designed for students who want to understand not only what machine learning algorithms do and how they can be used, but also the fundamental principles behind how and why they work.\n- *Schedule:* Monday and Wednesday, 1:45-3:15 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Linda Nguyen\n- *Class Size:* Large (50-60 students)\nDo any of these options stand out to you, or would you like more details on any of them?"""
+            final_response = """Thanks for your patience, Mathieu! I've found three courses that match your criteria for a technical elective in AI, I have taken 5XX level classes given you are a senior and have validated already three 4XX tech electives. Here they are:\n\n **Option 1: CIS 5190 - Applied Machine Learning**\n- *Description:* The course introduces fundamental concepts and algorithms that enable computers to learn from experience, with an emphasis on practical application to real problems. It covers supervised learning (decision trees, logistic regression, support vector machines, neural networks, and deep learning), unsupervised learning (clustering, dimensionality reduction), and reinforcement learning.\n- *Schedule:* Monday and Wednesday, 10:00 AM - 11:30 AM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Emily Zhang\n- *Class Size:* Medium (30-40 students)\nI know that you are minoring in data science so this course might interest you:\n\n### **Option 2: CIS 5220 - Deep Learning for Data Science**\n- *Description:* This course provides a comprehensive introduction to machine learning techniques specifically tailored for visual data. The class includes a series of hands-on projects where students develop models for tasks such as image classification, object detection, and video analysis.\n- *Schedule:* Monday and Wednesday, 2:00 PM - 3:30 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Michael Rivera\n- *Class Size:* Small (20-25 students)\n\n **Option 3: CIS 5200 - Machine Learning**\n- *Description:* This course intends to provide a thorough modern introduction to the field of machine learning. It is designed for students who want to understand not only what machine learning algorithms do and how they can be used, but also the fundamental principles behind how and why they work.\n- *Schedule:* Monday and Wednesday, 1:45-3:15 PM\n- *Format:* Lecture-based with practical assignments\n- *Instructor:* Dr. Linda Nguyen\n- *Class Size:* Large (50-60 students)\nDo any of these options stand out to you, or would you like more details on any of them?"""
 
             waiting_chunks = split_preserving_formatting(waiting_text_answer)
             for chunk in waiting_chunks:

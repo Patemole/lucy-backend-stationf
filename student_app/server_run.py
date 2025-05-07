@@ -371,19 +371,55 @@ async def count_student_questions(chat_history):
 
 
 @timing_decorator
-async def classify_query(question: str) -> dict:
+async def classify_query(question: str, university: str) -> dict:
     """
     Classifies a student's question into predefined categories and generates a conversation title.
     Returns a dictionary with 'category' and 'conversation_title'.
     """
+    logging.info(f"this is the university: {university}")
 
-    # Define the JSON schema for the expected response
+
+    is_kedge = university.lower() == "kedge"
+
+    if is_kedge:
+        categories_enum = ["Aides financières", "événements", "politiques", "logement", "cours", "discussions"]
+        category_example = "l'une parmi : Aides financières, événements, politiques, logement, cours, discussions"
+        system_content = (
+            "Vous êtes un classificateur. Catégorisez la question de l'utilisateur dans l'une de ces catégories : "
+            "Identifiez d'abord la langue de la question de l'utilisateur, puis catégorisez la question dans l'une de ces catégories : "
+            "Aides financières, événements, politiques, logement, cours, ou discussions. "
+            "Ne mettez discussions que lorsque cela n'a aucun rapport avec l'université exemple : salut, comment ça va, que peux-tu faire etc... lorsque l'étudiant ne demande pas d'informations mais veut juste te parler sinon choisissez une autre catégorie. "
+            "Générez également un titre de conversation court de style clickbait. "
+            "La catégorie et le titre de la conversation doivent être dans la langue de la question de l'utilisateur. Assurez-vous de traduire en conséquence avant de retourner la réponse. "
+            "si la question de l'utilisateur est en anglais, la catégorie (Financial Aids, Events, Policies, Housing, Courses, Chitchat) et le titre de la conversation doivent être en anglais, si la question de l'utilisateur est en français, la catégorie (Aides financières, événements, politiques, logement, cours, discussions) et le titre de la conversation doivent être en français. "
+            "{\n"
+            f'  "category": "{category_example}",\n'
+            '  "conversation_title": "un titre court de style clickbait"\n'
+            "}\n\n"
+        )
+    else:
+        categories_enum = ["Financial Aids", "Events", "Policies", "Housing", "Courses", "Chitchat"]
+        category_example = "one of: Financial Aids, Events, Policies, Housing, Courses, Chitchat"
+        system_content = (
+            "You are a classifier. Categorize the user's question into one of these categories: "
+            "First identify the language of the user question, then categorize the question into one of these categories: "
+            "Financial Aids, Events, Policies, Housing, Courses, or Chitchat. "
+            "Only put Chitchat only when it is not related at all with university example: hi, how are you, what can you do etc... when the student is not asking for info but just want to talks to you otherwise choose another category"
+            "Also, generate a short conversation title using a clickbait style. "
+            "Both category and conversation title should be in the language of the user question. Make sure to translate accordingly before returning the response. "
+            "if the user question is in english, the category (Financial Aids, Events, Policies, Housing, Courses, Chitchat) and conversation title should be in english, if the user question is in french, the category (Aides financières, événements, politiques, logement, cours, discussions) and conversation title should be in french. "
+            "{\n"
+            f'  "category": "{category_example}",\n'
+            '  "conversation_title": "a short clickbait-style title"\n'
+            "}\n\n"
+        )
+
     response_schema = {
         "type": "object",
         "properties": {
             "category": {
                 "type": "string",
-                "enum": ["Financial Aids", "Events", "Policies", "Housing", "Courses", "Chitchat",]
+                "enum": categories_enum
             },
             "conversation_title": {
                 "type": "string"
@@ -400,14 +436,7 @@ async def classify_query(question: str) -> dict:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a classifier. Categorize the user's question into one of these categories: "
-                               "Financial Aids, Events, Policies, Housing, Courses, or Chitchat. "
-                               "Only put Chitchat only when it is not related at all with university example: hi, how are you, what can you do etc... when the student is not asking for info but just want to talks to you otherwise choose another category"
-                               "Also, generate a short conversation title using a clickbait style. "
-                               "{\n"
-                               '  "category": "one of: Financial Aids, Events, Policies, Housing, Courses, Chitchat",\n'
-                               '  "conversation_title": "a short clickbait-style title"\n'
-                               "}\n\n"
+                    "content": system_content
                 },
                 {"role": "user", "content": f"Question: {question}"}
             ],
@@ -419,8 +448,8 @@ async def classify_query(question: str) -> dict:
                     "schema": response_schema
                 }
             },
-            max_tokens=100,
-            temperature=1.0
+            max_tokens=50,
+            temperature=1.7
         )
 
         # Extract and return the structured response
@@ -433,7 +462,6 @@ async def classify_query(question: str) -> dict:
             "category": "unknown",
             "conversation_title": "Untitled Conversation"
         }
-
 
 
 
@@ -916,7 +944,7 @@ async def chat(request: Request, response: Response, input_query: InputQuery) ->
             
                 if is_first_message:
                     print("first message task creating")
-                    classification_task = asyncio.create_task(classify_query(input_message))
+                    classification_task = asyncio.create_task(classify_query(input_message, university))
                     print(f"first message task created")
                     print("awaiting task")
                     classification_title_result = await classification_task
