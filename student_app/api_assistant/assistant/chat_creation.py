@@ -670,24 +670,29 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         # Process RAG results (common to all)
                         rag_result_content = ""
                         rag_sources_list = []
+                        seen_document_names = set() # Keep track of document names to avoid duplicates
                         if isinstance(rag_data, list):
                             rag_result_content = "\n".join([item.get('content', '') for item in rag_data])
-                            rag_sources_list = [
-                                {
-                                    "answer_document": {
-                                        "document_id": "4",
-                                        "link": item['metadata'].get('file_url', '') if 'metadata' in item else '',
-                                        "document_name": (item['metadata'].get('filename') or item['metadata'].get('title', '')) if 'metadata' in item else '',
-                                        "source_type": "course_resource"
-                                    }
-                                } for item in rag_data if isinstance(item, dict) and 'metadata' in item and item['metadata'].get('file_url') and (item['metadata'].get('filename') or item['metadata'].get('title'))
-                            ]
+                            for item in rag_data:
+                                if isinstance(item, dict) and 'metadata' in item:
+                                    file_url = item['metadata'].get('file_url', '')
+                                    # Determine document_name, prioritizing filename then title
+                                    doc_name = item['metadata'].get('filename') or item['metadata'].get('title', '')
+                                    
+                                    if file_url and doc_name and doc_name not in seen_document_names:
+                                        source_dict = {
+                                            "answer_document": {
+                                                "document_id": "4", # Assuming this is a static or placeholder ID
+                                                "link": file_url,
+                                                "document_name": doc_name,
+                                                "source_type": "course_resource"
+                                            }
+                                        }
+                                        rag_sources_list.append(source_dict)
+                                        seen_document_names.add(doc_name)
+                            
                             if rag_sources_list:
-                                 logging.info(f"Prepared {len(rag_sources_list)} sources from RAG.")
-                            else:
-                                 logging.info("No suitable sources found in RAG results.")
-                        else:
-                            logging.warning(f"Unexpected RAG data type or format: {type(rag_data)}. Cannot process sources.")
+                                 logging.info(f"Prepared {len(rag_sources_list)} unique sources from RAG based on document_name.")
 
                         # Combine sources
                         sources_list = rag_sources_list + web_sources_list
