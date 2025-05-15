@@ -646,7 +646,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         logging.info(f"Yielded reasoning steps for get_current_info: {query}")
 
                         # Run both tasks concurrently for all universities
-                        rag_task = asyncio.create_task(search_top_pages(query, university))
+                        rag_task = asyncio.create_task(search_top_pages(query, university, school))
                         info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
 
                         # Await results
@@ -724,8 +724,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         # Combine for the tool content (common format)
                         tool_content = json.dumps(f"Web information from university websites: {info_result}\n Content from university private and verified database which you should use in priority if relevant {rag_data}")
 
-                        # Yield Reddit/YouTube immediately if requested (common logic) when not kedge
-                        if reddit_bool and university.lower() != "kedge":
+                        # Yield Reddit/YouTube immediately if requested (common logic) when is upenn
+                        if reddit_bool and university.lower() == "upenn":
                             logging.info(f"Yielding Reddit results immediately for query: {query}")
                             async for rs in get_reddit_summary_for_query(query):
                                 yield rs
