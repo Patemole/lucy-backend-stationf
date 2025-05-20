@@ -67,7 +67,12 @@ def generate_search_domain_filter(university):
     default_domain = f"{university}.edu"
 
     # Combine the default domain with the custom domains
-    search_domain_filter = [default_domain] + custom_domains
+    if university == "pennai":
+        search_domain_filter = ["upenn.edu"]
+    else:
+        search_domain_filter = [default_domain] + custom_domains
+
+    
 
     return search_domain_filter
 
