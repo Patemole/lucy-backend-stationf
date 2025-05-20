@@ -79,7 +79,7 @@ async def fetch_document_metadata(path: str, collection_name: str, api_key: str)
 
 
 @timing_decorator
-async def search_top_pages(query: str, collection_name: str, program: Union[str, List[str]] = "all", size: int = 5):
+async def search_top_pages(query: str, collection_name: str, program: Union[str, List[str]] = "all", campus: Union[str, List[str]] = "all", size: int = 5):
     """
     Search for documents matching a query, retrieve top snippets, fetch their metadata,
     and return combined information.
@@ -87,6 +87,7 @@ async def search_top_pages(query: str, collection_name: str, program: Union[str,
     :param query: the search query string.
     :param collection_name: the name of the collection to search.
     :param program: the program(s) to filter by (string or list of strings). Defaults to "all".
+    :param campus: the campus(es) to filter by (string or list of strings). Defaults to "all".
     :param size: the maximum number of top results to return.
     :return: a list of dictionaries, each containing 'content' and 'metadata'.
     """
@@ -96,28 +97,41 @@ async def search_top_pages(query: str, collection_name: str, program: Union[str,
 
     try:
         if collection_name.lower() == "kedge":
-            # 1. Perform the top pages search with program filtering
-            logging.info(f"Searching top pages for query: '{query}' in collection '{collection_name}' with program filter: '{program}' or 'all'")
+            # 1. Perform the top pages search with program and campus filtering
+            logging.info(f"Searching top pages for query: '{query}' in collection '{collection_name}' with program filter: '{program}' and campus filter: '{campus}'")
+
             
+            # Process program filter terms
             current_program_terms = []
             if isinstance(program, str):
-                # If program is a string, use it as a single term (unless it's 'all')
                 if program.lower() != "all":
                     current_program_terms.append(program)
             elif isinstance(program, list):
-                # If program is a list, use its string elements
                 for p_item in program:
                     if isinstance(p_item, str) and p_item.lower() != "all":
                         current_program_terms.append(p_item)
                     elif not isinstance(p_item, str):
                         logging.warning(f"Ignoring non-string item in program list: {p_item}")
             else:
-                logging.warning(f"Program parameter has unexpected type: {type(program)}. Defaulting to effectively filter by 'all'.")
-
-            # Add "all" to the list of terms and ensure uniqueness
+                logging.warning(f"Program parameter has unexpected type: {type(program)}. Defaulting to effectively filter by 'all' for program.")
             program_filter_values = list(set(current_program_terms + ["all"]))
+
+            # Process campus filter terms
+            current_campus_terms = []
+            if isinstance(campus, str):
+                if campus.lower() != "all":
+                    current_campus_terms.append(campus)
+            elif isinstance(campus, list):
+                for c_item in campus:
+                    if isinstance(c_item, str) and c_item.lower() != "all":
+                        current_campus_terms.append(c_item)
+                    elif not isinstance(c_item, str):
+                        logging.warning(f"Ignoring non-string item in campus list: {c_item}")
+            else:
+                logging.warning(f"Campus parameter has unexpected type: {type(campus)}. Defaulting to effectively filter by 'all' for campus.")
+            campus_filter_values = list(set(current_campus_terms + ["all"]))
             
-            logging.info(f"Applying program filter for ZeroEntropy with values: {program_filter_values}")
+            logging.info(f"Applying filters for ZeroEntropy - Program: {program_filter_values}, Campus: {campus_filter_values}")
               
             response = zclient.queries.top_pages(
                 collection_name=collection_name,
@@ -125,10 +139,11 @@ async def search_top_pages(query: str, collection_name: str, program: Union[str,
                 k=size,
                 include_content=True,
                 filter={
-                    "program": { # Assuming the metadata field is named 'program'
-                        "$in": program_filter_values
-                    }
-                }
+                    "$and": [
+                        {"program": { "$in": program_filter_values }},
+                        {"campus": { "$in": campus_filter_values }}
+                    ]
+                },
             )
         else:
             # 1. Perform the top snippets search
