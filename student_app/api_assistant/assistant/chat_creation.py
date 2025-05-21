@@ -511,6 +511,7 @@ def get_university_config(university, current_date, username, major, minor, year
 @timing_decorator
 async def handle_requires_action(client, university, username, major, minor, year, school, history_items, input_message):
     try:
+        university = "aiu"
         logging.info(f"Processing user message: {input_message}")
         logging.info("Starting handle_requires_action function")
 
