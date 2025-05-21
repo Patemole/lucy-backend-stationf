@@ -638,6 +638,8 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         reddit_bool = args.get("reddit_bool", False)
                         youtube_bool = args.get("youtube_bool", False)
                         nb_sources = args.get("number_of_sources", 6)
+                        reddit_bool=False
+                        youtube_bool=False
 
                         # -- Yield Reasoning Steps --
                         reasoning_steps = args.get('reasoning_steps', [])
@@ -646,7 +648,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                         logging.info(f"Yielded reasoning steps for get_current_info: {query}")
 
                         # Run both tasks concurrently for all universities
-                        rag_task = asyncio.create_task(search_top_pages(query, university, school))
+                        rag_task = asyncio.create_task(search_top_pages(query, university, year, school))
                         info_task = asyncio.create_task(get_up_to_date_info(query, university, username, major, minor, year, school, input_message, nb_sources))
 
                         # Await results
@@ -695,7 +697,7 @@ async def handle_requires_action(client, university, username, major, minor, yea
                                  logging.info(f"Prepared {len(rag_sources_list)} unique sources from RAG based on document_name.")
 
                         # Combine sources
-                        sources_list = rag_sources_list + web_sources_list
+                        sources_list = web_sources_list +rag_sources_list
 
                         # Yield Confidence Score (if not Kedge, as Kedge doesn't use Tavily's score)
                         if university.lower() != "kedge":
